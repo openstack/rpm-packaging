@@ -5,8 +5,8 @@ Summary:        OpenStack Packaging - RPM Macros
 License:        Apache-2.0
 Group:          Development/Libraries/Python
 Url:            https://wiki.openstack.org/wiki/Rpm-packaging
-Source1:        suse-macros.openstack
-Source2:        common-macros.openstack
+Source1:        macros.openstack-suse
+Source2:        macros.openstack-common
 BuildArch:      noarch
 
 %description
@@ -19,15 +19,15 @@ packages.
 
 %install
 %if 0%{?suse_version}
-install -D -m644 %{SOURCE1} %{buildroot}%{_sysconfdir}/rpm/suse-macros.openstack
+install -D -m644 %{SOURCE1} %{buildroot}%{_sysconfdir}/rpm/macros.openstack-suse
 %endif
-install -D -m644 %{SOURCE2} %{buildroot}%{_sysconfdir}/rpm/common-macros.openstack
+install -D -m644 %{SOURCE2} %{buildroot}%{_sysconfdir}/rpm/macros.openstack-common
 
 %files
 %defattr(-,root,root)
 %if 0%{?suse_version}
-%{_sysconfdir}/rpm/suse-macros.openstack
+%{_sysconfdir}/rpm/macros.openstack-suse
 %endif
-%{_sysconfdir}/rpm/common-macros.openstack
+%{_sysconfdir}/rpm/macros.openstack-common
 
 %changelog
