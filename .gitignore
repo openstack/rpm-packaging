@@ -1,0 +1,10 @@
+*.mo
+*.pyc
+*.sqlite
+*.swp
+*~
+.coverage
+.testrepository
+.tox
+.venv
+AUTHORS
