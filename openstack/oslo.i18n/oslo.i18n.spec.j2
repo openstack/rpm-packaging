@@ -41,7 +41,7 @@ Documentation for the oslo.i18n library.
 # generate html docs
 python setup.py build_sphinx
 # remove the sphinx-build leftovers
-rm -rf html/.{doctrees,buildinfo}
+rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %check
 export PYTHONPATH="%{python2_sitelib}:%{buildroot}%{python2_sitelib}"
@@ -54,7 +54,7 @@ testr init && testr run --parallel
 %{python2_sitelib}/*.egg-info
 
 %files doc
-%doc html
+%doc doc/build/html
 %doc LICENSE
 
 %changelog
