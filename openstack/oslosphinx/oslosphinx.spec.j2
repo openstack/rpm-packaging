@@ -1,0 +1,53 @@
+#
+# spec file for package python-oslosphinx
+#
+# Copyright (c) 2015 SUSE LINUX GmbH, Nuernberg, Germany.
+#
+# All modifications and additions to the file contributed by third parties
+# remain the property of their copyright owners, unless otherwise agreed
+# upon. The license for this file, and modifications and additions to the
+# file, is the same license as for the pristine package itself (unless the
+# license for the pristine package is not an Open Source License, in which
+# case the license is the MIT License). An "Open Source License" is a
+# license that conforms to the Open Source Definition (Version 1.9)
+# published by the Open Source Initiative.
+
+# Please submit bugfixes or comments via http://bugs.opensuse.org/
+#
+
+
+Name:           {{ 'oslosphinx' | py2pkg }}
+Version:        4.2.0
+Release:        0
+Url:            https://launchpad.net/oslosphinx
+Summary:        OpenStack Sphinx
+License:        Apache-2.0
+Group:          Development/Languages/Python
+Source:         https://pypi.python.org/packages/source/o/oslosphinx/oslosphinx-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ 'devel' | py2pkg }}
+BuildRequires:  {{ 'pbr' | py2pkg }}
+Requires:       {{ 'pbr' | py2pkg }} >= 1.6
+Requires:       {{ 'requests' | py2pkg }} >= 2.8.1
+BuildArch:      noarch
+
+%description
+The Oslo Sphinx library provides an OpenStack common
+layer of Sphinx plugins.
+
+%prep
+%setup -q -n oslosphinx-%{version}
+
+%build
+%{__python2} setup.py build
+
+%install
+%{__python2} setup.py install --skip-build --root=%{buildroot} --prefix=%{_prefix} --install-data=%{python2_sitelib}
+
+%files
+%defattr(-,root,root,-)
+%doc LICENSE README.rst AUTHORS
+%{python2_sitelib}/oslosphinx
+%{python2_sitelib}/*.egg-info
+
+%changelog
