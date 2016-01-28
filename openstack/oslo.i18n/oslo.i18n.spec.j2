@@ -39,13 +39,13 @@ Documentation for the oslo.i18n library.
 %{__python2} setup.py install --skip-build --root %{buildroot}
 
 # generate html docs
-python setup.py build_sphinx
+%{__python2} setup.py build_sphinx
 # remove the sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %check
 export PYTHONPATH="%{python2_sitelib}:%{buildroot}%{python2_sitelib}"
-export PYTHON="python -S"
+export PYTHON="%{__python2} -S"
 testr init && testr run --parallel
 
 %files
