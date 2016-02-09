@@ -1,0 +1,60 @@
+%global sname keystoneauth1
+
+Name:           {{ 'keystoneauth1' | py2pkg }}
+Version:        2.2.0
+Release:        0
+Summary:        OpenStack authenticating tools
+License:        {{ 'Apache-2.0' | license }}
+Url:            https://launchpad.net/%{sname}
+Source0:        https://pypi.python.org/packages/source/k/%{sname}/%{sname}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ 'pbr' | py2pkg }}
+BuildRequires:  {{ 'setuptools' | py2pkg }}
+Requires:       {{ 'iso8601' | py2pkg }} >= 0.1.9
+Requires:       {{ 'lxml' | py2pkg }} >= 2.3
+Requires:       {{ 'requests' | py2pkg }} >= 2.8.1
+Requires:       {{ 'requests-kerberos' | py2pkg }} >= 0.6
+Requires:       {{ 'six' | py2pkg }} >= 1.9.0
+Requires:       {{ 'stevedore' | py2pkg }} >= 1.5.0
+BuildArch:      noarch
+
+%description
+Tools for authenticating to an OpenStack-based cloud. These tools include:
+* Authentication plugins (password, token, and federation based)
+* Discovery mechanisms to determine API version support
+* A session that is used to maintain client settings across requests
+  (based on the requests Python library)
+
+%package doc
+Summary:        Documentation for OpenStack authenticating tools
+BuildRequires:  {{ 'oslosphinx' | py2pkg }}
+BuildRequires:  {{ 'Sphinx' | py2pkg }}
+
+%description doc
+Documentation for OpenStack authenticating tools.
+
+%prep
+%setup -q -n %{sname}-%{version}
+
+%build
+%{__python2} setup.py build
+
+%install
+%{__python2} setup.py install --skip-build --root %{buildroot}
+
+# generate html docs
+%{__python2} setup.py build_sphinx
+# remove the sphinx-build leftovers
+rm -rf doc/build/html/.{doctrees,buildinfo}
+
+%files
+%license LICENSE
+%doc AUTHORS ChangeLog README.rst
+%{python2_sitelib}/%{sname}
+%{python2_sitelib}/*.egg-info
+
+%files doc
+%doc doc/build/html
+%license LICENSE
+
+%changelog
