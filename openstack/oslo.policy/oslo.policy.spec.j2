@@ -1,0 +1,69 @@
+%global sname oslo.policy
+
+Name:           {{ 'oslo.policy' | py2pkg }}
+Version:        1.5.0
+Release:        0
+Summary:        OpenStack Oslo Policy library
+License:        {{ 'Apache-2.0' | license }}
+URL:            https://launchpad.net/%sname
+Source0:        https://pypi.python.org/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('oslo.config', ('>=', '3.4.0')) }}
+BuildRequires:  {{ py2pkg('oslo.i18n', ('>=', '2.1.0')) }}
+BuildRequires:  {{ py2pkg('oslo.serialization', ('>=', '1.10.0')) }}
+BuildRequires:  {{ py2pkg('oslo.utils', ('>=', '3.5.0')) }}
+BuildRequires:  {{ py2pkg('oslotest', ('>=', '1.10.0')) }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('requests', ('>=', '2.8.1')) }}
+BuildRequires:  {{ py2pkg('requests-mock', ('>=', '0.7.0')) }}
+Requires:       {{ py2pkg('oslo.config', ('>=', '3.4.0')) }}
+Requires:       {{ py2pkg('oslo.i18n', ('>=', '2.1.0')) }}
+Requires:       {{ py2pkg('oslo.serialization', ('>=', '1.10.0')) }}
+Requires:       {{ py2pkg('oslo.utils', ('>=', '3.5.0')) }}
+Requires:       {{ py2pkg('requests', ('>=', '2.8.1')) }}
+Requires:       {{ py2pkg('six', ('>=', '1.9.0')) }}
+BuildArch:      noarch
+
+%description
+The OpenStack Oslo Policy library.
+RBAC policy enforcement library for OpenStack.
+
+%package doc
+Summary:    Documentation for the Oslo Policy library
+Group:      Documentation
+BuildRequires:  {{ py2pkg('oslosphinx', ('>=', '2.5.0')) }}
+BuildRequires:  {{ py2pkg('Sphinx', ('>=', '1.1.2')) }}
+
+%description doc
+Documentation for the Oslo Policy library.
+
+%prep
+%setup -q -n %{sname}-%{version}
+
+%build
+%{__python2} setup.py build
+
+# generate html docs
+%{__python2} setup.py build_sphinx
+# remove the sphinx-build leftovers
+rm -rf doc/build/html/.{doctrees,buildinfo}
+
+%install
+%{__python2} setup.py install --skip-build --root %{buildroot}
+
+%check
+%{__python2} setup.py testr
+
+%files
+%license LICENSE
+%doc README.rst
+%{_bindir}/oslopolicy-checker
+%{python2_sitelib}/oslo_policy
+%{python2_sitelib}/*.egg-info
+
+%files doc
+%license LICENSE
+%doc doc/build/html
+
+%changelog
