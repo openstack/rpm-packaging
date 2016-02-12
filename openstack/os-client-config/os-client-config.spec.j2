@@ -1,0 +1,90 @@
+%global sname os-client-config
+%bcond_with test
+%bcond_with docs
+Name:           {{ 'os-client-config' | py2pkg }}
+Version:        1.14.0
+Release:        0
+Summary:        OpenStack Client Configuration Library
+License:        {{ 'Apache-2.0' | license }}
+Group:          Development/Libraries
+URL:            https://launchpad.net/%{sname}
+Source0:        https://pypi.python.org/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
+BuildArch:      noarch
+BuildRequires: openstack-macros
+BuildRequires: python-devel
+%if %{with test}
+BuildRequires: {{ 'coverage' | py2pkg }} >= 3.6
+BuildRequires: {{ 'discover' | py2pkg }}
+BuildRequires: {{ 'extras' | py2pkg }}
+BuildRequires: {{ 'fixtures' | py2pkg }} >= 0.3.14
+BuildRequires: {{ 'mock' | py2pkg }}
+BuildRequires: {{ 'oslotest' | py2pkg }} >= 1.11
+BuildRequires: {{ 'python-glanceclient' | py2pkg }} >= 1.18.0
+BuildRequires: {{ 'python-keystoneclient' | py2pkg }} >= 1.1.0
+BuildRequires: {{ 'python-subunit' | py2pkg }} >= 0.0.18
+BuildRequires: {{ 'testrepository' | py2pkg }}
+BuildRequires: {{ 'testscenarios' | py2pkg }} >= 0.4
+BuildRequires: {{ 'testtools' | py2pkg }} >= 0.9.34
+%endif
+BuildRequires: {{ 'pbr' | py2pkg }}
+BuildRequires: {{ 'setuptools' | py2pkg }}
+Requires:      {{ 'appdirs' | py2pkg }} >= 1.3.0
+Requires:      {{ 'PyYAML' | py2pkg }} >= 3.1.0
+Requires:      {{ 'keystoneauth1' | py2pkg }} >= 2.1.0
+Requires:      {{ 'requestsexceptions' | py2pkg }} >= 1.1.1
+
+
+%description
+os-client-config is a library for collecting client configuration for
+using an OpenStack cloud in a consistent and comprehensive manner.
+It will find cloud config for as few as 1 cloud and as many as you want
+to put in a config file. It will read environment variables and config
+files, and it also contains some vendor specific default values so that
+you don't have to know extra info to use OpenStack.
+
+%if %{with docs}
+%package doc
+Summary:       Documentation for OpenStack client configuration library
+BuildRequires: {{ 'oslosphinx' | py2pkg }} >= 2.3.0
+BuildRequires: {{ 'Sphinx' | py2pkg }}
+BuildRequires: {{ 'reno' | py2pkg }} >= 0.1.1
+
+%description doc
+Documentation for the os-client-config library.
+%endif
+
+%prep
+%setup -q -n %{sname}-%{version}
+
+%build
+%{__python2} setup.py build
+%if %{with docs}
+# generate html docs
+%{__python2} setup.py build_sphinx
+# remove the sphinx-build leftovers
+rm -rf html/.{doctrees,buildinfo}
+%endif
+
+%install
+%{__python2} setup.py install --skip-build --root %{buildroot}
+
+%if %{with test}
+%check
+export PYTHONPATH="%{python2_sitearch}:%{python2_sitelib}:%{buildroot}%{python2_sitelib}"
+export PYTHON="%{__python2} -S"
+testr init && testr run
+%endif
+
+%files
+%license LICENSE
+%doc README.rst AUTHORS
+%{python2_sitelib}/os_client_config
+%{python2_sitelib}/*.egg-info
+
+%if %{with docs}
+%files doc
+%doc doc/build/html
+%license LICENSE
+%endif
+
+%changelog
