@@ -1,0 +1,85 @@
+%global sname python-glanceclient
+Name:           {{ py2name('python-glanceclient') }}
+Epoch:          {{ epoch('python-glanceclient') }}
+Version:        2.0.1
+Release:        0
+Summary:        Python API and CLI for OpenStack Glance
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages
+Url:            https://launchpad.net/%{sname}
+Source0:        https://pypi.io/packages/source/p/%{sname}/%{sname}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('PrettyTable') }}
+BuildRequires:  python-devel
+BuildRequires:  {{ py2pkg('fixtures') }}
+BuildRequires:  {{ py2pkg('python-keystoneclient') }}
+BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('os-client-config') }}
+BuildRequires:  {{ py2pkg('oslo.utils') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('reno') }}
+BuildRequires:  {{ py2pkg('requests-mock') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testscenarios') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+BuildRequires:  {{ py2pkg('warlock') }}
+Requires:       {{ py2pkg('Babel') }}
+Requires:       {{ py2pkg('PrettyTable') }}
+Requires:       {{ py2pkg('python-keystoneclient') }}
+Requires:       {{ py2pkg('oslo.i18n') }}
+Requires:       {{ py2pkg('oslo.utils') }}
+Requires:       {{ py2pkg('pbr') }}
+Requires:       {{ py2pkg('requests') }}
+Requires:       {{ py2pkg('six') }}
+Requires:       {{ py2pkg('warlock') }}
+BuildArch:      noarch
+
+%description
+This is a client for the OpenStack Glance API. There's a Python API (the
+glanceclient module), and a command-line script (glance). Each implements
+100% of the OpenStack Glance API.
+
+%package doc
+Summary:        Documentation for OpenStack Nova API Client
+Group:          Documentation
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+
+%description      doc
+This is a client for the OpenStack Glance API. There's a Python API (the
+glanceclient module), and a command-line script (glance). Each implements
+100% of the OpenStack Glance API.
+This package contains auto-generated documentation.
+
+%prep
+%setup -q -n %{sname}-%{version}
+
+%build
+%py2_build
+
+# generate html docs
+%{__python2} setup.py build_sphinx
+# remove the sphinx-build leftovers
+rm -rf doc/build/html/.{doctrees,buildinfo}
+
+%install
+%py2_install
+#man pages
+install -p -D -m 644 doc/build/man/glance.1 %{buildroot}%{_mandir}/man1/glance.1
+
+%check
+%{__python2} setup.py testr
+
+%files
+%license LICENSE
+%doc README.rst ChangeLog
+%{_bindir}/glance
+%{python2_sitelib}/glanceclient
+%{python2_sitelib}/*.egg-info
+%{_mandir}/man1/glance.1.gz
+
+%files doc
+%license LICENSE
+%doc doc/build/html
+
+%changelog
