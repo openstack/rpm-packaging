@@ -1,7 +1,7 @@
 %global sname oslo.i18n
 
 Name:           {{ 'oslo.i18n' | py2pkg }}
-Version:        2.2.0
+Version:        3.3.0
 Release:        0
 Summary:        OpenStack i18n library
 License:        {{ 'Apache-2.0' | license }}
@@ -9,6 +9,7 @@ Url:            https://launchpad.net/%{sname}
 Source0:        https://pypi.python.org/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
 BuildRequires:  openstack-macros
 BuildRequires:  {{ 'Babel' | py2pkg }}
+BuildRequires:  {{ 'mock' | py2pkg }}
 BuildRequires:  {{ 'oslotest' | py2pkg }}
 BuildRequires:  {{ 'pbr' | py2pkg }}
 BuildRequires:  {{ 'setuptools' | py2pkg }}
