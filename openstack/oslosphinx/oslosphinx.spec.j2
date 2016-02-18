@@ -17,7 +17,7 @@
 
 
 Name:           {{ 'oslosphinx' | py2pkg }}
-Version:        4.2.0
+Version:        4.3.0
 Release:        0
 Url:            https://launchpad.net/oslosphinx
 Summary:        OpenStack Sphinx
@@ -27,8 +27,9 @@ Source:         https://pypi.python.org/packages/source/o/oslosphinx/oslosphinx-
 BuildRequires:  openstack-macros
 BuildRequires:  {{ 'devel' | py2pkg }}
 BuildRequires:  {{ 'pbr' | py2pkg }}
-Requires:       {{ 'pbr' | py2pkg }} >= 1.6
+Requires:       {{ 'pbr' | py2pkg }} >= 1.8
 Requires:       {{ 'requests' | py2pkg }} >= 2.8.1
+Requires:       {{ 'six' | py2pkg }} >= 1.9.0
 BuildArch:      noarch
 
 %description
@@ -46,7 +47,8 @@ layer of Sphinx plugins.
 
 %files
 %defattr(-,root,root,-)
-%doc LICENSE README.rst AUTHORS
+%doc README.rst AUTHORS
+%license LICENSE
 %{python2_sitelib}/oslosphinx
 %{python2_sitelib}/*.egg-info
 
