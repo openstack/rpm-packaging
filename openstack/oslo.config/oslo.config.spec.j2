@@ -67,7 +67,6 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %check
 export PYTHONPATH="%{python2_sitelib}:%{buildroot}%{python2_sitelib}"
-export PYTHON="%{__python2} -S"
 testr init && testr run
 
 %files
