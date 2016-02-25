@@ -1,0 +1,66 @@
+%global sname oslo.serialization
+
+Name:          {{ 'oslo.serialization' | py2pkg }}
+Version:       2.4.0
+Release:       0
+Summary:       OpenStack serialization library
+Group:         Development/Languages
+License:       {{ 'Apache-2.0' | license }}
+Url:           https://launchpad.net/%{sname}
+Source0:       https://pypi.python.org/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
+BuildRequires: openstack-macros
+BuildRequires: {{ 'devel' | py2pkg }}
+BuildRequires: {{ 'mock' | py2pkg }}
+BuildRequires: {{ 'netaddr' | py2pkg }} >= 0.7.12
+BuildRequires: {{ 'oslotest' | py2pkg }}
+BuildRequires: {{ 'oslo.i18n' | py2pkg }}
+BuildRequires: {{ 'pbr' | py2pkg }}
+BuildRequires: {{ 'setuptools' | py2pkg }}
+Requires:      {{ 'Babel' | py2pkg }} >= 1.3
+Requires:      {{ 'six' | py2pkg }} >= 1.9.0
+Requires:      {{ 'msgpack-python' | py2pkg }} >= 0.4.0
+Requires:      {{ 'pytz' | py2pkg }} >= 2013.6
+BuildArch:     noarch
+
+%description
+The oslo.serialization library provides support for representing objects
+in transmittable and storable formats, such as Base64, JSON and MessagePack.
+
+%package doc
+Summary:       Documentation for OpenStack serialization library
+BuildRequires: {{ 'oslosphinx' | py2pkg }} >= 2.3.0
+BuildRequires: {{ 'Sphinx' | py2pkg }}
+
+%description doc
+The oslo.serialization library provides support for representing objects
+in transmittable and storable formats, such as Base64, JSON and MessagePack.
+This package contains the documentation.
+
+%prep
+%setup -q -n %{sname}-%{version}
+
+%build
+%{__python2} setup.py build
+
+# generate html docs
+%{__python2} setup.py build_sphinx
+# remove the sphinx-build leftovers
+rm -rf doc/build/html/.{doctrees,buildinfo}
+
+%install
+%{__python2} setup.py install --prefix=%{_prefix} --root=%{buildroot}
+
+%check
+testr init && testr run
+
+%files
+%license LICENSE
+%doc README.rst AUTHORS ChangeLog
+%{python2_sitelib}/oslo_serialization
+%{python2_sitelib}/*.egg-info
+
+%files doc
+%license LICENSE
+%doc doc/build/html
+
+%changelog
