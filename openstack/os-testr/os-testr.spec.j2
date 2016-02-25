@@ -1,0 +1,75 @@
+%global sname os-testr
+Name:           {{ py2pkg('os-testr') }}
+Version:        0.6.0
+Release:        0
+Summary:        A testr wrapper to provide functionality for OpenStack projects
+License:        {{ 'Apache-2.0' | license }}
+Group:          Development/Languages/Python
+Url:            http://www.openstack.org/
+Source:         https://pypi.python.org/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  python-devel
+BuildRequires:  {{ py2pkg('ddt', ('>=', '0.4.0')) }}
+BuildRequires:  {{ py2pkg('mock', ('>=', '1.2')) }}
+BuildRequires:  {{ py2pkg('oslotest', ('>=', '1.2.0')) }}
+BuildRequires:  {{ py2pkg('pbr', ('>=', '1.3')) }}
+BuildRequires:  {{ py2pkg('testscenarios', ('>=', '0.4')) }}
+BuildRequires:  {{ py2pkg('testrepository', ('>=', '0.0.18')) }}
+Requires:       {{ py2pkg('Babel', ('>=', '1.3')) }}
+Requires:       {{ py2pkg('pbr', ('>=', '1.3')) }}
+Requires:       {{ py2pkg('python-subunit', ('>=', '0.0.18')) }}
+Requires:       {{ py2pkg('testrepository', ('>=', '0.0.18')) }}
+Requires:       {{ py2pkg('testtools', ('>=', '1.4.0')) }}
+BuildArch:      noarch
+
+%description
+A testr wrapper to provide functionality for OpenStack projects
+* Documentation: http://docs.openstack.org/developer/os-testr
+* Source: http://git.openstack.org/cgit/openstack/os-testr
+* Bugs: http://bugs.launchpad.net/os-testr
+
+%package doc
+Summary:        Documentation for the testr
+Group:          Documentation
+BuildRequires:  {{ py2pkg('oslosphinx', ('>=', '2.5.0')) }}
+BuildRequires:  {{ py2pkg('Sphinx', ('>=', '1.1.2')) }}
+
+%description doc
+Documentation for the testr wrapper.
+
+%prep
+%setup -q -n %{sname}-%{version}
+
+%build
+%{__python2} setup.py build
+
+# generate html docs
+%{__python2} setup.py build_sphinx
+# remove the sphinx-build leftovers
+rm -rf doc/build/html/.{doctrees,buildinfo}
+
+%install
+%{__python2} setup.py install --prefix=%{_prefix} --root=%{buildroot}
+
+
+%check
+export PATH="$PATH:%{buildroot}/%{_bindir}"
+export PYTHONPATH="%{python2_sitearch}:%{python2_sitelib}:%{buildroot}%{python2_sitelib}"
+%{__python2} setup.py testr
+
+%files
+%defattr(-,root,root,-)
+%license LICENSE
+%doc README.rst ChangeLog
+%{_bindir}/generate-subunit
+%{_bindir}/ostestr
+%{_bindir}/subunit-trace
+%{_bindir}/subunit2html
+%{python2_sitelib}/os_testr
+%{python2_sitelib}/os_testr*egg-info
+
+%files doc
+%license LICENSE
+%doc doc/build/html
+
+%changelog
