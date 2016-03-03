@@ -1,0 +1,80 @@
+%global sname oslo.log
+
+Name:           {{ 'oslo.log' | py2pkg }}
+Version:        3.2.0
+Release:        0
+Summary:        OpenStack log library
+License:        {{ 'Apache-2.0' | license }}
+URL:            https://launchpad.net/%{sname}
+Source0:        https://pypi.python.org/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
+
+BuildRequires:  openstack-macros
+BuildRequires:  python-devel
+BuildRequires:  {{ py2pkg('pyinotify', ('>=', '0.9.6')) }}
+BuildRequires:  {{ py2pkg('mock', ('>=', '1.2')) }}
+BuildRequires:  {{ py2pkg('oslo.config', ('>=', '3.4.0')) }}
+BuildRequires:  {{ py2pkg('oslo.context', ('>=', '0.2.0')) }}
+BuildRequires:  {{ py2pkg('oslo.i18n', ('>=', '2.1.0')) }}
+BuildRequires:  {{ py2pkg('oslo.serialization', ('>=', '1.10.0')) }}
+BuildRequires:  {{ py2pkg('oslo.utils', ('>=', '3.5.0')) }}
+BuildRequires:  {{ py2pkg('oslotest', ('>=', '1.10.0')) }}
+BuildRequires:  {{ py2pkg('pbr', ('>=', '1.6')) }}
+BuildRequires:  {{ py2pkg('python-dateutil', ('>=', '2.4.2')) }}
+BuildRequires:  {{ py2pkg('python-subunit', ('>=', '0.0.18')) }}
+BuildRequires:  {{ py2pkg('setuptools') }}
+BuildRequires:  {{ py2pkg('six', ('>=', '1.9.0')) }}
+BuildRequires:  {{ py2pkg('testrepository', ('>=', '0.0.18')) }}
+BuildRequires:  {{ py2pkg('testscenarios', ('>=', '0.4')) }}
+BuildRequires:  {{ py2pkg('testtools', ('>=', '1.4.0')) }}
+Requires:       {{ py2pkg('Babel', ('>=', '1.3')) }}
+Requires:       {{ py2pkg('debtcollector', ('>=', '1.2.0')) }}
+Requires:       {{ py2pkg('oslo.config', ('>=', '3.4.0')) }}
+Requires:       {{ py2pkg('oslo.context', ('>=', '0.2.0')) }}
+Requires:       {{ py2pkg('oslo.i18n', ('>=', '2.1.0')) }}
+Requires:       {{ py2pkg('oslo.serialization', ('>=', '1.10.0')) }}
+Requires:       {{ py2pkg('oslo.utils', ('>=', '3.5.0')) }}
+Requires:       {{ py2pkg('pyinotify', ('>=', '0.9.6')) }}
+Requires:       {{ py2pkg('python-dateutil', ('>=', '2.4.2')) }}
+Requires:       {{ py2pkg('six', ('>=', '1.9.0')) }}
+BuildArch:      noarch
+
+%description
+OpenStack logging configuration library provides standardized configuration
+for all openstack projects.It also provides custom formatters, handlers and
+support for context specific logging (like resource id's etc).
+
+%package doc
+Summary:    Documentation for OpenStack log library
+BuildRequires: {{ py2pkg('Sphinx', ('>=', '1.1.2')) }}
+BuildRequires: {{ py2pkg('oslosphinx', ('>=', '2.5.0')) }}
+
+%description doc
+Documentation for the oslo.log library.
+
+%prep
+%setup -q -n %{sname}-%{version}
+
+%build
+%{__python2} setup.py build
+
+# generate html docs
+%{__python2} setup.py build_sphinx
+rm -rf doc/build/html/.{doctrees,buildinfo}
+
+%install
+%{__python2} setup.py install --skip-build --root %{buildroot}
+
+%check
+testr init && testr run --parallel
+
+%files
+%license LICENSE
+%doc ChangeLog README.rst
+%{python_sitelib}/oslo_log
+%{python_sitelib}/*.egg-info
+
+%files doc
+%license LICENSE
+%doc doc/build/html
+
+%changelog
