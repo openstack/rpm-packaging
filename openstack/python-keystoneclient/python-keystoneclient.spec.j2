@@ -1,0 +1,115 @@
+%global sname python-keystoneclient
+
+Name:          {{ py2name('python-keystoneclient') }}
+Epoch:         {{ epoch('python-keystoneclient') }}
+Version:       2.3.1
+Release:       0
+Summary:       Client library for OpenStack Identity API
+License:       {{ license('Apache-2.0') }}
+Group:         Development/Languages/Python
+Url:           http://launchpad.net/%{sname}
+Source0:       https://pypi.python.org/packages/source/p/%{sname}/%{sname}-%{version}.tar.gz
+
+BuildArch:     noarch
+BuildRequires: openstack-macros
+BuildRequires: python-devel
+BuildRequires: {{ py2pkg('pbr') }}
+BuildRequires: {{ py2pkg('debtcollector') }}
+BuildRequires: {{ py2pkg('keystoneauth1') }}
+BuildRequires: {{ py2pkg('oslo.config') }}
+BuildRequires: {{ py2pkg('oslo.i18n') }}
+BuildRequires: {{ py2pkg('oslo.serialization') }}
+BuildRequires: {{ py2pkg('oslo.utils') }}
+BuildRequires: {{ py2pkg('six') }}
+# Requires for tests
+BuildRequires: openssl
+BuildRequires: {{ py2pkg('flake8') }}
+BuildRequires: {{ py2pkg('testrepository') }}
+BuildRequires: {{ py2pkg('testresources') }}
+BuildRequires: {{ py2pkg('testscenarios') }}
+BuildRequires: {{ py2pkg('mock') }}
+BuildRequires: {{ py2pkg('PrettyTable') }}
+BuildRequires: {{ py2pkg('requests-mock') }}
+BuildRequires: {{ py2pkg('lxml') }}
+BuildRequires: {{ py2pkg('oslotest') }}
+BuildRequires: {{ py2pkg('positional') }}
+
+# from requirements.txt
+Requires:      {{ py2pkg('iso8601') }}
+Requires:      {{ py2pkg('debtcollector') }}
+Requires:      {{ py2pkg('keystoneauth1') }}
+Requires:      {{ py2pkg('oslo.config') }}
+Requires:      {{ py2pkg('oslo.i18n') }}
+Requires:      {{ py2pkg('oslo.serialization') }}
+Requires:      {{ py2pkg('oslo.utils') }}
+Requires:      {{ py2pkg('positional') }}
+Requires:      {{ py2pkg('PrettyTable') }}
+Requires:      {{ py2pkg('requests') }}
+Requires:      {{ py2pkg('six') }}
+Requires:      {{ py2pkg('stevedore') }}
+
+
+%description
+Client library and command line utility for interacting with Openstack
+Identity API.
+
+%package doc
+Summary:       Documentation for OpenStack Identity API Client
+Group:         Documentation
+
+BuildRequires: {{ py2pkg('Sphinx') }}
+BuildRequires: {{ py2pkg('oslosphinx') }}
+
+%description doc
+Documentation for the client library for interacting with Openstack
+Identity API.
+
+
+%prep
+%setup -q
+sed '/^html_last_updated_fmt.*/,/.)/ s/^/#/' -i doc/source/conf.py
+
+
+%build
+%{__python} setup.py build
+
+# Build HTML docs and man page
+%{__python2} setup.py build_sphinx
+%{__python2} setup.py build_sphinx -b man
+
+
+%install
+%{__python} setup.py install -O1 --skip-build --root %{buildroot}
+install -p -D -m 644 tools/keystone.bash_completion %{buildroot}%{_sysconfdir}/bash_completion.d/keystone.bash_completion
+
+# Delete tests
+rm -fr %{buildroot}%{python_sitelib}/tests
+
+# Install man page
+install -p -D -m 644 doc/build/man/keystone.1 %{buildroot}%{_mandir}/man1/keystone.1
+
+# Fix hidden-file-or-dir warnings
+rm -fr html/.doctrees html/.buildinfo
+
+
+%check
+export PYTHONPATH="%{python2_sitearch}:%{python2_sitelib}:%{buildroot}%{python2_sitelib}"
+%{__python2} setup.py testr
+
+
+%files
+%doc README.rst
+%license LICENSE
+%{_bindir}/keystone
+%{_sysconfdir}/bash_completion.d/keystone.bash_completion
+%{python_sitelib}/keystoneclient
+%{python_sitelib}/*.egg-info
+%{_mandir}/man1/keystone.1*
+
+
+%files doc
+%doc doc/build/html
+%license LICENSE
+
+
+%changelog
