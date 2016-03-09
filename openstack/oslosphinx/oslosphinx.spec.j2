@@ -16,7 +16,7 @@
 #
 
 
-Name:           {{ 'oslosphinx' | py2pkg }}
+Name:           {{ py2pkg('oslosphinx') }}
 Version:        4.3.0
 Release:        0
 Url:            https://launchpad.net/oslosphinx
@@ -25,11 +25,11 @@ License:        Apache-2.0
 Group:          Development/Languages/Python
 Source:         https://pypi.python.org/packages/source/o/oslosphinx/oslosphinx-%{version}.tar.gz
 BuildRequires:  openstack-macros
-BuildRequires:  {{ 'devel' | py2pkg }}
-BuildRequires:  {{ 'pbr' | py2pkg }}
-Requires:       {{ 'pbr' | py2pkg }} >= 1.8
-Requires:       {{ 'requests' | py2pkg }} >= 2.8.1
-Requires:       {{ 'six' | py2pkg }} >= 1.9.0
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+Requires:       {{ py2pkg('pbr', (">=", "1.8")) }}
+Requires:       {{ py2pkg('requests', (">=", "2.8.1")) }}
+Requires:       {{ py2pkg('six', (">=", "1.9.0")) }}
 BuildArch:      noarch
 
 %description

@@ -1,7 +1,7 @@
 %global sname os-client-config
 %bcond_with test
 %bcond_with docs
-Name:           {{ 'os-client-config' | py2pkg }}
+Name:           {{ py2pkg('os-client-config') }}
 Version:        1.14.0
 Release:        0
 Summary:        OpenStack Client Configuration Library
@@ -13,25 +13,25 @@ BuildArch:      noarch
 BuildRequires: openstack-macros
 BuildRequires: python-devel
 %if %{with test}
-BuildRequires: {{ 'coverage' | py2pkg }} >= 3.6
-BuildRequires: {{ 'discover' | py2pkg }}
-BuildRequires: {{ 'extras' | py2pkg }}
-BuildRequires: {{ 'fixtures' | py2pkg }} >= 0.3.14
-BuildRequires: {{ 'mock' | py2pkg }}
-BuildRequires: {{ 'oslotest' | py2pkg }} >= 1.11
-BuildRequires: {{ 'python-glanceclient' | py2pkg }} >= 1.18.0
-BuildRequires: {{ 'python-keystoneclient' | py2pkg }} >= 1.1.0
-BuildRequires: {{ 'python-subunit' | py2pkg }} >= 0.0.18
-BuildRequires: {{ 'testrepository' | py2pkg }}
-BuildRequires: {{ 'testscenarios' | py2pkg }} >= 0.4
-BuildRequires: {{ 'testtools' | py2pkg }} >= 0.9.34
+BuildRequires: {{ py2pkg('coverage', (">=", "3.6")) }}
+BuildRequires: {{ py2pkg('discover') }}
+BuildRequires: {{ py2pkg('extras') }}
+BuildRequires: {{ py2pkg('fixtures', (">=", "0.3.14")) }}
+BuildRequires: {{ py2pkg('mock') }}
+BuildRequires: {{ py2pkg('oslotest', (">=", "1.11")) }}
+BuildRequires: {{ py2pkg('python-glanceclient', (">=", "1.18.0")) }}
+BuildRequires: {{ py2pkg('python-keystoneclient', (">=", "1.1.0")) }}
+BuildRequires: {{ py2pkg('python-subunit', (">=", "0.0.18")) }}
+BuildRequires: {{ py2pkg('testrepository') }}
+BuildRequires: {{ py2pkg('testscenarios', (">=", "0.4")) }}
+BuildRequires: {{ py2pkg('testtools', (">=", "0.9.34")) }}
 %endif
-BuildRequires: {{ 'pbr' | py2pkg }}
-BuildRequires: {{ 'setuptools' | py2pkg }}
-Requires:      {{ 'appdirs' | py2pkg }} >= 1.3.0
-Requires:      {{ 'PyYAML' | py2pkg }} >= 3.1.0
-Requires:      {{ 'keystoneauth1' | py2pkg }} >= 2.1.0
-Requires:      {{ 'requestsexceptions' | py2pkg }} >= 1.1.1
+BuildRequires: {{ py2pkg('pbr') }}
+BuildRequires: {{ py2pkg('setuptools') }}
+Requires:      {{ py2pkg('appdirs', (">=", "1.3.0")) }}
+Requires:      {{ py2pkg('PyYAML', (">=", "3.1.0")) }}
+Requires:      {{ py2pkg('keystoneauth1', (">=", "2.1.0")) }}
+Requires:      {{ py2pkg('requestsexceptions', (">=", "1.1.1")) }}
 
 
 %description
@@ -45,9 +45,9 @@ you don't have to know extra info to use OpenStack.
 %if %{with docs}
 %package doc
 Summary:       Documentation for OpenStack client configuration library
-BuildRequires: {{ 'oslosphinx' | py2pkg }} >= 2.3.0
-BuildRequires: {{ 'Sphinx' | py2pkg }}
-BuildRequires: {{ 'reno' | py2pkg }} >= 0.1.1
+BuildRequires: {{ py2pkg('oslosphinx', (">=", "2.3.0")) }}
+BuildRequires: {{ py2pkg('Sphinx') }}
+BuildRequires: {{ py2pkg('reno', (">=", "0.1.1")) }}
 
 %description doc
 Documentation for the os-client-config library.
