@@ -9,6 +9,7 @@ Url:            https://launchpad.net/%{sname}
 Source0:        https://pypi.python.org/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
 BuildRequires:  openstack-macros
 BuildRequires:  python-devel
+BuildRequires:  {{ py2pkg('enum34') }}
 BuildRequires:  {{ py2pkg('eventlet', ('>=', '0.18.2')) }}
 BuildRequires:  {{ py2pkg('fasteners', ('>=', '0.7')) }}
 BuildRequires:  {{ py2pkg('fixtures', ('>=', '1.3.1')) }}
