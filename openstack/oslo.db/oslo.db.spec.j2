@@ -1,0 +1,94 @@
+%global sname oslo.db
+
+Name:           {{ py2name('oslo.db') }}
+Version:        4.7.0
+Release:        0
+Summary:        OpenStack oslo.db library
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            https://launchpad.net/%{sname}
+Source0:        https://pypi.python.org/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('alembic') }}
+BuildRequires:  {{ py2pkg('Babel') }}
+BuildRequires:  {{ py2pkg('eventlet') }}
+BuildRequires:  {{ py2pkg('fixtures') }}
+BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('oslo.config') }}
+BuildRequires:  {{ py2pkg('oslo.context') }}
+BuildRequires:  {{ py2pkg('oslo.i18n') }}
+BuildRequires:  {{ py2pkg('oslo.utils') }}
+BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('MySQL-python') }}
+BuildRequires:  {{ py2pkg('PyMySQL') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('python-subunit') }}
+BuildRequires:  {{ py2pkg('psycopg2') }}
+BuildRequires:  {{ py2pkg('reno') }}
+BuildRequires:  {{ py2pkg('six') }}
+BuildRequires:  {{ py2pkg('sqlalchemy-migrate') }}
+BuildRequires:  {{ py2pkg('tempest-lib') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testresources') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+BuildRequires:  {{ py2pkg('tempest-lib') }}
+Requires:       {{ py2pkg('alembic') }}
+Requires:       {{ py2pkg('Babel') }}
+Requires:       {{ py2pkg('oslo.config') }}
+Requires:       {{ py2pkg('oslo.context') }}
+Requires:       {{ py2pkg('oslo.i18n') }}
+Requires:       {{ py2pkg('oslo.utils') }}
+Requires:       {{ py2pkg('PyMySQL') }}
+Requires:       {{ py2pkg('psycopg2') }}
+Requires:       {{ py2pkg('six') }}
+Requires:       {{ py2pkg('SQLAlchemy') }}
+Requires:       {{ py2pkg('sqlalchemy-migrate') }}
+Requires:       {{ py2pkg('stevedore') }}
+BuildArch:      noarch
+
+%description
+The OpenStack Oslo database handling library. Provides database connectivity
+to the different backends and helper utils.
+* Documentation: http://docs.openstack.org/developer/oslo.db
+* Source: http://git.openstack.org/cgit/openstack/oslo.db
+* Bugs: http://bugs.launchpad.net/oslo
+
+
+%package doc
+Summary:        Documentation for the Oslo database handling library
+Group:          Documentation
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('Sphinx') }}
+
+%description doc
+Documentation for the Oslo database handling library.
+
+%prep
+%setup -q -n %{sname}-%{version}
+
+%build
+%{__python2} setup.py build
+
+# generate html docs
+%{__python2} setup.py build_sphinx
+# remove the sphinx-build leftovers
+rm -rf doc/build/html/.{doctrees,buildinfo}
+
+%install
+%{__python2} setup.py install --skip-build --root %{buildroot}
+
+%check
+%{__python2} setup.py testr
+
+%files
+%license LICENSE
+%doc README.rst ChangeLog
+%{python2_sitelib}/oslo_db
+%{python2_sitelib}/*.egg-info
+
+%files doc
+%license LICENSE
+%doc doc/build/html
+
+%changelog
