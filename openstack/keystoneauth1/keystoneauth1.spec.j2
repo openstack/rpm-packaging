@@ -1,22 +1,39 @@
 %global sname keystoneauth1
 
 Name:           {{ py2name('keystoneauth1') }}
-Version:        2.2.0
+Version:        2.6.0
 Release:        0
 Summary:        OpenStack authenticating tools
-License:        {{ 'Apache-2.0' | license }}
+License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            https://launchpad.net/%{sname}
 Source0:        https://pypi.python.org/packages/source/k/%{sname}/%{sname}-%{version}.tar.gz
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('setuptools') }}
-Requires:       {{ py2pkg('iso8601', (">=", "0.1.9")) }}
-Requires:       {{ py2pkg('lxml', (">=", "2.3")) }}
-Requires:       {{ py2pkg('requests', (">=", "2.8.1")) }}
-Requires:       {{ py2pkg('requests-kerberos', (">=", "0.6")) }}
-Requires:       {{ py2pkg('six', (">=", "1.9.0")) }}
-Requires:       {{ py2pkg('stevedore', (">=", "1.5.0")) }}
+BuildRequires:  {{ py2pkg('requests-kerberos') }}
+BuildRequires:  {{ py2pkg('positional') }}
+BuildRequires:  {{ py2pkg('iso8601') }}
+BuildRequires:  {{ py2pkg('fixtures') }}
+BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('oslo.config') }}
+BuildRequires:  {{ py2pkg('oslo.utils') }}
+BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('os-testr') }}
+BuildRequires:  {{ py2pkg('betamax') }}
+BuildRequires:  {{ py2pkg('pycrypto') }}
+BuildRequires:  {{ py2pkg('pep8') }}
+BuildRequires:  {{ py2pkg('reno') }}
+BuildRequires:  {{ py2pkg('requests-mock') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testresources') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+Requires:       {{ py2pkg('iso8601') }}
+Requires:       {{ py2pkg('lxml') }}
+Requires:       {{ py2pkg('requests') }}
+Requires:       {{ py2pkg('requests-kerberos') }}
+Requires:       {{ py2pkg('six') }}
+Requires:       {{ py2pkg('stevedore') }}
+Requires:       {{ py2pkg('positional') }}
 BuildArch:      noarch
 
 %description
@@ -47,6 +64,9 @@ Documentation for OpenStack authenticating tools.
 %{__python2} setup.py build_sphinx
 # remove the sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
+
+%check
+%{__python2} setup.py testr
 
 %files
 %license LICENSE
