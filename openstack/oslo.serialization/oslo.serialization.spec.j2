@@ -53,7 +53,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %{__python2} setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
-testr init && testr run
+%{__python2} setup.py test
 
 %files
 %license LICENSE

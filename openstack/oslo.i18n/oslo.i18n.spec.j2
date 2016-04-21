@@ -45,8 +45,7 @@ Documentation for the oslo.i18n library.
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %check
-export PYTHONPATH="%{python2_sitelib}:%{buildroot}%{python2_sitelib}"
-testr init && testr run --parallel
+%{__python2} setup.py test
 
 %files
 %doc AUTHORS ChangeLog CONTRIBUTING.rst HACKING.rst LICENSE PKG-INFO README.rst
