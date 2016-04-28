@@ -4,6 +4,7 @@ epochs:
   cinder: 1
   glance: 1
   heat: 1
+  horizon: 1
   keystone: 1
   manila: 1
   neutron: 1
