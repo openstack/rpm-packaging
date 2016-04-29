@@ -8,6 +8,8 @@ Group:          Development/Languages/Python
 Url:            https://launchpad.net/%{sname}
 Source0:        https://pypi.io/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
 BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('PyYAML') }}
+BuildRequires:  {{ py2pkg('WebOb') }}
 BuildRequires:  {{ py2pkg('amqp') }}
 BuildRequires:  {{ py2pkg('cachetools') }}
 BuildRequires:  {{ py2pkg('debtcollector') }}
@@ -34,14 +36,14 @@ BuildRequires:  {{ py2pkg('pbr') }}
 BuildRequires:  {{ py2pkg('pika') }}
 BuildRequires:  {{ py2pkg('pika-pool') }}
 BuildRequires:  {{ py2pkg('python-subunit') }}
-BuildRequires:  {{ py2pkg('PyYAML') }}
 BuildRequires:  {{ py2pkg('retrying') }}
 BuildRequires:  {{ py2pkg('six') }}
 BuildRequires:  {{ py2pkg('stevedore') }}
 BuildRequires:  {{ py2pkg('testrepository') }}
 BuildRequires:  {{ py2pkg('testscenarios') }}
 BuildRequires:  {{ py2pkg('testtools') }}
-BuildRequires:  {{ py2pkg('WebOb') }}
+Requires:       {{ py2pkg('PyYAML') }}
+Requires:       {{ py2pkg('WebOb') }}
 Requires:       {{ py2pkg('amqp') }}
 Requires:       {{ py2pkg('cachetools') }}
 Requires:       {{ py2pkg('debtcollector') }}
@@ -60,11 +62,9 @@ Requires:       {{ py2pkg('oslo.service') }}
 Requires:       {{ py2pkg('oslo.utils') }}
 Requires:       {{ py2pkg('pika') }}
 Requires:       {{ py2pkg('pika-pool') }}
-Requires:       {{ py2pkg('PyYAML') }}
 Requires:       {{ py2pkg('retrying') }}
 Requires:       {{ py2pkg('six') }}
 Requires:       {{ py2pkg('stevedore') }}
-Requires:       {{ py2pkg('WebOb') }}
 BuildArch:      noarch
 
 %description
@@ -73,8 +73,8 @@ of different messaging transports.
 
 %package doc
 Summary:        Documentation for OpenStack messaging library
-BuildRequires:  {{ py2pkg('oslosphinx') }}
 BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
 
 %description doc
 The Oslo messaging API supports RPC and notifications over a number

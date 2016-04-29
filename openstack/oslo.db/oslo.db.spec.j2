@@ -1,5 +1,4 @@
 %global sname oslo.db
-
 Name:           {{ py2name('oslo.db') }}
 Version:        4.7.0
 Release:        0
@@ -9,9 +8,11 @@ Group:          Development/Languages/Python
 Url:            https://launchpad.net/%{sname}
 Source0:        https://pypi.io/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('devel') }}
-BuildRequires:  {{ py2pkg('alembic') }}
 BuildRequires:  {{ py2pkg('Babel') }}
+BuildRequires:  {{ py2pkg('MySQL-python') }}
+BuildRequires:  {{ py2pkg('PyMySQL') }}
+BuildRequires:  {{ py2pkg('alembic') }}
+BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('eventlet') }}
 BuildRequires:  {{ py2pkg('fixtures') }}
 BuildRequires:  {{ py2pkg('mock') }}
@@ -20,27 +21,25 @@ BuildRequires:  {{ py2pkg('oslo.context') }}
 BuildRequires:  {{ py2pkg('oslo.i18n') }}
 BuildRequires:  {{ py2pkg('oslo.utils') }}
 BuildRequires:  {{ py2pkg('oslotest') }}
-BuildRequires:  {{ py2pkg('MySQL-python') }}
-BuildRequires:  {{ py2pkg('PyMySQL') }}
 BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('python-subunit') }}
 BuildRequires:  {{ py2pkg('psycopg2') }}
+BuildRequires:  {{ py2pkg('python-subunit') }}
 BuildRequires:  {{ py2pkg('reno') }}
 BuildRequires:  {{ py2pkg('six') }}
 BuildRequires:  {{ py2pkg('sqlalchemy-migrate') }}
 BuildRequires:  {{ py2pkg('testrepository') }}
 BuildRequires:  {{ py2pkg('testresources') }}
 BuildRequires:  {{ py2pkg('testtools') }}
-Requires:       {{ py2pkg('alembic') }}
 Requires:       {{ py2pkg('Babel') }}
+Requires:       {{ py2pkg('PyMySQL') }}
+Requires:       {{ py2pkg('SQLAlchemy') }}
+Requires:       {{ py2pkg('alembic') }}
 Requires:       {{ py2pkg('oslo.config') }}
 Requires:       {{ py2pkg('oslo.context') }}
 Requires:       {{ py2pkg('oslo.i18n') }}
 Requires:       {{ py2pkg('oslo.utils') }}
-Requires:       {{ py2pkg('PyMySQL') }}
 Requires:       {{ py2pkg('psycopg2') }}
 Requires:       {{ py2pkg('six') }}
-Requires:       {{ py2pkg('SQLAlchemy') }}
 Requires:       {{ py2pkg('sqlalchemy-migrate') }}
 Requires:       {{ py2pkg('stevedore') }}
 BuildArch:      noarch
@@ -52,12 +51,11 @@ to the different backends and helper utils.
 * Source: http://git.openstack.org/cgit/openstack/oslo.db
 * Bugs: http://bugs.launchpad.net/oslo
 
-
 %package doc
 Summary:        Documentation for the Oslo database handling library
 Group:          Documentation
-BuildRequires:  {{ py2pkg('oslosphinx') }}
 BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
 
 %description doc
 Documentation for the Oslo database handling library.

@@ -49,8 +49,8 @@ Features:
 
 %package doc
 Summary:        Documentation for OpenStack os-brick library
-BuildRequires:  {{ py2pkg('oslosphinx') }}
 BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
 
 %description doc
 OpenStack Cinder brick library for managing local volume attaches.
@@ -74,7 +74,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %{__python2}  setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 # move usr/etc to etc
-mv %{buildroot}/usr/etc/* %{buildroot}/%{_sysconfdir}/
+mv %{buildroot}%{_prefix}%{_sysconfdir}/* %{buildroot}/%{_sysconfdir}/
 
 %check
 %{__python2} setup.py testr

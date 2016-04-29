@@ -1,34 +1,33 @@
 %global sname oslo.config
-
-Name:          {{ py2name('oslo.config') }}
-Version:       3.10.0
-Epoch:         {{ epoch('oslo.config') }}
-Release:       0
-Summary:       OpenStack common configuration library
-Group:         Development/Languages
-License:       {{ license('Apache-2.0') }}
-Url:           https://launchpad.net/%{sname}
-Source0:       https://pypi.io/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
-BuildRequires: openstack-macros
-BuildRequires: python-devel
-BuildRequires: {{ py2pkg('debtcollector') }}
-BuildRequires: {{ py2pkg('six') }}
-BuildRequires: {{ py2pkg('netaddr') }}
-BuildRequires: {{ py2pkg('stevedore') }}
-BuildRequires: {{ py2pkg('fixtures') }}
-BuildRequires: {{ py2pkg('mock') }}
-BuildRequires: {{ py2pkg('oslo.i18n') }}
-BuildRequires: {{ py2pkg('oslotest') }}
-BuildRequires: {{ py2pkg('pbr') }}
-BuildRequires: {{ py2pkg('python-subunit') }}
-BuildRequires: {{ py2pkg('testrepository') }}
-BuildRequires: {{ py2pkg('testscenarios') }}
-BuildRequires: {{ py2pkg('testtools') }}
-Requires:      {{ py2pkg('debtcollector') }}
-Requires:      {{ py2pkg('netaddr') }}
-Requires:      {{ py2pkg('six') }}
-Requires:      {{ py2pkg('stevedore') }}
-BuildArch:     noarch
+Name:           {{ py2name('oslo.config') }}
+Version:        3.10.0
+Epoch:          {{ epoch('oslo.config') }}
+Release:        0
+Summary:        OpenStack common configuration library
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages
+Url:            https://launchpad.net/%{sname}
+Source0:        https://pypi.io/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('debtcollector') }}
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('fixtures') }}
+BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('netaddr') }}
+BuildRequires:  {{ py2pkg('oslo.i18n') }}
+BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('python-subunit') }}
+BuildRequires:  {{ py2pkg('six') }}
+BuildRequires:  {{ py2pkg('stevedore') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testscenarios') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+Requires:       {{ py2pkg('debtcollector') }}
+Requires:       {{ py2pkg('netaddr') }}
+Requires:       {{ py2pkg('six') }}
+Requires:       {{ py2pkg('stevedore') }}
+BuildArch:      noarch
 
 %description
 The Oslo project intends to produce a python library containing
@@ -39,11 +38,10 @@ useful.
 The oslo-config library is a command line and configuration file
 parsing library from the Oslo project.
 
-
 %package doc
 Summary:       Documentation for OpenStack common configuration library
-BuildRequires: {{ py2pkg('oslosphinx') }}
-BuildRequires: {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
 
 %description doc
 Documentation for the oslo-config library.

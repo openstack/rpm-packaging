@@ -1,11 +1,10 @@
 %global sname oslo.serialization
-
 Name:          {{ py2name('oslo.serialization') }}
 Version:       2.7.0
 Release:       0
 Summary:       OpenStack serialization library
-Group:         Development/Languages
 License:       {{ license('Apache-2.0') }}
+Group:         Development/Languages
 Url:           https://launchpad.net/%{sname}
 Source0:       https://pypi.io/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
 BuildRequires: openstack-macros
@@ -29,8 +28,8 @@ in transmittable and storable formats, such as Base64, JSON and MessagePack.
 
 %package doc
 Summary:       Documentation for OpenStack serialization library
-BuildRequires: {{ py2pkg('oslosphinx') }}
 BuildRequires: {{ py2pkg('Sphinx') }}
+BuildRequires: {{ py2pkg('oslosphinx') }}
 
 %description doc
 The oslo.serialization library provides support for representing objects

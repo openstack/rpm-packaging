@@ -1,5 +1,4 @@
 %global sname os-win
-
 Name:          {{ py2name('os-win') }}
 Epoch:         {{ epoch('os-win') }}
 Version:       0.3.2
@@ -7,10 +6,8 @@ Release:       0
 Summary:       Hyper-V library for OpenStack projects
 License:       {{ license('Apache-2.0') }}
 Group:         Development/Languages/Python
-URL:           https://launchpad.net/%{sname}
+Url:           https://launchpad.net/%{sname}
 Source0:       https://pypi.io/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
-BuildArch:     noarch
-
 BuildRequires: openstack-macros
 BuildRequires: {{ py2pkg('devel') }}
 BuildRequires: {{ py2pkg('eventlet') }}
@@ -36,6 +33,7 @@ Requires:      {{ py2pkg('oslo.log') }}
 Requires:      {{ py2pkg('oslo.service') }}
 Requires:      {{ py2pkg('oslo.utils') }}
 Requires:      {{ py2pkg('pbr') }}
+BuildArch:     noarch
 
 %description
 Library contains Windows / Hyper-V code commonly used in the OpenStack projects:
@@ -44,7 +42,6 @@ nova, cinder, networking-hyperv.
 %package doc
 Summary:       Documentation for OpenStack Identity API Client
 Group:         Documentation
-
 BuildRequires: {{ py2pkg('Sphinx') }}
 BuildRequires: {{ py2pkg('oslosphinx') }}
 

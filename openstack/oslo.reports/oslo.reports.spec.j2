@@ -8,10 +8,10 @@ Group:          Development/Languages/Python
 Url:            https://launchpad.net/%{sname}
 Source0:        https://pypi.io/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
 BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('Jinja2') }}
 BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('eventlet') }}
 BuildRequires:  {{ py2pkg('greenlet') }}
-BuildRequires:  {{ py2pkg('Jinja2') }}
 BuildRequires:  {{ py2pkg('oslo.config') }}
 BuildRequires:  {{ py2pkg('oslo.i18n') }}
 BuildRequires:  {{ py2pkg('oslo.serialization') }}
@@ -32,11 +32,10 @@ BuildArch:      noarch
 The project oslo.reports hosts a general purpose error report generation
 framework, known as the "guru meditation report".
 
-
 %package doc
 Summary:        Documentation for OpenStack reports library
-BuildRequires:  {{ py2pkg('oslosphinx') }}
 BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
 
 %description doc
 The project oslo.reports hosts a general purpose error report generation

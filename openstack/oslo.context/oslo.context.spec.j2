@@ -4,16 +4,16 @@ Name:          {{ py2name('oslo.context') }}
 Version:       2.4.0
 Release:       0
 Summary:       OpenStack Oslo context library
-Group:         Development/Languages
 License:       {{ license('Apache-2.0') }}
+Group:         Development/Languages
 Url:           https://launchpad.net/%{sname}
 Source0:       https://pypi.io/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
 BuildRequires: openstack-macros
 BuildRequires: {{ py2pkg('pbr') }}
+BuildArch:     noarch
 %if %{with test}
 BuildRequires: {{ py2pkg('oslotest') }}
 %endif
-BuildArch:     noarch
 
 %description
 The Oslo context library has helpers to maintain useful information
@@ -24,7 +24,6 @@ used by various modules such as logging.
 %package doc
 Summary:       Documentation for OpenStack common configuration library
 Group:         Documentation
-
 BuildRequires: {{ py2pkg('Sphinx') }}
 BuildRequires: {{ py2pkg('oslosphinx') }}
 

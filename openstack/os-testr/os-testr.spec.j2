@@ -8,12 +8,12 @@ Group:          Development/Languages/Python
 Url:            http://www.openstack.org/
 Source:         https://pypi.io/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('ddt') }}
+BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('oslotest') }}
 BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('testscenarios') }}
 BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testscenarios') }}
 Requires:       {{ py2pkg('Babel') }}
 Requires:       {{ py2pkg('pbr') }}
 Requires:       {{ py2pkg('python-subunit') }}
@@ -30,8 +30,8 @@ A testr wrapper to provide functionality for OpenStack projects
 %package doc
 Summary:        Documentation for the testr
 Group:          Documentation
-BuildRequires:  {{ py2pkg('oslosphinx') }}
 BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
 
 %description doc
 Documentation for the testr wrapper.
