@@ -1,0 +1,71 @@
+%global sname oslo.rootwrap
+Name:           {{ py2name('oslo.rootwrap') }}
+Version:        4.2.0
+Release:        0
+Summary:        Filtering shell commands to run as root from OpenStack services
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            https://launchpad.net/%{sname}
+Source0:        https://pypi.python.org/packages/c8/5c/fc9b0a988d31083998af78fde9c5d73897c9a4a0a9fce167fcf96261643c/%{sname}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  python-devel
+BuildRequires:  {{ py2pkg('eventlet') }}
+BuildRequires:  {{ py2pkg('fixtures') }}
+BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('python-subunit') }}
+BuildRequires:  {{ py2pkg('six') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testscenarios') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+Requires:       {{ py2pkg('six') }}
+BuildArch:      noarch
+%if 0%{?suse_version}
+BuildRequires:  iproute2
+%else
+BuildRequires:  iproute
+%endif
+
+%description
+oslo.rootwrap allows fine-grained filtering of shell commands to run as root
+from OpenStack services.
+
+%package doc
+Summary:    Documentation for OpenStack oslo rootwrap
+BuildRequires: {{ py2pkg('Sphinx') }}
+BuildRequires: {{ py2pkg('oslosphinx') }}
+
+%description doc
+Documentation for the oslo.rootwrap library.
+
+%prep
+%setup -q -n %{sname}-%{version}
+
+%build
+%{__python2} setup.py build
+
+# generate html docs
+%{__python2} setup.py build_sphinx
+rm -rf doc/build/html/.{doctrees,buildinfo}
+
+%install
+%{__python2} setup.py install --skip-build --root %{buildroot}
+
+%check
+export PYTHONPATH=.
+%{__python2} setup.py testr
+
+%files
+%license LICENSE
+%doc ChangeLog README.rst
+%{python2_sitelib}/oslo_rootwrap
+%{python2_sitelib}/*.egg-info
+%{_bindir}/oslo-rootwrap
+%{_bindir}/oslo-rootwrap-daemon
+
+%files doc
+%license LICENSE
+%doc doc/build/html
+
+%changelog
