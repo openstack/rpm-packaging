@@ -1,12 +1,12 @@
 %global sname oslo.concurrency
 Name:           {{ py2name('oslo.concurrency') }}
-Version:        3.7.0
+Version:        3.9.0
 Release:        0
 Summary:        OpenStack oslo.concurrency library
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            https://launchpad.net/%{sname}
-Source0:        https://pypi.python.org/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
+Source0:        https://pypi.python.org/packages/04/60/4f001d4783070147d4e209f67c22945c8c7031c8d49657f3b7fe2e70db88/%{sname}-%{version}.tar.gz
 BuildRequires:  openstack-macros
 BuildRequires:  python-devel
 BuildRequires:  {{ py2pkg('enum34') }}
@@ -23,7 +23,6 @@ BuildRequires:  {{ py2pkg('pbr') }}
 BuildRequires:  {{ py2pkg('testrepository') }}
 BuildRequires:  {{ py2pkg('testscenarios') }}
 BuildRequires:  {{ py2pkg('testtools') }}
-Requires:       {{ py2pkg('Babel') }}
 Requires:       {{ py2pkg('enum34') }}
 Requires:       {{ py2pkg('fasteners') }}
 Requires:       {{ py2pkg('iso8601') }}
