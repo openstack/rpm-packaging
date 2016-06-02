@@ -1,26 +1,18 @@
 %global sname oslo.context
-%bcond_with test
+%bcond_without test
 Name:          {{ py2name('oslo.context') }}
-Version:       2.2.0
+Version:       2.4.0
 Release:       0
 Summary:       OpenStack Oslo context library
 Group:         Development/Languages
-License:       {{ 'Apache-2.0' | license }}
+License:       {{ license('Apache-2.0') }}
 Url:           https://launchpad.net/%{sname}
-Source0:       https://pypi.python.org/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
+Source0:       https://pypi.python.org/packages/66/4e/f0ac027adf2a24111dad2915c0f7c2e25a939a660d3af6e65036eb7a9f6d/%{sname}-%{version}.tar.gz
 BuildRequires: openstack-macros
-BuildRequires: {{ py2pkg('Babel') }}
 BuildRequires: {{ py2pkg('pbr') }}
-BuildRequires: {{ py2pkg('setuptools') }}
 %if %{with test}
-BuildRequires: {{ py2pkg('hacking') }}
-BuildRequires: {{ py2pkg('oslotest', (">=", "1.10.0")) }}
-BuildRequires: {{ py2pkg('testrepository', (">=", "0.0.18")) }}
-BuildRequires: {{ py2pkg('testscenarios', (">=", "0.4")) }}
-BuildRequires: {{ py2pkg('testtools', (">=", "0.9.34")) }}
+BuildRequires: {{ py2pkg('oslotest') }}
 %endif
-Requires:      {{ py2pkg('Babel', (">=", "1.3")) }}
-Requires:      {{ py2pkg('pbr') }}
 BuildArch:     noarch
 
 %description
@@ -35,15 +27,12 @@ Group:         Documentation
 
 BuildRequires: {{ py2pkg('Sphinx') }}
 BuildRequires: {{ py2pkg('oslosphinx') }}
-BuildRequires: {{ py2pkg('fixtures') }}
 
 %description doc
 Documentation for the oslo-context library.
 
 %prep
 %setup -q -n %{sname}-%{version}
-# Remove bundled egg-info
-rm -rf %{sname}.egg-info
 
 %build
 %{__python2} setup.py build
