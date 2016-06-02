@@ -1,0 +1,82 @@
+%global sname oslo.middleware
+Name:           {{ py2name('oslo.middleware') }}
+Version:        3.11.0
+Release:        0
+Summary:        OpenStack oslo.middleware library
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            https://launchpad.net/%{sname}
+Source0:        https://pypi.python.org/packages/9c/22/9916786751507a05baed5217feaab8681846b8b2f49b5a946ba911dbfb48/%{sname}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  python-devel
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('fixtures') }}
+BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+BuildRequires:  {{ py2pkg('debtcollector') }}
+BuildRequires:  {{ py2pkg('Jinja2') }}
+BuildRequires:  {{ py2pkg('oslo.config') }}
+BuildRequires:  {{ py2pkg('oslo.context') }}
+BuildRequires:  {{ py2pkg('oslo.i18n') }}
+BuildRequires:  {{ py2pkg('oslo.utils') }}
+BuildRequires:  {{ py2pkg('six') }}
+BuildRequires:  {{ py2pkg('stevedore') }}
+BuildRequires:  {{ py2pkg('WebOb') }}
+Requires:       {{ py2pkg('debtcollector') }}
+Requires:       {{ py2pkg('Jinja2') }}
+Requires:       {{ py2pkg('oslo.config') }}
+Requires:       {{ py2pkg('oslo.context') }}
+Requires:       {{ py2pkg('oslo.i18n') }}
+Requires:       {{ py2pkg('oslo.utils') }}
+Requires:       {{ py2pkg('six') }}
+Requires:       {{ py2pkg('stevedore') }}
+Requires:       {{ py2pkg('WebOb') }}
+BuildArch:      noarch
+
+%description
+Oslo middleware library includes components that can be injected into wsgi
+pipelines to intercept request/response flows. The base class can be enhanced
+with functionality like add/delete/modification of http headers and support
+for limiting size/connection etc.
+
+%package doc
+Summary:        Documentation for OpenStack middleware library
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('Sphinx') }}
+
+%description doc
+Oslo middleware library includes components that can be injected into wsgi
+pipelines to intercept request/response flows. The base class can be enhanced
+with functionality like add/delete/modification of http headers and support
+for limiting size/connection etc.
+This package contains the documentation.
+
+%prep
+%setup -q -n %{sname}-%{version}
+
+%build
+%{__python2} setup.py build
+
+# generate html docs
+%{__python2} setup.py build_sphinx
+# remove the sphinx-build leftovers
+rm -rf doc/build/html/.{doctrees,buildinfo}
+
+%install
+%{__python2}  setup.py install --prefix=%{_prefix} --root=%{buildroot}
+
+%check
+%{__python2} setup.py testr
+
+%files
+%license LICENSE
+%doc README.rst ChangeLog
+%{python2_sitelib}/oslo_middleware
+%{python2_sitelib}/*.egg-info
+
+%files doc
+%license LICENSE
+%doc doc/build/html
+
+%changelog
