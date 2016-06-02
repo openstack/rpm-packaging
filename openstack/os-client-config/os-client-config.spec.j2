@@ -2,19 +2,17 @@
 %bcond_with test
 %bcond_with docs
 Name:           {{ py2name('os-client-config') }}
-Version:        1.16.0
+Version:        1.18.0
 Release:        0
 Summary:        OpenStack Client Configuration Library
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Libraries
 Url:            https://launchpad.net/%{sname}
-Source0:        https://pypi.python.org/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
+Source0:        https://pypi.io/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
 BuildArch:      noarch
 BuildRequires: openstack-macros
 BuildRequires: python-devel
 %if %{with test}
-BuildRequires: {{ py2pkg('coverage') }}
-BuildRequires: {{ py2pkg('discover') }}
 BuildRequires: {{ py2pkg('extras') }}
 BuildRequires: {{ py2pkg('fixtures') }}
 BuildRequires: {{ py2pkg('mock') }}
@@ -30,8 +28,8 @@ BuildRequires: {{ py2pkg('jsonschema') }}
 BuildRequires: {{ py2pkg('pbr') }}
 BuildRequires: {{ py2pkg('setuptools') }}
 Requires:      {{ py2pkg('appdirs') }}
-Requires:      {{ py2pkg('PyYAML') }}
 Requires:      {{ py2pkg('keystoneauth1') }}
+Requires:      {{ py2pkg('PyYAML') }}
 Requires:      {{ py2pkg('requestsexceptions') }}
 
 
