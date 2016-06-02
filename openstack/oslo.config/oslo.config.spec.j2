@@ -1,31 +1,32 @@
 %global sname oslo.config
 
 Name:          {{ py2name('oslo.config') }}
-Version:       3.9.0
+Version:       3.10.0
 Release:       0
 Summary:       OpenStack common configuration library
 Group:         Development/Languages
-License:       {{ 'Apache-2.0' | license }}
+License:       {{ license('Apache-2.0') }}
 Url:           https://launchpad.net/%{sname}
-Source0:       https://pypi.python.org/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
+Source0:       https://pypi.python.org/packages/83/0f/f51e69bee2eb3cd2218ec1d94d1bedfdc26534b743c7d81d4a3ed8ac4c6b/%{sname}-%{version}.tar.gz
 BuildRequires: openstack-macros
 BuildRequires: python-devel
-BuildRequires: {{ py2pkg('debtcollector', ('>=', '1.2.0')) }}
-BuildRequires: {{ py2pkg('discover') }}
-BuildRequires: {{ py2pkg('fixtures', ('>=', '1.3.1')) }}
-BuildRequires: {{ py2pkg('mock', ('>=', '1.2')) }}
-BuildRequires: {{ py2pkg('oslo.i18n', ('>=', '2.1.0')) }}
-BuildRequires: {{ py2pkg('oslotest', ('>=', '1.10.0')) }}
-BuildRequires: {{ py2pkg('pbr', ('>=', '1.6')) }}
-BuildRequires: {{ py2pkg('python-subunit', ('>=', '0.0.18')) }}
-BuildRequires: {{ py2pkg('setuptools') }}
-BuildRequires: {{ py2pkg('testrepository', ('>=', '0.0.18')) }}
-BuildRequires: {{ py2pkg('testscenarios', ('>=', '0.4')) }}
-BuildRequires: {{ py2pkg('testtools', ('>=', '1.4.0')) }}
-Requires:      {{ py2pkg('debtcollector', ('>=', '1.2.0')) }}
-Requires:      {{ py2pkg('netaddr', ('>=', '0.7.12')) }}
-Requires:      {{ py2pkg('six', ('>=', '1.9.0')) }}
-Requires:      {{ py2pkg('stevedore', ('>=', '1.5.0')) }}
+BuildRequires: {{ py2pkg('debtcollector') }}
+BuildRequires: {{ py2pkg('six') }}
+BuildRequires: {{ py2pkg('netaddr') }}
+BuildRequires: {{ py2pkg('stevedore') }}
+BuildRequires: {{ py2pkg('fixtures') }}
+BuildRequires: {{ py2pkg('mock') }}
+BuildRequires: {{ py2pkg('oslo.i18n') }}
+BuildRequires: {{ py2pkg('oslotest') }}
+BuildRequires: {{ py2pkg('pbr') }}
+BuildRequires: {{ py2pkg('python-subunit') }}
+BuildRequires: {{ py2pkg('testrepository') }}
+BuildRequires: {{ py2pkg('testscenarios') }}
+BuildRequires: {{ py2pkg('testtools') }}
+Requires:      {{ py2pkg('debtcollector') }}
+Requires:      {{ py2pkg('netaddr') }}
+Requires:      {{ py2pkg('six') }}
+Requires:      {{ py2pkg('stevedore') }}
 BuildArch:     noarch
 
 %description
@@ -40,10 +41,8 @@ parsing library from the Oslo project.
 
 %package doc
 Summary:       Documentation for OpenStack common configuration library
-BuildRequires: {{ py2pkg('netaddr', ('>=', '0.7.12')) }}
-BuildRequires: {{ py2pkg('oslosphinx', ('>=', '2.5.0')) }}
-BuildRequires: {{ py2pkg('Sphinx', ('>=', '1.1.2')) }}
-BuildRequires: {{ py2pkg('stevedore', ('>=', '1.5.0')) }}
+BuildRequires: {{ py2pkg('oslosphinx') }}
+BuildRequires: {{ py2pkg('Sphinx') }}
 
 %description doc
 Documentation for the oslo-config library.
@@ -53,8 +52,6 @@ Documentation for the oslo-config library.
 
 %build
 %{__python2} setup.py build
-# disabling git call for last modification date from git repo
-sed '/^html_last_updated_fmt.*/,/.)/ s/^/#/' -i doc/source/conf.py
 
 %{__python2} setup.py build_sphinx
 # remove the sphinx-build leftovers
