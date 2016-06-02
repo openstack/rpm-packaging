@@ -1,13 +1,13 @@
 %global sname oslo.utils
 
 Name:           {{ py2name('oslo.utils') }}
-Version:        3.8.0
+Version:        3.11.0
 Release:        0
 Summary:        OpenStack utils library
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            https://launchpad.net/%{sname}
-Source0:        https://pypi.python.org/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
+Source0:        https://pypi.python.org/packages/a9/b0/ad68e5cb0b68ffc26c651e4bb622207e9e91b8ba6c8f60dd4cc20d864b54/%{sname}-%{version}.tar.gz
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('Babel') }}
 BuildRequires:  {{ py2pkg('debtcollector') }}
@@ -21,13 +21,13 @@ BuildRequires:  {{ py2pkg('oslo.config') }}
 BuildRequires:  {{ py2pkg('oslo.i18n') }}
 BuildRequires:  {{ py2pkg('oslotest') }}
 BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('python-subunit') }}
 BuildRequires:  {{ py2pkg('testrepository') }}
 BuildRequires:  {{ py2pkg('testscenarios') }}
 BuildRequires:  {{ py2pkg('testtools') }}
-BuildRequires:  {{ py2pkg('wrapt') }}
-Requires:       {{ py2pkg('Babel') }}
 Requires:       {{ py2pkg('debtcollector') }}
 Requires:       {{ py2pkg('funcsigs') }}
+Requires:       {{ py2pkg('iso8601') }}
 Requires:       {{ py2pkg('monotonic') }}
 Requires:       {{ py2pkg('netaddr') }}
 Requires:       {{ py2pkg('netifaces') }}
