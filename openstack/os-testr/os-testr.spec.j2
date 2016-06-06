@@ -1,25 +1,24 @@
 %global sname os-testr
 Name:           {{ py2name('os-testr') }}
-Version:        0.6.0
+Version:        0.7.0
 Release:        0
 Summary:        A testr wrapper to provide functionality for OpenStack projects
-License:        {{ 'Apache-2.0' | license }}
+License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            http://www.openstack.org/
-Source:         https://pypi.python.org/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
+Source:         https://pypi.io/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
 BuildRequires:  openstack-macros
-BuildRequires:  python-devel
-BuildRequires:  {{ py2pkg('ddt', ('>=', '0.4.0')) }}
-BuildRequires:  {{ py2pkg('mock', ('>=', '1.2')) }}
-BuildRequires:  {{ py2pkg('oslotest', ('>=', '1.2.0')) }}
-BuildRequires:  {{ py2pkg('pbr', ('>=', '1.3')) }}
-BuildRequires:  {{ py2pkg('testscenarios', ('>=', '0.4')) }}
-BuildRequires:  {{ py2pkg('testrepository', ('>=', '0.0.18')) }}
-Requires:       {{ py2pkg('Babel', ('>=', '1.3')) }}
-Requires:       {{ py2pkg('pbr', ('>=', '1.3')) }}
-Requires:       {{ py2pkg('python-subunit', ('>=', '0.0.18')) }}
-Requires:       {{ py2pkg('testrepository', ('>=', '0.0.18')) }}
-Requires:       {{ py2pkg('testtools', ('>=', '1.4.0')) }}
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('ddt') }}
+BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('testscenarios') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+Requires:       {{ py2pkg('Babel') }}
+Requires:       {{ py2pkg('pbr') }}
+Requires:       {{ py2pkg('python-subunit') }}
+Requires:       {{ py2pkg('testrepository') }}
+Requires:       {{ py2pkg('testtools') }}
 BuildArch:      noarch
 
 %description
@@ -31,8 +30,8 @@ A testr wrapper to provide functionality for OpenStack projects
 %package doc
 Summary:        Documentation for the testr
 Group:          Documentation
-BuildRequires:  {{ py2pkg('oslosphinx', ('>=', '2.5.0')) }}
-BuildRequires:  {{ py2pkg('Sphinx', ('>=', '1.1.2')) }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('Sphinx') }}
 
 %description doc
 Documentation for the testr wrapper.
