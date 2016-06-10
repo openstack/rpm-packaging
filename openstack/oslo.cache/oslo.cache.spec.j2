@@ -1,7 +1,7 @@
 %global sname oslo.cache
 
 Name:           {{ py2name('oslo.cache') }}
-Version:        1.6.0
+Version:        1.9.0
 Release:        0
 Summary:        Cache storage for Openstack projects
 License:        {{ license('Apache-2.0') }}
@@ -21,7 +21,6 @@ BuildRequires:  {{ py2pkg('oslotest') }}
 BuildRequires:  {{ py2pkg('pbr') }}
 BuildRequires:  {{ py2pkg('pymongo') }}
 BuildRequires:  {{ py2pkg('six') }}
-Requires:       {{ py2pkg('Babel') }}
 Requires:       {{ py2pkg('dogpile.cache') }}
 Requires:       {{ py2pkg('memcached') }}
 Requires:       {{ py2pkg('oslo.config') }}
