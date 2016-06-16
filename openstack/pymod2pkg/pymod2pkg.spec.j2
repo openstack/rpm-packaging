@@ -1,0 +1,59 @@
+%global sname pymod2pkg
+Name:           {{ py2name('pymod2pkg') }}
+Version:        0.4.0
+Release:        0
+Summary:        OpenStack Packaging - python module name to package name map
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Libraries/Python
+Url:            https://wiki.openstack.org/wiki/Rpm-packaging
+Source0:        https://pypi.io/packages/source/p/%{sname}/%{sname}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testscenarios') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+Requires:       {{ py2pkg('pbr') }}
+BuildArch:      noarch
+
+%description
+pymod2pkg is a simple python module for translating python module names to
+corresponding package names which is a common problem in the packaging world.
+
+%package doc
+Summary:        Documentation for python module name to package name map library
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+Requires:       %{name} = %{version}
+
+%description doc
+Documentation for python module name to package name map library.
+
+%prep
+%setup -q -n %{sname}-%{version}
+
+%build
+%{__python2} setup.py build
+# generate html docs
+%{__python2} setup.py build_sphinx
+# remove the sphinx-build leftovers
+rm -rf doc/build/html/.{doctrees,buildinfo}
+
+%install
+%{__python2} setup.py install --prefix=%{_prefix} --skip-build --root %{buildroot}
+
+%check
+%{__python2} setup.py test
+
+%files
+%license LICENSE
+%doc README*
+%{_bindir}/pymod2pkg
+%{python2_sitelib}/%{sname}*
+%{python2_sitelib}/*.egg-info
+
+%files doc
+%doc doc/build/html
+%license LICENSE
+
+%changelog
