@@ -71,7 +71,7 @@ sed '/^html_last_updated_fmt.*/,/.)/ s/^/#/' -i doc/source/conf.py
 
 
 %build
-%{__python} setup.py build
+%{__python2} setup.py build
 
 # Build HTML docs and man page
 %{__python2} setup.py build_sphinx
@@ -79,11 +79,11 @@ sed '/^html_last_updated_fmt.*/,/.)/ s/^/#/' -i doc/source/conf.py
 
 
 %install
-%{__python} setup.py install -O1 --skip-build --root %{buildroot}
+%{__python2} setup.py install -O1 --skip-build --root %{buildroot}
 install -p -D -m 644 tools/keystone.bash_completion %{buildroot}%{_sysconfdir}/bash_completion.d/keystone.bash_completion
 
 # Delete tests
-rm -fr %{buildroot}%{python_sitelib}/tests
+rm -fr %{buildroot}%{python2_sitelib}/tests
 
 # Install man page
 install -p -D -m 644 doc/build/man/keystone.1 %{buildroot}%{_mandir}/man1/keystone.1
@@ -102,8 +102,8 @@ export PYTHONPATH="%{python2_sitearch}:%{python2_sitelib}:%{buildroot}%{python2_
 %license LICENSE
 %{_bindir}/keystone
 %{_sysconfdir}/bash_completion.d/keystone.bash_completion
-%{python_sitelib}/keystoneclient
-%{python_sitelib}/*.egg-info
+%{python2_sitelib}/keystoneclient
+%{python2_sitelib}/*.egg-info
 %{_mandir}/man1/keystone.1*
 
 
