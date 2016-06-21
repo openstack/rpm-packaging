@@ -1,0 +1,58 @@
+%global sname futurist
+Name:           {{ py2name('futurist') }}
+Version:        0.14.0
+Release:        0
+Summary:        Backport of the concurrent.futures package from Python 3.2
+License:        {{ license('Apache-2.0') }}
+Url:            http://launchpad.net/futurist
+Source0:        https://pypi.io/packages/source/f/%{sname}/%{sname}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('PrettyTable') }}
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('contextlib2') }}
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('eventlet') }}
+BuildRequires:  {{ py2pkg('futures') }}
+BuildRequires:  {{ py2pkg('monotonic') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('setuptools') }}
+BuildRequires:  {{ py2pkg('six') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testscenarios') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+Requires:       {{ py2pkg('contextlib2') }}
+Requires:       {{ py2pkg('futures') }}
+Requires:       {{ py2pkg('monotonic') }}
+Requires:       {{ py2pkg('six') }}
+BuildArch:      noarch
+
+%description
+Backport of the concurrent.futures package from Python 3.2.
+Useful additions to futures from the future.
+
+%prep
+%setup -q -n %{sname}-%{version}
+
+%build
+%py2_build
+# generate html docs
+%{__python2} setup.py build_sphinx
+# remove the sphinx-build leftovers
+rm -rf html/.{doctrees,buildinfo}
+
+%install
+%py2_install
+
+%check
+%{__python2} setup.py test
+
+%files
+%doc doc/build/html README.rst
+%license LICENSE
+%{python2_sitelib}/%{sname}
+%{python2_sitelib}/%{sname}-*-py?.?.egg-info
+
+%changelog
+
