@@ -1,0 +1,78 @@
+%global sname oslo.privsep
+Name:           {{ py2name('oslo.privsep') }}
+Version:        1.9.0
+Release:        0
+Summary:        OpenStack library for privilege separation
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            http://launchpad.net/oslo.privsep
+Source0:        https://pypi.io/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('Babel') }}
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('cffi') }}
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('enum34') }}
+BuildRequires:  {{ py2pkg('eventlet') }}
+BuildRequires:  {{ py2pkg('greenlet') }}
+BuildRequires:  {{ py2pkg('msgpack-python') }}
+BuildRequires:  {{ py2pkg('oslo.config') }}
+BuildRequires:  {{ py2pkg('oslo.i18n') }}
+BuildRequires:  {{ py2pkg('oslo.log') }}
+BuildRequires:  {{ py2pkg('oslo.utils') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('setuptools') }}
+Requires:       {{ py2pkg('Babel') }}
+Requires:       {{ py2pkg('cffi') }}
+Requires:       {{ py2pkg('enum34') }}
+Requires:       {{ py2pkg('msgpack-python') }}
+Requires:       {{ py2pkg('oslo.config') }}
+Requires:       {{ py2pkg('oslo.i18n') }}
+Requires:       {{ py2pkg('oslo.log') }}
+Requires:       {{ py2pkg('oslo.utils') }}
+BuildArch:      noarch
+
+%description
+OpenStack library for privilege separation
+
+%package doc
+Summary:        oslo.privsep documentation
+Requires:       %{name} = %{version}
+
+%description doc
+Documentation for oslo.privsep
+
+%prep
+%setup -q -n %{sname}-%{version}
+
+%build
+%py2_build
+# generate html docs
+%{__python2} setup.py build_sphinx
+# remove the sphinx-build leftovers
+rm -rf html/.{doctrees,buildinfo}
+
+%install
+%py2_install
+
+%check
+# FIXME: Disable tests failing in Fuel CI
+# https://review.openstack.org/#/c/340524/
+# Temporarily blacklist failing test
+testr list-tests | \
+grep -v oslo_privsep.tests.test_daemon.TestDaemon.test_drop_privs > tests
+PYTHONPATH=. %{__python2} setup.py testr --testr-args "--load-list tests"
+
+%files
+%doc README.rst
+%license LICENSE
+%{_bindir}/privsep-helper
+%{python2_sitelib}/oslo_privsep
+%{python2_sitelib}/%{sname}-*-py?.?.egg-info
+
+%files doc
+%doc doc/build/html
+
+%changelog
