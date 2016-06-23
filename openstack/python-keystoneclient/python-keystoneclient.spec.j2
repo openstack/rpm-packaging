@@ -1,7 +1,7 @@
 %global sname python-keystoneclient
 Name:           {{ py2name('python-keystoneclient') }}
 Epoch:          {{ epoch('python-keystoneclient') }}
-Version:        2.3.1
+Version:        3.2.0
 Release:        0
 Summary:        Client library for OpenStack Identity API
 License:        {{ license('Apache-2.0') }}
@@ -10,9 +10,8 @@ Url:            http://launchpad.net/%{sname}
 Source0:        https://pypi.io/packages/source/p/%{sname}/%{sname}-%{version}.tar.gz
 BuildRequires:  openssl
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('PrettyTable') }}
 BuildRequires:  {{ py2pkg('debtcollector') }}
-BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  python-devel
 BuildRequires:  {{ py2pkg('flake8') }}
 BuildRequires:  {{ py2pkg('keystoneauth1') }}
 BuildRequires:  {{ py2pkg('lxml') }}
@@ -29,7 +28,6 @@ BuildRequires:  {{ py2pkg('six') }}
 BuildRequires:  {{ py2pkg('testrepository') }}
 BuildRequires:  {{ py2pkg('testresources') }}
 BuildRequires:  {{ py2pkg('testscenarios') }}
-Requires:       {{ py2pkg('PrettyTable') }}
 Requires:       {{ py2pkg('debtcollector') }}
 Requires:       {{ py2pkg('iso8601') }}
 Requires:       {{ py2pkg('keystoneauth1') }}
@@ -44,8 +42,7 @@ Requires:       {{ py2pkg('stevedore') }}
 BuildArch:      noarch
 
 %description
-Client library and command line utility for interacting with Openstack
-Identity API.
+Client library for interacting with Openstack Identity API.
 
 %package doc
 Summary:        Documentation for OpenStack Identity API Client
@@ -58,7 +55,7 @@ Documentation for the client library for interacting with Openstack
 Identity API.
 
 %prep
-%setup -q
+%setup -q -n %{sname}-%{version}
 sed '/^html_last_updated_fmt.*/,/.)/ s/^/#/' -i doc/source/conf.py
 
 %build
@@ -66,17 +63,12 @@ sed '/^html_last_updated_fmt.*/,/.)/ s/^/#/' -i doc/source/conf.py
 
 # Build HTML docs and man page
 %{__python2} setup.py build_sphinx
-%{__python2} setup.py build_sphinx -b man
 
 %install
 %{__python2} setup.py install -O1 --skip-build --root %{buildroot}
-install -p -D -m 644 tools/keystone.bash_completion %{buildroot}%{_sysconfdir}/bash_completion.d/keystone.bash_completion
 
 # Delete tests
 rm -fr %{buildroot}%{python2_sitelib}/tests
-
-# Install man page
-install -p -D -m 644 doc/build/man/keystone.1 %{buildroot}%{_mandir}/man1/keystone.1
 
 # Fix hidden-file-or-dir warnings
 rm -fr html/.doctrees html/.buildinfo
@@ -88,11 +80,8 @@ export PYTHONPATH="%{python2_sitearch}:%{python2_sitelib}:%{buildroot}%{python2_
 %files
 %doc README.rst
 %license LICENSE
-%{_bindir}/keystone
-%{_sysconfdir}/bash_completion.d/keystone.bash_completion
 %{python2_sitelib}/keystoneclient
 %{python2_sitelib}/*.egg-info
-%{_mandir}/man1/keystone.1*
 
 %files doc
 %doc doc/build/html
