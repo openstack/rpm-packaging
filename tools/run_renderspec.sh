@@ -13,6 +13,6 @@ for spec in ${specdir}/**/*.spec.j2; do
     for specstyle in "suse" "fedora"; do
         echo "run ${spec} for ${specstyle}"
         renderspec --spec-style ${specstyle} ${spec} \
-                   -o $WORKSPACE/logs/`basename ${spec}`.${specstyle}
+                   -o $WORKSPACE/logs/${spec##*/}.${specstyle}
     done
 done
