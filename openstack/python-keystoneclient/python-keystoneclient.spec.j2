@@ -12,7 +12,6 @@ BuildRequires:  openssl
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('debtcollector') }}
 BuildRequires:  python-devel
-BuildRequires:  {{ py2pkg('flake8') }}
 BuildRequires:  {{ py2pkg('keystoneauth1') }}
 BuildRequires:  {{ py2pkg('lxml') }}
 BuildRequires:  {{ py2pkg('mock') }}
@@ -75,6 +74,8 @@ rm -fr html/.doctrees html/.buildinfo
 
 %check
 export PYTHONPATH="%{python2_sitearch}:%{python2_sitelib}:%{buildroot}%{python2_sitelib}"
+# don't want to depend on hacking for package building
+rm keystoneclient/tests/unit/test_hacking_checks.py
 %{__python2} setup.py testr
 
 %files
