@@ -1,6 +1,6 @@
 %global sname oslo.policy
 Name:           {{ py2name('oslo.policy') }}
-Version:        1.9.0
+Version:        1.11.0
 Release:        0
 Summary:        OpenStack Oslo Policy library
 License:        {{ license('Apache-2.0') }}
@@ -60,6 +60,8 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %license LICENSE
 %doc README.rst
 %{_bindir}/oslopolicy-checker
+%{_bindir}/oslopolicy-list-redundant
+%{_bindir}/oslopolicy-policy-generator
 %{_bindir}/oslopolicy-sample-generator
 %{python2_sitelib}/oslo_policy
 %{python2_sitelib}/*.egg-info
