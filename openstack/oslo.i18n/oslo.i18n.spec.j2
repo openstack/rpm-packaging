@@ -47,12 +47,13 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %{__python2} setup.py test
 
 %files
-%doc AUTHORS ChangeLog CONTRIBUTING.rst HACKING.rst LICENSE PKG-INFO README.rst
+%doc AUTHORS ChangeLog CONTRIBUTING.rst README.rst
+%license LICENSE
 %{python2_sitelib}/oslo_i18n
 %{python2_sitelib}/*.egg-info
 
 %files doc
 %doc doc/build/html
-%doc LICENSE
+%license LICENSE
 
 %changelog
