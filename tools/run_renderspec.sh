@@ -2,7 +2,7 @@
 
 set -eux
 
-basedir=$1
+basedir=${1:-$PWD}
 specdir=${basedir}/openstack/
 
 WORKSPACE=${WORKSPACE:-$basedir}
