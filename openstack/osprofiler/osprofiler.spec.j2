@@ -1,0 +1,70 @@
+%global sname osprofiler
+Name:           {{ py2name('osprofiler') }}
+Version:        1.3.0
+Release:        0
+Summary:        OpenStack Profiler Library
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            https://launchpad.net/osprofiler
+Source0:        https://pypi.io/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('WebOb') }}
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('oslo.config') }}
+BuildRequires:  {{ py2pkg('oslo.utils') }}
+BuildRequires:  {{ py2pkg('python-subunit') }}
+BuildRequires:  {{ py2pkg('six') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+Requires:       {{ py2pkg('WebOb') }}
+Requires:       {{ py2pkg('oslo.config') }}
+Requires:       {{ py2pkg('oslo.utils') }}
+Requires:       {{ py2pkg('six') }}
+BuildArch:      noarch
+
+%description
+OSProfiler provides a tiny but powerful library that is used by
+most (soon to be all) OpenStack projects and their python clients. It
+provides functionality to be able to generate 1 trace per request, that goes
+through all involved services. This trace can then be extracted and used
+to build a tree of calls which can be quite handy for a variety of
+reasons (for example in isolating cross-project performance issues).
+
+%package doc
+Summary:        Documentation for OSProfiler
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+
+%description doc
+Documentation for OSProfiler.
+
+%prep
+%setup -q -n %{sname}-%{version}
+
+%build
+%{__python2} setup.py build
+
+%install
+%{__python2} setup.py install --skip-build --root %{buildroot}
+
+# generate html docs
+%{__python2} setup.py build_sphinx
+# remove the sphinx-build leftovers
+rm -rf doc/build/html/.{doctrees,buildinfo}
+
+%check
+%{__python2} setup.py testr
+
+%files
+%license LICENSE
+%doc README.rst ChangeLog
+%{python2_sitelib}/osprofiler
+%{python2_sitelib}/*.egg-info
+%{_bindir}/osprofiler
+
+%files doc
+%license LICENSE
+%doc doc/build/html
+
+%changelog
