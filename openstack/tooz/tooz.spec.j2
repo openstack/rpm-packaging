@@ -1,0 +1,80 @@
+%global pypi_name tooz
+Name:           {{ py2name('tooz') }}
+Version:        1.40.0
+Release:        0
+Summary:        Coordination library for distributed systems
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            https://tooz.readthedocs.org
+Source0:        https://pypi.io/packages/source/t/%{pypi_name}/%{pypi_name}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('setuptools') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+Requires:       {{ py2pkg('Babel') }}
+Requires:       {{ py2pkg('enum34') }}
+Requires:       {{ py2pkg('fasteners') }}
+Requires:       {{ py2pkg('futures') }}
+Requires:       {{ py2pkg('futurist') }}
+Requires:       {{ py2pkg('iso8601') }}
+Requires:       {{ py2pkg('msgpack-python') }}
+Requires:       {{ py2pkg('oslo.serialization') }}
+Requires:       {{ py2pkg('oslo.utils') }}
+Requires:       {{ py2pkg('retrying') }}
+Requires:       {{ py2pkg('six') }}
+Requires:       {{ py2pkg('stevedore') }}
+Requires:       {{ py2pkg('voluptuous') }}
+Requires:       {{ py2pkg('zake') }}
+BuildArch:      noarch
+
+%description
+The Tooz project aims at centralizing the most common distributed primitives
+like group membership protocol, lock service and leader election by providing
+a coordination API helping developers to build distributed applications.
+
+%package doc
+Summary:        Documentation for %{name}
+Group:          Documentation
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('enum34') }}
+BuildRequires:  {{ py2pkg('futures') }}
+BuildRequires:  {{ py2pkg('oslo.utils') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('stevedore') }}
+
+%description doc
+The Tooz project aims at centralizing the most common distributed primitives
+like group membership protocol, lock service and leader election by providing
+a coordination API helping developers to build distributed applications.
+
+This package contains documentation in HTML format.
+
+%prep
+%setup -q -n %{pypi_name}-%{version}
+
+%build
+%py2_build
+
+# generate html docs
+%{__python2} setup.py build_sphinx
+# remove the Sphinx-build leftovers
+rm -rf html/.{doctrees,buildinfo}
+
+%check
+%{__python2} setup.py testr
+
+%install
+%py2_install
+
+%files
+%license LICENSE
+%doc README.rst
+%{python2_sitelib}/%{pypi_name}
+%{python2_sitelib}/%{pypi_name}-*.egg-info
+
+%files doc
+%license LICENSE
+%doc doc/build/html
+
+%changelog
