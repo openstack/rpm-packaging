@@ -1,0 +1,78 @@
+Name:           {{ py2name('oslo.versionedobjects') }}
+Version:        1.9.1
+Release:        0
+Summary:        Oslo Versioned Objects library
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            http://launchpad.net/oslo
+Source0:        https://pypi.io/packages/source/o/oslo.versionedobjects/oslo.versionedobjects-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires: {{ py2pkg('devel') }}
+BuildRequires: {{ py2pkg('iso8601') }}
+BuildRequires: {{ py2pkg('oslo.concurrency') }}
+BuildRequires: {{ py2pkg('oslo.config') }}
+BuildRequires: {{ py2pkg('oslo.context') }}
+BuildRequires: {{ py2pkg('oslo.i18n') }}
+BuildRequires: {{ py2pkg('oslo.log') }}
+BuildRequires: {{ py2pkg('oslo.messaging') }}
+BuildRequires: {{ py2pkg('oslo.serialization') }}
+BuildRequires: {{ py2pkg('oslo.utils') }}
+BuildRequires: {{ py2pkg('oslotest') }}
+BuildRequires: {{ py2pkg('pbr') }}
+BuildRequires: {{ py2pkg('testtools') }}
+Requires:      {{ py2pkg('Babel') }}
+Requires:      {{ py2pkg('WebOb') }}
+Requires:      {{ py2pkg('iso8601') }}
+Requires:      {{ py2pkg('netaddr') }}
+Requires:      {{ py2pkg('oslo.concurrency') }}
+Requires:      {{ py2pkg('oslo.config') }}
+Requires:      {{ py2pkg('oslo.context') }}
+Requires:      {{ py2pkg('oslo.i18n') }}
+Requires:      {{ py2pkg('oslo.log') }}
+Requires:      {{ py2pkg('oslo.messaging') }}
+Requires:      {{ py2pkg('oslo.serialization') }}
+Requires:      {{ py2pkg('oslo.utils') }}
+Requires:      {{ py2pkg('six') }}
+BuildArch:      noarch
+
+%description
+oslo.versionedobjects library deals with DB schema being at different versions
+than the code expects, allowing services to be operated safely during upgrades.
+It enables DB independent schema by providing an abstraction layer, which
+allows us to support SQL and NoSQL Databases. oslo.versionedobjects is also
+used in RPC APIs, to ensure upgrades happen without spreading version dependent
+code across different services and projects.
+
+%package doc
+Summary:        osloversionedobjects library - Documentation
+Group:          Documentation/HTML
+BuildRequires: {{ py2pkg('Sphinx') }}
+BuildRequires: {{ py2pkg('oslosphinx') }}
+Requires:       %{name} = %{version}
+
+%description doc
+This package contains documentation files for %{name}.
+
+%prep
+%setup -q -n oslo.versionedobjects-%{version}
+
+%build
+%{__python2} setup.py build
+%{__python2} setup.py build_sphinx && rm doc/build/html/.buildinfo
+
+%install
+%{__python2} setup.py install --prefix=%{_prefix} --root=%{buildroot}
+
+%check
+%{__python2} setup.py testr
+
+%files
+%license LICENSE
+%doc README.rst ChangeLog AUTHORS
+%{python2_sitelib}/*
+
+%files doc
+%license LICENSE
+%doc doc/build/html
+
+%changelog
