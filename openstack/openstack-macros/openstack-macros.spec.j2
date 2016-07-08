@@ -1,12 +1,16 @@
+%if 0%{?rhel} || 0%{?fedora}
+%global rdo 1
+%endif
 Name:           openstack-macros
 Version:        2015.2
 Release:        0
 Summary:        OpenStack Packaging - RPM Macros
-License:        Apache-2.0
+License:        {{ license('Apache-2.0') }}
 Group:          Development/Libraries/Python
 Url:            https://wiki.openstack.org/wiki/Rpm-packaging
+Source0:        macros.openstack-common
 Source1:        macros.openstack-suse
-Source2:        macros.openstack-common
+Source2:        macros.openstack-rdo
 BuildArch:      noarch
 
 %description
@@ -18,16 +22,22 @@ packages.
 %build
 
 %install
+install -D -m644 %{SOURCE0} %{buildroot}%{_sysconfdir}/rpm/macros.openstack-common
 %if 0%{?suse_version}
 install -D -m644 %{SOURCE1} %{buildroot}%{_sysconfdir}/rpm/macros.openstack-suse
 %endif
-install -D -m644 %{SOURCE2} %{buildroot}%{_sysconfdir}/rpm/macros.openstack-common
+%if 0%{?rdo}
+install -D -m644 %{SOURCE2} %{buildroot}%{_sysconfdir}/rpm/macros.openstack-rdo
+%endif
 
 %files
-%defattr(-,root,root)
+%{_sysconfdir}/rpm/macros.openstack-common
 %if 0%{?suse_version}
 %{_sysconfdir}/rpm/macros.openstack-suse
 %endif
-%{_sysconfdir}/rpm/macros.openstack-common
+%if 0%{?rdo}
+%{_sysconfdir}/rpm/macros.openstack-rdo
+%endif
 
 %changelog
+
