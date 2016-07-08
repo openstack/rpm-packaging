@@ -1,0 +1,90 @@
+%global pypi_name oslo.vmware
+Name:           {{ py2name('oslo.vmware') }}
+Version:        2.10.0
+Release:        0
+Summary:        Oslo VMware library for OpenStack projects
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            http://launchpad.net/oslo.vmware
+Source0:        https://pypi.io/packages/source/o/%{pypi_name}/%{pypi_name}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('Babel') }}
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('eventlet') }}
+BuildRequires:  {{ py2pkg('fixtures') }}
+BuildRequires:  {{ py2pkg('lxml') }}
+BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('mox3') }}
+BuildRequires:  {{ py2pkg('oslo.i18n') }}
+BuildRequires:  {{ py2pkg('oslo.utils') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('python-subunit') }}
+BuildRequires:  {{ py2pkg('requests') }}
+BuildRequires:  {{ py2pkg('suds-jurko') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testscenarios') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+BuildRequires:  {{ py2pkg('urllib3') }}
+Requires:       {{ py2pkg('Babel') }}
+Requires:       {{ py2pkg('PyYAML') }}
+Requires:       {{ py2pkg('eventlet') }}
+Requires:       {{ py2pkg('iso8601') }}
+Requires:       {{ py2pkg('lxml') }}
+Requires:       {{ py2pkg('netaddr') }}
+Requires:       {{ py2pkg('requests') }}
+Requires:       {{ py2pkg('six') }}
+Requires:       {{ py2pkg('stevedore') }}
+Requires:       {{ py2pkg('suds-jurko') }}
+Requires:       {{ py2pkg('urllib3') }}
+BuildArch:      noarch
+
+%description
+The Oslo project intends to produce a python library containing infrastructure
+code shared by OpenStack projects. The APIs provided by the project should be
+high quality, stable, consistent and generally useful.
+
+The Oslo VMware library offers session and API call management for VMware ESX/VC
+server.
+
+%package    doc
+Summary:    Documentation for OpenStack common VMware library
+BuildRequires: {{ py2pkg('Sphinx') }}
+BuildRequires: {{ py2pkg('netaddr') }}
+BuildRequires: {{ py2pkg('oslo.concurrency') }}
+BuildRequires: {{ py2pkg('oslo.i18n') }}
+BuildRequires: {{ py2pkg('oslosphinx') }}
+BuildRequires: {{ py2pkg('requests') }}
+BuildRequires: {{ py2pkg('suds-jurko') }}
+Requires:      %{name} = %{version}
+
+%description doc
+Documentation for OpenStack common VMware library.
+
+%prep
+%setup -q -n %{pypi_name}-%{version}
+
+%build
+%py2_build
+
+# generate html docs
+%{__python2} setup.py build_sphinx
+# remove the sphinx-build leftovers
+rm -rf doc/build/html/.{doctrees,buildinfo}
+
+%install
+%py2_install
+
+%check
+PYTHONPATH=. %{__python2} setup.py test
+
+%files
+%doc README.rst
+%license LICENSE
+%{python2_sitelib}/oslo_vmware
+%{python2_sitelib}/*.egg-info
+
+%files doc
+%doc doc/build/html
+%license LICENSE
+
+%changelog
