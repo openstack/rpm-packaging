@@ -1,0 +1,68 @@
+%global sname cliff
+Name:           {{ py2name('cliff') }}
+Version:        2.1.0
+Release:        0
+Summary:        Command Line Interface Formulation Framework
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            https://launchpad.net/python-%{sname}
+Source:         https://pypi.io/packages/source/c/cliff/%{sname}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('setuptools') }}
+Requires:       {{ py2pkg('PrettyTable') }}
+Requires:       {{ py2pkg('PyYAML') }}
+Requires:       {{ py2pkg('cmd2') }}
+Requires:       {{ py2pkg('pyparsing') }}
+Requires:       {{ py2pkg('six') }}
+Requires:       {{ py2pkg('stevedore') }}
+Requires:       {{ py2pkg('unicodecsv') }}
+BuildArch:      noarch
+
+%description
+cliff is a framework for building command line programs. It uses
+setuptools entry points to provide subcommands, output formatters, and
+other extensions.
+
+%package doc
+Summary:        %{summary} - Documentation
+Group:          Documentation/HTML
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('cmd2') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('stevedore') }}
+Requires:       %{name} = %{version}
+
+%description doc
+cliff is a framework for building command line programs. It uses
+setuptools entry points to provide subcommands, output formatters, and
+other extensions.
+
+This package contains documentation files for %{name}.
+
+%prep
+%setup -q -n %{sname}-%{version}
+
+%build
+%py2_build
+%{__python2} setup.py build_sphinx
+rm -rf doc/build/html/.{doctrees,buildinfo}
+
+%install
+%py2_install
+
+%check
+%{__python2} setup.py testr
+
+%files
+%license LICENSE
+%doc ChangeLog README.rst
+%{python2_sitelib}/%{sname}
+%{python2_sitelib}/*.egg-info
+
+%files doc
+%license LICENSE
+%doc doc/build/html
+
+%changelog
