@@ -57,11 +57,11 @@ This package contains documentation files for %{name}.
 %setup -q -n oslo.versionedobjects-%{version}
 
 %build
-%{__python2} setup.py build
+%{py2_build}
 %{__python2} setup.py build_sphinx && rm doc/build/html/.buildinfo
 
 %install
-%{__python2} setup.py install --prefix=%{_prefix} --root=%{buildroot}
+%{py2_install}
 
 %check
 %{__python2} setup.py testr

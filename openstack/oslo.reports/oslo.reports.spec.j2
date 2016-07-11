@@ -46,7 +46,7 @@ This package contains the documentation.
 %setup -q -n %{sname}-%{version}
 
 %build
-%{__python2} setup.py build
+%{py2_build}
 
 # generate html docs
 %{__python2} setup.py build_sphinx
@@ -54,7 +54,7 @@ This package contains the documentation.
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
-%{__python2}  setup.py install --prefix=%{_prefix} --root=%{buildroot}
+%{py2_install}
 
 %check
 %{__python2} setup.py testr

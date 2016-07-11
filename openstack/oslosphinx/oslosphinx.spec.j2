@@ -23,10 +23,10 @@ layer of Sphinx plugins.
 %setup -q -n oslosphinx-%{version}
 
 %build
-%{__python2} setup.py build
+%{py2_build}
 
 %install
-%{__python2} setup.py install --skip-build --root=%{buildroot} --prefix=%{_prefix} --install-data=%{python2_sitelib}
+%{py2_install}
 
 %files
 %defattr(-,root,root,-)

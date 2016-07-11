@@ -55,7 +55,7 @@ Documentation for the os-client-config library.
 %setup -q -n %{sname}-%{version}
 
 %build
-%{__python2} setup.py build
+%{py2_build}
 %if %{with docs}
 # generate html docs
 %{__python2} setup.py build_sphinx
@@ -64,7 +64,7 @@ rm -rf html/.{doctrees,buildinfo}
 %endif
 
 %install
-%{__python2} setup.py install --skip-build --root %{buildroot}
+%{py2_install}
 
 %if %{with test}
 %check

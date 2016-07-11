@@ -51,10 +51,10 @@ Documentation for OpenStack utils library.
 %setup -q -n %{sname}-%{version}
 
 %build
-%{__python2} setup.py build
+%{py2_build}
 
 %install
-%{__python2} setup.py install --skip-build --root %{buildroot}
+%{py2_install}
 
 # generate html docs
 %{__python2} setup.py build_sphinx
