@@ -1,0 +1,81 @@
+%global sname zaqarclient
+Name:           {{ py2name('python-zaqarclient') }}
+Version:        1.2.0
+Release:        0
+Summary:        Client Library for OpenStack Zaqar Queueing API
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            http://launchpad.net/%{sname}
+Source0:        https://pypi.io/packages/source/p/%{name}/%{name}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('coverage') }}
+BuildRequires:  {{ py2pkg('ddt') }}
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('fixtures') }}
+BuildRequires:  {{ py2pkg('jsonschema') }}
+BuildRequires:  {{ py2pkg('python-keystoneclient') }}
+BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('nose') }}
+BuildRequires:  {{ py2pkg('nose-exclude') }}
+BuildRequires:  {{ py2pkg('openstack-doc-tools') }}
+BuildRequires:  {{ py2pkg('os-client-config') }}
+BuildRequires:  {{ py2pkg('osc-lib') }}
+BuildRequires:  {{ py2pkg('oslo.i18n') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('python-subunit') }}
+BuildRequires:  {{ py2pkg('requests') }}
+BuildRequires:  {{ py2pkg('requests-mock') }}
+BuildRequires:  {{ py2pkg('setuptools') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testscenarios') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+Requires:       {{ py2pkg('jsonschema') }}
+Requires:       {{ py2pkg('python-keystoneclient') }}
+Requires:       {{ py2pkg('openstack-doc-tools') }}
+Requires:       {{ py2pkg('osc-lib') }}
+Requires:       {{ py2pkg('oslo.i18n') }}
+Requires:       {{ py2pkg('pbr') }}
+Requires:       {{ py2pkg('requests') }}
+Requires:       {{ py2pkg('six') }}
+Requires:       {{ py2pkg('stevedore') }}
+BuildArch:      noarch
+
+%description
+Python client to Zaqar Queueing API.
+
+%package doc
+Summary:        Documentation for OpenStack Zaqar Queueing API
+Group:          Documentation
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+
+%description doc
+Documentation for the client library for interacting with Openstack
+Zaqar Queueing API.
+
+%prep
+%setup -q -n %{name}-%{version}
+
+%build
+%py2_build
+
+# Build HTML docs and man page
+%{__python2} setup.py build_sphinx
+
+%install
+%py2_install
+
+%check
+PYTHONPATH=. nosetests
+
+%files
+%doc README.rst ChangeLog examples
+%license LICENSE
+%{python2_sitelib}/%{sname}
+%{python2_sitelib}/python_zaqarclient-*-py?.?.egg-info
+
+%files doc
+%doc doc/build/html
+%license LICENSE
+
+%changelog
