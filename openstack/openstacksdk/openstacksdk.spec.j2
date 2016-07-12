@@ -1,0 +1,69 @@
+%global sname openstacksdk
+Name:           {{ py2name('openstacksdk') }}
+Version:        0.9.0
+Release:        0
+Summary:        An SDK for building applications to work with OpenStack
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            https://launchpad.net/%{sname}
+Source:         https://pypi.io/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('setuptools') }}
+BuildRequires:  {{ py2pkg('six') }}
+BuildRequires:  {{ py2pkg('stevedore') }}
+Requires:       {{ py2pkg('keystoneauth1') }}
+Requires:       {{ py2pkg('os-client-config') }}
+Requires:       {{ py2pkg('six') }}
+Requires:       {{ py2pkg('stevedore') }}
+BuildArch:      noarch
+
+%description
+The python-openstacksdk is a collection of libraries for building
+applications to work with OpenStack clouds. The project aims to
+provide a consistent and complete set of interactions with OpenStack's
+many services, along with complete documentation, examples, and tools.
+
+%package doc
+Summary:        %{summary} - Documentation
+Group:          Documentation/HTML
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('keystoneauth1') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
+BuildRequires:  {{ py2pkg('os-client-config') }}
+Requires:       %{name} = %{version}
+
+%description doc
+The python-openstacksdk is a collection of libraries for building
+applications to work with OpenStack clouds. The project aims to
+provide a consistent and complete set of interactions with OpenStack's
+many services, along with complete documentation, examples, and tools.
+
+This package contains documentation files for %{name}.
+
+%prep
+%setup -q -n %{sname}-%{version}
+
+%build
+%py2_build
+%{__python2} setup.py build_sphinx
+rm -rf doc/build/html/.{doctrees,buildinfo}
+
+%install
+%py2_install
+
+%check
+%{__python2} setup.py testr
+
+%files
+%license LICENSE
+%doc ChangeLog README.rst
+%{python2_sitelib}/openstack
+%{python2_sitelib}/*.egg-info
+
+%files doc
+%license LICENSE
+%doc doc/build/html
+
+%changelog
