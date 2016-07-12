@@ -1,0 +1,44 @@
+%global sname openstackdocstheme
+Name:           {{ py2name('openstackdocstheme') }}
+Version:        1.3.0
+Release:        0
+Summary:        OpenStack Docs Theme
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            https://launchpad.net/%{sname}
+Source:         https://pypi.io/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('requests') }}
+BuildRequires:  {{ py2pkg('setuptools') }}
+Requires:       {{ py2pkg('Sphinx') }}
+Requires:       {{ py2pkg('oslosphinx') }}
+Requires:       {{ py2pkg('requests') }}
+BuildArch:      noarch
+
+%description
+Theme and extension support for Sphinx documentation that is published
+to docs.openstack.org. Intended for use by OpenStack projects.
+
+%prep
+%setup -q -n %{sname}-%{version}
+
+%build
+%py2_build
+
+%install
+%py2_install
+
+%check
+%{__python2} setup.py testr
+
+%files
+%license LICENSE
+%doc RELEASENOTES.rst README.rst
+%{python2_sitelib}/%{sname}
+%{python2_sitelib}/*.egg-info
+
+%changelog
