@@ -1,0 +1,66 @@
+%global sname pycadf
+Name:           python-%{sname}
+Version:        2.3.0
+Release:        0
+Summary:        DMTF Cloud Audit (CADF) data model
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            https://launchpad.net/pycadf
+Source0:        https://pypi.io/packages/source/p/%{sname}/%{sname}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('setuptools') }}
+Requires:       {{ py2pkg('Babel') }}
+Requires:       {{ py2pkg('WebOb') }}
+Requires:       {{ py2pkg('debtcollector') }}
+Requires:       {{ py2pkg('iso8601') }}
+Requires:       {{ py2pkg('netaddr') }}
+Requires:       {{ py2pkg('oslo.config') }}
+Requires:       {{ py2pkg('oslo.messaging') }}
+Requires:       {{ py2pkg('oslo.serialization') }}
+Requires:       {{ py2pkg('pytz') }}
+Requires:       {{ py2pkg('six') }}
+BuildArch:      noarch
+
+%description
+DMTF Cloud Audit (CADF) data model
+
+%package doc
+Summary:        Documentation for the DMTF Cloud Audit (CADF) data model
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+
+%description doc
+Documentation for the DMTF Cloud Audit (CADF) data model.
+
+%prep
+%setup -q -n %{sname}-%{version}
+
+%build
+%py2_build
+
+# generate html docs
+%{__python2} setup.py build_sphinx
+# remove the sphinx-build leftovers
+rm -rf doc/build/html/.{doctrees,buildinfo}
+
+%install
+%py2_install
+# FIXME: pbr/wheel bug installing onfiguration files in /usr/etc
+mkdir -p %{buildroot}/%{_sysconfdir}
+mv %{buildroot}%{_prefix}%{_sysconfdir}/%{sname} %{buildroot}/%{_sysconfdir}/
+
+%files
+%doc README.rst
+%license LICENSE
+%dir %{_sysconfdir}/%{sname}
+%config(noreplace) %{_sysconfdir}/%{sname}/*.conf
+%{python2_sitelib}/%{sname}
+%{python2_sitelib}/%{sname}-*-py?.?.egg-info
+
+%files doc
+%license LICENSE
+%doc doc/build/html
+
+%changelog
