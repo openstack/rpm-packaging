@@ -1,0 +1,84 @@
+%global sname python-ceilometerclient
+Name:           {{ py2name('ceilometerclient') }}
+Version:        2.4.0
+Release:        0
+Summary:        Python API and CLI for OpenStack Ceilometer
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages
+Url:            https://github.com/openstack/%{name}
+Source0:        https://pypi.io/packages/source/p/%{sname}/%{sname}-%{version}.tar.gz
+BuildRequires:  {{ py2pkg('PrettyTable') }}
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('python-keystoneclient') }}
+BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('oslo.i18n') }}
+BuildRequires:  {{ py2pkg('oslo.serialization') }}
+BuildRequires:  {{ py2pkg('oslo.utils') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('requests') }}
+BuildRequires:  {{ py2pkg('requests-mock') }}
+BuildRequires:  {{ py2pkg('setuptools') }}
+BuildRequires:  {{ py2pkg('six') }}
+BuildRequires:  {{ py2pkg('stevedore') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testscenarios') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+Requires:       {{ py2pkg('PrettyTable') }}
+Requires:       {{ py2pkg('iso8601') }}
+Requires:       {{ py2pkg('keystoneauth1') }}
+Requires:       {{ py2pkg('python-keystoneclient') }}
+Requires:       {{ py2pkg('oslo.i18n') }}
+Requires:       {{ py2pkg('oslo.serialization') }}
+Requires:       {{ py2pkg('oslo.utils') }}
+Requires:       {{ py2pkg('pbr') }}
+Requires:       {{ py2pkg('requests') }}
+Requires:       {{ py2pkg('six') }}
+Requires:       {{ py2pkg('stevedore') }}
+BuildArch:      noarch
+
+%description
+This is a client library for Ceilometer built on the Ceilometer API. It
+provides a Python API (the ceilometerclient module) and a command-line tool
+(ceilometer).
+
+%package doc
+Summary:        Documentation for OpenStack Ceilometer API Client
+Group:          Documentation
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+
+%description      doc
+This is a client library for Ceilometer built on the Ceilometer API. It
+provides a Python API (the ceilometerclient module) and a command-line tool
+(ceilometer).
+
+This package contains auto-generated documentation.
+
+%prep
+%setup -q -n %{name}-%{version}
+
+%build
+%{py2_build}
+
+sphinx-build -b html doc/source html
+# Fix hidden-file-or-dir warnings
+rm -rf html/.doctrees html/.buildinfo
+
+%install
+%{py2_install}
+
+%check
+%{__python2} setup.py testr
+
+%files
+%doc README.rst
+%license LICENSE
+%{_bindir}/ceilometer
+%{python2_sitelib}/ceilometerclient
+%{python2_sitelib}/*.egg-info
+
+%files doc
+%license LICENSE
+%doc html
+
+%changelog
