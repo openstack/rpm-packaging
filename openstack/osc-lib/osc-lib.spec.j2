@@ -1,6 +1,6 @@
 %global sname osc-lib
 Name:           {{ py2name('osc-lib') }}
-Version:        0.2.1
+Version:        0.3.0
 Release:        0
 Summary:        OpenStackClient Library
 License:        {{ license('Apache-2.0') }}
@@ -22,7 +22,6 @@ BuildRequires:  {{ py2pkg('oslotest') }}
 BuildRequires:  {{ py2pkg('osprofiler') }}
 BuildRequires:  {{ py2pkg('pbr') }}
 BuildRequires:  {{ py2pkg('reno') }}
-BuildRequires:  {{ py2pkg('requests') }}
 BuildRequires:  {{ py2pkg('requests-mock') }}
 BuildRequires:  {{ py2pkg('simplejson') }}
 BuildRequires:  {{ py2pkg('six') }}
@@ -36,7 +35,6 @@ Requires:       {{ py2pkg('os-client-config') }}
 Requires:       {{ py2pkg('oslo.i18n') }}
 Requires:       {{ py2pkg('oslo.utils') }}
 Requires:       {{ py2pkg('pbr') }}
-Requires:       {{ py2pkg('requests') }}
 Requires:       {{ py2pkg('simplejson') }}
 Requires:       {{ py2pkg('six') }}
 Requires:       {{ py2pkg('stevedore') }}
