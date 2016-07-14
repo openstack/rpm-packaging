@@ -1,6 +1,6 @@
 %global sname oslo.cache
 Name:           {{ py2name('oslo.cache') }}
-Version:        1.10.0
+Version:        1.11.0
 Release:        0
 Summary:        Cache storage for Openstack projects
 License:        {{ license('Apache-2.0') }}
@@ -10,7 +10,6 @@ Source0:        https://pypi.io/packages/source/o/%{sname}/%{sname}-%{version}.t
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('dogpile.cache') }}
-BuildRequires:  {{ py2pkg('memcached') }}
 BuildRequires:  {{ py2pkg('mock') }}
 BuildRequires:  {{ py2pkg('oslo.config') }}
 BuildRequires:  {{ py2pkg('oslo.i18n') }}
@@ -19,13 +18,14 @@ BuildRequires:  {{ py2pkg('oslo.utils') }}
 BuildRequires:  {{ py2pkg('oslotest') }}
 BuildRequires:  {{ py2pkg('pbr') }}
 BuildRequires:  {{ py2pkg('pymongo') }}
+BuildRequires:  {{ py2pkg('python-memcached') }}
 BuildRequires:  {{ py2pkg('six') }}
 Requires:       {{ py2pkg('dogpile.cache') }}
-Requires:       {{ py2pkg('memcached') }}
 Requires:       {{ py2pkg('oslo.config') }}
 Requires:       {{ py2pkg('oslo.i18n') }}
 Requires:       {{ py2pkg('oslo.log') }}
 Requires:       {{ py2pkg('oslo.utils') }}
+Requires:       {{ py2pkg('python-memcached') }}
 Requires:       {{ py2pkg('six') }}
 BuildArch:      noarch
 
