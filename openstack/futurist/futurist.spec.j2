@@ -1,6 +1,6 @@
 %global sname futurist
 Name:           {{ py2name('futurist') }}
-Version:        0.14.0
+Version:        0.15.0
 Release:        0
 Summary:        Backport of the concurrent.futures package from Python 3.2
 License:        {{ license('Apache-2.0') }}
@@ -22,6 +22,7 @@ BuildRequires:  {{ py2pkg('six') }}
 BuildRequires:  {{ py2pkg('testrepository') }}
 BuildRequires:  {{ py2pkg('testscenarios') }}
 BuildRequires:  {{ py2pkg('testtools') }}
+Requires:       {{ py2pkg('PrettyTable') }}
 Requires:       {{ py2pkg('contextlib2') }}
 Requires:       {{ py2pkg('futures') }}
 Requires:       {{ py2pkg('monotonic') }}
