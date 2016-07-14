@@ -7,6 +7,7 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages
 Url:            https://github.com/openstack/%{name}
 Source0:        https://pypi.io/packages/source/p/%{sname}/%{sname}-%{version}.tar.gz
+BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('PrettyTable') }}
 BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('python-keystoneclient') }}
