@@ -1,12 +1,12 @@
 %global sname oslo.rootwrap
 Name:           {{ py2name('oslo.rootwrap') }}
-Version:        4.2.0
+Version:        4.4.0
 Release:        0
 Summary:        Filtering shell commands to run as root from OpenStack services
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            https://launchpad.net/%{sname}
-Source0:        https://pypi.python.org/packages/c8/5c/fc9b0a988d31083998af78fde9c5d73897c9a4a0a9fce167fcf96261643c/%{sname}-%{version}.tar.gz
+Source0:        https://pypi.io/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
 BuildRequires:  openstack-macros
 BuildRequires:  python-devel
 BuildRequires:  {{ py2pkg('eventlet') }}
