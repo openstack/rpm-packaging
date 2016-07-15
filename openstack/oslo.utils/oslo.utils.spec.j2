@@ -1,6 +1,6 @@
 %global sname oslo.utils
 Name:           {{ py2name('oslo.utils') }}
-Version:        3.15.0
+Version:        3.16.0
 Release:        0
 Summary:        OpenStack Utils Library
 License:        {{ license('Apache-2.0') }}
@@ -20,6 +20,7 @@ BuildRequires:  {{ py2pkg('oslo.config') }}
 BuildRequires:  {{ py2pkg('oslo.i18n') }}
 BuildRequires:  {{ py2pkg('oslotest') }}
 BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('pyparsing') }}
 BuildRequires:  {{ py2pkg('python-subunit') }}
 BuildRequires:  {{ py2pkg('testrepository') }}
 BuildRequires:  {{ py2pkg('testscenarios') }}
@@ -31,6 +32,7 @@ Requires:       {{ py2pkg('monotonic') }}
 Requires:       {{ py2pkg('netaddr') }}
 Requires:       {{ py2pkg('netifaces') }}
 Requires:       {{ py2pkg('oslo.i18n') }}
+Requires:       {{ py2pkg('pyparsing') }}
 Requires:       {{ py2pkg('pytz') }}
 Requires:       {{ py2pkg('six') }}
 BuildArch:      noarch
