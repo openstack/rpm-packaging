@@ -2,7 +2,7 @@
 
 set -e
 
-basedir=$1
+basedir=${1:-$PWD}
 
 WORKSPACE=${WORKSPACE:-$basedir}
 # tempfile to store the spec-cleaner diff for all specs
