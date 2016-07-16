@@ -17,7 +17,6 @@ epochs:
   python-glanceclient: 1
   python-keystoneclient: 1
   python-novaclient: 1
-  python-openstackclient: 1
   sahara: 1
   tempest: 1
   trove: 1
