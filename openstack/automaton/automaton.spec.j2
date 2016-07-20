@@ -1,0 +1,64 @@
+%global sname automaton
+Name:           {{ py2name('%{sname}') }}
+Version:        1.3.0
+Release:        0
+Summary:        Friendly state machines for python
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            https://launchpad/%{sname}
+Source0:        https://pypi.io/packages/source/a/%{sname}/%{sname}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('PrettyTable') }}
+BuildRequires:  {{ py2pkg('debtcollector') }}
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testscenarios') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+Requires:       {{ py2pkg('PrettyTable') }}
+Requires:       {{ py2pkg('debtcollector') }}
+Requires:       {{ py2pkg('pbr') }}
+Requires:       {{ py2pkg('six') }}
+BuildArch:      noarch
+
+%description
+Friendly state machines for python.
+
+%package doc
+Summary:        Documentation for the Automaton Library
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+
+%description doc
+Documentation for the Automaton library.
+
+%prep
+%setup -q -n %{sname}-%{version}
+
+%build
+%py2_build
+
+# generate html docs
+%{__python2} setup.py build_sphinx
+# remove the Sphinx-build leftovers
+rm -rf html/.{doctrees,buildinfo}
+
+%install
+%py2_install
+
+%check
+PYTHONPATH=. %{__python2} setup.py testr
+
+%files
+%doc README.rst
+%license LICENSE
+%{python2_sitelib}/%{sname}
+%{python2_sitelib}/*.egg-info
+
+%files doc
+%license LICENSE
+%doc doc/build/html
+
+%changelog
