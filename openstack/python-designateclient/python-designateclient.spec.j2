@@ -1,0 +1,74 @@
+%global sname python-designateclient
+Name:           {{ py2name('python-designateclient') }}
+Version:        2.2.0
+Release:        0
+Summary:        OpenStack DNS as a Service - Client
+License:        {{ 'Apache-2.0' | license }}
+Url:            https://launchpad.net/%{sname}
+Source0:        https://pypi.io/packages/source/p/%{sname}/%{sname}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('jsonschema') }}
+BuildRequires:  {{ py2pkg('python-keystoneclient') }}
+BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('python-subunit') }}
+BuildRequires:  {{ py2pkg('requests-mock') }}
+BuildRequires:  {{ py2pkg('setuptools') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+Requires:       {{ py2pkg('cliff') }}
+Requires:       {{ py2pkg('debtcollector') }}
+Requires:       {{ py2pkg('jsonschema') }}
+Requires:       {{ py2pkg('python-keystoneclient') }}
+Requires:       {{ py2pkg('oslo.utils') }}
+Requires:       {{ py2pkg('pbr') }}
+Requires:       {{ py2pkg('requests') }}
+Requires:       {{ py2pkg('six') }}
+Requires:       {{ py2pkg('stevedore') }}
+BuildArch:      noarch
+
+%description
+OpenStack DNS as a Service - Client
+
+%package doc
+Summary:        Documentation for the OpenStack DNS as a Service - Client
+Group:          Documentation
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+
+%description doc
+Documentation for the OpenStack DNS as a Service - Client.
+
+%prep
+%setup -q -n %{sname}-%{version}
+
+%build
+%py2_build
+
+# generate html docs
+%{__python2} setup.py build_sphinx
+# remove the sphinx-build leftovers
+rm -rf doc/build/html/.{doctrees,buildinfo}
+
+%install
+%py2_install
+#man pages
+install -p -D -m 644 doc/build/man/python-designateclient.1 %{buildroot}%{_mandir}/man1/python-designateclient.1
+
+%check
+%{__python2} setup.py testr
+
+%files
+%license LICENSE
+%doc README.rst ChangeLog
+%{python2_sitelib}/designateclient
+%{python2_sitelib}/python_designateclient-%{version}-py2.?.egg-info
+%{_bindir}/designate
+%{_mandir}/man1/python-designateclient.1.*
+
+%files doc
+%license LICENSE
+%doc doc/build/html
+
+%changelog
