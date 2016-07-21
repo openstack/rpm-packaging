@@ -1,0 +1,61 @@
+Name:           {{ py2name('tempest-lib') }}
+Version:        1.0.0
+Release:        0
+Summary:        OpenStack Functional Testing Library
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            http://www.openstack.org/
+Source:         https://pypi.io/packages/source/t/tempest-lib/tempest-lib-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('ddt') }}
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('httplib2') }}
+BuildRequires:  {{ py2pkg('jsonschema') }}
+BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('oslo.log') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('paramiko') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('python-subunit') }}
+BuildRequires:  {{ py2pkg('sphinx') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testscenarios') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+Requires:       {{ py2pkg('Babel') }}
+Requires:       {{ py2pkg('fixtures') }}
+Requires:       {{ py2pkg('httplib2') }}
+Requires:       {{ py2pkg('iso8601') }}
+Requires:       {{ py2pkg('jsonschema') }}
+Requires:       {{ py2pkg('os-testr') }}
+Requires:       {{ py2pkg('oslo.log') }}
+Requires:       {{ py2pkg('six') }}
+BuildArch:       noarch
+
+%description
+OpenStack Functional Testing Library
+
+%prep
+%setup -q -n tempest-lib-%{version}
+
+%build
+%{__python2} setup.py build
+
+%install
+%{__python2} setup.py install --skip-build --prefix=%{_prefix} --root=%{buildroot}
+# both files are provided by openstack-tempest (because tempest-lib is
+# now deprecated and the code was copied to tempest)
+rm %{buildroot}/%{_bindir}/skip-tracker
+rm %{buildroot}/%{_bindir}/check-uuid
+
+%check
+%{__python2} setup.py testr
+
+%files
+%defattr(-,root,root,-)
+%license LICENSE
+%doc README.rst ChangeLog AUTHORS
+%{python2_sitelib}/tempest_lib
+%{python2_sitelib}/*.egg-info
+
+%changelog
