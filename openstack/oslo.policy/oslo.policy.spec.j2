@@ -1,7 +1,7 @@
 %global sname oslo.policy
 
 Name:           {{ py2name('oslo.policy') }}
-Version:        1.5.0
+Version:        1.6.0
 Release:        0
 Summary:        OpenStack Oslo Policy library
 License:        {{ 'Apache-2.0' | license }}
@@ -9,20 +9,20 @@ URL:            https://launchpad.net/%sname
 Source0:        https://pypi.io/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('devel') }}
-BuildRequires:  {{ py2pkg('oslo.config', ('>=', '3.4.0')) }}
-BuildRequires:  {{ py2pkg('oslo.i18n', ('>=', '2.1.0')) }}
-BuildRequires:  {{ py2pkg('oslo.serialization', ('>=', '1.10.0')) }}
-BuildRequires:  {{ py2pkg('oslo.utils', ('>=', '3.5.0')) }}
-BuildRequires:  {{ py2pkg('oslotest', ('>=', '1.10.0')) }}
+BuildRequires:  {{ py2pkg('oslo.config') }}
+BuildRequires:  {{ py2pkg('oslo.i18n') }}
+BuildRequires:  {{ py2pkg('oslo.serialization') }}
+BuildRequires:  {{ py2pkg('oslo.utils') }}
+BuildRequires:  {{ py2pkg('oslotest') }}
 BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('requests', ('>=', '2.8.1')) }}
-BuildRequires:  {{ py2pkg('requests-mock', ('>=', '0.7.0')) }}
-Requires:       {{ py2pkg('oslo.config', ('>=', '3.4.0')) }}
-Requires:       {{ py2pkg('oslo.i18n', ('>=', '2.1.0')) }}
-Requires:       {{ py2pkg('oslo.serialization', ('>=', '1.10.0')) }}
-Requires:       {{ py2pkg('oslo.utils', ('>=', '3.5.0')) }}
-Requires:       {{ py2pkg('requests', ('>=', '2.8.1')) }}
-Requires:       {{ py2pkg('six', ('>=', '1.9.0')) }}
+BuildRequires:  {{ py2pkg('requests') }}
+BuildRequires:  {{ py2pkg('requests-mock') }}
+Requires:       {{ py2pkg('oslo.config') }}
+Requires:       {{ py2pkg('oslo.i18n') }}
+Requires:       {{ py2pkg('oslo.serialization') }}
+Requires:       {{ py2pkg('oslo.utils') }}
+Requires:       {{ py2pkg('requests') }}
+Requires:       {{ py2pkg('six') }}
 BuildArch:      noarch
 
 %description
@@ -32,8 +32,8 @@ RBAC policy enforcement library for OpenStack.
 %package doc
 Summary:    Documentation for the Oslo Policy library
 Group:      Documentation
-BuildRequires:  {{ py2pkg('oslosphinx', ('>=', '2.5.0')) }}
-BuildRequires:  {{ py2pkg('Sphinx', ('>=', '1.1.2')) }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('Sphinx') }}
 
 %description doc
 Documentation for the Oslo Policy library.
