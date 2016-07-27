@@ -33,14 +33,14 @@ Documentation for python module name to package name map library.
 %setup -q -n %{sname}-%{version}
 
 %build
-%{__python2} setup.py build
+%{py2_build}
 # generate html docs
 %{__python2} setup.py build_sphinx
 # remove the sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
-%{__python2} setup.py install --prefix=%{_prefix} --skip-build --root %{buildroot}
+%{py2_install}
 
 %check
 %{__python2} setup.py test

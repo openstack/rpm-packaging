@@ -58,13 +58,13 @@ Identity API.
 sed '/^html_last_updated_fmt.*/,/.)/ s/^/#/' -i doc/source/conf.py
 
 %build
-%{__python2} setup.py build
+%{py2_build}
 
 # Build HTML docs and man page
 %{__python2} setup.py build_sphinx
 
 %install
-%{__python2} setup.py install -O1 --skip-build --root %{buildroot}
+%{py2_install}
 
 # Delete tests
 rm -fr %{buildroot}%{python2_sitelib}/tests
