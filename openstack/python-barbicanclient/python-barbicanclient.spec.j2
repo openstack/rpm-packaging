@@ -1,0 +1,75 @@
+%global sname python-barbicanclient
+Name:           {{ py2name('python-barbicanclient') }}
+Version:        4.0.1
+Release:        0
+Summary:        Client for the Barbican Key Management API
+License:        {{ license('Apache-2.0') }}
+Url:            http://launchpad.net/%{sname}
+Source0:        https://pypi.io/packages/source/p/%{sname}/%{sname}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('cliff') }}
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('python-keystoneclient') }}
+BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('requests') }}
+BuildRequires:  {{ py2pkg('requests-mock') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testscenarios') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+Requires:       {{ py2pkg('cliff') }}
+Requires:       {{ py2pkg('python-keystoneclient') }}
+Requires:       {{ py2pkg('oslo.i18n') }}
+Requires:       {{ py2pkg('oslo.serialization') }}
+Requires:       {{ py2pkg('oslo.utils') }}
+Requires:       {{ py2pkg('pbr') }}
+Requires:       {{ py2pkg('requests') }}
+Requires:       {{ py2pkg('six') }}
+BuildArch:      noarch
+
+%description
+OpenStack Key Management API client - Python 2.x
+This is a client for the Barbican Key Management API. This package includes a
+Python library for accessing the API (the barbicanclient module), and a
+command-line script (barbican).
+
+This package contains the Python 2.x module.
+
+%package doc
+Summary:       Documentation for OpenStack Key Management API Client
+Group:         Documentation
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+
+%description doc
+Documentation for the client library for interacting with
+Openstack Key Management API
+
+%prep
+%setup -q -n %{name}-%{version}
+
+# Remove the sphinx-build leftovers
+rm -rf html/.{doctrees,buildinfo}
+
+%build
+%{py2_build}
+%{__python2} setup.py build_sphinx
+
+%install
+%{py2_install}
+
+%check
+%{__python2} setup.py testr
+
+%files
+%doc README.rst
+%license LICENSE
+%{python2_sitelib}/python_barbicanclient-%{version}-py?.?.egg-info
+%{python2_sitelib}/barbicanclient
+%{_bindir}/barbican
+
+%files doc
+%doc doc/build/html
+%license LICENSE
+
+%changelog
