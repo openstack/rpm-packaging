@@ -1,5 +1,5 @@
 Name:       {{ py2name('python-neutronclient') }}
-Version:    4.2.0
+Version:    5.0.0
 Release:    0
 Summary:    Python API and CLI for OpenStack Neutron
 License:    {{ license('Apache-2.0') }}
@@ -7,10 +7,15 @@ Group:      Development/Languages/Python
 Url:        http://launchpad.net/%{name}
 Source0:    https://pypi.io/packages/source/p/%{name}/%{name}-%{version}.tar.gz
 BuildRequires: openstack-macros
+BuildRequires: {{ py2pkg('cliff') }}
 BuildRequires: {{ py2pkg('devel') }}
 BuildRequires: {{ py2pkg('fixtures') }}
 BuildRequires: {{ py2pkg('mock') }}
 BuildRequires: {{ py2pkg('mox3') }}
+BuildRequires: {{ py2pkg('netaddr') }}
+BuildRequires: {{ py2pkg('oslo.i18n') }}
+BuildRequires: {{ py2pkg('oslo.serialization') }}
+BuildRequires: {{ py2pkg('oslo.utils') }}
 BuildRequires: {{ py2pkg('oslotest') }}
 BuildRequires: {{ py2pkg('pbr') }}
 BuildRequires: {{ py2pkg('requests-mock') }}
@@ -25,6 +30,7 @@ Requires:      {{ py2pkg('iso8601') }}
 Requires:      {{ py2pkg('keystoneauth1') }}
 Requires:      {{ py2pkg('netaddr') }}
 Requires:      {{ py2pkg('os-client-config') }}
+Requires:      {{ py2pkg('osc-lib') }}
 Requires:      {{ py2pkg('oslo.i18n') }}
 Requires:      {{ py2pkg('oslo.serialization') }}
 Requires:      {{ py2pkg('oslo.utils') }}
@@ -60,6 +66,9 @@ Neutron's API.
 
 %install
 %py2_install
+
+%check
+%{__python2} setup.py testr
 
 %files
 %doc README.rst
