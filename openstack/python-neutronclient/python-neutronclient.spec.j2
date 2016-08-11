@@ -10,9 +10,11 @@ BuildRequires: openstack-macros
 BuildRequires: {{ py2pkg('cliff') }}
 BuildRequires: {{ py2pkg('devel') }}
 BuildRequires: {{ py2pkg('fixtures') }}
+BuildRequires: {{ py2pkg('keystoneauth1') }}
 BuildRequires: {{ py2pkg('mock') }}
 BuildRequires: {{ py2pkg('mox3') }}
 BuildRequires: {{ py2pkg('netaddr') }}
+BuildRequires: {{ py2pkg('os-client-config') }}
 BuildRequires: {{ py2pkg('oslo.i18n') }}
 BuildRequires: {{ py2pkg('oslo.serialization') }}
 BuildRequires: {{ py2pkg('oslo.utils') }}
@@ -38,7 +40,7 @@ Requires:      {{ py2pkg('pbr') }}
 Requires:      {{ py2pkg('requests') }}
 Requires:      {{ py2pkg('simplejson') }}
 Requires:      {{ py2pkg('six') }}
-BuildArch:  noarch
+BuildArch:     noarch
 
 %description
 Client library and command line utility for interacting with OpenStack
