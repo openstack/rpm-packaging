@@ -1,6 +1,6 @@
 %global sname oslo.db
 Name:           {{ py2name('oslo.db') }}
-Version:        4.8.0
+Version:        4.11.0
 Release:        0
 Summary:        OpenStack oslo.db library
 License:        {{ license('Apache-2.0') }}
@@ -11,6 +11,7 @@ BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('MySQL-python') }}
 BuildRequires:  {{ py2pkg('PyMySQL') }}
 BuildRequires:  {{ py2pkg('alembic') }}
+BuildRequires:  {{ py2pkg('debtcollector') }}
 BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('eventlet') }}
 BuildRequires:  {{ py2pkg('fixtures') }}
@@ -32,6 +33,7 @@ BuildRequires:  {{ py2pkg('testtools') }}
 Requires:       {{ py2pkg('PyMySQL') }}
 Requires:       {{ py2pkg('SQLAlchemy') }}
 Requires:       {{ py2pkg('alembic') }}
+Requires:       {{ py2pkg('debtcollector') }}
 Requires:       {{ py2pkg('oslo.config') }}
 Requires:       {{ py2pkg('oslo.context') }}
 Requires:       {{ py2pkg('oslo.i18n') }}
