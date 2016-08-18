@@ -1,0 +1,91 @@
+%global sname python-heatclient
+Name:           {{ py2name('python-heatclient') }}
+Version:        1.4.0
+Release:        0
+Summary:        Python API and CLI for OpenStack Heat
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            https://launchpad.net/%{sname}
+Source0:        https://pypi.io/packages/source/p/%{sname}/%{sname}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('PyYAML') }}
+BuildRequires:  {{ py2pkg('cliff') }}
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('fixtures') }}
+BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('mox3') }}
+BuildRequires:  {{ py2pkg('osc-lib') }}
+BuildRequires:  {{ py2pkg('oslo.serialization') }}
+BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('requests-mock') }}
+BuildRequires:  {{ py2pkg('python-swiftclient') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testscenarios') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+Requires:       {{ py2pkg('Babel') }}
+Requires:       {{ py2pkg('PrettyTable') }}
+Requires:       {{ py2pkg('PyYAML') }}
+Requires:       {{ py2pkg('cliff') }}
+Requires:       {{ py2pkg('iso8601') }}
+Requires:       {{ py2pkg('keystoneauth1') }}
+Requires:       {{ py2pkg('osc-lib') }}
+Requires:       {{ py2pkg('oslo.i18n') }}
+Requires:       {{ py2pkg('oslo.serialization') }}
+Requires:       {{ py2pkg('oslo.utils') }}
+Requires:       {{ py2pkg('requests') }}
+Requires:       {{ py2pkg('six') }}
+Requires:       {{ py2pkg('python-swiftclient') }}
+BuildArch:      noarch
+
+%description
+This is a client for the OpenStack Heat API. There's a Python API (the
+heatclient module), and a command-line script (heat). Each implements 100% of
+the OpenStack Heat API.
+
+%package doc
+Summary:        Documentation for OpenStack Heat API Client
+Group:          Documentation
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+
+%description      doc
+This is a client for the OpenStack Heat API. There's a Python API (the
+heatclient module), and a command-line script (heat). Each implements 100% of
+the OpenStack Heat API.
+This package contains auto-generated documentation.
+
+%prep
+%setup -q -n %{sname}-%{version}
+
+%build
+%{py2_build}
+
+%{__python2} setup.py build_sphinx
+# remove the sphinx-build leftovers
+rm -rf doc/build/html/.{doctrees,buildinfo}
+
+%install
+%{py2_install}
+# man page
+install -p -D -m 644 doc/build/man/heat.1 %{buildroot}%{_mandir}/man1/heat.1
+# bash completion
+install -p -D -m 644 tools/heat.bash_completion %{buildroot}%{_sysconfdir}/bash_completion.d/%{name}
+
+%check
+%{__python2} setup.py testr
+
+%files
+%doc README.rst
+%license LICENSE
+%{python2_sitelib}/heatclient
+%{python2_sitelib}/*.egg-info
+%{_sysconfdir}/bash_completion.d//%{name}
+%{_mandir}/man1/heat.1.gz
+%{_bindir}/heat
+
+%files doc
+%license LICENSE
+%doc doc/build/html
+
+%changelog
