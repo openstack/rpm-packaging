@@ -1,0 +1,106 @@
+%global sname python-openstackclient
+Name:           {{ py2name('python-openstackclient') }}
+Version:        2.6.0
+Release:        0
+Summary:        OpenStack Command-line Client
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            https://launchpad.net/%{sname}
+Source0:        https://pypi.io/packages/source/p/%{sname}/%{sname}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('python-cinderclient') }}
+BuildRequires:  {{ py2pkg('cliff') }}
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('fixtures') }}
+BuildRequires:  {{ py2pkg('python-glanceclient') }}
+BuildRequires:  {{ py2pkg('python-keystoneclient') }}
+BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('python-novaclient') }}
+BuildRequires:  {{ py2pkg('openstacksdk') }}
+BuildRequires:  {{ py2pkg('os-client-config') }}
+BuildRequires:  {{ py2pkg('os-testr') }}
+BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('osprofiler') }}
+BuildRequires:  {{ py2pkg('requests') }}
+BuildRequires:  {{ py2pkg('requests-mock') }}
+BuildRequires:  {{ py2pkg('stevedore') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+BuildRequires:  {{ py2pkg('wrapt') }}
+Requires:       {{ py2pkg('Babel') }}
+Requires:       {{ py2pkg('python-cinderclient') }}
+Requires:       {{ py2pkg('cliff') }}
+Requires:       {{ py2pkg('python-glanceclient') }}
+Requires:       {{ py2pkg('keystoneauth1') }}
+Requires:       {{ py2pkg('python-keystoneclient') }}
+Requires:       {{ py2pkg('python-novaclient') }}
+Requires:       {{ py2pkg('openstacksdk') }}
+Requires:       {{ py2pkg('osc-lib') }}
+Requires:       {{ py2pkg('oslo.i18n') }}
+Requires:       {{ py2pkg('oslo.utils') }}
+Requires:       {{ py2pkg('six') }}
+BuildArch:      noarch
+
+%description
+python-openstackclient is a unified command-line client for the OpenStack APIs.
+It is a thin wrapper to the stock python-*client modules that implement the
+actual REST API client actions.
+
+%package doc
+Summary:        Documentation for OpenStack Command-line Client
+Group:          Documentation
+# Some clients are commented out, since they have not been built yet
+# TODO(jpena): uncomment them to enable their sections in the documentation
+BuildRequires:  {{ py2pkg('Sphinx') }}
+#BuildRequires:  {{ py2pkg('aodhclient') }}
+BuildRequires:  {{ py2pkg('python-barbicanclient') }}
+#BuildRequires:  {{ py2pkg('python-congressclient') }}
+BuildRequires:  {{ py2pkg('python-designateclient') }}
+BuildRequires:  {{ py2pkg('python-heatclient') }}
+#BuildRequires:  {{ py2pkg('python-ironicclient') }}
+#BuildRequires:  {{ py2pkg('python-mistralclient') }}
+#BuildRequires:  {{ py2pkg('python-muranoclient') }}
+#BuildRequires:  {{ py2pkg('python-neutronclient') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+#BuildRequires:  {{ py2pkg('python-ironic-inspector-client') }}
+#BuildRequires:  {{ py2pkg('python-saharaclient') }}
+#BuildRequires:  {{ py2pkg('python-zaqarclient') }}
+
+%description      doc
+python-openstackclient is a unified command-line client for the OpenStack APIs.
+It is a thin wrapper to the stock python-*client modules that implement the
+actual REST API client actions.
+This package contains auto-generated documentation.
+
+%prep
+%setup -q -n %{sname}-%{version}
+
+%build
+%{py2_build}
+
+%{__python2} setup.py build_sphinx
+# remove the sphinx-build leftovers
+rm -rf doc/build/html/.{doctrees,buildinfo}
+
+%install
+%{py2_install}
+# man page
+install -p -D -m 644 doc/build/man/openstack.1 %{buildroot}%{_mandir}/man1/openstack.1
+
+
+%check
+%{__python2} setup.py testr
+
+%files
+%doc README.rst
+%license LICENSE
+%{python2_sitelib}/openstackclient
+%{python2_sitelib}/*.egg-info
+%{_mandir}/man1/openstack.1.gz
+%{_bindir}/openstack
+
+%files doc
+%license LICENSE
+%doc doc/build/html
+
+%changelog
