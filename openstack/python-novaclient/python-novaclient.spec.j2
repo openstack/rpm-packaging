@@ -1,43 +1,43 @@
-Name:             python-novaclient
-Epoch:            {{ epoch('python-novaclient') }}
-Version:          5.1.0
-Release:          0
-Summary:          Python API and CLI for OpenStack Nova
-License:          {{ license('Apache-2.0') }}
-Group:            Development/Languages/Python
-Url:              http:///launchpad.net/{name}
-Source0:          https://pypi.io/packages/source/p/%{name}/%{name}-%{version}.tar.gz
-BuildRequires:    openssl
-BuildRequires:    openstack-macros
-BuildRequires:    {{ py2pkg('cinderclient') }}
-BuildRequires:    {{ py2pkg('devel') }}
-BuildRequires:    {{ py2pkg('fixtures') }}
-BuildRequires:    {{ py2pkg('keyring') }}
-BuildRequires:    {{ py2pkg('keystoneclient') }}
-BuildRequires:    {{ py2pkg('mock') }}
-BuildRequires:    {{ py2pkg('os-client-config') }}
-BuildRequires:    {{ py2pkg('pbr') }}
-BuildRequires:    {{ py2pkg('requests-mock') }}
-BuildRequires:    {{ py2pkg('setuptools') }}
-BuildRequires:    {{ py2pkg('testrepository') }}
-BuildRequires:    {{ py2pkg('testscenarios') }}
-BuildRequires:    {{ py2pkg('testtools') }}
-Requires:         openssl
-Requires:         {{ py2pkg('Babel') }}
-Requires:         {{ py2pkg('PrettyTable') }}
-Requires:         {{ py2pkg('iso8601') }}
-Requires:         {{ py2pkg('keyring') }}
-Requires:         {{ py2pkg('keystoneauth1') }}
-Requires:         {{ py2pkg('keystoneclient') }}
-Requires:         {{ py2pkg('oslo.i18n') }}
-Requires:         {{ py2pkg('oslo.serialization') }}
-Requires:         {{ py2pkg('oslo.utils') }}
-Requires:         {{ py2pkg('pbr') }}
-Requires:         {{ py2pkg('requests') }}
-Requires:         {{ py2pkg('setuptools') }}
-Requires:         {{ py2pkg('simplejson') }}
-Requires:         {{ py2pkg('six') }}
-BuildArch:        noarch
+Name:           python-novaclient
+Epoch:          {{ epoch('python-novaclient') }}
+Version:        5.1.0
+Release:        0
+Summary:        Python API and CLI for OpenStack Nova
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:             http:///launchpad.net/{name}
+Source0:        https://pypi.io/packages/source/p/%{name}/%{name}-%{version}.tar.gz
+BuildRequires:  openssl
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('cinderclient') }}
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('fixtures') }}
+BuildRequires:  {{ py2pkg('keyring') }}
+BuildRequires:  {{ py2pkg('keystoneclient') }}
+BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('os-client-config') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('requests-mock') }}
+BuildRequires:  {{ py2pkg('setuptools') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testscenarios') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+Requires:       openssl
+Requires:       {{ py2pkg('Babel') }}
+Requires:       {{ py2pkg('PrettyTable') }}
+Requires:       {{ py2pkg('iso8601') }}
+Requires:       {{ py2pkg('keyring') }}
+Requires:       {{ py2pkg('keystoneauth1') }}
+Requires:       {{ py2pkg('keystoneclient') }}
+Requires:       {{ py2pkg('oslo.i18n') }}
+Requires:       {{ py2pkg('oslo.serialization') }}
+Requires:       {{ py2pkg('oslo.utils') }}
+Requires:       {{ py2pkg('pbr') }}
+Requires:       {{ py2pkg('requests') }}
+Requires:       {{ py2pkg('setuptools') }}
+Requires:       {{ py2pkg('simplejson') }}
+Requires:       {{ py2pkg('six') }}
+BuildArch:      noarch
 
 %description
 This is a client for the OpenStack Nova API. There's a Python API (the
@@ -45,10 +45,10 @@ novaclient module), and a command-line script (nova). Each implements 100% of
 the OpenStack Nova API.
 
 %package doc
-Summary:          Documentation for OpenStack Nova API Client
-Group:            Documentation
-BuildRequires:    {{ py2pkg('Sphinx') }}
-BuildRequires:    {{ py2pkg('oslosphinx') }}
+Summary:        Documentation for OpenStack Nova API Client
+Group:          Documentation
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
 
 %description      doc
 This is a client for the OpenStack Nova API. There's a Python API (the
