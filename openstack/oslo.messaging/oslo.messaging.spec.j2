@@ -1,6 +1,6 @@
 %global sname oslo.messaging
 Name:           {{ py2name('oslo.messaging') }}
-Version:        5.5.0
+Version:        5.6.0
 Release:        0
 Summary:        OpenStack oslo.messaging library
 License:        {{ license('Apache-2.0') }}
@@ -33,6 +33,7 @@ BuildRequires:  {{ py2pkg('oslo.service') }}
 BuildRequires:  {{ py2pkg('oslo.utils') }}
 BuildRequires:  {{ py2pkg('oslotest') }}
 BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('pifpaf') }}
 BuildRequires:  {{ py2pkg('pika') }}
 BuildRequires:  {{ py2pkg('pika-pool') }}
 BuildRequires:  {{ py2pkg('python-subunit') }}
@@ -105,6 +106,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %{python2_sitelib}/*.egg-info
 %{_bindir}/oslo-messaging-zmq-broker
 %{_bindir}/oslo-messaging-zmq-proxy
+%{_bindir}/oslo-messaging-send-notification
 
 %files doc
 %license LICENSE
