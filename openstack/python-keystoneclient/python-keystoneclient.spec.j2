@@ -1,7 +1,7 @@
 %global sname python-keystoneclient
 Name:           {{ py2name('python-keystoneclient') }}
 Epoch:          {{ epoch('python-keystoneclient') }}
-Version:        3.2.0
+Version:        3.5.0
 Release:        0
 Summary:        Client library for OpenStack Identity API
 License:        {{ license('Apache-2.0') }}
@@ -28,7 +28,6 @@ BuildRequires:  {{ py2pkg('testrepository') }}
 BuildRequires:  {{ py2pkg('testresources') }}
 BuildRequires:  {{ py2pkg('testscenarios') }}
 Requires:       {{ py2pkg('debtcollector') }}
-Requires:       {{ py2pkg('iso8601') }}
 Requires:       {{ py2pkg('keystoneauth1') }}
 Requires:       {{ py2pkg('oslo.config') }}
 Requires:       {{ py2pkg('oslo.i18n') }}
@@ -55,7 +54,6 @@ Identity API.
 
 %prep
 %setup -q -n %{sname}-%{version}
-sed '/^html_last_updated_fmt.*/,/.)/ s/^/#/' -i doc/source/conf.py
 
 %build
 %{py2_build}
