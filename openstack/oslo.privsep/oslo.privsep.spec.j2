@@ -1,6 +1,6 @@
 %global sname oslo.privsep
 Name:           {{ py2name('oslo.privsep') }}
-Version:        1.11.0
+Version:        1.13.0
 Release:        0
 Summary:        OpenStack library for privilege separation
 License:        {{ license('Apache-2.0') }}
@@ -27,6 +27,8 @@ BuildRequires:  {{ py2pkg('setuptools') }}
 Requires:       {{ py2pkg('Babel') }}
 Requires:       {{ py2pkg('cffi') }}
 Requires:       {{ py2pkg('enum34') }}
+Requires:       {{ py2pkg('eventlet') }}
+Requires:       {{ py2pkg('greenlet') }}
 Requires:       {{ py2pkg('msgpack-python') }}
 Requires:       {{ py2pkg('oslo.config') }}
 Requires:       {{ py2pkg('oslo.i18n') }}
