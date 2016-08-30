@@ -42,10 +42,10 @@ you don't have to know extra info to use OpenStack.
 
 %if %{with docs}
 %package doc
-Summary:       Documentation for OpenStack client configuration library
-BuildRequires: {{ py2pkg('Sphinx') }}
-BuildRequires: {{ py2pkg('oslosphinx') }}
-BuildRequires: {{ py2pkg('reno') }}
+Summary:        Documentation for OpenStack client configuration library
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('reno') }}
 
 %description doc
 Documentation for the os-client-config library.
