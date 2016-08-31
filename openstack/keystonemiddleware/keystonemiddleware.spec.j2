@@ -1,0 +1,88 @@
+%global sname keystonemiddleware
+Name:           {{ py2name('keystonemiddleware') }}
+Version:        4.9.0
+Release:        0
+Summary:        Middleware for OpenStack Identity
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            https://launchpad.net/%{sname}
+Source0:        https://pypi.io/packages/source/k/%{sname}/%{sname}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('WebOb') }}
+BuildRequires:  {{ py2pkg('fixtures') }}
+BuildRequires:  {{ py2pkg('keystoneauth1') }}
+BuildRequires:  {{ py2pkg('python-keystoneclient') }}
+BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('oslo.config') }}
+BuildRequires:  {{ py2pkg('oslo.context') }}
+BuildRequires:  {{ py2pkg('oslo.i18n') }}
+BuildRequires:  {{ py2pkg('oslo.serialization') }}
+BuildRequires:  {{ py2pkg('oslo.utils') }}
+BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('positional') }}
+BuildRequires:  {{ py2pkg('pycadf') }}
+BuildRequires:  {{ py2pkg('pycrypto') }}
+BuildRequires:  {{ py2pkg('python-memcached') }}
+BuildRequires:  {{ py2pkg('requests') }}
+BuildRequires:  {{ py2pkg('requests-mock') }}
+BuildRequires:  {{ py2pkg('six') }}
+BuildRequires:  {{ py2pkg('stevedore') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testresources') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+Requires:       {{ py2pkg('WebOb') }}
+Requires:       {{ py2pkg('keystoneauth1') }}
+Requires:       {{ py2pkg('python-keystoneclient') }}
+Requires:       {{ py2pkg('oslo.config') }}
+Requires:       {{ py2pkg('oslo.context') }}
+Requires:       {{ py2pkg('oslo.i18n') }}
+Requires:       {{ py2pkg('oslo.serialization') }}
+Requires:       {{ py2pkg('oslo.utils') }}
+Requires:       {{ py2pkg('positional') }}
+Requires:       {{ py2pkg('pycadf') }}
+Requires:       {{ py2pkg('requests') }}
+Requires:       {{ py2pkg('six') }}
+BuildArch:      noarch
+
+%description
+This package contains middleware modules designed to provide authentication
+and authorization features to web services other than Keystone
+The most prominent module is keystonemiddleware.auth_token. This package
+does not expose any CLI or Python API features.
+
+%package doc
+Summary:        Documentation for Middleware for OpenStack Identity
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+
+%description doc
+Documentation for Middleware for OpenStack Identity.
+
+%prep
+%setup -q -n %{sname}-%{version}
+
+%build
+%{py2_build}
+
+%install
+%{py2_install}
+
+# generate html docs
+%{__python2} setup.py build_sphinx
+# remove the sphinx-build leftovers
+rm -rf doc/build/html/.{doctrees,buildinfo}
+
+%check
+%{__python2} setup.py testr
+
+%files
+%license LICENSE
+%doc AUTHORS ChangeLog README.rst
+%{python2_sitelib}/%{sname}
+%{python2_sitelib}/*.egg-info
+
+%files doc
+%doc doc/build/html
+%license LICENSE
+
+%changelog
