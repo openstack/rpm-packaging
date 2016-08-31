@@ -1,6 +1,6 @@
 %global sname oslo.messaging
 Name:           {{ py2name('oslo.messaging') }}
-Version:        5.6.0
+Version:        5.10.0
 Release:        0
 Summary:        OpenStack oslo.messaging library
 License:        {{ license('Apache-2.0') }}
@@ -22,6 +22,7 @@ BuildRequires:  {{ py2pkg('greenlet') }}
 BuildRequires:  {{ py2pkg('kafka-python') }}
 BuildRequires:  {{ py2pkg('kombu') }}
 BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('monotonic') }}
 BuildRequires:  {{ py2pkg('mox3') }}
 BuildRequires:  {{ py2pkg('oslo.config') }}
 BuildRequires:  {{ py2pkg('oslo.context') }}
@@ -53,6 +54,7 @@ Requires:       {{ py2pkg('futures') }}
 Requires:       {{ py2pkg('futurist') }}
 Requires:       {{ py2pkg('greenlet') }}
 Requires:       {{ py2pkg('kombu') }}
+Requires:       {{ py2pkg('monotonic') }}
 Requires:       {{ py2pkg('oslo.config') }}
 Requires:       {{ py2pkg('oslo.context') }}
 Requires:       {{ py2pkg('oslo.i18n') }}
