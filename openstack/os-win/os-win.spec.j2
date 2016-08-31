@@ -1,7 +1,7 @@
 %global sname os-win
 Name:          {{ py2name('os-win') }}
 Epoch:         {{ epoch('os-win') }}
-Version:       1.1.0
+Version:       1.2.0
 Release:       0
 Summary:       Hyper-V library for OpenStack projects
 License:       {{ license('Apache-2.0') }}
@@ -26,7 +26,6 @@ BuildRequires: {{ py2pkg('testscenarios') }}
 BuildRequires: {{ py2pkg('testtools') }}
 Requires:      {{ py2pkg('Babel') }}
 Requires:      {{ py2pkg('eventlet') }}
-Requires:      {{ py2pkg('netaddr') }}
 Requires:      {{ py2pkg('oslo.concurrency') }}
 Requires:      {{ py2pkg('oslo.config') }}
 Requires:      {{ py2pkg('oslo.i18n') }}
