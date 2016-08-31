@@ -1,37 +1,37 @@
-Name:           {{ py2name('oslo.versionedobjects') }}
-Version:        1.17.0
-Release:        0
-Summary:        Oslo Versioned Objects library
-License:        {{ license('Apache-2.0') }}
-Group:          Development/Languages/Python
-Url:            http://launchpad.net/oslo
-Source0:        https://pypi.io/packages/source/o/oslo.versionedobjects/oslo.versionedobjects-%{version}.tar.gz
-BuildRequires:  openstack-macros
-BuildRequires: {{ py2pkg('devel') }}
-BuildRequires: {{ py2pkg('iso8601') }}
-BuildRequires: {{ py2pkg('oslo.concurrency') }}
-BuildRequires: {{ py2pkg('oslo.config') }}
-BuildRequires: {{ py2pkg('oslo.context') }}
-BuildRequires: {{ py2pkg('oslo.i18n') }}
-BuildRequires: {{ py2pkg('oslo.log') }}
-BuildRequires: {{ py2pkg('oslo.messaging') }}
-BuildRequires: {{ py2pkg('oslo.serialization') }}
-BuildRequires: {{ py2pkg('oslo.utils') }}
-BuildRequires: {{ py2pkg('oslotest') }}
-BuildRequires: {{ py2pkg('pbr') }}
-BuildRequires: {{ py2pkg('testtools') }}
-Requires:      {{ py2pkg('WebOb') }}
-Requires:      {{ py2pkg('iso8601') }}
-Requires:      {{ py2pkg('netaddr') }}
-Requires:      {{ py2pkg('oslo.concurrency') }}
-Requires:      {{ py2pkg('oslo.config') }}
-Requires:      {{ py2pkg('oslo.context') }}
-Requires:      {{ py2pkg('oslo.i18n') }}
-Requires:      {{ py2pkg('oslo.log') }}
-Requires:      {{ py2pkg('oslo.messaging') }}
-Requires:      {{ py2pkg('oslo.serialization') }}
-Requires:      {{ py2pkg('oslo.utils') }}
-Requires:      {{ py2pkg('six') }}
+Name:            {{ py2name('oslo.versionedobjects') }}
+Version:         1.17.0
+Release:         0
+Summary:         Oslo Versioned Objects library
+License:         {{ license('Apache-2.0') }}
+Group:           Development/Languages/Python
+Url:             http://launchpad.net/oslo
+Source0:         https://pypi.io/packages/source/o/oslo.versionedobjects/oslo.versionedobjects-%{version}.tar.gz
+BuildRequires:   openstack-macros
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('iso8601') }}
+BuildRequires:  {{ py2pkg('oslo.concurrency') }}
+BuildRequires:  {{ py2pkg('oslo.config') }}
+BuildRequires:  {{ py2pkg('oslo.context') }}
+BuildRequires:  {{ py2pkg('oslo.i18n') }}
+BuildRequires:  {{ py2pkg('oslo.log') }}
+BuildRequires:  {{ py2pkg('oslo.messaging') }}
+BuildRequires:  {{ py2pkg('oslo.serialization') }}
+BuildRequires:  {{ py2pkg('oslo.utils') }}
+BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+Requires:       {{ py2pkg('WebOb') }}
+Requires:       {{ py2pkg('iso8601') }}
+Requires:       {{ py2pkg('netaddr') }}
+Requires:       {{ py2pkg('oslo.concurrency') }}
+Requires:       {{ py2pkg('oslo.config') }}
+Requires:       {{ py2pkg('oslo.context') }}
+Requires:       {{ py2pkg('oslo.i18n') }}
+Requires:       {{ py2pkg('oslo.log') }}
+Requires:       {{ py2pkg('oslo.messaging') }}
+Requires:       {{ py2pkg('oslo.serialization') }}
+Requires:       {{ py2pkg('oslo.utils') }}
+Requires:       {{ py2pkg('six') }}
 BuildArch:      noarch
 
 %description
@@ -45,8 +45,8 @@ code across different services and projects.
 %package doc
 Summary:        osloversionedobjects library - Documentation
 Group:          Documentation/HTML
-BuildRequires: {{ py2pkg('Sphinx') }}
-BuildRequires: {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
 Requires:       %{name} = %{version}
 
 %description doc
