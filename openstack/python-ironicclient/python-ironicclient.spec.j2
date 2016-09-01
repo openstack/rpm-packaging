@@ -1,6 +1,6 @@
 %global sname python-ironicclient
 Name:           {{ py2name('python-ironicclient') }}
-Version:        1.6.0
+Version:        1.7.0
 Release:        0
 Summary:        Python API and CLI for OpenStack Ironic
 License:        {{ license('Apache-2.0')}}
@@ -10,6 +10,7 @@ Source0:        https://pypi.io/packages/source/p/%{sname}/%{sname}-%{version}.t
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('Babel') }}
 BuildRequires:  {{ py2pkg('PrettyTable') }}
+BuildRequires:  {{ py2pkg('PyYAML') }}
 BuildRequires:  {{ py2pkg('appdirs') }}
 BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('dogpile.cache') }}
@@ -18,6 +19,7 @@ BuildRequires:  {{ py2pkg('jsonschema') }}
 BuildRequires:  {{ py2pkg('mock') }}
 BuildRequires:  {{ py2pkg('python-openstackclient') }}
 BuildRequires:  {{ py2pkg('os-testr') }}
+BuildRequires:  {{ py2pkg('osc-lib') }}
 BuildRequires:  {{ py2pkg('oslo.i18n') }}
 BuildRequires:  {{ py2pkg('oslo.utils') }}
 BuildRequires:  {{ py2pkg('oslotest') }}
@@ -27,11 +29,13 @@ BuildRequires:  {{ py2pkg('requests') }}
 BuildRequires:  {{ py2pkg('requests-mock') }}
 BuildRequires:  {{ py2pkg('testtools') }}
 Requires:       {{ py2pkg('PrettyTable') }}
+Requires:       {{ py2pkg('PyYAML') }}
 Requires:       {{ py2pkg('appdirs') }}
-Requires:       {{ py2pkg('cliff') }}
 Requires:       {{ py2pkg('dogpile.cache') }}
+Requires:       {{ py2pkg('jsonschema') }}
 Requires:       {{ py2pkg('keystoneauth1') }}
 Requires:       {{ py2pkg('python-openstackclient') }}
+Requires:       {{ py2pkg('osc-lib') }}
 Requires:       {{ py2pkg('oslo.i18n') }}
 Requires:       {{ py2pkg('oslo.utils') }}
 Requires:       {{ py2pkg('pbr') }}
@@ -50,6 +54,7 @@ Summary:        Documentation for OpenStack Ironic API Client
 Group:          Documentation
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('reno') }}
 
 %description doc
 This is a client for the OpenStack Cinder API (Block Storage. There's a
