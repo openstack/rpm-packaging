@@ -4,6 +4,7 @@ Version:        1.14.0
 Release:        0
 Summary:        OpenStack Oslo Policy library
 License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
 Url:            https://launchpad.net/%sname
 Source0:        https://pypi.io/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
 BuildRequires:  openstack-macros
@@ -31,8 +32,8 @@ The OpenStack Oslo Policy library.
 RBAC policy enforcement library for OpenStack.
 
 %package doc
-Summary:    Documentation for the Oslo Policy library
-Group:      Documentation
+Summary:        Documentation for the Oslo Policy library
+Group:          Documentation
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('oslosphinx') }}
 
