@@ -1,49 +1,49 @@
 %global sname os-win
-Name:          {{ py2name('os-win') }}
-Epoch:         {{ epoch('os-win') }}
-Version:       1.2.0
-Release:       0
-Summary:       Hyper-V library for OpenStack projects
-License:       {{ license('Apache-2.0') }}
-Group:         Development/Languages/Python
-Url:           https://launchpad.net/%{sname}
-Source0:       https://pypi.io/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
-BuildRequires: openstack-macros
-BuildRequires: {{ py2pkg('ddt') }}
-BuildRequires: {{ py2pkg('devel') }}
-BuildRequires: {{ py2pkg('eventlet') }}
-BuildRequires: {{ py2pkg('mock') }}
-BuildRequires: {{ py2pkg('oslo.concurrency') }}
-BuildRequires: {{ py2pkg('oslo.i18n') }}
-BuildRequires: {{ py2pkg('oslo.log') }}
-BuildRequires: {{ py2pkg('oslosphinx') }}
-BuildRequires: {{ py2pkg('oslotest') }}
-BuildRequires: {{ py2pkg('pbr') }}
-BuildRequires: {{ py2pkg('python-subunit') }}
-BuildRequires: {{ py2pkg('sphinx') }}
-BuildRequires: {{ py2pkg('testrepository') }}
-BuildRequires: {{ py2pkg('testscenarios') }}
-BuildRequires: {{ py2pkg('testtools') }}
-Requires:      {{ py2pkg('Babel') }}
-Requires:      {{ py2pkg('eventlet') }}
-Requires:      {{ py2pkg('oslo.concurrency') }}
-Requires:      {{ py2pkg('oslo.config') }}
-Requires:      {{ py2pkg('oslo.i18n') }}
-Requires:      {{ py2pkg('oslo.log') }}
-Requires:      {{ py2pkg('oslo.service') }}
-Requires:      {{ py2pkg('oslo.utils') }}
-Requires:      {{ py2pkg('pbr') }}
-BuildArch:     noarch
+Name:           {{ py2name('os-win') }}
+Epoch:          {{ epoch('os-win') }}
+Version:        1.2.0
+Release:        0
+Summary:        Hyper-V library for OpenStack projects
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            https://launchpad.net/%{sname}
+Source0:        https://pypi.io/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('ddt') }}
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('eventlet') }}
+BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('oslo.concurrency') }}
+BuildRequires:  {{ py2pkg('oslo.i18n') }}
+BuildRequires:  {{ py2pkg('oslo.log') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('python-subunit') }}
+BuildRequires:  {{ py2pkg('sphinx') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testscenarios') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+Requires:       {{ py2pkg('Babel') }}
+Requires:       {{ py2pkg('eventlet') }}
+Requires:       {{ py2pkg('oslo.concurrency') }}
+Requires:       {{ py2pkg('oslo.config') }}
+Requires:       {{ py2pkg('oslo.i18n') }}
+Requires:       {{ py2pkg('oslo.log') }}
+Requires:       {{ py2pkg('oslo.service') }}
+Requires:       {{ py2pkg('oslo.utils') }}
+Requires:       {{ py2pkg('pbr') }}
+BuildArch:      noarch
 
 %description
 Library contains Windows / Hyper-V code commonly used in the OpenStack projects:
 nova, cinder, networking-hyperv.
 
 %package doc
-Summary:       Documentation for OpenStack Identity API Client
-Group:         Documentation
-BuildRequires: {{ py2pkg('Sphinx') }}
-BuildRequires: {{ py2pkg('oslosphinx') }}
+Summary:        Documentation for OpenStack Identity API Client
+Group:          Documentation
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
 
 %description doc
 Documentation for the Hyper-V library.
