@@ -1,6 +1,6 @@
 %global sname python-openstackclient
 Name:           {{ py2name('python-openstackclient') }}
-Version:        2.6.0
+Version:        3.1.0
 Release:        0
 Summary:        OpenStack Command-line Client
 License:        {{ license('Apache-2.0') }}
@@ -19,6 +19,7 @@ BuildRequires:  {{ py2pkg('python-novaclient') }}
 BuildRequires:  {{ py2pkg('openstacksdk') }}
 BuildRequires:  {{ py2pkg('os-client-config') }}
 BuildRequires:  {{ py2pkg('os-testr') }}
+BuildRequires:  {{ py2pkg('osc-lib') }}
 BuildRequires:  {{ py2pkg('oslotest') }}
 BuildRequires:  {{ py2pkg('osprofiler') }}
 BuildRequires:  {{ py2pkg('requests') }}
@@ -54,12 +55,12 @@ Group:          Documentation
 BuildRequires:  {{ py2pkg('Sphinx') }}
 #BuildRequires:  {{ py2pkg('aodhclient') }}
 BuildRequires:  {{ py2pkg('python-barbicanclient') }}
-#BuildRequires:  {{ py2pkg('python-congressclient') }}
+BuildRequires:  {{ py2pkg('python-congressclient') }}
 BuildRequires:  {{ py2pkg('python-designateclient') }}
 BuildRequires:  {{ py2pkg('python-heatclient') }}
 #BuildRequires:  {{ py2pkg('python-ironicclient') }}
 #BuildRequires:  {{ py2pkg('python-mistralclient') }}
-#BuildRequires:  {{ py2pkg('python-muranoclient') }}
+BuildRequires:  {{ py2pkg('python-muranoclient') }}
 #BuildRequires:  {{ py2pkg('python-neutronclient') }}
 BuildRequires:  {{ py2pkg('oslosphinx') }}
 #BuildRequires:  {{ py2pkg('python-ironic-inspector-client') }}
