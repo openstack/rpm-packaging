@@ -1,5 +1,5 @@
 Name:       {{ py2name('python-neutronclient') }}
-Version:    5.0.0
+Version:    5.1.0
 Release:    0
 Summary:    Python API and CLI for OpenStack Neutron
 License:    {{ license('Apache-2.0') }}
@@ -14,7 +14,9 @@ BuildRequires: {{ py2pkg('keystoneauth1') }}
 BuildRequires: {{ py2pkg('mock') }}
 BuildRequires: {{ py2pkg('mox3') }}
 BuildRequires: {{ py2pkg('netaddr') }}
+BuildRequires: {{ py2pkg('python-openstackclient') }}
 BuildRequires: {{ py2pkg('os-client-config') }}
+BuildRequires: {{ py2pkg('osc-lib') }}
 BuildRequires: {{ py2pkg('oslo.i18n') }}
 BuildRequires: {{ py2pkg('oslo.serialization') }}
 BuildRequires: {{ py2pkg('oslo.utils') }}
