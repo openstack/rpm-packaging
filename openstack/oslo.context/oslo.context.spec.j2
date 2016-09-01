@@ -1,7 +1,7 @@
 %global sname oslo.context
 %bcond_without test
 Name:           {{ py2name('oslo.context') }}
-Version:        2.8.0
+Version:        2.9.0
 Release:        0
 Summary:        OpenStack Oslo context library
 License:        {{ license('Apache-2.0') }}
@@ -10,8 +10,8 @@ Url:            https://launchpad.net/%{sname}
 Source0:        https://pypi.io/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires: {{ py2pkg('positional') }}
-Requires:      {{ py2pkg('positional') }}
+BuildRequires:  {{ py2pkg('positional') }}
+Requires:       {{ py2pkg('positional') }}
 BuildArch:      noarch
 %if %{with test}
 BuildRequires:  {{ py2pkg('oslotest') }}
