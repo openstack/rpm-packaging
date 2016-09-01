@@ -1,0 +1,98 @@
+%global sname glance_store
+Name:           {{ py2name('glance_store') }}
+Version:        0.18.0
+Release:        0
+Summary:        OpenStack Image Service Store Library
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            https://launchpad.net/%{sname}
+Source0:        https://pypi.io/packages/source/g/%{sname}/%{sname}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('python-cinderclient') }}
+BuildRequires:  {{ py2pkg('debtcollector') }}
+BuildRequires:  {{ py2pkg('enum34') }}
+BuildRequires:  {{ py2pkg('eventlet') }}
+BuildRequires:  {{ py2pkg('fixtures') }}
+BuildRequires:  {{ py2pkg('jsonschema') }}
+BuildRequires:  {{ py2pkg('python-keystoneclient') }}
+BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('os-brick') }}
+BuildRequires:  {{ py2pkg('os-testr') }}
+BuildRequires:  {{ py2pkg('oslo.concurrency') }}
+BuildRequires:  {{ py2pkg('oslo.config') }}
+BuildRequires:  {{ py2pkg('oslo.i18n') }}
+BuildRequires:  {{ py2pkg('oslo.serialization') }}
+BuildRequires:  {{ py2pkg('oslo.utils') }}
+BuildRequires:  {{ py2pkg('oslo.vmware') }}
+BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('python-subunit') }}
+BuildRequires:  {{ py2pkg('requests') }}
+BuildRequires:  {{ py2pkg('requests-mock') }}
+BuildRequires:  {{ py2pkg('six') }}
+BuildRequires:  {{ py2pkg('stevedore') }}
+BuildRequires:  {{ py2pkg('python-swiftclient') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testscenarios') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+Requires:       {{ py2pkg('python-cinderclient') }}
+Requires:       {{ py2pkg('debtcollector') }}
+Requires:       {{ py2pkg('enum34') }}
+Requires:       {{ py2pkg('eventlet') }}
+Requires:       {{ py2pkg('httplib2') }}
+Requires:       {{ py2pkg('jsonschema') }}
+Requires:       {{ py2pkg('python-keystoneclient') }}
+Requires:       {{ py2pkg('os-brick') }}
+Requires:       {{ py2pkg('oslo.concurrency') }}
+Requires:       {{ py2pkg('oslo.config') }}
+Requires:       {{ py2pkg('oslo.i18n') }}
+Requires:       {{ py2pkg('oslo.rootwrap') }}
+Requires:       {{ py2pkg('oslo.serialization') }}
+Requires:       {{ py2pkg('oslo.utils') }}
+Requires:       {{ py2pkg('oslo.vmware') }}
+Requires:       {{ py2pkg('requests') }}
+Requires:       {{ py2pkg('six') }}
+Requires:       {{ py2pkg('stevedore') }}
+Requires:       {{ py2pkg('python-swiftclient') }}
+BuildArch:      noarch
+
+%description
+Glance store library.
+
+%package doc
+Summary:        Documentation for OpenStack Image Service Store Library
+Group:          Documentation
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('reno') }}
+
+%description doc
+Documentation for the Glance store library.
+
+%prep
+%setup -q -n %{sname}-%{version}
+# NOTE(toabctl): Can be removed when https://review.openstack.org/364532 is included
+sed -i -e 's/^\(html_last_updated_fmt.*\)\(git_cmd\)/\1"\/usr\/bin\/true"/' doc/source/conf.py
+
+%build
+%{py2_build}
+%{__python2} setup.py build_sphinx
+rm -rf html/.{doctrees,buildinfo}
+
+%install
+%{py2_install}
+
+%check
+%{__python2} setup.py testr
+
+%files
+%doc AUTHORS README.rst ChangeLog
+%license LICENSE
+%{python2_sitelib}/glance_store*
+%{python2_sitelib}/*.egg-info
+%{_bindir}/glance-rootwrap
+
+%files doc
+%doc doc/build/html
+%license LICENSE
+
+%changelog
