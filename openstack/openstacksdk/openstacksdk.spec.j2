@@ -1,6 +1,6 @@
 %global sname openstacksdk
 Name:           {{ py2name('openstacksdk') }}
-Version:        0.9.4
+Version:        0.9.5
 Release:        0
 Summary:        An SDK for building applications to work with OpenStack
 License:        {{ license('Apache-2.0') }}
@@ -9,12 +9,17 @@ Url:            https://launchpad.net/%{sname}
 Source0:        https://pypi.io/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('fixtures') }}
 BuildRequires:  {{ py2pkg('mock') }}
 BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('requests') }}
+BuildRequires:  {{ py2pkg('requests-mock') }}
 BuildRequires:  {{ py2pkg('setuptools') }}
 BuildRequires:  {{ py2pkg('six') }}
 BuildRequires:  {{ py2pkg('stevedore') }}
 BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testscenarios') }}
+BuildRequires:  {{ py2pkg('testtools') }}
 Requires:       {{ py2pkg('keystoneauth1') }}
 Requires:       {{ py2pkg('os-client-config') }}
 Requires:       {{ py2pkg('six') }}
