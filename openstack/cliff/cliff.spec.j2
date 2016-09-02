@@ -1,6 +1,6 @@
 %global sname cliff
 Name:           {{ py2name('cliff') }}
-Version:        2.1.0
+Version:        2.2.0
 Release:        0
 Summary:        Command Line Interface Formulation Framework
 License:        {{ license('Apache-2.0') }}
@@ -8,9 +8,17 @@ Group:          Development/Languages/Python
 Url:            https://launchpad.net/python-%{sname}
 Source0:        https://pypi.io/packages/source/c/cliff/%{sname}-%{version}.tar.gz
 BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('PrettyTable') }}
+BuildRequires:  {{ py2pkg('PyYAML') }}
+BuildRequires:  {{ py2pkg('cmd2') }}
+BuildRequires:  {{ py2pkg('coverage') }}
 BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('nose') }}
 BuildRequires:  {{ py2pkg('pbr') }}
 BuildRequires:  {{ py2pkg('setuptools') }}
+BuildRequires:  {{ py2pkg('stevedore') }}
+BuildRequires:  {{ py2pkg('unicodecsv') }}
 Requires:       {{ py2pkg('PrettyTable') }}
 Requires:       {{ py2pkg('PyYAML') }}
 Requires:       {{ py2pkg('cmd2') }}
@@ -29,9 +37,7 @@ other extensions.
 Summary:        %{summary} - Documentation
 Group:          Documentation/HTML
 BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('cmd2') }}
 BuildRequires:  {{ py2pkg('oslosphinx') }}
-BuildRequires:  {{ py2pkg('stevedore') }}
 Requires:       %{name} = %{version}
 
 %description doc
@@ -53,7 +59,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %py2_install
 
 %check
-%{__python2} setup.py testr
+%{__python2} setup.py nosetests
 
 %files
 %license LICENSE
