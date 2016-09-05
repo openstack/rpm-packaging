@@ -1,0 +1,75 @@
+Name:           {{ py2name('python-mistralclient') }}
+Version:        2.0.0
+Release:        0
+Summary:        Python API and CLI for OpenStack Mistral
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            http://launchpad.net/%{name}
+Source0:        https://pypi.io/packages/source/p/%{name}/%{name}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('PyYAML') }}
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('fixtures') }}
+BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('nose') }}
+BuildRequires:  {{ py2pkg('python-openstackclient') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('setuptools') }}
+BuildRequires:  {{ py2pkg('tempest-lib') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+Requires:       {{ py2pkg('PyYAML') }}
+Requires:       {{ py2pkg('cliff') }}
+Requires:       {{ py2pkg('python-keystoneclient') }}
+Requires:       {{ py2pkg('os-client-config') }}
+Requires:       {{ py2pkg('osc-lib') }}
+Requires:       {{ py2pkg('osprofiler') }}
+Requires:       {{ py2pkg('requests') }}
+Requires:       {{ py2pkg('six') }}
+BuildArch:      noarch
+
+%description
+Client library for Mistral built on the Mistral API. It provides a Python API
+(the mistralclient module) and a command-line tool (mistral).
+
+%package doc
+Summary:        Documentation for OpenStack Mistral API client libary
+Group:          Documentation
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+
+%description doc
+Client library for Mistral built on the Mistral API. It provides a Python API
+(the mistralclient module) and a command-line tool (mistral).
+This package contains the documentation.
+
+%prep
+%setup -q -n %{name}-%{version}
+
+%build
+%py2_build
+
+# Build HTML docs and man page
+%{__python2} setup.py build_sphinx -b man
+rm -rf html/.{doctrees,buildinfo}
+
+%install
+%py2_install
+#man pages
+install -p -D -m 644 build/sphinx/man/mistral_client.1 %{buildroot}%{_mandir}/man1/mistral_client.1
+
+%check
+find . -type f -name *.pyc -delete
+nosetests mistralclient/tests/unit
+
+%files
+%license LICENSE
+%{python2_sitelib}/mistralclient
+%{python2_sitelib}/*.egg-info
+%{_bindir}/mistral
+%{_mandir}/man1/mistral_client.1.*
+
+%files doc
+%license LICENSE
+
+%changelog
