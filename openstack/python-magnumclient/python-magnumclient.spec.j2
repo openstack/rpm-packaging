@@ -1,5 +1,5 @@
 Name:           {{ py2name('python-magnumclient') }}
-Version:        2.2.0
+Version:        2.3.0
 Release:        0
 Summary:        Python API and CLI for OpenStack Magnum
 License:        {{ license('Apache-2.0') }}
@@ -8,10 +8,13 @@ Url:            http://launchpad.net/%{name}
 Source0:        https://pypi.io/packages/source/p/%{name}/%{name}-%{version}.tar.gz
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('PrettyTable') }}
+BuildRequires:  {{ py2pkg('cryptography') }}
+BuildRequires:  {{ py2pkg('decorator') }}
 BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('fixtures') }}
 BuildRequires:  {{ py2pkg('keystoneauth1') }}
 BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('os-client-config') }}
 BuildRequires:  {{ py2pkg('oslo.i18n') }}
 BuildRequires:  {{ py2pkg('oslo.serialization') }}
 BuildRequires:  {{ py2pkg('oslo.utils') }}
@@ -24,6 +27,8 @@ BuildRequires:  {{ py2pkg('testscenarios') }}
 BuildRequires:  {{ py2pkg('testtools') }}
 Requires:       {{ py2pkg('Babel') }}
 Requires:       {{ py2pkg('PrettyTable') }}
+Requires:       {{ py2pkg('cryptography') }}
+Requires:       {{ py2pkg('decorator') }}
 Requires:       {{ py2pkg('keystoneauth1') }}
 Requires:       {{ py2pkg('os-client-config') }}
 Requires:       {{ py2pkg('oslo.i18n') }}
