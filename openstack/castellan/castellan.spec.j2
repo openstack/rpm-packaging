@@ -1,0 +1,72 @@
+%global sname castellan
+Name:           {{ py2name('castellan') }}
+Version:        0.4.0
+Release:        0
+Summary:        Generic Key Manager interface for OpenStack
+License:        {{ license('Apache-2.0') }}
+Group:          Developement/Languages/Python
+Url:            http://launchpad.net/castellan
+Source0:        https://pypi.io/packages/source/c/%{sname}/%{sname}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('python-barbicanclient') }}
+BuildRequires:  {{ py2pkg('coverage') }}
+BuildRequires:  {{ py2pkg('cryptography') }}
+BuildRequires:  {{ py2pkg('oslo.config') }}
+BuildRequires:  {{ py2pkg('oslo.log') }}
+BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('python-subunit') }}
+BuildRequires:  {{ py2pkg('setuptools') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testscenarios') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+Requires:       {{ py2pkg('Babel') }}
+Requires:       {{ py2pkg('cryptography') }}
+Requires:       {{ py2pkg('oslo.config') }}
+Requires:       {{ py2pkg('oslo.context') }}
+Requires:       {{ py2pkg('oslo.log') }}
+Requires:       {{ py2pkg('oslo.policy') }}
+Requires:       {{ py2pkg('oslo.serialization') }}
+Requires:       {{ py2pkg('oslo.utils') }}
+BuildArch:      noarch
+
+%description
+Generic Key Manager interface for OpenStack.
+
+%package doc
+Summary:        Documentation for castellan
+Group:          Documentation
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+
+%description doc
+Castellan is a generic Key Manager interface for OpenStack.
+This package contains the documentation
+
+%prep
+%setup -q -n %{sname}-%{version}
+
+%build
+%py2_build
+# generate html docs
+%{__python2} setup.py build_sphinx
+# remove the sphinx-build leftovers
+rm -rf html/.{doctrees,buildinfo}
+
+%install
+%py2_install
+
+%check
+# Functional tests require a working Keystone infrastructure
+OS_TEST_PATH=./castellan/tests/unit %{__python2} setup.py test
+
+%files
+%doc README.rst
+%license LICENSE
+%{python2_sitelib}/%{sname}
+%{python2_sitelib}/%{sname}-*-py?.?.egg-info
+
+%files doc
+%license LICENSE
+%doc doc/build/html
+
+%changelog
