@@ -1,6 +1,6 @@
 %global sname openstackdocstheme
 Name:           {{ py2name('openstackdocstheme') }}
-Version:        1.4.0
+Version:        1.5.0
 Release:        0
 Summary:        OpenStack Docs Theme
 License:        {{ license('Apache-2.0') }}
@@ -10,6 +10,7 @@ Source0:        https://pypi.io/packages/source/o/%{sname}/%{sname}-%{version}.t
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('os-api-ref') }}
 BuildRequires:  {{ py2pkg('oslosphinx') }}
 BuildRequires:  {{ py2pkg('pbr') }}
 BuildRequires:  {{ py2pkg('requests') }}
