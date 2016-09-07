@@ -1,0 +1,59 @@
+%global sname os-api-ref
+Name:           {{ py2name('os-api-ref') }}
+Version:        1.0.0
+Release:        0
+Summary:        Sphinx Extensions to support API reference sites in OpenStack
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            https://launchpad.net/%{sname}
+Source0:        https://pypi.io/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('PyYAML') }}
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('beautifulsoup4') }}
+BuildRequires:  {{ py2pkg('docutils') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('python-subunit') }}
+BuildRequires:  {{ py2pkg('sphinx-testing') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+Requires:       {{ py2pkg('PyYAML') }}
+Requires:       {{ py2pkg('Sphinx') }}
+Requires:       {{ py2pkg('docutils') }}
+Requires:       {{ py2pkg('openstackdocstheme') }}
+Requires:       {{ py2pkg('pbr') }}
+BuildArch:      noarch
+
+%description
+This project is a collection of sphinx stanzas that assist in building an API
+Reference site for an OpenStack project in RST. RST is great for
+unstructured English, but displaying semi structured (and repetitive) data
+in tables is not it's strength. This provides tooling to insert semi-structured
+data describing request and response parameters, and turn those into nice
+tables.
+The project also includes a set of styling (and javascript) that is expected
+to layer on top of an openstackdocstheme theme base. This provides a nice set
+of collapsing sections for REST methods and javascript controls to
+expand / collapse all sections.
+
+%prep
+%setup -q -n %{sname}-%{version}
+
+%build
+%{py2_build}
+
+%install
+%{py2_install}
+
+%check
+%{__python2} setup.py testr
+
+%files
+%license LICENSE
+%doc README.rst ChangeLog
+%{python2_sitelib}/os_api_ref
+%{python2_sitelib}/*.egg-info
+
+%changelog
