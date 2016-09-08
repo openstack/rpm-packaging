@@ -1,16 +1,16 @@
 %global sname python-congressclient
 Name:           {{ py2name('python-congressclient') }}
-Version:        1.4.0
+Version:        1.5.0
 Release:        0
 Summary:        Client library for Congress
 License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
 Url:            http://launchpad.net/%{name}
 Source0:        https://pypi.io/packages/source/p/%{sname}/%{sname}-%{version}.tar.gz
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('fixtures') }}
 BuildRequires:  {{ py2pkg('jsonpatch') }}
-BuildRequires:  {{ py2pkg('keystoneclient') }}
 BuildRequires:  {{ py2pkg('mock') }}
 BuildRequires:  {{ py2pkg('osc-lib') }}
 BuildRequires:  {{ py2pkg('oslo.log') }}
@@ -27,8 +27,6 @@ BuildRequires:  {{ py2pkg('testtools') }}
 Requires:       {{ py2pkg('Babel') }}
 Requires:       {{ py2pkg('cliff') }}
 Requires:       {{ py2pkg('keystoneauth1') }}
-Requires:       {{ py2pkg('keystoneclient') }}
-Requires:       {{ py2pkg('openstackclient') }}
 Requires:       {{ py2pkg('oslo.i18n') }}
 Requires:       {{ py2pkg('oslo.log') }}
 Requires:       {{ py2pkg('oslo.serialization') }}
