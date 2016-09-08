@@ -9,7 +9,6 @@ Url:             http:///launchpad.net/{name}
 Source0:        https://pypi.io/packages/source/p/%{name}/%{name}-%{version}.tar.gz
 BuildRequires:  openssl
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('Tempest') }}
 BuildRequires:  {{ py2pkg('python-cinderclient') }}
 BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('fixtures') }}
@@ -72,7 +71,7 @@ This package contains auto-generated documentation.
 rm -fr html/.doctrees html/.buildinfo
 
 %check
-%{__python2} setup.py testr
+OS_TEST_PATH=novaclient/tests/unit %{__python2} setup.py testr
 
 %files
 %doc README.rst
