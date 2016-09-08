@@ -1,5 +1,5 @@
 Name:           {{ py2name('python-troveclient') }}
-Version:        2.4.0
+Version:        2.5.0
 Release:        0
 Summary:        Client library for OpenStack DBaaS API
 License:        {{ license('Apache-2.0') }}
@@ -12,6 +12,7 @@ BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('httplib2') }}
 BuildRequires:  {{ py2pkg('keystoneauth1') }}
+BuildRequires:  {{ py2pkg('python-mistralclient') }}
 BuildRequires:  {{ py2pkg('mock') }}
 BuildRequires:  {{ py2pkg('oslo.utils') }}
 BuildRequires:  {{ py2pkg('oslosphinx') }}
@@ -28,6 +29,7 @@ BuildRequires:  {{ py2pkg('testtools') }}
 Requires:       {{ py2pkg('Babel') }}
 Requires:       {{ py2pkg('PrettyTable') }}
 Requires:       {{ py2pkg('keystoneauth1') }}
+Requires:       {{ py2pkg('python-mistralclient') }}
 Requires:       {{ py2pkg('oslo.i18n') }}
 Requires:       {{ py2pkg('oslo.utils') }}
 Requires:       {{ py2pkg('pbr') }}
