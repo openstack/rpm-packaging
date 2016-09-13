@@ -1,0 +1,77 @@
+%global pypi_name stevedore
+Name:           {{ py2name('stevedore') }}
+Version:        1.17.1
+Release:        0
+Summary:        Manage dynamic plugins for Python applications
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            http://docs.openstack.org/developer/stevedore/
+Source0:        https://tarballs.openstack.org/stevedore/%{pypi_name}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  python-devel
+BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('setuptools') }}
+Requires:       {{ py2pkg('pbr') }}
+Requires:       {{ py2pkg('six') }}
+BuildArch:      noarch
+
+%description
+Python makes loading code dynamically easy, allowing you to configure
+and extend your application by discovering and loading extensions
+(plugins) at runtime. Many applications implement their own
+library for doing this, using ``__import__`` or ``importlib``.
+stevedore avoids creating yet another extension
+mechanism by building on top of setuptools entry points. The code
+for managing entry points tends to be repetitive, though, so stevedore
+provides manager classes for implementing common patterns for using
+dynamically loaded extensions.
+
+%package doc
+Summary:        Documentation for %{name}
+Group:          Documentation
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+
+%description doc
+Python makes loading code dynamically easy, allowing you to configure
+and extend your application by discovering and loading extensions
+(plugins) at runtime. Many applications implement their own
+library for doing this, using ``__import__`` or ``importlib``.
+stevedore avoids creating yet another extension
+mechanism by building on top of setuptools entry points. The code
+for managing entry points tends to be repetitive, though, so stevedore
+provides manager classes for implementing common patterns for using
+dynamically loaded extensions.
+
+This package contains documentation in HTML format.
+
+%prep
+%setup -q -n %{pypi_name}-%{version}
+
+%build
+%py2_build
+
+# generate html docs
+%{__python2} setup.py build_sphinx
+# remove the Sphinx-build leftovers
+rm -rf html/.{doctrees,buildinfo}
+
+%check
+%{__python2} setup.py testr
+
+%install
+%py2_install
+
+%files
+%license LICENSE
+%doc README.rst
+%{python2_sitelib}/%{pypi_name}
+%{python2_sitelib}/%{pypi_name}-*.egg-info
+
+%files doc
+%license LICENSE
+%doc doc/build/html
+
+%changelog
