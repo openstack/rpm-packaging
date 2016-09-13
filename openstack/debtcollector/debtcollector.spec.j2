@@ -1,0 +1,83 @@
+%global pypi_name debtcollector
+Name:           {{ py2name('debtcollector') }}
+Version:        1.8.0
+Release:        0
+Summary:        A collection of Python deprecation patterns and strategies
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            http://docs.openstack.org/developer/debtcollector/
+Source0:        https://tarballs.openstack.org/debtcollector/%{pypi_name}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  python-devel
+BuildRequires:  {{ py2pkg('fixtures') }}
+BuildRequires:  {{ py2pkg('funcsigs') }}
+BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('python-subunit') }}
+BuildRequires:  {{ py2pkg('setuptools') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('wrapt') }}
+Requires:       {{ py2pkg('funcsigs') }}
+Requires:       {{ py2pkg('pbr') }}
+Requires:       {{ py2pkg('six') }}
+Requires:       {{ py2pkg('wrapt') }}
+BuildArch:      noarch
+
+%description
+A collection of Python deprecation patterns and strategies that help
+you collect your technical debt in a non-destructive manner. The goal
+of this library is to provide well documented developer facing
+deprecation patterns that start of with a basic set and can expand
+into a larger set of patterns as time goes on. The desired output of
+these patterns is to apply the warnings module to emit
+DeprecationWarning or PendingDeprecationWarning or similar derivative
+to developers using libraries (or potentially applications) about
+future deprecations.
+
+%package doc
+Summary:        Documentation for %{name}
+Group:          Documentation
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+
+%description doc
+A collection of Python deprecation patterns and strategies that help
+you collect your technical debt in a non-destructive manner. The goal
+of this library is to provide well documented developer facing
+deprecation patterns that start of with a basic set and can expand
+into a larger set of patterns as time goes on. The desired output of
+these patterns is to apply the warnings module to emit
+DeprecationWarning or PendingDeprecationWarning or similar derivative
+to developers using libraries (or potentially applications) about
+future deprecations.
+
+This package contains documentation in HTML format.
+
+%prep
+%setup -q -n %{pypi_name}-%{version}
+
+%build
+%py2_build
+
+# generate html docs
+%{__python2} setup.py build_sphinx
+# remove the Sphinx-build leftovers
+rm -rf html/.{doctrees,buildinfo}
+
+%check
+%{__python2} setup.py testr
+
+%install
+%py2_install
+
+%files
+%license LICENSE
+%doc README.rst
+%{python2_sitelib}/%{pypi_name}
+%{python2_sitelib}/%{pypi_name}-*.egg-info
+
+%files doc
+%license LICENSE
+%doc doc/build/html
+
+%changelog
