@@ -1,6 +1,6 @@
 %global sname python-ceilometerclient
 Name:           {{ py2name('ceilometerclient') }}
-Version:        2.5.0
+Version:        2.6.1
 Release:        0
 Summary:        Python API and CLI for OpenStack Ceilometer
 License:        {{ license('Apache-2.0') }}
@@ -10,7 +10,7 @@ Source0:        https://pypi.io/packages/source/p/%{sname}/%{sname}-%{version}.t
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('PrettyTable') }}
 BuildRequires:  {{ py2pkg('devel') }}
-BuildRequires:  {{ py2pkg('python-keystoneclient') }}
+BuildRequires:  {{ py2pkg('keystoneauth1') }}
 BuildRequires:  {{ py2pkg('mock') }}
 BuildRequires:  {{ py2pkg('oslo.i18n') }}
 BuildRequires:  {{ py2pkg('oslo.serialization') }}
@@ -27,7 +27,6 @@ BuildRequires:  {{ py2pkg('testtools') }}
 Requires:       {{ py2pkg('PrettyTable') }}
 Requires:       {{ py2pkg('iso8601') }}
 Requires:       {{ py2pkg('keystoneauth1') }}
-Requires:       {{ py2pkg('python-keystoneclient') }}
 Requires:       {{ py2pkg('oslo.i18n') }}
 Requires:       {{ py2pkg('oslo.serialization') }}
 Requires:       {{ py2pkg('oslo.utils') }}
