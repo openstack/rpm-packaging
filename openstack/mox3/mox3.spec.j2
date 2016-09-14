@@ -1,0 +1,69 @@
+%global pypi_name mox3
+Name:           {{ py2name('mox3') }}
+Version:        0.18.0
+Release:        0
+Summary:        An unofficial port of the Google mox framework to Python 3
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            http://docs.openstack.org/developer/stevedore/
+Source0:        https://tarballs.openstack.org/%{pypi_name}/%{pypi_name}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  python-devel
+BuildRequires:  {{ py2pkg('fixtures') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('python-subunit') }}
+BuildRequires:  {{ py2pkg('setuptools') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+Requires:       {{ py2pkg('fixtures') }}
+Requires:       {{ py2pkg('pbr') }}
+BuildArch:      noarch
+
+%description
+Mox3 is an unofficial port of the Google mox framework to Python 3. It
+was meant to be as compatible with mox as possible, but small
+enhancements have been made. The library was tested on Python version
+3.2, 2.7 and 2.6.
+
+%package doc
+Summary:        Documentation for %{name}
+Group:          Documentation
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+
+%description doc
+Mox3 is an unofficial port of the Google mox framework to Python 3. It
+was meant to be as compatible with mox as possible, but small
+enhancements have been made. The library was tested on Python version
+3.2, 2.7 and 2.6.
+
+This package contains documentation in HTML format.
+
+%prep
+%setup -q -n %{pypi_name}-%{version}
+
+%build
+%py2_build
+
+# generate html docs
+%{__python2} setup.py build_sphinx
+# remove the Sphinx-build leftovers
+rm build/sphinx/html/.buildinfo
+
+%check
+%{__python2} setup.py testr
+
+%install
+%py2_install
+
+%files
+%license COPYING.txt
+%doc README.rst
+%{python2_sitelib}/%{pypi_name}
+%{python2_sitelib}/%{pypi_name}-*.egg-info
+
+%files doc
+%license COPYING.txt
+%doc build/sphinx/html
+
+%changelog
