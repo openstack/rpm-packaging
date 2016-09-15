@@ -1,0 +1,76 @@
+%global pypi_name django_openstack_auth
+Name:           {{ py2name('django_openstack_auth') }}
+Version:        2.4.0
+Release:        0
+Summary:        Django authentication backend for OpenStack Keystone
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            http://docs.openstack.org/developer/django_openstack_auth/
+Source0:        https://tarballs.openstack.org/%{pypi_name}/%{pypi_name}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('Django') }}
+BuildRequires:  python-devel
+BuildRequires:  {{ py2pkg('keystoneauth1') }}
+BuildRequires:  {{ py2pkg('python-keystoneclient') }}
+BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('mox3') }}
+BuildRequires:  {{ py2pkg('oslo.policy') }}
+BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('setuptools') }}
+BuildRequires:  {{ py2pkg('testscenarios') }}
+Requires:       {{ py2pkg('Django') }}
+Requires:       {{ py2pkg('keystoneauth1') }}
+Requires:       {{ py2pkg('python-keystoneclient') }}
+Requires:       {{ py2pkg('oslo.config') }}
+Requires:       {{ py2pkg('oslo.policy') }}
+Requires:       {{ py2pkg('pbr') }}
+Requires:       {{ py2pkg('six') }}
+BuildArch:      noarch
+
+%description
+Django OpenStack Auth is a pluggable Django authentication backend
+that works with Django's ``contrib.auth`` framework to authenticate a
+user against OpenStack's Keystone Identity API.
+
+%package doc
+Summary:        Documentation for %{name}
+Group:          Documentation
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+
+%description doc
+Django OpenStack Auth is a pluggable Django authentication backend
+that works with Django's ``contrib.auth`` framework to authenticate a
+user against OpenStack's Keystone Identity API.
+
+This package contains documentation in HTML format.
+
+%prep
+%setup -q -n %{pypi_name}-%{version}
+
+%build
+%py2_build
+
+# generate html docs
+%{__python2} setup.py build_sphinx
+# remove the Sphinx-build leftovers
+rm doc/build/html/.buildinfo
+
+%check
+PYTHONPATH=. %{__python2} openstack_auth/tests/run_tests.py
+
+%install
+%py2_install
+
+%files
+%license LICENSE
+%doc README.rst
+%{python2_sitelib}/openstack_auth
+%{python2_sitelib}/%{pypi_name}-*.egg-info
+
+%files doc
+%license LICENSE
+%doc doc/build/html
+
+%changelog
