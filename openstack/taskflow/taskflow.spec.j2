@@ -1,0 +1,102 @@
+%global pypi_name taskflow
+Name:           {{ py2name('taskflow') }}
+Version:        2.6.0
+Release:        0
+Summary:        Taskflow structured state management library
+License:        {{ license('Apache-2.0') }}
+Url:            https://launchpad.net/taskflow
+Source0:        https://pypi.io/packages/source/t/%{pypi_name}/%{pypi_name}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('PyMySQL') }}
+BuildRequires:  {{ py2pkg('SQLAlchemy') }}
+BuildRequires:  {{ py2pkg('SQLAlchemy-Utils') }}
+BuildRequires:  {{ py2pkg('alembic') }}
+BuildRequires:  {{ py2pkg('automaton') }}
+BuildRequires:  {{ py2pkg('cachetools') }}
+BuildRequires:  {{ py2pkg('contextlib2') }}
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('enum34') }}
+BuildRequires:  {{ py2pkg('eventlet') }}
+BuildRequires:  {{ py2pkg('fasteners') }}
+BuildRequires:  {{ py2pkg('futurist') }}
+BuildRequires:  {{ py2pkg('jsonschema') }}
+BuildRequires:  {{ py2pkg('kazoo') }}
+BuildRequires:  {{ py2pkg('kombu') }}
+BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('networkx') }}
+BuildRequires:  {{ py2pkg('oslo.serialization') }}
+BuildRequires:  {{ py2pkg('oslo.utils') }}
+BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('psycopg2') }}
+BuildRequires:  {{ py2pkg('pydotplus') }}
+BuildRequires:  {{ py2pkg('redis') }}
+BuildRequires:  {{ py2pkg('retrying') }}
+BuildRequires:  {{ py2pkg('testscenarios') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+BuildRequires:  {{ py2pkg('zake') }}
+Requires:       {{ py2pkg('Babel') }}
+Requires:       {{ py2pkg('anyjson') }}
+Requires:       {{ py2pkg('automaton') }}
+Requires:       {{ py2pkg('cachetools') }}
+Requires:       {{ py2pkg('contextlib2') }}
+Requires:       {{ py2pkg('debtcollector') }}
+Requires:       {{ py2pkg('enum34') }}
+Requires:       {{ py2pkg('fasteners') }}
+Requires:       {{ py2pkg('futures') }}
+Requires:       {{ py2pkg('futurist') }}
+Requires:       {{ py2pkg('iso8601') }}
+Requires:       {{ py2pkg('jsonschema') }}
+Requires:       {{ py2pkg('kazoo') }}
+Requires:       {{ py2pkg('monotonic') }}
+Requires:       {{ py2pkg('networkx') }}
+Requires:       {{ py2pkg('oslo.serialization') }}
+Requires:       {{ py2pkg('oslo.utils') }}
+Requires:       {{ py2pkg('retrying') }}
+Requires:       {{ py2pkg('six') }}
+Requires:       {{ py2pkg('stevedore') }}
+BuildArch:      noarch
+
+%description
+A library to do [jobs, tasks, flows] in a HA manner using
+different backends to be used with OpenStack projects.
+
+%package doc
+Summary:        Documentation for Taskflow
+Group:          Documentation
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+
+%description doc
+A library to do [jobs, tasks, flows] in a HA manner using
+different backends to be used with OpenStack projects.
+This package contains the associated documentation.
+
+%prep
+%setup -q -n %{pypi_name}-%{version}
+
+%build
+%py2_build
+
+%install
+%py2_install
+
+# generate html docs
+%{__python2} setup.py build_sphinx
+# remove the sphinx-build leftovers
+rm -rf html/.{doctrees,buildinfo}
+
+%check
+PYTHONPATH=. %{__python2} setup.py testr
+
+%files
+%doc README.rst
+%license LICENSE
+%{python2_sitelib}/%{pypi_name}
+%{python2_sitelib}/%{pypi_name}-*.egg-info
+
+%files doc
+%license LICENSE
+%doc doc/build/html
+
+%changelog
