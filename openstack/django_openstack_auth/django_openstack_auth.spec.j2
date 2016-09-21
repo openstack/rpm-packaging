@@ -7,6 +7,8 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            http://docs.openstack.org/developer/django_openstack_auth/
 Source0:        https://tarballs.openstack.org/%{pypi_name}/%{pypi_name}-%{version}.tar.gz
+# Merged into stable/newton: https://review.openstack.org/#/c/372422/
+Patch0:         0001-Correctly-initialize-TestResponses.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('Django') }}
 BuildRequires:  python-devel
@@ -48,6 +50,7 @@ This package contains documentation in HTML format.
 
 %prep
 %setup -q -n %{pypi_name}-%{version}
+%patch0 -p1
 
 %build
 %py2_build
