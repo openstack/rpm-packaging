@@ -1,0 +1,66 @@
+Name:           {{ py2name('python-oneviewclient') }}
+Version:        2.5.1
+Release:        0
+Summary:        Python API and CLI for OpenStack Oneview
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            http://launchpad.net/%{name}
+Source0:        https://pypi.io/packages/source/p/%{name}/%{name}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('python-subunit') }}
+BuildRequires:  {{ py2pkg('retrying') }}
+BuildRequires:  {{ py2pkg('setuptools') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testscenarios') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+Requires:       {{ py2pkg('Babel') }}
+Requires:       {{ py2pkg('pbr') }}
+Requires:       {{ py2pkg('retrying') }}
+Requires:       {{ py2pkg('six') }}
+Requires:       {{ py2pkg('stevedore') }}
+BuildArch:      noarch
+
+%description
+Client library for Oneview built on the Oneview API. It provides a Python API
+(the oneviewclient module) and a command-line tool (oneview).
+
+%package doc
+Summary:        Documentation for OpenStack Oneview API client libary
+Group:          Documentation
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+
+%description doc
+Client library for Oneview built on the Oneview API. It provides a Python API
+(the oneviewclient module) and a command-line tool (oneview).
+This package contains the documentation.
+
+%prep
+%setup -q -n %{name}-%{version}
+
+%build
+%py2_build
+
+# Build HTML docs and man page
+%{__python2} setup.py build_sphinx
+rm -rf html/.{doctrees,buildinfo}
+
+%install
+%py2_install
+
+%check
+%{__python2} setup.py testr
+
+%files
+%doc README.rst
+%license LICENSE
+%{python2_sitelib}/oneview_client
+%{python2_sitelib}/*.egg-info
+
+%files doc
+%doc doc/build/html
+%license LICENSE
+
+%changelog
