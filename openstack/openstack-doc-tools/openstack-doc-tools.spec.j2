@@ -1,0 +1,59 @@
+%global sname openstack-doc-tools
+%global module os_doc_tools
+Name:           {{ py2name('openstack-doc-tools') }}
+Version:        1.0.1
+Release:        0
+Summary:        OpenStack Docs Tools
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            https://launchpad.net/%{sname}
+Source0:        https://pypi.io/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('Babel') }}
+BuildRequires:  {{ py2pkg('PyYAML') }}
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('demjson') }}
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('setuptools') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+Requires:       {{ py2pkg('PyYAML') }}
+Requires:       {{ py2pkg('Sphinx') }}
+Requires:       {{ py2pkg('cliff-tablib') }}
+Requires:       {{ py2pkg('iso8601') }}
+Requires:       {{ py2pkg('lxml') }}
+Requires:       {{ py2pkg('oslosphinx') }}
+BuildArch:      noarch
+
+%description
+Tools used by the OpenStack Documentation Project.
+
+%prep
+%setup -q -n %{sname}-%{version}
+
+%build
+%py2_build
+
+%install
+%py2_install
+
+%check
+%{__python2} setup.py testr
+
+%files
+%license LICENSE
+%doc README.rst
+%{_bindir}/doc-tools-build-rst
+%{_bindir}/doc-tools-check-languages
+%{_bindir}/doc-tools-update-cli-reference
+%{_bindir}/openstack-auto-commands
+%{_bindir}/openstack-indexpage
+%{_bindir}/openstack-jsoncheck
+%{python2_sitelib}/%{module}
+%{python2_sitelib}/autogenerate_config_docs
+%{_datadir}/%{sname}
+%{python2_sitelib}/*.egg-info
+
+%changelog
