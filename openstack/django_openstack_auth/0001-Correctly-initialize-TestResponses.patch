@@ -1,0 +1,31 @@
+From a411d37b2e9e9293f688cc1de2ed6920761c2ce5 Mon Sep 17 00:00:00 2001
+From: woodnt <woodm1979@gmail.com>
+Date: Thu, 8 Sep 2016 14:14:28 -0600
+Subject: [PATCH] Correctly initialize TestResponses
+
+There's a pretty awful hack currently in place to add the reason
+attribute to the TestResponse class.  This code correctly initializes
+the class, including the reason attribute.
+
+Change-Id: I73384db1f89add051547f4d5db36ab1e647e84ef
+Closes-Bug: 1613740
+---
+ openstack_auth/tests/data_v3.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/openstack_auth/tests/data_v3.py b/openstack_auth/tests/data_v3.py
+index 257c304..7053091 100644
+--- a/openstack_auth/tests/data_v3.py
++++ b/openstack_auth/tests/data_v3.py
+@@ -38,7 +38,7 @@ class TestResponse(requests.Response):
+ 
+     def __init__(self, data):
+         self._text = None
+-        super(TestResponse, self)
++        super(TestResponse, self).__init__()
+         if isinstance(data, dict):
+             self.status_code = data.get('status_code', 200)
+             self.headers = data.get('headers', None)
+-- 
+2.9.3
+
