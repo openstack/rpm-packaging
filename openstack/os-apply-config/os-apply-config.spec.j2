@@ -1,0 +1,81 @@
+%global sname os-apply-config
+%bcond_with test
+%bcond_with docs
+Name:           {{ py2name('os-apply-config') }}
+Version:        0.1.32
+Release:        0
+Summary:        OpenStack os-apply-config Configuration Library
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            https://launchpad.net/%{sname}
+Source0:        https://pypi.io/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('setuptools') }}
+Requires:       {{ py2pkg('PyYAML') }}
+Requires:       {{ py2pkg('anyjson') }}
+Requires:       {{ py2pkg('pbr') }}
+Requires:       {{ py2pkg('pystache') }}
+Requires:       {{ py2pkg('setuptools') }}
+Requires:       {{ py2pkg('six') }}
+BuildArch:      noarch
+%if %{with test}
+BuildRequires:  {{ py2pkg('fixtures') }}
+BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('python-subunit') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testscenarios') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+%endif
+
+%description
+os-apply-config is a apply configuration from cloud metadata
+
+%package doc
+Summary:        Documentation for OpenStack Os-apply-config configuration library
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('reno') }}
+
+%description doc
+Documentation for the os-apply-config library.
+
+%prep
+%autosetup -n %{sname}-%{version}
+%py_req_cleanup
+
+%build
+%{py2_build}
+
+%if %{with docs}
+# generate html docs
+%{__python2} setup.py build_sphinx
+# remove the sphinx-build leftovers
+rm -rf doc/build/html/.{doctrees,buildinfo}
+%endif
+
+
+%install
+%{py2_install}
+
+%if %{with test}
+%check
+%{__python2} setup.py testr
+%endif
+
+%files
+%license LICENSE
+%doc README.rst
+%{_bindir}/os-apply-config
+%{_bindir}/os-config-applier
+%{python2_sitelib}/os_apply_config
+%{python2_sitelib}/*.egg-info
+
+%if %{with docs}
+%files doc
+%doc doc/build/html
+%license LICENSE
+%endif
+
+%changelog
