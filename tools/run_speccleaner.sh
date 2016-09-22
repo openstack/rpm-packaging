@@ -7,17 +7,23 @@ basedir=${1:-$PWD}
 WORKSPACE=${WORKSPACE:-$basedir}
 # tempfile to store the spec-cleaner diff for all specs
 tmpdir=$(mktemp -d)
+MAXPROC=4
 
 echo "run spec-cleaner over specfiles from $WORKSPACE/logs/"
 
+count=0
 # TODO(toabctl): also run spec-cleaner with non-SUSE specs
 # but the current problem is that the license check works for SUSE only
 for spec in $WORKSPACE/logs/*.suse ; do
     # NOTE(toabctl):spec-cleaner can not ignore epochs currently
     sed -i '/^Epoch:.*/d' $spec
     spec-cleaner -m -d --no-copyright --diff-prog "diff -uw" \
-                 $spec > $tmpdir/`basename ${spec}`.cleaner.diff
+                 $spec > $tmpdir/`basename ${spec}`.cleaner.diff &
+    let count+=1
+    [[ count -eq $MAXPROC ]] && wait && count=0
 done
+
+wait
 
 # check if some diffs are available
 failed=0
