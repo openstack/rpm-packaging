@@ -1,0 +1,66 @@
+Name:           {{ py2name('python-k8sclient') }}
+Version:        0.3.0
+Release:        0
+Summary:        Python API and CLI for OpenStack K8s
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            http://launchpad.net/%{name}
+Source0:        https://pypi.io/packages/source/p/%{name}/%{name}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('python-dateutil') }}
+BuildRequires:  {{ py2pkg('python-subunit') }}
+BuildRequires:  {{ py2pkg('setuptools') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testscenarios') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+BuildRequires:  {{ py2pkg('urllib3') }}
+Requires:       {{ py2pkg('pbr') }}
+Requires:       {{ py2pkg('python-dateutil') }}
+Requires:       {{ py2pkg('six') }}
+Requires:       {{ py2pkg('urllib3') }}
+BuildArch:      noarch
+
+%description
+Client library for K8s built on the K8s API. It provides a Python API
+(the k8sclient module) and a command-line tool (k8s).
+
+%package doc
+Summary:        Documentation for OpenStack K8s API client libary
+Group:          Documentation
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+
+%description doc
+Client library for K8s built on the K8s API. It provides a Python API
+(the k8sclient module) and a command-line tool (k8s).
+This package contains the documentation.
+
+%prep
+%setup -q -n %{name}-%{version}
+
+%build
+%py2_build
+
+# Build HTML docs and man page
+%{__python2} setup.py build_sphinx
+rm -rf html/.{doctrees,buildinfo}
+
+%install
+%py2_install
+
+%check
+%{__python2} setup.py testr
+
+%files
+%doc README.rst
+%license LICENSE
+%{python2_sitelib}/k8sclient
+%{python2_sitelib}/*.egg-info
+
+%files doc
+%doc doc/build/html
+%license LICENSE
+
+%changelog
