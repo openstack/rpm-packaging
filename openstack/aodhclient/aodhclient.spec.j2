@@ -1,0 +1,81 @@
+%global sname aodhclient
+Name:           {{ py2name('aodhclient') }}
+Version:        0.7.0
+Release:        0
+Summary:        Python client library for Aodh
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            https://github.com/openstack/%{name}
+Source0:        https://pypi.io/packages/source/a/%{sname}/%{sname}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('cliff') }}
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('keystoneauth1') }}
+BuildRequires:  {{ py2pkg('oslo.serialization') }}
+BuildRequires:  {{ py2pkg('oslo.utils') }}
+BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('pyparsing') }}
+BuildRequires:  {{ py2pkg('python-subunit') }}
+BuildRequires:  {{ py2pkg('requests') }}
+BuildRequires:  {{ py2pkg('setuptools') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+Requires:       {{ py2pkg('cliff') }}
+Requires:       {{ py2pkg('debtcollector') }}
+Requires:       {{ py2pkg('keystoneauth1') }}
+Requires:       {{ py2pkg('osc-lib') }}
+Requires:       {{ py2pkg('oslo.i18n') }}
+Requires:       {{ py2pkg('oslo.serialization') }}
+Requires:       {{ py2pkg('oslo.utils') }}
+Requires:       {{ py2pkg('pbr') }}
+Requires:       {{ py2pkg('pyparsing') }}
+Requires:       {{ py2pkg('six') }}
+BuildArch:      noarch
+
+%description
+This is a client library for Aodh built on the Aodh API. It
+provides a Python API (the aodhclient module) and a command-line tool.
+
+%package doc
+Summary:        Documentation for OpenStack Aodh API Client
+Group:          Documentation
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+
+%description      doc
+This is a client library for Aodh built on the Aodh API. It
+provides a Python API (the aodhclient module) and a command-line tool.
+
+This package contains auto-generated documentation.
+
+%prep
+%setup -q -n %{sname}-%{version}
+
+%build
+%py2_build
+
+%install
+%py2_install
+
+%{__python2} setup.py build_sphinx
+# Fix hidden-file-or-dir warnings
+rm -rf html/.doctrees html/.buildinfo
+
+%check
+# FIXME: only run unittests for now.
+export OS_TEST_PATH=./aodhclient/tests/unit
+PYTHONPATH=. %{__python2} setup.py testr
+
+%files
+%doc README.rst
+%license LICENSE
+%{_bindir}/aodh
+%{python2_sitelib}/aodhclient
+%{python2_sitelib}/*.egg-info
+
+%files doc
+%doc doc/build/html
+%license LICENSE
+
+%changelog
