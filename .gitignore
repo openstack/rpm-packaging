@@ -8,4 +8,6 @@
 .testrepository
 .tox
 .venv
+logs
+.idea
 AUTHORS
