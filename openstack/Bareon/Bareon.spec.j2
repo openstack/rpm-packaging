@@ -6,7 +6,7 @@ Version:        0.0.1~a3
 Release:        0
 Summary:        OpenStack bareon tool
 License:        {{ license('Apache-2.0') }}
-Group:          Applications/System
+Group:          System/Management
 Url:            https://launchpad.net/%{sname}
 Source0:        https://pypi.io/packages/source/b/bareon/%{sname}-%{sversion}.tar.gz
 BuildRequires:  openstack-macros
@@ -20,9 +20,7 @@ BuildRequires:  {{ py2pkg('setuptools') }}
 BuildRequires:  {{ py2pkg('unittest2') }}
 BuildRequires:  {{ py2pkg('yaml') }}
 Requires:       bzip2
-Requires:       cloud-utils
 Requires:       coreutils
-Requires:       debootstrap
 Requires:       dmidecode
 Requires:       e2fsprogs
 Requires:       ethtool
@@ -31,7 +29,6 @@ Requires:       genisoimage
 Requires:       gzip
 Requires:       lvm2
 Requires:       mdadm
-Requires:       openssh-clients
 Requires:       parted
 Requires:       pciutils
 Requires:       psmisc
@@ -47,10 +44,15 @@ Requires:       {{ py2pkg('stevedore') }}
 Requires:       {{ py2pkg('urllib3') }}
 Requires:       tar
 Requires:       udev
-Requires:       util-linux-ng
 Requires:       xfsprogs
 Requires:       xz
 BuildArch:      noarch
+%if ! 0%{?suse_version}
+Requires:       cloud-utils
+Requires:       debootstrap
+Requires:       openssh-clients
+Requires:       util-linux-ng
+%endif
 
 %description
 Bareon is nothing more than just a set of data driven executable scripts:
@@ -73,7 +75,7 @@ BuildRequires:  {{ py2pkg('oslosphinx') }}
 Documentation for OpenStack bareon tool.
 
 %prep
-%setup  -q -n %{sname}-%{sversion}
+%setup -q -n %{sname}-%{sversion}
 
 %build
 %{py2_build}
