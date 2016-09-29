@@ -1,6 +1,6 @@
 %global sname tempest
 Name:           {{ py2name('Tempest') }}
-Version:        12.1.0
+Version:        12.2.0
 Release:        0
 Summary:        The OpenStack Integration Test Suite
 License:        {{ license('Apache-2.0') }}
@@ -11,6 +11,7 @@ BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('PrettyTable') }}
 BuildRequires:  {{ py2pkg('PyYAML') }}
 BuildRequires:  {{ py2pkg('cliff') }}
+BuildRequires:  {{ py2pkg('debtcollector') }}
 BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('fixtures') }}
 BuildRequires:  {{ py2pkg('jsonschema') }}
@@ -26,7 +27,6 @@ BuildRequires:  {{ py2pkg('oslo.utils') }}
 BuildRequires:  {{ py2pkg('oslotest') }}
 BuildRequires:  {{ py2pkg('paramiko') }}
 BuildRequires:  {{ py2pkg('pep8') }}
-BuildRequires:  {{ py2pkg('pyOpenSSL') }}
 BuildRequires:  {{ py2pkg('six') }}
 BuildRequires:  {{ py2pkg('stevedore') }}
 BuildRequires:  {{ py2pkg('testrepository') }}
@@ -36,6 +36,7 @@ BuildRequires:  {{ py2pkg('urllib3') }}
 Requires:       {{ py2pkg('PrettyTable') }}
 Requires:       {{ py2pkg('PyYAML') }}
 Requires:       {{ py2pkg('cliff') }}
+Requires:       {{ py2pkg('debtcollector') }}
 Requires:       {{ py2pkg('fixtures') }}
 Requires:       {{ py2pkg('jsonschema') }}
 Requires:       {{ py2pkg('netaddr') }}
@@ -47,7 +48,6 @@ Requires:       {{ py2pkg('oslo.log') }}
 Requires:       {{ py2pkg('oslo.serialization') }}
 Requires:       {{ py2pkg('oslo.utils') }}
 Requires:       {{ py2pkg('paramiko') }}
-Requires:       {{ py2pkg('pyOpenSSL') }}
 Requires:       {{ py2pkg('six') }}
 Requires:       {{ py2pkg('stevedore') }}
 Requires:       {{ py2pkg('testrepository') }}
@@ -84,7 +84,6 @@ sed -i -e 's/^\(html_last_updated_fmt.*\)\(git_cmd\)/\1"\/usr\/bin\/true"/' doc/
 # NOTE(toabctl): config files are installed into usr/etc/
 install -d -m 755 %{buildroot}%{_sysconfdir}/tempest
 mv %{buildroot}/%{_prefix}/%{_sysconfdir}/%{sname}/accounts.yaml.sample %{buildroot}/%{_sysconfdir}/%{sname}/accounts.yaml
-mv %{buildroot}/%{_prefix}/%{_sysconfdir}/%{sname}/javelin-resources.yaml.sample %{buildroot}/%{_sysconfdir}/%{sname}/javelin-resources.yaml
 mv %{buildroot}/%{_prefix}/%{_sysconfdir}/%{sname}/logging.conf.sample %{buildroot}/%{_sysconfdir}/%{sname}/logging.conf
 mv %{buildroot}/%{_prefix}/%{_sysconfdir}/%{sname}/whitelist.yaml %{buildroot}/%{_sysconfdir}/%{sname}/whitelist.yaml
 
@@ -104,7 +103,6 @@ mv %{buildroot}/%{_prefix}/%{_sysconfdir}/%{sname}/whitelist.yaml %{buildroot}/%
 %{python2_sitelib}/*.egg-info
 %{_bindir}/tempest
 %{_bindir}/verify-tempest-config
-%{_bindir}/javelin2
 %{_bindir}/run-tempest-stress
 %{_bindir}/tempest-cleanup
 %{_bindir}/tempest-account-generator
@@ -115,7 +113,6 @@ mv %{buildroot}/%{_prefix}/%{_sysconfdir}/%{sname}/whitelist.yaml %{buildroot}/%
 %config(noreplace) %{_sysconfdir}/tempest/logging.conf
 %config(noreplace) %{_sysconfdir}/tempest/accounts.yaml
 %config(noreplace) %{_sysconfdir}/tempest/whitelist.yaml
-%config(noreplace) %{_sysconfdir}/tempest/javelin-resources.yaml
 
 %files doc
 %license LICENSE
