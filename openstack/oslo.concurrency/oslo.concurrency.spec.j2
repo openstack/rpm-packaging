@@ -65,9 +65,10 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %check
 # Test suite fails on 32 bit platforms
-%ifnarch %arm %ix86 s390 ppc
+# ifarch/ifnarch can not be used in noarch packages
+if [ "%_lib" = "lib64" ]; then
 %{__python2} setup.py testr
-%endif
+fi
 
 %files
 %license LICENSE
