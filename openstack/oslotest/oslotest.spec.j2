@@ -21,7 +21,8 @@ BuildRequires:  {{ py2pkg('testtools') }}
 Requires:       {{ py2pkg('fixtures') }}
 Requires:       {{ py2pkg('mock') }}
 Requires:       {{ py2pkg('mox3') }}
-Requires:       {{ py2pkg('os-client-config') }}
+# NOTE: python-os-client-config is only needed for functional testing
+# Requires:       {{ py2pkg('os-client-config') }}
 Requires:       {{ py2pkg('python-subunit') }}
 Requires:       {{ py2pkg('six') }}
 Requires:       {{ py2pkg('testrepository') }}
