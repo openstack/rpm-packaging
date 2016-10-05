@@ -1,0 +1,65 @@
+%global sname python-dracclient
+Name:           {{ py2name('python-dracclient') }}
+Version:        0.1.0
+Release:        0
+Summary:        Library for managing machines with Dell iDRAC cards.
+License:        {{ license('Apache-2.0')}}
+Group:          Development/Languages/Python
+Url:            https://launchpad.net/%{sname}
+Source0:        https://pypi.io/packages/source/p/%{sname}/%{sname}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('coverage') }}
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('lxml') }}
+BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('requests') }}
+BuildRequires:  {{ py2pkg('requests-mock') }}
+BuildRequires:  {{ py2pkg('setuptools') }}
+Requires:       {{ py2pkg('lxml') }}
+Requires:       {{ py2pkg('requests') }}
+Requires:       {{ py2pkg('six') }}
+BuildArch:      noarch
+
+%description
+Library for managing machines with Dell iDRAC cards.
+
+%package doc
+Summary:        Documentation for OpenStack Drac API Client
+Group:          Documentation
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('reno') }}
+
+%description doc
+This is a client for the OpenStack Drac API and a command-line script (drac).
+Each implements 100% of the OpenStack Drac API.
+This package contains auto-generated documentation.
+
+%prep
+%setup -q -n %{sname}-%{version}
+
+%build
+%{py2_build}
+
+%{__python2} setup.py build_sphinx
+# remove the sphinx-build leftovers
+rm -rf doc/build/html/.{doctrees,buildinfo}
+
+%install
+%{py2_install}
+
+%check
+coverage run --branch --source dracclient --omit "dracclient/tests*" -m unittest discover dracclient.tests
+
+%files
+%license LICENSE
+%doc README.rst ChangeLog
+%{python2_sitelib}/dracclient
+%{python2_sitelib}/*.egg-info
+
+%files doc
+%license LICENSE
+%doc doc/build/html
+
+%changelog
