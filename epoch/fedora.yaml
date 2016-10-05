@@ -18,6 +18,6 @@ epochs:
   python-keystoneclient: 1
   python-novaclient: 1
   sahara: 1
-  tempest: 1
+  Tempest: 1
   trove: 1
   zaqar: 1
