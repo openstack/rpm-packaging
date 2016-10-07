@@ -1,0 +1,56 @@
+Name:           {{ py2name('microversion_parse') }}
+Version:        0.1.4
+Release:        0
+Summary:        OpenStack microversion header parser
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            http://www.openstack.org/
+Source0:        https://pypi.io/packages/source/m/microversion_parse/microversion_parse-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('WebOb') }}
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('setuptools') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+BuildArch:      noarch
+
+%description
+A simple parser for OpenStack microversion headers.
+
+%package doc
+Summary:        Documentation for OpenStack Microversion headers
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+
+%description doc
+This package contains thedocumentation for OpenStack microversion
+headers parsing library.
+
+%prep
+%setup -q -n microversion_parse-%{version}
+
+%build
+%{py2_build}
+
+# generate html docs
+%{__python2} setup.py build_sphinx
+# remove the sphinx-build leftovers
+rm -rf doc/build/html/.{doctrees,buildinfo}
+
+%install
+%{py2_install}
+
+%check
+%{__python2} setup.py testr
+
+%files
+%license LICENSE
+%doc ChangeLog README.rst
+%{python2_sitelib}/microversion_parse
+%{python2_sitelib}/microversion_parse*egg-info
+
+%files doc
+%license LICENSE
+%doc doc/build/html
+
+%changelog
