@@ -1,7 +1,7 @@
 %global sname tempest
 Name:           {{ py2name('Tempest') }}
 Epoch:          {{ epoch('Tempest') }}
-Version:        12.2.0
+Version:        13.0.0
 Release:        0
 Summary:        The OpenStack Integration Test Suite
 License:        {{ license('Apache-2.0') }}
@@ -21,13 +21,13 @@ BuildRequires:  {{ py2pkg('netaddr') }}
 BuildRequires:  {{ py2pkg('os-testr') }}
 BuildRequires:  {{ py2pkg('oslo.concurrency') }}
 BuildRequires:  {{ py2pkg('oslo.config') }}
-BuildRequires:  {{ py2pkg('oslo.i18n') }}
 BuildRequires:  {{ py2pkg('oslo.log') }}
 BuildRequires:  {{ py2pkg('oslo.serialization') }}
 BuildRequires:  {{ py2pkg('oslo.utils') }}
 BuildRequires:  {{ py2pkg('oslotest') }}
 BuildRequires:  {{ py2pkg('paramiko') }}
 BuildRequires:  {{ py2pkg('pep8') }}
+BuildRequires:  {{ py2pkg('python-subunit') }}
 BuildRequires:  {{ py2pkg('six') }}
 BuildRequires:  {{ py2pkg('stevedore') }}
 BuildRequires:  {{ py2pkg('testrepository') }}
@@ -44,11 +44,11 @@ Requires:       {{ py2pkg('netaddr') }}
 Requires:       {{ py2pkg('os-testr') }}
 Requires:       {{ py2pkg('oslo.concurrency') }}
 Requires:       {{ py2pkg('oslo.config') }}
-Requires:       {{ py2pkg('oslo.i18n') }}
 Requires:       {{ py2pkg('oslo.log') }}
 Requires:       {{ py2pkg('oslo.serialization') }}
 Requires:       {{ py2pkg('oslo.utils') }}
 Requires:       {{ py2pkg('paramiko') }}
+Requires:       {{ py2pkg('python-subunit') }}
 Requires:       {{ py2pkg('six') }}
 Requires:       {{ py2pkg('stevedore') }}
 Requires:       {{ py2pkg('testrepository') }}
@@ -105,7 +105,6 @@ mv %{buildroot}/%{_prefix}/%{_sysconfdir}/%{sname}/whitelist.yaml %{buildroot}/%
 %{_bindir}/tempest
 %{_bindir}/verify-tempest-config
 %{_bindir}/run-tempest-stress
-%{_bindir}/tempest-cleanup
 %{_bindir}/tempest-account-generator
 %{_bindir}/skip-tracker
 %{_bindir}/check-uuid
