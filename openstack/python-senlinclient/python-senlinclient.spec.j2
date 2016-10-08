@@ -66,7 +66,7 @@ Each implements 100% of the OpenStack Senlin API. This package contains
 auto-generated documentation.
 
 %prep
-%setup -q -n %{sname}-%{version}
+%autosetup -n %{sname}-%{version}
 # FIXME: can be removed when https://review.openstack.org/#/c/377314/ is released
 sed -i -e 's/^\s\{4\}git_cmd\(.*\)/    "\/usr\/bin\/true"\1/' doc/source/conf.py
 

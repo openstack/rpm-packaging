@@ -69,7 +69,7 @@ BuildRequires:  {{ py2pkg('reno') }}
 Documentation for the Glance store library.
 
 %prep
-%setup -q -n %{sname}-%{version}
+%autosetup -n %{sname}-%{version}
 # NOTE(toabctl): Can be removed when https://review.openstack.org/364532 is included
 sed -i -e 's/^\(html_last_updated_fmt.*\)\(git_cmd\)/\1"\/usr\/bin\/true"/' doc/source/conf.py
 

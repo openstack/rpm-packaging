@@ -14,6 +14,10 @@ for spec in $WORKSPACE/logs/*.suse ; do
         echo "$spec should not have Source: lines. Please use Source0: instead."
         failed=1
     }
+    egrep -q '^%setup' $spec && {
+        echo "$spec should not use '%setup'. Please use '%autosetup' instead."
+        failed=1
+    }
 done
 
 exit $failed

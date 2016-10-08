@@ -50,7 +50,7 @@ BuildRequires:  {{ py2pkg('oslosphinx') }}
 Python client library for interacting with OpenStack Sahara API.
 
 %prep
-%setup -q -n %{name}-%{version}
+%autosetup -n %{name}-%{version}
 # FIXME: can be removed when https://review.openstack.org/#/c/363681/ is merged
 sed -i -e 's/^\s\{4\}git_cmd\(.*\)/    "\/usr\/bin\/true"\1/' doc/source/conf.py
 

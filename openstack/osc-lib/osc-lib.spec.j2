@@ -53,7 +53,7 @@ BuildRequires:  {{ py2pkg('oslosphinx') }}
 Documentation for the OpenStack client library.
 
 %prep
-%setup -q -n %{sname}-%{version}
+%autosetup -n %{sname}-%{version}
 
 %build
 %{__python2} setup.py build

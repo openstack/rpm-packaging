@@ -37,7 +37,7 @@ BuildRequires:  {{ py2pkg('oslosphinx') }}
 Documentation for the testr wrapper.
 
 %prep
-%setup -q -n %{sname}-%{version}
+%autosetup -n %{sname}-%{version}
 
 %build
 %{py2_build}

@@ -36,7 +36,7 @@ BuildArch:       noarch
 OpenStack Functional Testing Library
 
 %prep
-%setup -q -n tempest-lib-%{version}
+%autosetup -n tempest-lib-%{version}
 
 %build
 %{__python2} setup.py build

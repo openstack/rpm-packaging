@@ -55,7 +55,7 @@ Requires:       %{name} = %{version}
 This package contains documentation files for %{name}.
 
 %prep
-%setup -q -n oslo.versionedobjects-%{version}
+%autosetup -n oslo.versionedobjects-%{version}
 
 %build
 %{py2_build}

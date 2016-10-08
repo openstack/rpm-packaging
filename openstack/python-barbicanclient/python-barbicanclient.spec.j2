@@ -47,7 +47,7 @@ Documentation for the client library for interacting with
 Openstack Key Management API
 
 %prep
-%setup -q -n %{name}-%{version}
+%autosetup -n %{name}-%{version}
 
 # Remove the sphinx-build leftovers
 rm -rf html/.{doctrees,buildinfo}

@@ -75,7 +75,7 @@ BuildRequires:  {{ py2pkg('oslosphinx') }}
 Documentation for OpenStack bareon tool.
 
 %prep
-%setup -q -n %{sname}-%{sversion}
+%autosetup -n %{sname}-%{sversion}
 
 %build
 %{py2_build}

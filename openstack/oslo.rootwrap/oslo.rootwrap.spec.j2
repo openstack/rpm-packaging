@@ -41,7 +41,7 @@ BuildRequires:  {{ py2pkg('reno') }}
 Documentation for the OpenStack %{sname} library.
 
 %prep
-%setup -q -n %{sname}-%{version}
+%autosetup -n %{sname}-%{version}
 
 %build
 %{py2_build}

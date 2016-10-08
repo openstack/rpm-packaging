@@ -26,7 +26,7 @@ A common library to be used **exclusively** by projects under the `Ironic
 governance <http://governance.openstack.org/reference/projects/ironic.html>`
 
 %prep
-%setup -q -n ironic-lib-%{version}
+%autosetup -n ironic-lib-%{version}
 
 %build
 %{py2_build}

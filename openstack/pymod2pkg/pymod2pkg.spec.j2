@@ -30,7 +30,7 @@ Requires:       %{name} = %{version}
 Documentation for python module name to package name map library.
 
 %prep
-%setup -q -n %{sname}-%{version}
+%autosetup -n %{sname}-%{version}
 
 %build
 %{py2_build}

@@ -42,7 +42,7 @@ BuildRequires:  {{ py2pkg('oslosphinx') }}
 Documentation for OSProfiler.
 
 %prep
-%setup -q -n %{sname}-%{version}
+%autosetup -n %{sname}-%{version}
 
 %build
 %{py2_build}

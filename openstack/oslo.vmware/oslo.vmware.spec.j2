@@ -59,7 +59,7 @@ Requires:       %{name} = %{version}
 Documentation for OpenStack common VMware library.
 
 %prep
-%setup -q -n %{pypi_name}-%{version}
+%autosetup -n %{pypi_name}-%{version}
 
 %build
 %py2_build

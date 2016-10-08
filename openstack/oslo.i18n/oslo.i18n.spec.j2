@@ -30,7 +30,7 @@ BuildRequires:  {{ py2pkg('oslosphinx') }}
 Documentation for the oslo.i18n library.
 
 %prep
-%setup -q -n %{sname}-%{version}
+%autosetup -n %{sname}-%{version}
 
 %build
 %{py2_build}
