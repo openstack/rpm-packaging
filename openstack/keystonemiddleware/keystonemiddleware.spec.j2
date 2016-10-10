@@ -1,6 +1,6 @@
 %global sname keystonemiddleware
 Name:           {{ py2name('keystonemiddleware') }}
-Version:        4.9.0
+Version:        4.10.0
 Release:        0
 Summary:        Middleware for OpenStack Identity
 License:        {{ license('Apache-2.0') }}
@@ -9,6 +9,7 @@ Url:            https://launchpad.net/%{sname}
 Source0:        https://pypi.io/packages/source/k/%{sname}/%{sname}-%{version}.tar.gz
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('WebOb') }}
+BuildRequires:  {{ py2pkg('WebTest') }}
 BuildRequires:  {{ py2pkg('fixtures') }}
 BuildRequires:  {{ py2pkg('keystoneauth1') }}
 BuildRequires:  {{ py2pkg('python-keystoneclient') }}
