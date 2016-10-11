@@ -27,6 +27,7 @@ governance <http://governance.openstack.org/reference/projects/ironic.html>`
 
 %prep
 %autosetup -n ironic-lib-%{version}
+%py_req_cleanup
 
 %build
 %{py2_build}

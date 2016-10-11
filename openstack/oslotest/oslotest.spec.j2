@@ -36,6 +36,7 @@ better support for mocking results.
 
 %prep
 %autosetup -n oslotest-%{version}
+%py_req_cleanup
 
 %build
 %{py2_build}

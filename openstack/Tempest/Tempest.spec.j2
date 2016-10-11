@@ -73,6 +73,7 @@ Documentation for the OpenStack Integration Test Suite.
 
 %prep
 %autosetup -n %{sname}-%{version}
+%py_req_cleanup
 
 %build
 %{py2_build}

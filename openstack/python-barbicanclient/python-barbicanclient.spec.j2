@@ -48,6 +48,7 @@ Openstack Key Management API
 
 %prep
 %autosetup -n %{name}-%{version}
+%py_req_cleanup
 
 # Remove the sphinx-build leftovers
 rm -rf html/.{doctrees,buildinfo}

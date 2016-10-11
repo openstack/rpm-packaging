@@ -25,6 +25,7 @@ to docs.openstack.org. Intended for use by OpenStack projects.
 
 %prep
 %autosetup -n %{sname}-%{version}
+%py_req_cleanup
 
 %build
 %py2_build

@@ -52,6 +52,7 @@ This package contains documentation in HTML format.
 
 %prep
 %autosetup -n %{pypi_name}-%{version}
+%py_req_cleanup
 
 %build
 %py2_build

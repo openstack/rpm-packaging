@@ -37,6 +37,7 @@ OpenStack Functional Testing Library
 
 %prep
 %autosetup -n tempest-lib-%{version}
+%py_req_cleanup
 
 %build
 %{__python2} setup.py build

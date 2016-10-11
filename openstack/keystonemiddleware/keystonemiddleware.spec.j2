@@ -61,6 +61,7 @@ Documentation for Middleware for OpenStack Identity.
 
 %prep
 %autosetup -n %{sname}-%{version}
+%py_req_cleanup
 
 %build
 %{py2_build}

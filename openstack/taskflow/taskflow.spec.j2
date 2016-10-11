@@ -76,6 +76,7 @@ This package contains the associated documentation.
 
 %prep
 %autosetup -n %{pypi_name}-%{version}
+%py_req_cleanup
 
 %build
 %py2_build

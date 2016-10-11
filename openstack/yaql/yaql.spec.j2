@@ -36,6 +36,7 @@ written in python and is distributed via PyPI.
 
 %prep
 %autosetup -n yaql-%{version}
+%py_req_cleanup
 
 %build
 %py2_build

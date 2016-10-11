@@ -62,6 +62,7 @@ Documentation for the Oslo database handling library.
 
 %prep
 %autosetup -n %{sname}-%{version}
+%py_req_cleanup
 
 %build
 %{py2_build}

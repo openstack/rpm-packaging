@@ -76,6 +76,7 @@ Documentation for OpenStack bareon tool.
 
 %prep
 %autosetup -n %{sname}-%{sversion}
+%py_req_cleanup
 
 %build
 %{py2_build}
