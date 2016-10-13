@@ -73,8 +73,6 @@ Documentation for the OpenStack Integration Test Suite.
 
 %prep
 %setup -q -n %{sname}-%{version}
-# FIXME(toabctl): Remove when https://review.openstack.org/#/c/363036/ is merged
-sed -i -e 's/^\(html_last_updated_fmt.*\)\(git_cmd\)/\1"\/usr\/bin\/true"/' doc/source/conf.py
 
 %build
 %{py2_build}
