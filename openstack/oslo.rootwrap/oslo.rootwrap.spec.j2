@@ -32,12 +32,12 @@ oslo.rootwrap allows fine-grained filtering of shell commands to run as root
 from OpenStack services.
 
 %package doc
-Summary:        Documentation  for OpenStack oslo rootwrap
+Summary:        Documentation for OpenStack %{sname}
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('oslosphinx') }}
 
 %description doc
-Documentation for the oslo.rootwrap library.
+Documentation for the OpenStack %{sname} library.
 
 %prep
 %setup -q -n %{sname}-%{version}
