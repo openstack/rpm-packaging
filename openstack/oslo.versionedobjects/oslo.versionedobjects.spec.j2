@@ -1,12 +1,12 @@
-Name:            {{ py2name('oslo.versionedobjects') }}
-Version:         1.17.0
-Release:         0
-Summary:         Oslo Versioned Objects library
-License:         {{ license('Apache-2.0') }}
-Group:           Development/Languages/Python
-Url:             http://launchpad.net/%{sname}
-Source0:         https://pypi.io/packages/source/o/oslo.versionedobjects/oslo.versionedobjects-%{version}.tar.gz
-BuildRequires:   openstack-macros
+Name:           {{ py2name('oslo.versionedobjects') }}
+Version:        1.17.0
+Release:        0
+Summary:        Oslo Versioned Objects library
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            http://launchpad.net/%{sname}
+Source0:        https://pypi.io/packages/source/o/oslo.versionedobjects/oslo.versionedobjects-%{version}.tar.gz
+BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('iso8601') }}
 BuildRequires:  {{ py2pkg('oslo.concurrency') }}
