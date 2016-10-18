@@ -1,0 +1,56 @@
+%global sname yaql
+Name:           {{ py2name('yaql') }}
+Version:        1.1.1
+Release:        0
+Summary:        YAQL - Yet Another Query Language
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            https://launchpad.net/%{sname}
+Source0:        https://pypi.io/packages/source/y/%{sname}/%{sname}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+# for testing
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('fixtures') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('ply') }}
+BuildRequires:  {{ py2pkg('python-dateutil') }}
+BuildRequires:  {{ py2pkg('python-subunit') }}
+BuildRequires:  {{ py2pkg('six') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testscenarios') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+Requires:       {{ py2pkg('Babel') }}
+Requires:       {{ py2pkg('ply') }}
+Requires:       {{ py2pkg('python-dateutil') }}
+Requires:       {{ py2pkg('six') }}
+BuildArch:      noarch
+
+%description
+YAQL (Yet Another Query Language) is an embeddable and extensible query
+language, that allows performing complex queries against arbitrary objects. It
+has a vast and comprehensive standard library of frequently used querying
+functions and can be extend even further with user-specified functions. YAQL is
+written in python and is distributed via PyPI.
+
+%prep
+%setup -q -n yaql-%{version}
+
+%build
+%py2_build
+
+%install
+%py2_install
+
+%check
+%{__python2} setup.py testr
+
+%files
+%license LICENSE
+%doc ChangeLog README.rst AUTHORS
+%{_bindir}/yaql
+%{python2_sitelib}/%{sname}
+%{python2_sitelib}/%{sname}*.egg-info
+
+%changelog
