@@ -1,6 +1,6 @@
 %global sname oslo.middleware
 Name:           {{ py2name('oslo.middleware') }}
-Version:        3.19.0
+Version:        3.20.0
 Release:        0
 Summary:        OpenStack oslo.middleware library
 License:        {{ license('Apache-2.0') }}
@@ -44,6 +44,7 @@ for limiting size/connection etc.
 Summary:        Documentation for OpenStack middleware library
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('reno') }}
 
 %description doc
 Oslo middleware library includes components that can be injected into wsgi
