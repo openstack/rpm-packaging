@@ -1,6 +1,6 @@
 %global sname oslo.log
 Name:           {{ py2name('oslo.log') }}
-Version:        3.16.0
+Version:        3.17.0
 Release:        0
 Summary:        OpenStack log library
 License:        {{ license('Apache-2.0') }}
@@ -10,6 +10,7 @@ Source0:        https://pypi.io/packages/source/o/%{sname}/%{sname}-%{version}.t
 BuildRequires:  openstack-macros
 BuildRequires:  python-devel
 BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('monotonic') }}
 BuildRequires:  {{ py2pkg('oslo.config') }}
 BuildRequires:  {{ py2pkg('oslo.context') }}
 BuildRequires:  {{ py2pkg('oslo.i18n') }}
@@ -25,6 +26,7 @@ BuildRequires:  {{ py2pkg('testrepository') }}
 BuildRequires:  {{ py2pkg('testscenarios') }}
 BuildRequires:  {{ py2pkg('testtools') }}
 Requires:       {{ py2pkg('debtcollector') }}
+Requires:       {{ py2pkg('monotonic') }}
 Requires:       {{ py2pkg('oslo.config') }}
 Requires:       {{ py2pkg('oslo.context') }}
 Requires:       {{ py2pkg('oslo.i18n') }}
@@ -69,6 +71,7 @@ testr init && testr run --parallel
 %doc ChangeLog README.rst
 %{python2_sitelib}/oslo_log
 %{python2_sitelib}/*.egg-info
+%{_bindir}/convert-json
 
 %files doc
 %license LICENSE
