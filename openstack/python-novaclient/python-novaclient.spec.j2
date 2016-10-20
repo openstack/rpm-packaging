@@ -56,6 +56,27 @@ the OpenStack Nova API.
 
 This package contains auto-generated documentation.
 
+%package test
+Summary:        Testsuite for OpenStack Nova API Client
+Group:          Development/Languages/Python
+Requires:       %{name} = %{epoch}:%{version}
+Requires:       {{ py2pkg('fixtures') }}
+Requires:       {{ py2pkg('python-glanceclient') }}
+Requires:       {{ py2pkg('python-keystoneclient') }}
+Requires:       {{ py2pkg('mock') }}
+Requires:       {{ py2pkg('os-client-config') }}
+Requires:       {{ py2pkg('requests-mock') }}
+Requires:       {{ py2pkg('testrepository') }}
+Requires:       {{ py2pkg('testscenarios') }}
+Requires:       {{ py2pkg('testtools') }}
+
+%description      test
+This is a client for the OpenStack Nova API. There's a Python API (the
+novaclient module), and a command-line script (nova). Each implements 100% of
+the OpenStack Nova API.
+
+This package contains the testsuite.
+
 %prep
 %setup -q -n %{name}-%{version}
 
@@ -68,6 +89,9 @@ This package contains auto-generated documentation.
 %{__python2} setup.py build_sphinx
 # Fix hidden-file-or-dir warnings
 rm -fr html/.doctrees html/.buildinfo
+
+# handle the test subpackage
+%openstack_test_package_install novaclient
 
 %check
 OS_TEST_PATH=novaclient/tests/unit %{__python2} setup.py testr
@@ -82,5 +106,9 @@ OS_TEST_PATH=novaclient/tests/unit %{__python2} setup.py testr
 %files doc
 %doc doc/build/html
 %license LICENSE
+
+%files test
+%license LICENSE
+%openstack_test_package_dir
 
 %changelog
