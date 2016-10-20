@@ -1,6 +1,6 @@
 %global sname oslo.rootwrap
 Name:           {{ py2name('oslo.rootwrap') }}
-Version:        5.1.0
+Version:        5.2.0
 Release:        0
 Summary:        Filtering shell commands to run as root from OpenStack services
 License:        {{ license('Apache-2.0') }}
@@ -35,6 +35,7 @@ from OpenStack services.
 Summary:        Documentation for OpenStack %{sname}
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('reno') }}
 
 %description doc
 Documentation for the OpenStack %{sname} library.
