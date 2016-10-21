@@ -1,0 +1,91 @@
+%global sname neutron-lib
+Name:           {{ py2name('neutron-lib') }}
+Version:        0.4.0
+Release:        0
+Summary:        OpenStack Neutron library
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            http://docs.openstack.org/developer/neutron-lib/
+Source0:        https://pypi.io/packages/source/n/%{sname}/%{sname}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('Babel') }}
+BuildRequires:  {{ py2pkg('SQLAlchemy') }}
+BuildRequires:  {{ py2pkg('debtcollector') }}
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('fixtures') }}
+BuildRequires:  {{ py2pkg('os-api-ref') }}
+BuildRequires:  {{ py2pkg('os-testr') }}
+BuildRequires:  {{ py2pkg('oslo.config') }}
+BuildRequires:  {{ py2pkg('oslo.context') }}
+BuildRequires:  {{ py2pkg('oslo.db') }}
+BuildRequires:  {{ py2pkg('oslo.i18n') }}
+BuildRequires:  {{ py2pkg('oslo.log') }}
+BuildRequires:  {{ py2pkg('oslo.messaging') }}
+BuildRequires:  {{ py2pkg('oslo.policy') }}
+BuildRequires:  {{ py2pkg('oslo.service') }}
+BuildRequires:  {{ py2pkg('oslo.utils') }}
+BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('pep8') }}
+BuildRequires:  {{ py2pkg('python-subunit') }}
+BuildRequires:  {{ py2pkg('setuptools') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testresources') }}
+BuildRequires:  {{ py2pkg('testscenarios') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+Requires:       {{ py2pkg('Babel') }}
+Requires:       {{ py2pkg('SQLAlchemy') }}
+Requires:       {{ py2pkg('debtcollector') }}
+Requires:       {{ py2pkg('oslo.config') }}
+Requires:       {{ py2pkg('oslo.context') }}
+Requires:       {{ py2pkg('oslo.db') }}
+Requires:       {{ py2pkg('oslo.i18n') }}
+Requires:       {{ py2pkg('oslo.log') }}
+Requires:       {{ py2pkg('oslo.messaging') }}
+Requires:       {{ py2pkg('oslo.policy') }}
+Requires:       {{ py2pkg('oslo.service') }}
+Requires:       {{ py2pkg('oslo.utils') }}
+BuildArch:      noarch
+
+%description
+OpenStack Neutron library shared by all Neutron sub-projects.
+
+%package doc
+Summary:        OpenStack Neutron library documentation
+Group:          Documentation
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+
+%description doc
+OpenStack Neutron library shared by all Neutron sub-projects.
+
+%prep
+%autosetup -n neutron-lib-%{version}
+# FIXME: can be removed when https://review.openstack.org/#/c/390134/ is merged
+sed -i -e 's/^\s\{4\}git_cmd\(.*\)/    "\/usr\/bin\/true"\1/' doc/source/conf.py
+
+%build
+%{py2_build}
+
+%install
+%{py2_install}
+
+# Build HTML docs and man page
+%{__python2} setup.py build_sphinx
+# remove the sphinx-build leftovers
+rm -rf doc/build/html/.{doctrees,buildinfo}
+
+%check
+%{__python2} setup.py testr
+
+%files
+%license LICENSE
+%doc ChangeLog README.rst
+%{python_sitelib}/neutron_lib
+%{python_sitelib}/neutron_lib*egg-info
+
+%files doc
+%doc doc/build/html
+%license LICENSE
+
+%changelog
