@@ -6,6 +6,7 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            http://launchpad.net/%{name}
 Source0:        https://pypi.io/packages/source/p/%{name}/%{name}-%{version}.tar.gz
+Patch0:         0001-Add-magnum.bash_completion.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('PrettyTable') }}
 BuildRequires:  {{ py2pkg('cryptography') }}
@@ -56,7 +57,7 @@ Client library for Magnum built on the Magnum API. It provides a Python API
 This package contains the documentation.
 
 %prep
-%autosetup -n %{name}-%{version}
+%autosetup -n %{name}-%{version} -p1
 %py_req_cleanup
 
 %build
@@ -69,6 +70,9 @@ rm -rf html/.{doctrees,buildinfo}
 %install
 %py2_install
 
+# Install bash completion
+install -p -D -m 644 tools/magnum.bash_completion %{buildroot}%{_sysconfdir}/bash_completion.d/%{name}
+
 %check
 %{__python2} setup.py testr
 
@@ -77,6 +81,7 @@ rm -rf html/.{doctrees,buildinfo}
 %license LICENSE
 %{python2_sitelib}/magnumclient
 %{python2_sitelib}/*.egg-info
+%{_sysconfdir}/bash_completion.d/%{name}
 %{_bindir}/magnum
 
 %files doc
