@@ -1,0 +1,76 @@
+Name:           {{ py2name('python-freezerclient') }}
+Version:        1.0.0
+Release:        0
+Summary:        Python API and CLI for OpenStack Freezer
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            http://launchpad.net/%{name}
+Source0:        https://pypi.io/packages/source/p/%{name}/%{name}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('astroid') }}
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('discover') }}
+BuildRequires:  {{ py2pkg('fixtures') }}
+BuildRequires:  {{ py2pkg('python-keystoneclient') }}
+BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('oslo.i18n') }}
+BuildRequires:  {{ py2pkg('oslo.utils') }}
+BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('python-subunit') }}
+BuildRequires:  {{ py2pkg('setuptools') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+Requires:       {{ py2pkg('cliff') }}
+Requires:       {{ py2pkg('python-keystoneclient') }}
+Requires:       {{ py2pkg('oslo.config') }}
+Requires:       {{ py2pkg('oslo.i18n') }}
+Requires:       {{ py2pkg('oslo.log') }}
+Requires:       {{ py2pkg('oslo.utils') }}
+Requires:       {{ py2pkg('pbr') }}
+Requires:       {{ py2pkg('six') }}
+BuildArch:      noarch
+
+%description
+Client library for Freezer built on the Freezer API. It provides a Python API
+(the freezerclient module) and a command-line tool (freezer).
+
+%package doc
+Summary:        Documentation for OpenStack Freezer API client libary
+Group:          Documentation
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+
+%description doc
+Client library for Freezer built on the Freezer API. It provides a Python API
+(the freezerclient module) and a command-line tool (freezer).
+This package contains the documentation.
+
+%prep
+%autosetup -n %{name}-%{version}
+
+%build
+%py2_build
+
+# Build HTML docs and man page
+%{__python2} setup.py build_sphinx
+rm -rf html/.{doctrees,buildinfo}
+
+%install
+%py2_install
+
+%check
+%{__python2} setup.py testr
+
+%files
+%doc README.rst
+%license LICENSE
+%{python2_sitelib}/freezerclient
+%{python2_sitelib}/*.egg-info
+%{_bindir}/freezer
+
+%files doc
+%doc doc/build/html
+%license LICENSE
+
+%changelog
