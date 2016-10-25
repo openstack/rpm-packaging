@@ -44,6 +44,24 @@ Client library and command line utility for interacting with Openstack
 Share API.
 This package contains auto-generated documentation.
 
+%package test
+Summary:        Testsuite for OpenStack Share API Client
+Group:          Development/Languages/Python
+Requires:       %{name} = %{version}
+Requires:       {{ py2pkg('Tempest') }}
+Requires:       {{ py2pkg('ddt') }}
+Requires:       {{ py2pkg('fixtures') }}
+Requires:       {{ py2pkg('mock') }}
+Requires:       {{ py2pkg('python-openstackclient') }}
+Requires:       {{ py2pkg('oslotest') }}
+Requires:       {{ py2pkg('testrepository') }}
+Requires:       {{ py2pkg('testtools') }}
+
+%description    test
+Client library and command line utility for interacting with Openstack
+Share API.
+This package contains the testsuite.
+
 %prep
 %autosetup -n %{sname}-%{version}
 
@@ -53,6 +71,9 @@ This package contains auto-generated documentation.
 %{__python2} setup.py build_sphinx
 # remove the sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
+
+# handle the test subpackage
+%openstack_test_package_install manilaclient
 
 %install
 %{py2_install}
@@ -76,5 +97,9 @@ install -p -D -m 644 tools/manila.bash_completion %{buildroot}%{_sysconfdir}/bas
 %files doc
 %license LICENSE
 %doc doc/build/html
+
+%files test
+%license LICENSE
+%openstack_test_package_dir
 
 %changelog
