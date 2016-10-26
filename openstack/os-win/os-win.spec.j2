@@ -9,6 +9,7 @@ Group:          Development/Languages/Python
 Url:            https://launchpad.net/%{sname}
 Source0:        https://pypi.io/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
 BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('ddt') }}
 BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('eventlet') }}
@@ -20,7 +21,6 @@ BuildRequires:  {{ py2pkg('oslosphinx') }}
 BuildRequires:  {{ py2pkg('oslotest') }}
 BuildRequires:  {{ py2pkg('pbr') }}
 BuildRequires:  {{ py2pkg('python-subunit') }}
-BuildRequires:  {{ py2pkg('sphinx') }}
 BuildRequires:  {{ py2pkg('testrepository') }}
 BuildRequires:  {{ py2pkg('testscenarios') }}
 BuildRequires:  {{ py2pkg('testtools') }}
