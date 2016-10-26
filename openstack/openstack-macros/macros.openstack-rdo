@@ -1,1 +1,3 @@
 # RDO macros
+
+%py_req_cleanup rm -rf *requirements.txt
