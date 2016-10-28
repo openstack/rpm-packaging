@@ -7,6 +7,7 @@ Group:          Development/Languages/Python
 Url:            http://www.openstack.org/
 Source0:        https://pypi.io/packages/source/t/tempest-lib/tempest-lib-%{version}.tar.gz
 BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('ddt') }}
 BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('httplib2') }}
@@ -18,7 +19,6 @@ BuildRequires:  {{ py2pkg('oslotest') }}
 BuildRequires:  {{ py2pkg('paramiko') }}
 BuildRequires:  {{ py2pkg('pbr') }}
 BuildRequires:  {{ py2pkg('python-subunit') }}
-BuildRequires:  {{ py2pkg('sphinx') }}
 BuildRequires:  {{ py2pkg('testrepository') }}
 BuildRequires:  {{ py2pkg('testscenarios') }}
 BuildRequires:  {{ py2pkg('testtools') }}
