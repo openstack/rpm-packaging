@@ -51,6 +51,7 @@ Python client library for interacting with OpenStack Sahara API.
 
 %prep
 %autosetup -n %{name}-%{version}
+%py_req_cleanup
 # FIXME: can be removed when https://review.openstack.org/#/c/363681/ is merged
 sed -i -e 's/^\s\{4\}git_cmd\(.*\)/    "\/usr\/bin\/true"\1/' doc/source/conf.py
 

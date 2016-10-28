@@ -32,6 +32,7 @@ Tools used by the OpenStack Documentation Project.
 
 %prep
 %autosetup -n %{sname}-%{version}
+%py_req_cleanup
 
 %build
 %py2_build

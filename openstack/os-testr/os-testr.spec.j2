@@ -38,6 +38,7 @@ Documentation for the testr wrapper.
 
 %prep
 %autosetup -n %{sname}-%{version}
+%py_req_cleanup
 
 %build
 %{py2_build}

@@ -33,6 +33,7 @@ This package contains Python client and command line tool for Ironic Inspector.
 
 %prep
 %autosetup -n %{sname}-%{version}
+%py_req_cleanup
 
 %build
 %{py2_build}

@@ -28,6 +28,7 @@ headers parsing library.
 
 %prep
 %autosetup -n microversion_parse-%{version}
+%py_req_cleanup
 
 %build
 %{py2_build}

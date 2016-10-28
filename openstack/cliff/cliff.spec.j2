@@ -49,6 +49,7 @@ This package contains documentation files for %{name}.
 
 %prep
 %autosetup -n %{sname}-%{version}
+%py_req_cleanup
 
 %build
 %py2_build

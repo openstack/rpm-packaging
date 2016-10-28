@@ -57,6 +57,7 @@ DBaaS API.
 
 %prep
 %autosetup -n %{name}-%{version}
+%py_req_cleanup
 
 %build
 %py2_build

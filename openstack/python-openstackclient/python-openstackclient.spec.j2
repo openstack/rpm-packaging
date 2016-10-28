@@ -75,6 +75,7 @@ This package contains auto-generated documentation.
 
 %prep
 %autosetup -n %{sname}-%{version}
+%py_req_cleanup
 
 %build
 %{py2_build}
