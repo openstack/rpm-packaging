@@ -11,3 +11,32 @@
 %_defaultlicensedir %_defaultdocdir
 
 %py_req_cleanup true
+
+# Create given user with given group (to be used as %pre scriptlet for
+# openstack related daemons). Also migrates away from openstack- prefixed
+# users/group if it exists
+# Optional:
+#   -u userid to pick
+#   -g groupid to pick
+#   -s shell to pick
+# Example: openstack_pre_user_group_create keystone keystone
+%openstack_pre_user_group_create(u:g:s:) \
+    # Migrate away from old openstack- prefix \
+    oldu=$(getent passwd openstack-%1 |cut -d: -f3) || : \
+    [ -n "$oldu" ] && { \
+        oldu="-o -u $oldu"   \
+        userdel openstack-%1  \
+    } \
+    getent group %2 >/dev/null || { \
+        # Migrate away from old openstack- prefix \
+        oldg=$(getent group openstack-%2 |cut -d: -f3) || : \
+        [ -n "$oldg" ] && oldg="-o -g $oldg" \
+        [ -n "$oldg" ] && groupdel openstack-%2 || : \
+        [ -z "$oldg" ] && oldg="%{-g:-g %{-g*}}" \
+        groupadd -r %2 $oldg \
+    } \
+    [ -z "$oldu" ] && oldu="%{-u:-u %{-u*}}" \
+    getent passwd %1 >/dev/null || { \
+        useradd -r -g %2 $oldu -d %{_localstatedir}/lib/%1 %{-s:-s %{-s*}}%{!-s: -s /sbin/nologin} -c "OpenStack %1 Daemon" %1 \
+    } \
+%nil
