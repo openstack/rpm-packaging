@@ -1,3 +1,21 @@
 # RDO macros
 
+# Create given user with given group (to be used as %pre scriptlet for
+# openstack related daemons). Also migrates away from openstack- prefixed
+# users/group if it exists
+# Optional:
+#   -u userid to pick
+#   -g groupid to pick
+#   -s shell to pick
+# Example: openstack_pre_user_group_create keystone keystone
+%openstack_pre_user_group_create(u:g:s:) \
+    getent group %2 >/dev/null || { \
+        groupadd -r %2 $oldg \
+    } \
+    getent passwd %1 >/dev/null || { \
+        useradd -r -g %2 %{-u:-u %{-u*}} -d %{_sharedstatedir}/%1 %{-s:-s %{-s*}}%{!-s: -s /sbin/nologin} -c "OpenStack %1 Daemon" %1 \
+    } \
+%nil
+
+
 %py_req_cleanup rm -rf *requirements.txt
