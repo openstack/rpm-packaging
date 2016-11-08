@@ -1,6 +1,6 @@
 %global sname neutron-lib
 Name:           {{ py2name('neutron-lib') }}
-Version:        0.4.0
+Version:        1.0.0
 Release:        0
 Summary:        OpenStack Neutron library
 License:        {{ license('Apache-2.0') }}
@@ -8,13 +8,13 @@ Group:          Development/Languages/Python
 Url:            http://docs.openstack.org/developer/neutron-lib/
 Source0:        https://pypi.io/packages/source/n/%{sname}/%{sname}-%{version}.tar.gz
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('Babel') }}
 BuildRequires:  {{ py2pkg('SQLAlchemy') }}
 BuildRequires:  {{ py2pkg('debtcollector') }}
 BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('fixtures') }}
 BuildRequires:  {{ py2pkg('os-api-ref') }}
 BuildRequires:  {{ py2pkg('os-testr') }}
+BuildRequires:  {{ py2pkg('oslo.concurrency') }}
 BuildRequires:  {{ py2pkg('oslo.config') }}
 BuildRequires:  {{ py2pkg('oslo.context') }}
 BuildRequires:  {{ py2pkg('oslo.db') }}
@@ -33,9 +33,9 @@ BuildRequires:  {{ py2pkg('testrepository') }}
 BuildRequires:  {{ py2pkg('testresources') }}
 BuildRequires:  {{ py2pkg('testscenarios') }}
 BuildRequires:  {{ py2pkg('testtools') }}
-Requires:       {{ py2pkg('Babel') }}
 Requires:       {{ py2pkg('SQLAlchemy') }}
 Requires:       {{ py2pkg('debtcollector') }}
+Requires:       {{ py2pkg('oslo.concurrency') }}
 Requires:       {{ py2pkg('oslo.config') }}
 Requires:       {{ py2pkg('oslo.context') }}
 Requires:       {{ py2pkg('oslo.db') }}
@@ -55,6 +55,7 @@ Summary:        OpenStack Neutron library documentation
 Group:          Documentation
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('reno') }}
 
 %description doc
 OpenStack Neutron library shared by all Neutron sub-projects.
