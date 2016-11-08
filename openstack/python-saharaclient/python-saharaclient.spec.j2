@@ -1,6 +1,6 @@
 %global sname saharaclient
 Name:           {{ py2name('python-saharaclient') }}
-Version:        0.18.0
+Version:        1.0.0
 Release:        0
 Summary:        Client library for OpenStack Sahara API
 License:        {{ license('Apache-2.0') }}
@@ -72,7 +72,6 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %files
 %license LICENSE
 %doc ChangeLog README.rst
-%{_bindir}/sahara
 %{python2_sitelib}/saharaclient
 %{python2_sitelib}/*.egg-info
 
