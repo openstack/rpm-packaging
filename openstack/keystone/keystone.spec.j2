@@ -1,0 +1,253 @@
+%global with_doc 1
+%global sname keystone
+{% set upstream_version = '11.0.0.0b2' %}
+{% set rpm_release = '1' %}
+%if 0%{?rhel} || 0%{?fedora}
+%global rdo 1
+%endif
+Name:           {{ py2name('keystone') }}
+Epoch:          {{ epoch('keystone') }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
+Summary:        OpenStack Identity Service
+License:        {{ license('Apache-2.0') }}
+Url:            https://launchpad.net/keystone
+Source0:        http://tarballs.openstack.org/%{sname}/%{sname}-{{upstream_version}}.tar.gz
+Source1:        openstack-keystone.logrotate
+Source2:        openstack-keystone.sysctl
+Source3:        openstack-keystone.tmpfiles
+Source4:        openstack-keystone.defaultconf
+Source5:        openstack-keystone.README.config
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('Tempest') }}
+BuildRequires:  {{ py2pkg('WebTest') }}
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('fixtures') }}
+BuildRequires:  {{ py2pkg('freezegun') }}
+BuildRequires:  {{ py2pkg('lxml') }}
+BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('os-api-ref') }}
+BuildRequires:  {{ py2pkg('os-testr') }}
+BuildRequires:  {{ py2pkg('oslo.cache') }}
+BuildRequires:  {{ py2pkg('oslo.config') }}
+BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('osprofiler') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('python-subunit') }}
+BuildRequires:  {{ py2pkg('reno') }}
+BuildRequires:  {{ py2pkg('requests') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testresources') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+Requires:       python-%{sname} = %{epoch}:%{version}-%{release}
+BuildArch:      noarch
+%if 0%{?suse_version}
+BuildRequires:  libxmlsec1-openssl1
+Requires(pre):  pwdutils
+%endif
+%if 0%{?rdo}
+BuildRequires:  xmlsec1-openssl
+Requires(pre):  shadow-utils
+%endif
+
+%description
+Keystone is a Python implementation of the OpenStack
+(http://www.openstack.org) identity service API.
+.
+This package contains the keystone python libraries.
+
+%package -n     python-%{sname}
+Summary:        Keystone Python libraries
+Group:          Applications/System
+Requires:       {{ py2pkg('Babel') }}
+Requires:       {{ py2pkg('Paste') }}
+Requires:       {{ py2pkg('PasteDeploy') }}
+Requires:       {{ py2pkg('PyMySQL') }}
+Requires:       {{ py2pkg('Routes') }}
+Requires:       {{ py2pkg('SQLAlchemy') }}
+Requires:       {{ py2pkg('WebOb') }}
+Requires:       {{ py2pkg('cryptography') }}
+Requires:       {{ py2pkg('dogpile.cache') }}
+Requires:       {{ py2pkg('jsonschema') }}
+Requires:       {{ py2pkg('python-keystoneclient') }}
+Requires:       {{ py2pkg('keystonemiddleware') }}
+Requires:       {{ py2pkg('ldappool') }}
+Requires:       {{ py2pkg('msgpack-python') }}
+Requires:       {{ py2pkg('oauthlib') }}
+Requires:       {{ py2pkg('oslo.cache') }}
+Requires:       {{ py2pkg('oslo.concurrency') }}
+Requires:       {{ py2pkg('oslo.config') }}
+Requires:       {{ py2pkg('oslo.context') }}
+Requires:       {{ py2pkg('oslo.db') }}
+Requires:       {{ py2pkg('oslo.i18n') }}
+Requires:       {{ py2pkg('oslo.log') }}
+Requires:       {{ py2pkg('oslo.messaging') }}
+Requires:       {{ py2pkg('oslo.middleware') }}
+Requires:       {{ py2pkg('oslo.policy') }}
+Requires:       {{ py2pkg('oslo.serialization') }}
+Requires:       {{ py2pkg('oslo.utils') }}
+Requires:       {{ py2pkg('osprofiler') }}
+Requires:       {{ py2pkg('passlib') }}
+Requires:       {{ py2pkg('pbr') }}
+Requires:       {{ py2pkg('pycadf') }}
+Requires:       {{ py2pkg('pysaml2') }}
+Requires:       {{ py2pkg('python-memcached') }}
+Requires:       {{ py2pkg('six') }}
+Requires:       {{ py2pkg('sqlalchemy-migrate') }}
+Requires:       {{ py2pkg('stevedore') }}
+%if 0%{?suse_version}
+Requires:       {{ py2pkg('pyldap') }}
+%endif
+%if 0%{?rdo}
+Requires:       {{ py2pkg('python-ldap') }}
+%endif
+
+%description -n   python-%{sname}
+Keystone is a Python implementation of the OpenStack
+(http://docs.openstack.org/developer/keystone/) identity service API.
+This package contains the Keystone Python library.
+
+%if 0%{?with_doc}
+%package doc
+Summary:        Documentation for OpenStack Identity Service
+Group:          Documentation
+BuildRequires:  {{ py2pkg('PasteDeploy') }}
+BuildRequires:  {{ py2pkg('Routes') }}
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('cryptography') }}
+BuildRequires:  {{ py2pkg('dogpile.cache') }}
+BuildRequires:  {{ py2pkg('jsonschema') }}
+BuildRequires:  {{ py2pkg('keystonemiddleware') }}
+BuildRequires:  {{ py2pkg('ldappool') }}
+BuildRequires:  {{ py2pkg('msgpack-python') }}
+BuildRequires:  {{ py2pkg('oauthlib') }}
+BuildRequires:  {{ py2pkg('oslo.concurrency') }}
+BuildRequires:  {{ py2pkg('oslo.db') }}
+BuildRequires:  {{ py2pkg('oslo.i18n') }}
+BuildRequires:  {{ py2pkg('oslo.log') }}
+BuildRequires:  {{ py2pkg('oslo.messaging') }}
+BuildRequires:  {{ py2pkg('oslo.middleware') }}
+BuildRequires:  {{ py2pkg('oslo.policy') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('passlib') }}
+BuildRequires:  {{ py2pkg('pysaml2') }}
+BuildRequires:  {{ py2pkg('python-memcached') }}
+
+%description doc
+OpenStack Keystone documentaion.
+.
+This package contains the documentation
+%endif
+
+%prep
+%autosetup -n %{sname}-{{upstream_version}}
+%if 0%{?rdo}
+find . \( -name .gitignore -o -name .placeholder \) -delete
+find keystone -name \*.py -exec sed -i '/\/usr\/bin\/env python/d' {} \;
+# adjust paths to WSGI scripts
+sed -i 's#/local/bin#/bin#' httpd/wsgi-keystone.conf
+sed -i 's#apache2#httpd#' httpd/wsgi-keystone.conf
+%endif
+
+%build
+%{py2_build}
+export PYTHONPATH="."
+%if 0%{?with_doc}
+# docs generation requires everything to be installed first
+pushd doc
+make html
+make man
+popd
+# remove the sphinx-build leftovers
+rm -rf doc/build/html/.{doctrees,buildinfo}
+%endif
+# config file generation
+oslo-config-generator --config-file config-generator/keystone.conf \
+--output-file etc/keystone.conf.sample
+
+%install
+%{py2_install}
+mkdir -p %{buildroot}%{_mandir}/man1
+install -d -m 755 %{buildroot}%{_sysconfdir}/keystone
+install -d -m 755 %{buildroot}%{_sysconfdir}/sysctl.d
+install -d -m 755 %{buildroot}%{_localstatedir}/{lib,log}/keystone
+install -d -m 750 %{buildroot}%{_localstatedir}/cache/keystone
+install -d -m 755 %{buildroot}%{_sysconfdir}/keystone/keystone.conf.d/
+# default dir for fernet tokens
+install -d -m 750 %{buildroot}%{_sysconfdir}/keystone/credential-keys/
+install -D -m 644 %{SOURCE3} %{buildroot}/%{_tmpfilesdir}/keystone.conf
+install -p -D -m 640 etc/keystone.conf.sample %{buildroot}%{_sysconfdir}/keystone/keystone.conf
+install -D -m 640 %{SOURCE4} %{buildroot}/%{_sysconfdir}/keystone/keystone.conf.d/010-keystone.conf
+install -D -m 440 %{SOURCE5} %{buildroot}/%{_sysconfdir}/keystone/README.config
+install -p -D -m 640 etc/logging.conf.sample %{buildroot}%{_sysconfdir}/keystone/logging.conf
+install -p -D -m 640 etc/keystone-paste.ini %{buildroot}%{_sysconfdir}/keystone/keystone-paste.ini
+install -p -D -m 640 etc/policy.json %{buildroot}%{_sysconfdir}/keystone/policy.json
+install -p -D -m 640 etc/default_catalog.templates %{buildroot}%{_sysconfdir}/keystone/default_catalog.templates
+install -p -D -m 640 etc/sso_callback_template.html %{buildroot}%{_sysconfdir}/keystone/sso_callback_template.html
+install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/openstack-keystone
+install -p -D -m 644 etc/policy.v3cloudsample.json %{buildroot}%{_datadir}/keystone/policy.v3cloudsample.json
+install -p -D -m 644 %{SOURCE2} %{buildroot}%{_sysconfdir}/sysctl.d/openstack-keystone.conf
+install -p -D -m 644 doc/build/man/*.1 %{buildroot}%{_mandir}/man1/
+# Install sample data script.
+install -p -D -m 755 tools/sample_data.sh %{buildroot}%{_datadir}/keystone/sample_data.sh
+# Install apache configuration files
+install -p -D -m 644 httpd/wsgi-keystone.conf  %{buildroot}%{_datadir}/keystone/
+
+%pre
+%openstack_pre_user_group_create keystone keystone /sbin/nologin
+exit 0
+
+%check
+# TODO (IgorYozhikov) on a high amount of vCpu unit tests are not passing
+# Since that we are launching tests in 1 by 1 mode by pack of 4
+export TEST_RUN_CONCURRENCY=4
+# don't want to depend on hacking for package building
+rm keystone/tests/unit/test_hacking_checks.py
+%{__python2} setup.py testr
+
+%post
+%tmpfiles_create %{_tmpfilesdir}/keystone.conf
+%sysctl_apply openstack-keystone.conf
+
+%files
+%license LICENSE
+%doc README.rst
+%{_mandir}/man1/keystone*.1.gz
+%{_bindir}/keystone-wsgi-admin
+%{_bindir}/keystone-wsgi-public
+%{_bindir}/keystone-manage
+%_tmpfilesdir/keystone.conf
+%dir %{_datadir}/keystone
+%attr(0644, root, keystone) %{_datadir}/keystone/policy.v3cloudsample.json
+%attr(0755, root, root) %{_datadir}/keystone/sample_data.sh
+%attr(0644, root, keystone) %{_datadir}/keystone/wsgi-keystone.conf
+%dir %attr(0750, root, keystone) %{_sysconfdir}/keystone/
+%dir %attr(0750, root, keystone) %{_sysconfdir}/keystone/keystone.conf.d/
+%{_sysconfdir}/keystone/README.config
+%config(noreplace) %attr(0640, root, keystone) %{_sysconfdir}/keystone/keystone.conf
+%config(noreplace) %attr(0640, root, keystone) %{_sysconfdir}/keystone/keystone.conf.d/010-keystone.conf
+%config(noreplace) %attr(0640, root, keystone) %{_sysconfdir}/keystone/keystone-paste.ini
+%config(noreplace) %attr(0640, root, keystone) %{_sysconfdir}/keystone/logging.conf
+%config(noreplace) %attr(0640, root, keystone) %{_sysconfdir}/keystone/default_catalog.templates
+%config(noreplace) %attr(0640, keystone, keystone) %{_sysconfdir}/keystone/policy.json
+%config(noreplace) %attr(0640, keystone, keystone) %{_sysconfdir}/keystone/sso_callback_template.html
+%config(noreplace) %{_sysconfdir}/logrotate.d/openstack-keystone
+%dir %attr(0755, %{keystone}, %{keystone}) %{_localstatedir}/lib/keystone
+%dir %attr(0750, %{keystone}, %{keystone}) %{_localstatedir}/log/keystone
+%dir %attr(0750, %{keystone}, %{keystone}) %{_localstatedir}/cache/keystone
+%{_sysconfdir}/sysctl.d/openstack-keystone.conf
+
+%files -n python-keystone
+%defattr(-,root,root,-)
+%doc README.rst
+%license LICENSE
+%{python2_sitelib}/keystone*
+%{python2_sitelib}/keystone-*.egg-info
+
+%if 0%{?with_doc}
+%files doc
+%license LICENSE
+%doc doc/build/html
+%endif
+
+%changelog
