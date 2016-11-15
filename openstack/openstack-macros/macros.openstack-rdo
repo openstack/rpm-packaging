@@ -19,3 +19,21 @@
 
 
 %py_req_cleanup rm -rf *requirements.txt
+
+# Create a fake tempest plugin entry point which will
+# resides under %{python2_sitelib}/%{service}_tests.egg-info.
+# The prefix is %py2_entrypoint %{service}
+# where service is the name of the openstack-service or the modulename
+# It should used under %install section
+# the generated %{python2_sitelib}/%{service}_tests.egg-info
+# will go under %files section of tempest plugin subpackage
+# Example: %py2_entrypoint %{service}
+py2_entrypoint() \
+egg_path=%{buildroot}%{python2_sitelib}/%{1}-*.egg-info \
+tempest_egg_path=%{buildroot}%{python2_sitelib}/%{1}_tests.egg-info \
+mkdir $tempest_egg_path \
+grep "tempest\\|Tempest" %{1}.egg-info/entry_points.txt >$tempest_egg_path/entry_points.txt \
+sed -i "/tempest\\|Tempest/d" $egg_path/entry_points.txt \
+cp -r $egg_path/PKG-INFO $tempest_egg_path \
+sed -i "s/%{1}/%{1}_tests/g" $tempest_egg_path/PKG-INFO \
+%nil
