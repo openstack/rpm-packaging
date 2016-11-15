@@ -37,3 +37,51 @@ sed -i "/tempest\\|Tempest/d" $egg_path/entry_points.txt \
 cp -r $egg_path/PKG-INFO $tempest_egg_path \
 sed -i "s/%{1}/%{1}_tests/g" $tempest_egg_path/PKG-INFO \
 %nil
+
+
+# compat macros with Fedora
+%python_provide() %{lua:\
+        function string.starts(String,Start)\
+                return string.sub(String,1,string.len(Start))==Start\
+        end\
+        str = rpm.expand("%{?1:%{1}}");\
+        vr = rpm.expand("%{?epoch:%{epoch}:}%{version}-%{release}")
+        if (string.starts(str, "python2-")) then\
+                print("Provides: python-");\
+                print(string.sub(str,9,string.len(str)));\
+                print(" = ");\
+                print(vr);\
+                --Obsoleting the previous default python package\
+                print("\\nObsoletes: python-");\
+                print(string.sub(str,9,string.len(str)));\
+                print(" < ");\
+                print(vr);\
+        elseif (string.starts(str, "python3-")) then\
+                --No unversioned provides as python3 is not default\
+        elseif (string.starts(str, "pypy-")) then\
+                --No unversioned provides as pypy is not default\
+        elseif (string.starts(str, "pypy3-")) then\
+                --No unversioned provides as pypy is not default\
+        elseif (string.starts(str, "python-")) then\
+                --Providing the current default python\
+                print("Provides: python2-");\
+                print(string.sub(str,8,string.len(str)));\
+                print(" = ");\
+                print(vr);\
+        else\
+                print("ERROR: ");\
+                print(str);\
+                print("not recognized.");\
+        end\
+}
+
+#
+# Missing systemd macros in EL7 (taken from systemd under GPL 2.1+)
+#
+%sysctl_apply() \
+/usr/lib/systemd/systemd-sysctl %{?*} >/dev/null 2>&1 || : \
+%{nil}
+
+%binfmt_apply() \
+/usr/lib/systemd/systemd-binfmt %{?*} >/dev/null 2>&1 || : \
+%{nil}

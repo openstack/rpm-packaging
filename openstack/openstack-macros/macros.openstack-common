@@ -7,6 +7,12 @@
 
 %py_setup setup.py
 
+%py_shbang_opts -s
+
+%py_build() %{expand:\
+CFLAGS="%{optflags}" %{__python} %{py_setup} %{?py_setup_args} build --executable="%{__python2} %{py_shbang_opts}" %{?1}\
+}
+
 %py2_shbang_opts -s
 
 %py2_build() %{expand:\
