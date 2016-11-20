@@ -1,0 +1,36 @@
+%global sname XStatic-roboto-fontface
+Name:           {{ py2name('XStatic-roboto-fontface') }}
+Version:        0.5.0.0
+Release:        0
+Summary:        roboto-fontface 0.5.0.0 (XStatic packaging standard)
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            https://git.openstack.org/cgit/openstack/xstatic-roboto-fontface/
+Source0:        https://pypi.io/packages/source/X/%{sname}/%{sname}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('setuptools') }}
+BuildArch:      noarch
+
+%description
+roboto-fontface javascript library packaged for setuptools (easy_install) / pip.
+
+%prep
+%autosetup -n XStatic-roboto-fontface-%{version}
+%py_req_cleanup
+
+%build
+%{py2_build}
+
+%install
+%{py2_install}
+
+%files
+%doc README.txt xstatic/pkg/roboto_fontface/data/LICENSE
+%dir %{python2_sitelib}/xstatic
+%dir %{python2_sitelib}/xstatic/pkg
+%{python2_sitelib}/xstatic/pkg/roboto_fontface
+%{python2_sitelib}/*egg-info
+%{python2_sitelib}/*pth
+
+%changelog
