@@ -1,0 +1,35 @@
+%global sname XStatic-Angular-Mock
+Name:           {{ py2name('XStatic-Angular-Mock') }}
+Version:        1.2.1.1
+Release:        0
+Summary:        Angular-Mock %{version} (XStatic packaging standard)
+License:        {{ license('MIT') }}
+Group:          Development/Languages/Python
+Url:            https://git.openstack.org/cgit/openstack/{sname}/
+Source0:        https://pypi.io/packages/source/X/%{sname}/%{sname}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('setuptools') }}
+Requires:       {{ py2pkg('XStatic') }}
+BuildArch:      noarch
+
+%description
+Angular-Mock javascript library packaged for setuptools (easy_install) / pip.
+
+%prep
+%autosetup -n %{sname}-%{version}
+%py_req_cleanup
+
+%build
+%{py2_build}
+
+%install
+%{py2_install}
+
+%files
+%doc README.txt
+%{python2_sitelib}/xstatic
+%{python2_sitelib}/XStatic_Angular_Mock-%{version}-py?.?.egg-info
+%{python2_sitelib}/XStatic_Angular_Mock-%{version}-py?.?-nspkg.pth
+
+%changelog
