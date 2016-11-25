@@ -1,0 +1,35 @@
+%global sname XStatic-Font-Awesome
+Name:           {{ py2name('XStatic-Font-Awesome') }}
+Version:        4.7.0.0
+Release:        0
+Summary:        Font Awesome %{version} (XStatic packaging standard)
+License:        {{ license('OFL-1.1') }}
+Group:          Development/Languages/Python
+Url:            https://git.openstack.org/cgit/openstack/{sname}/
+Source0:        https://pypi.io/packages/source/X/%{sname}/%{sname}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('setuptools') }}
+Requires:       {{ py2pkg('XStatic') }}
+BuildArch:      noarch
+
+%description
+Font Awesome icons packaged for setuptools (easy_install) / pip.
+
+%prep
+%autosetup -n %{sname}-%{version}
+%py_req_cleanup
+
+%build
+%{py2_build}
+
+%install
+%{py2_install}
+
+%files
+%doc README.txt
+%{python2_sitelib}/xstatic
+%{python2_sitelib}/XStatic_Font_Awesome-%{version}-py?.?.egg-info
+%{python2_sitelib}/XStatic_Font_Awesome-%{version}-py?.?-nspkg.pth
+
+%changelog
