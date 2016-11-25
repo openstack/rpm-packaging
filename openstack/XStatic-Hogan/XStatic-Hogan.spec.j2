@@ -1,0 +1,35 @@
+%global sname XStatic-Hogan
+Name:           {{ py2name('XStatic-Hogan') }}
+Version:        2.0.0.2
+Release:        0
+Summary:        Hogan %{version} (XStatic packaging standard)
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            https://git.openstack.org/cgit/openstack/{sname}/
+Source0:        https://pypi.io/packages/source/X/%{sname}/%{sname}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('setuptools') }}
+Requires:       {{ py2pkg('XStatic') }}
+BuildArch:      noarch
+
+%description
+Hogan JavaScript library packaged for setuptools (easy_install) / pip.
+
+%prep
+%autosetup -n %{sname}-%{version}
+%py_req_cleanup
+
+%build
+%{py2_build}
+
+%install
+%{py2_install}
+
+%files
+%doc README.txt
+%{python2_sitelib}/xstatic
+%{python2_sitelib}/XStatic_Hogan-%{version}-py?.?.egg-info
+%{python2_sitelib}/XStatic_Hogan-%{version}-py?.?-nspkg.pth
+
+%changelog
