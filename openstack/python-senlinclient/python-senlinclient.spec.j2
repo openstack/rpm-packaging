@@ -68,8 +68,6 @@ auto-generated documentation.
 %prep
 %autosetup -n %{sname}-%{version}
 %py_req_cleanup
-# FIXME: can be removed when https://review.openstack.org/#/c/377314/ is released
-sed -i -e 's/^\s\{4\}git_cmd\(.*\)/    "\/usr\/bin\/true"\1/' doc/source/conf.py
 
 %build
 %{py2_build}
