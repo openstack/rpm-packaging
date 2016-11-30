@@ -1,0 +1,76 @@
+%global sname python-monascaclient
+Name:           {{ py2name('python-monascaclient') }}
+Version:        1.2.0
+Release:        0
+Summary:        Python API and CLI for OpenStack Monasca
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            https://launchpad.net/%{sname}
+Source0:        https://pypi.io/packages/source/p/%{sname}/%{sname}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('PrettyTable') }}
+BuildRequires:  {{ py2pkg('PyYAML') }}
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('fixtures') }}
+BuildRequires:  {{ py2pkg('python-keystoneclient') }}
+BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('mox3') }}
+BuildRequires:  {{ py2pkg('oslo.concurrency') }}
+BuildRequires:  {{ py2pkg('oslo.config') }}
+BuildRequires:  {{ py2pkg('oslo.i18n') }}
+BuildRequires:  {{ py2pkg('oslo.log') }}
+BuildRequires:  {{ py2pkg('oslo.serialization') }}
+BuildRequires:  {{ py2pkg('oslo.utils') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('setuptools') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testscenarios') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+Requires:       {{ py2pkg('Babel') }}
+Requires:       {{ py2pkg('PrettyTable') }}
+Requires:       {{ py2pkg('PyYAML') }}
+Requires:       {{ py2pkg('python-keystoneclient') }}
+Requires:       {{ py2pkg('oslo.concurrency') }}
+Requires:       {{ py2pkg('oslo.config') }}
+Requires:       {{ py2pkg('oslo.i18n') }}
+Requires:       {{ py2pkg('oslo.log') }}
+Requires:       {{ py2pkg('oslo.serialization') }}
+Requires:       {{ py2pkg('oslo.service') }}
+Requires:       {{ py2pkg('oslo.utils') }}
+Requires:       {{ py2pkg('pbr') }}
+Requires:       {{ py2pkg('requests') }}
+Requires:       {{ py2pkg('six') }}
+BuildArch:      noarch
+
+%description
+This is a client library for Monasca built to interface with the Monasca API. It
+provides a Python API (the ``monascaclient`` module) and a command-line tool
+(``monasca``).
+
+The Monasca Client was written using the OpenStack Heat Python client as a framework.
+
+%prep
+%autosetup -n %{sname}-%{version}
+
+%build
+%py2_build
+
+%install
+%py2_install
+# bash completion
+install -p -D -m 644 tools/monasca.bash_completion %{buildroot}%{_sysconfdir}/bash_completion.d/monasca.bash_completion
+rm -f %{buildroot}%{_datarootdir}/monasca.bash_completion
+
+%check
+%{__python2} setup.py testr
+
+%files
+%doc README.rst
+%license LICENSE
+%{python2_sitelib}/monascaclient
+%{python2_sitelib}/*.egg-info
+%{_sysconfdir}/bash_completion.d/monasca.bash_completion
+%{_bindir}/monasca
+
+%changelog
+
