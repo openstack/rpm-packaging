@@ -8,6 +8,8 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            https://launchpad.net/%{sname}
 Source0:        https://pypi.io/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
+# 0001-Add-defaults-for-config-dir.patch -- backport for master to support default config dirs
+Patch1:         0001-Add-defaults-for-config-dir.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('debtcollector') }}
 BuildRequires:  {{ py2pkg('devel') }}
@@ -51,6 +53,7 @@ Documentation for the oslo-config library.
 
 %prep
 %setup -q -n %{sname}-%{version}
+%patch1 -p1
 
 %build
 %{py2_build}

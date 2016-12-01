@@ -1,0 +1,594 @@
+From f24b04ea87f8dfa772eef231dccef96e34371698 Mon Sep 17 00:00:00 2001
+From: Thomas Bechtold <tbechtold@suse.com>
+Date: Tue, 22 Nov 2016 11:23:40 +0100
+Subject: [PATCH] Add defaults for config-dir
+
+If no --config-dir switches are given on the command
+line, use default directories to search for config
+snippets.
+This is similar to the default config-file support
+oslo.config already includes. It is useful in environments
+where command line arguments can not easily be added, like
+mod_wsgi Apache envs.
+
+Change-Id: I4df977911539777d1510e8b579375aca5b5f15f4
+---
+ oslo_config/_list_opts.py                          |   9 +-
+ oslo_config/cfg.py                                 | 109 +++++++++++++++---
+ oslo_config/fixture.py                             |  39 ++++++-
+ oslo_config/tests/test_cfg.py                      | 127 ++++++++++++++++++++-
+ oslo_config/tests/test_fixture.py                  |   5 +
+ .../add-default-config-dirs-03340ff6689afe94.yaml  |  38 ++++++
+ 6 files changed, 301 insertions(+), 26 deletions(-)
+ create mode 100644 releasenotes/notes/add-default-config-dirs-03340ff6689afe94.yaml
+
+diff --git a/oslo_config/_list_opts.py b/oslo_config/_list_opts.py
+index 0b6b27f..b6190ce 100644
+--- a/oslo_config/_list_opts.py
++++ b/oslo_config/_list_opts.py
+@@ -20,6 +20,13 @@ def list_opts():
+         '/etc/project/project.conf',
+         '/etc/project.conf',
+     ]
++    default_config_dirs = [
++        '~/.project/project.conf.d/',
++        '~/project.conf.d/',
++        '/etc/project/project.conf.d/',
++        '/etc/project.conf.d/',
++    ]
+     return [
+-        (None, cfg.ConfigOpts._make_config_options(default_config_files)),
++        (None, cfg.ConfigOpts._make_config_options(default_config_files,
++                                                   default_config_dirs)),
+     ]
+diff --git a/oslo_config/cfg.py b/oslo_config/cfg.py
+index 1697b2f..8b13823 100644
+--- a/oslo_config/cfg.py
++++ b/oslo_config/cfg.py
+@@ -625,20 +625,19 @@ def _get_config_dirs(project=None):
+         os.path.join('/etc', project) if project else None,
+         '/etc'
+     ]
+-
+     return list(moves.filter(bool, cfg_dirs))
+ 
+ 
+ def _search_dirs(dirs, basename, extension=""):
+-    """Search a list of directories for a given filename.
++    """Search a list of directories for a given filename or directory name.
+ 
+     Iterator over the supplied directories, returning the first file
+     found with the supplied name and extension.
+ 
+     :param dirs: a list of directories
+-    :param basename: the filename, for example 'glance-api'
++    :param basename: the filename or directory name, for example 'glance-api'
+     :param extension: the file extension, for example '.conf'
+-    :returns: the path to a matching file, or None
++    :returns: the path to a matching file or directory, or None
+     """
+     for d in dirs:
+         path = os.path.join(d, '%s%s' % (basename, extension))
+@@ -687,6 +686,47 @@ def find_config_files(project=None, prog=None, extension='.conf'):
+     return list(moves.filter(bool, config_files))
+ 
+ 
++def find_config_dirs(project=None, prog=None, extension='.conf.d'):
++    """Return a list of default configuration dirs.
++
++    :param project: an optional project name
++    :param prog: the program name, defaulting to the basename of
++        sys.argv[0], without extension .py
++    :param extension: the type of the config directory. Defaults to '.conf.d'
++
++    We default to two config dirs: [${project}.conf.d/, ${prog}.conf.d/].
++    If no project name is supplied, we only look for ${prog.conf.d/}.
++
++    And we look for those config dirs in the following directories::
++
++      ~/.${project}/
++      ~/
++      /etc/${project}/
++      /etc/
++
++    We return an absolute path for each of the two config dirs,
++    in the first place we find it (iff we find it).
++
++    For example, if project=foo, prog=bar and /etc/foo/foo.conf.d/,
++    /etc/bar.conf.d/ and ~/.foo/bar.conf.d/ all exist, then we return
++    ['/etc/foo/foo.conf.d/', '~/.foo/bar.conf.d/']
++    """
++    if prog is None:
++        prog = os.path.basename(sys.argv[0])
++        if prog.endswith(".py"):
++            prog = prog[:-3]
++
++    # the base config directories
++    cfg_base_dirs = _get_config_dirs(project)
++
++    config_dirs = []
++    if project:
++        config_dirs.append(_search_dirs(cfg_base_dirs, project, extension))
++    config_dirs.append(_search_dirs(cfg_base_dirs, prog, extension))
++
++    return list(moves.filter(bool, config_dirs))
++
++
+ def _is_opt_registered(opts, opt):
+     """Check whether an opt with the same name is already registered.
+ 
+@@ -2158,7 +2198,7 @@ class ConfigOpts(collections.Mapping):
+ 
+     """
+     disallow_names = ('project', 'prog', 'version',
+-                      'usage', 'default_config_files')
++                      'usage', 'default_config_files', 'default_config_dirs')
+ 
+     def __init__(self):
+         """Construct a ConfigOpts object."""
+@@ -2176,7 +2216,8 @@ class ConfigOpts(collections.Mapping):
+         self._cli_opts = collections.deque()
+         self._validate_default_values = False
+ 
+-    def _pre_setup(self, project, prog, version, usage, default_config_files):
++    def _pre_setup(self, project, prog, version, usage, default_config_files,
++                   default_config_dirs):
+         """Initialize a ConfigCliParser object for option parsing."""
+ 
+         if prog is None:
+@@ -2187,6 +2228,9 @@ class ConfigOpts(collections.Mapping):
+         if default_config_files is None:
+             default_config_files = find_config_files(project, prog)
+ 
++        if default_config_dirs is None:
++            default_config_dirs = find_config_dirs(project, prog)
++
+         self._oparser = _CachedArgumentParser(prog=prog, usage=usage)
+ 
+         if version is not None:
+@@ -2195,10 +2239,10 @@ class ConfigOpts(collections.Mapping):
+                                               action='version',
+                                               version=version)
+ 
+-        return prog, default_config_files
++        return prog, default_config_files, default_config_dirs
+ 
+     @staticmethod
+-    def _make_config_options(default_config_files):
++    def _make_config_options(default_config_files, default_config_dirs):
+         return [
+             _ConfigFileOpt('config-file',
+                            default=default_config_files,
+@@ -2209,6 +2253,7 @@ class ConfigOpts(collections.Mapping):
+                                  'to %(default)s.')),
+             _ConfigDirOpt('config-dir',
+                           metavar='DIR',
++                          default=default_config_dirs,
+                           help='Path to a config directory to pull *.conf '
+                                'files from. This file set is sorted, so as to '
+                                'provide a predictable parse order if '
+@@ -2219,10 +2264,11 @@ class ConfigOpts(collections.Mapping):
+                                'precedence.'),
+         ]
+ 
+-    def _setup(self, project, prog, version, usage, default_config_files):
++    def _setup(self, project, prog, version, usage, default_config_files,
++               default_config_dirs):
+         """Initialize a ConfigOpts object for option parsing."""
+-
+-        self._config_opts = self._make_config_options(default_config_files)
++        self._config_opts = self._make_config_options(default_config_files,
++                                                      default_config_dirs)
+         self.register_cli_opts(self._config_opts)
+ 
+         self.project = project
+@@ -2230,6 +2276,7 @@ class ConfigOpts(collections.Mapping):
+         self.version = version
+         self.usage = usage
+         self.default_config_files = default_config_files
++        self.default_config_dirs = default_config_dirs
+ 
+     def __clear_cache(f):
+         @functools.wraps(f)
+@@ -2250,6 +2297,7 @@ class ConfigOpts(collections.Mapping):
+                  version=None,
+                  usage=None,
+                  default_config_files=None,
++                 default_config_dirs=None,
+                  validate_default_values=False):
+         """Parse command line arguments and config files.
+ 
+@@ -2274,6 +2322,7 @@ class ConfigOpts(collections.Mapping):
+         :param version: the program version (for --version)
+         :param usage: a usage string (%prog will be expanded)
+         :param default_config_files: config files to use by default
++        :param default_config_dirs: config dirs to use by default
+         :param validate_default_values: whether to validate the default values
+         :raises: SystemExit, ConfigFilesNotFoundError, ConfigFileParseError,
+                  ConfigFilesPermissionDeniedError,
+@@ -2283,13 +2332,16 @@ class ConfigOpts(collections.Mapping):
+ 
+         self._validate_default_values = validate_default_values
+ 
+-        prog, default_config_files = self._pre_setup(project,
+-                                                     prog,
+-                                                     version,
+-                                                     usage,
+-                                                     default_config_files)
++        prog, default_config_files, default_config_dirs = self._pre_setup(
++            project,
++            prog,
++            version,
++            usage,
++            default_config_files,
++            default_config_dirs)
+ 
+-        self._setup(project, prog, version, usage, default_config_files)
++        self._setup(project, prog, version, usage, default_config_files,
++                    default_config_dirs)
+ 
+         self._namespace = self._parse_cli_opts(args if args is not None
+                                                else sys.argv[1:])
+@@ -2383,8 +2435,8 @@ class ConfigOpts(collections.Mapping):
+             return group._register_opt(opt, cli)
+ 
+         # NOTE(gcb) We can't use some names which are same with attributes of
+-        # Opts in default group. They includes project, prog, version, usage
+-        # and default_config_files.
++        # Opts in default group. They includes project, prog, version, usage,
++        # default_config_files and default_config_dirs.
+         if group is None:
+             if opt.name in self.disallow_names:
+                 raise ValueError('Name %s was reserved for oslo.config.'
+@@ -2930,6 +2982,8 @@ class ConfigOpts(collections.Mapping):
+                  RequiredOptError, DuplicateOptError
+         """
+         namespace = _Namespace(self)
++
++        # handle --config-file args or the default_config_files
+         for arg in self._args:
+             if arg == '--config-file' or arg.startswith('--config-file='):
+                 break
+@@ -2937,6 +2991,23 @@ class ConfigOpts(collections.Mapping):
+             for config_file in self.default_config_files:
+                 ConfigParser._parse_file(config_file, namespace)
+ 
++        # handle --config-dir args or the default_config_dirs
++        for arg in self._args:
++            if arg == '--config-dir' or arg.startswith('--config-dir='):
++                break
++        else:
++            for config_dir in self.default_config_dirs:
++                # for the default config-dir directories we just continue
++                # if the directories do not exist. This is different to the
++                # case where --config-dir is given on the command line.
++                if not os.path.exists(config_dir):
++                    continue
++
++                config_dir_glob = os.path.join(config_dir, '*.conf')
++
++                for config_file in sorted(glob.glob(config_dir_glob)):
++                    ConfigParser._parse_file(config_file, namespace)
++
+         self._oparser.parse_args(self._args, namespace)
+ 
+         self._validate_cli_options(namespace)
+diff --git a/oslo_config/fixture.py b/oslo_config/fixture.py
+index 6f047e8..ca21182 100644
+--- a/oslo_config/fixture.py
++++ b/oslo_config/fixture.py
+@@ -37,17 +37,23 @@ class Config(fixtures.Fixture):
+         # reset is because cleanup works in reverse order of registered items,
+         # and a reset must occur before unregistering options can occur.
+         self.addCleanup(self._reset_default_config_files)
++        self.addCleanup(self._reset_default_config_dirs)
+         self.addCleanup(self._unregister_config_opts)
+         self.addCleanup(self.conf.reset)
+         self._registered_config_opts = {}
+ 
+-        # Grab an old copy of the default config files - if it exists - for
+-        # subsequent cleanup.
++        # Grab an old copy of the default config files/dirs - if it exists -
++        # for subsequent cleanup.
+         if hasattr(self.conf, 'default_config_files'):
+             self._default_config_files = self.conf.default_config_files
+         else:
+             self._default_config_files = None
+ 
++        if hasattr(self.conf, 'default_config_dirs'):
++            self._default_config_dirs = self.conf.default_config_dirs
++        else:
++            self._default_config_dirs = None
++
+     def config(self, **kw):
+         """Override configuration values.
+ 
+@@ -83,6 +89,17 @@ class Config(fixtures.Fixture):
+             # being unset.
+             self.conf.default_config_files = None
+ 
++    def _reset_default_config_dirs(self):
++        if not hasattr(self.conf, 'default_config_dirs'):
++            return
++
++        if self._default_config_dirs:
++            self.conf.default_config_dirs = self._default_config_dirs
++        else:
++            # Delete, because we could conceivably begin with the property
++            # being unset.
++            self.conf.default_config_dirs = None
++
+     def register_opt(self, opt, group=None):
+         """Register a single option for the test run.
+ 
+@@ -181,6 +198,24 @@ class Config(fixtures.Fixture):
+         self.conf.default_config_files = config_files
+         self.conf.reload_config_files()
+ 
++    def set_config_dirs(self, config_dirs):
++        """Specify a list of config dirs to read.
++
++        This method allows you to predefine the list of configuration dirs
++        that are loaded by oslo_config. It will ensure that your tests do not
++        attempt to autodetect, and accidentally pick up config files from
++        locally installed services.
++        """
++        if not isinstance(config_dirs, list):
++            raise AttributeError("Please pass a list() to set_config_dirs()")
++
++        # Make sure the namespace exists for our tests.
++        if not self.conf._namespace:
++            self.conf([])
++
++        self.conf.default_config_dirs = config_dirs
++        self.conf.reload_config_files()
++
+     def set_default(self, name, default, group=None):
+         """Set a default value for an option.
+ 
+diff --git a/oslo_config/tests/test_cfg.py b/oslo_config/tests/test_cfg.py
+index cde47f1..46e8f8a 100644
+--- a/oslo_config/tests/test_cfg.py
++++ b/oslo_config/tests/test_cfg.py
+@@ -92,7 +92,8 @@ class ExceptionsTestCase(base.BaseTestCase):
+ class BaseTestCase(base.BaseTestCase):
+ 
+     class TestConfigOpts(cfg.ConfigOpts):
+-        def __call__(self, args=None, default_config_files=[]):
++        def __call__(self, args=None, default_config_files=[],
++                     default_config_dirs=[]):
+             return cfg.ConfigOpts.__call__(
+                 self,
+                 args=args,
+@@ -100,6 +101,7 @@ class BaseTestCase(base.BaseTestCase):
+                 version='1.0',
+                 usage='%(prog)s FOO BAR',
+                 default_config_files=default_config_files,
++                default_config_dirs=default_config_dirs,
+                 validate_default_values=True)
+ 
+     def setUp(self):
+@@ -113,10 +115,16 @@ class BaseTestCase(base.BaseTestCase):
+         tempfiles = []
+         for (basename, contents) in files:
+             if not os.path.isabs(basename):
+-                (fd, path) = tempfile.mkstemp(prefix=basename, suffix=ext)
++                # create all the tempfiles in a tempdir
++                tmpdir = tempfile.mkdtemp()
++                path = os.path.join(tmpdir, basename + ext)
++                # the path can start with a subdirectory so create
++                # it if it doesn't exist yet
++                if not os.path.exists(os.path.dirname(path)):
++                    os.makedirs(os.path.dirname(path))
+             else:
+                 path = basename + ext
+-                fd = os.open(path, os.O_CREAT | os.O_WRONLY)
++            fd = os.open(path, os.O_CREAT | os.O_WRONLY)
+             tempfiles.append(path)
+             try:
+                 os.write(fd, contents.encode('utf-8'))
+@@ -200,6 +208,35 @@ class FindConfigFilesTestCase(BaseTestCase):
+                          config_files)
+ 
+ 
++class FindConfigDirsTestCase(BaseTestCase):
++
++    def test_find_config_dirs(self):
++        config_dirs = [os.path.expanduser('~/.blaa/blaa.conf.d'),
++                       '/etc/foo.conf.d']
++
++        self.useFixture(fixtures.MonkeyPatch('sys.argv', ['foo']))
++        self.useFixture(fixtures.MonkeyPatch('os.path.exists',
++                                             lambda p: p in config_dirs))
++
++        self.assertEqual(cfg.find_config_dirs(project='blaa'), config_dirs)
++
++    def test_find_config_dirs_non_exists(self):
++        self.useFixture(fixtures.MonkeyPatch('sys.argv', ['foo']))
++        self.assertEqual(cfg.find_config_dirs(project='blaa'), [])
++
++    def test_find_config_dirs_with_extension(self):
++        config_dirs = ['/etc/foo.json.d']
++
++        self.useFixture(fixtures.MonkeyPatch('sys.argv', ['foo']))
++        self.useFixture(fixtures.MonkeyPatch('os.path.exists',
++                                             lambda p: p in config_dirs))
++
++        self.assertEqual(cfg.find_config_dirs(project='blaa'), [])
++        self.assertEqual(cfg.find_config_dirs(project='blaa',
++                                              extension='.json.d'),
++                         config_dirs)
++
++
+ class DefaultConfigFilesTestCase(BaseTestCase):
+ 
+     def test_use_default(self):
+@@ -275,6 +312,88 @@ class DefaultConfigFilesTestCase(BaseTestCase):
+         self.assertEqual('blaa', self.conf.foo)
+ 
+ 
++class DefaultConfigDirsTestCase(BaseTestCase):
++
++    def test_use_default(self):
++        self.conf.register_opt(cfg.StrOpt('foo'))
++        paths = self.create_tempfiles([('foo.conf.d/foo',
++                                        '[DEFAULT]\n''foo = bar\n')])
++        p = os.path.dirname(paths[0])
++        self.conf.register_cli_opt(cfg.StrOpt('config-dir-foo'))
++        self.conf(args=['--config-dir-foo', 'foo.conf.d'],
++                  default_config_dirs=[p])
++
++        self.assertEqual([p], self.conf.config_dir)
++        self.assertEqual('bar', self.conf.foo)
++
++    def test_do_not_use_default_multi_arg(self):
++        self.conf.register_opt(cfg.StrOpt('foo'))
++        paths = self.create_tempfiles([('foo.conf.d/foo',
++                                        '[DEFAULT]\n''foo = bar\n')])
++        p = os.path.dirname(paths[0])
++        self.conf(args=['--config-dir', p],
++                  default_config_dirs=['bar.conf.d'])
++
++        self.assertEqual([p], self.conf.config_dirs)
++        self.assertEqual('bar', self.conf.foo)
++
++    def test_do_not_use_default_single_arg(self):
++        self.conf.register_opt(cfg.StrOpt('foo'))
++        paths = self.create_tempfiles([('foo.conf.d/foo',
++                                        '[DEFAULT]\n''foo = bar\n')])
++        p = os.path.dirname(paths[0])
++        self.conf(args=['--config-dir=' + p],
++                  default_config_dirs=['bar.conf.d'])
++
++        self.assertEqual([p], self.conf.config_dir)
++        self.assertEqual('bar', self.conf.foo)
++
++    def test_no_default_config_dir(self):
++        self.conf(args=[])
++        self.assertEqual([], self.conf.config_dir)
++
++    def test_find_default_config_dir(self):
++        paths = self.create_tempfiles([('def.conf.d/def',
++                                        '[DEFAULT]')])
++        p = os.path.dirname(paths[0])
++        self.useFixture(fixtures.MonkeyPatch(
++                        'oslo_config.cfg.find_config_dirs',
++                        lambda project, prog: p))
++
++        self.conf(args=[], default_config_dirs=None)
++        self.assertEqual([p], self.conf.config_dir)
++
++    def test_default_config_dir(self):
++        paths = self.create_tempfiles([('def.conf.d/def',
++                                        '[DEFAULT]')])
++        p = os.path.dirname(paths[0])
++        self.conf(args=[], default_config_dirs=[p])
++
++        self.assertEqual([p], self.conf.config_dir)
++
++    def test_default_config_dir_with_value(self):
++        self.conf.register_cli_opt(cfg.StrOpt('foo'))
++
++        paths = self.create_tempfiles([('def.conf.d/def',
++                                        '[DEFAULT]\n''foo = bar\n')])
++        p = os.path.dirname(paths[0])
++        self.conf(args=[], default_config_dirs=[p])
++
++        self.assertEqual([p], self.conf.config_dir)
++        self.assertEqual('bar', self.conf.foo)
++
++    def test_default_config_dir_priority(self):
++        self.conf.register_cli_opt(cfg.StrOpt('foo'))
++
++        paths = self.create_tempfiles([('def.conf.d/def',
++                                        '[DEFAULT]\n''foo = bar\n')])
++        p = os.path.dirname(paths[0])
++        self.conf(args=['--foo=blaa'], default_config_dirs=[p])
++
++        self.assertEqual([p], self.conf.config_dir)
++        self.assertEqual('blaa', self.conf.foo)
++
++
+ class CliOptsTestCase(BaseTestCase):
+     """Test CLI Options.
+ 
+@@ -3645,7 +3764,7 @@ class OptDumpingTestCase(BaseTestCase):
+                          "'that', '--blaa-key', 'admin', '--passwd', 'hush']",
+                          "config files: []",
+                          "=" * 80,
+-                         "config_dir                     = None",
++                         "config_dir                     = []",
+                          "config_file                    = []",
+                          "foo                            = this",
+                          "passwd                         = ****",
+diff --git a/oslo_config/tests/test_fixture.py b/oslo_config/tests/test_fixture.py
+index 6e2062d..ace28ad 100644
+--- a/oslo_config/tests/test_fixture.py
++++ b/oslo_config/tests/test_fixture.py
+@@ -146,14 +146,19 @@ class ConfigTestCase(base.BaseTestCase):
+         """Assert that using the fixture forces a clean list."""
+         f = self._make_fixture()
+         self.assertNotIn('default_config_files', f.conf)
++        self.assertNotIn('default_config_dirs', f.conf)
+ 
+         config_files = ['./test_fixture.conf']
++        config_dirs = ['./test_fixture.conf.d']
+         f.set_config_files(config_files)
++        f.set_config_dirs(config_dirs)
+ 
+         self.assertEqual(f.conf.default_config_files, config_files)
++        self.assertEqual(f.conf.default_config_dirs, config_dirs)
+         f.cleanUp()
+ 
+         self.assertNotIn('default_config_files', f.conf)
++        self.assertNotIn('default_config_dirs', f.conf)
+ 
+     def test_load_custom_files(self):
+         f = self._make_fixture()
+diff --git a/releasenotes/notes/add-default-config-dirs-03340ff6689afe94.yaml b/releasenotes/notes/add-default-config-dirs-03340ff6689afe94.yaml
+new file mode 100644
+index 0000000..3294f14
+--- /dev/null
++++ b/releasenotes/notes/add-default-config-dirs-03340ff6689afe94.yaml
+@@ -0,0 +1,38 @@
++---
++features:
++  - |
++    Add default config-dir paths if no --config-dir switches are given on the
++    command line. This is similar to the default config-file handling
++    oslo.config already supports.
++    If no --config-dir switches are given, oslo.config searches now in a couple
++    of directories (depending on the given project name) for config file
++    snippets. Non-existing directories are simply skipped.
++    The directories, if no project name is given, are:
++
++    * ~/${prog}.conf.d/
++    * /etc/${prog}.conf.d/
++
++    Only the first directory is used if that is available.
++    If a project is given, the directories searched is a bit more complicated.
++    2 directories are searched, first search is for the project related dir:
++
++    * ~/.${project}/${project}.conf.d/
++    * ~/${project}.conf.d/
++    * /etc/${project}/${project}.conf.d/
++    * /etc/${project}.conf.d/
++
++    Then for the program name related configs, the following directories are
++    searched:
++
++    * ~/.${project}/${prog}.conf.d/
++    * ~/${prog}.conf.d/
++    * /etc/${project}/${prog}.conf.d/
++    * /etc/${prog}.conf.d/
++
++other:
++  - Adding some default config-dirs makes it possible to use config dir snippets
++    also in wsgi environments (like Apache) where it is not easily possible to
++    pass command line parameters to a wsgi app.
++upgrade:
++  - Similar to 'default_config_files', 'default_config_dirs' is no longer an
++    allowed config key. If that key is used, a ValueError() will be raised.
+-- 
+2.10.2
+
