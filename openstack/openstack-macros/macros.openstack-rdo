@@ -22,20 +22,23 @@
 
 # Create a fake tempest plugin entry point which will
 # resides under %{python2_sitelib}/%{service}_tests.egg-info.
-# The prefix is %py2_entrypoint %{service}
+# The prefix is %py2_entrypoint %{modulename} %{service}
 # where service is the name of the openstack-service or the modulename
 # It should used under %install section
 # the generated %{python2_sitelib}/%{service}_tests.egg-info
 # will go under %files section of tempest plugin subpackage
-# Example: %py2_entrypoint %{service}
-py2_entrypoint() \
+# Example: %py2_entrypoint %{modulename} %{service}
+# In most of the cases %{service} is same as %{modulename}
+# but in case of neutron plugins it is different
+# like servicename is neutron-lbaas and modulename is neutron_lbass
+%py2_entrypoint() \
 egg_path=%{buildroot}%{python2_sitelib}/%{1}-*.egg-info \
 tempest_egg_path=%{buildroot}%{python2_sitelib}/%{1}_tests.egg-info \
 mkdir $tempest_egg_path \
 grep "tempest\\|Tempest" %{1}.egg-info/entry_points.txt >$tempest_egg_path/entry_points.txt \
 sed -i "/tempest\\|Tempest/d" $egg_path/entry_points.txt \
 cp -r $egg_path/PKG-INFO $tempest_egg_path \
-sed -i "s/%{1}/%{1}_tests/g" $tempest_egg_path/PKG-INFO \
+sed -i "s/%{2}/%{1}_tests/g" $tempest_egg_path/PKG-INFO \
 %nil
 
 
