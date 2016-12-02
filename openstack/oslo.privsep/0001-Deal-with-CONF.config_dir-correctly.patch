@@ -1,0 +1,52 @@
+From 227ff32013e58dcb430e887b85e880aed1e148c7 Mon Sep 17 00:00:00 2001
+From: Nicolas Bock <nicolasbock@gmail.com>
+Date: Thu, 1 Dec 2016 10:34:51 -0700
+Subject: [PATCH] Deal with CONF.config_dir correctly
+
+When config_dir is set, we were seeing this error:
+  execv() arg 2 must contain only strings
+
+We got this debug log:
+  ['sudo', 'nova-rootwrap', ... ,
+  '--config-file', '/nova/nova.conf', '--config-dir', ['/etc/nova'],
+  ...]
+
+(cherry picked from commit 1666d9153a3b064c95e9fcaa6c3d77b926517a9c)
+
+Change-Id: I2f89cc49cbb43820d70c0d56f945d88ddaf2e5c6
+Closes-Bug: 1646555
+---
+ oslo_privsep/priv_context.py            | 3 ++-
+ oslo_privsep/tests/test_priv_context.py | 2 +-
+ 2 files changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/oslo_privsep/priv_context.py b/oslo_privsep/priv_context.py
+index 737f3b0..12cf8cd 100644
+--- a/oslo_privsep/priv_context.py
++++ b/oslo_privsep/priv_context.py
+@@ -158,7 +158,8 @@ class PrivContext(object):
+ 
+             try:
+                 if cfg.CONF.config_dir is not None:
+-                    cmd.extend(['--config-dir', cfg.CONF.config_dir])
++                    for cfg_dir in cfg.CONF.config_dir:
++                        cmd.extend(['--config-dir', cfg_dir])
+             except cfg.NoSuchOptError:
+                 pass
+ 
+diff --git a/oslo_privsep/tests/test_priv_context.py b/oslo_privsep/tests/test_priv_context.py
+index eaddb9f..535e48f 100644
+--- a/oslo_privsep/tests/test_priv_context.py
++++ b/oslo_privsep/tests/test_priv_context.py
+@@ -104,7 +104,7 @@ class PrivContextTest(testctx.TestContextTestCase):
+ 
+     def test_helper_command_default_dirtoo(self):
+         self.privsep_conf.config_file = ['/bar.conf', '/baz.conf']
+-        self.privsep_conf.config_dir = '/foo.d'
++        self.privsep_conf.config_dir = ['/foo.d']
+         cmd = testctx.context.helper_command('/tmp/sockpath')
+         expected = [
+             'sudo', 'privsep-helper',
+-- 
+2.10.2
+
