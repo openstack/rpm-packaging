@@ -1,6 +1,6 @@
 %global pypi_name taskflow
 Name:           {{ py2name('taskflow') }}
-Version:        2.7.0
+Version:        2.8.0
 Release:        0
 Summary:        Taskflow structured state management library
 License:        {{ license('Apache-2.0') }}
@@ -34,6 +34,7 @@ BuildRequires:  {{ py2pkg('pydotplus') }}
 BuildRequires:  {{ py2pkg('redis') }}
 BuildRequires:  {{ py2pkg('retrying') }}
 BuildRequires:  {{ py2pkg('stevedore') }}
+BuildRequires:  {{ py2pkg('tenacity') }}
 BuildRequires:  {{ py2pkg('testscenarios') }}
 BuildRequires:  {{ py2pkg('testtools') }}
 BuildRequires:  {{ py2pkg('zake') }}
@@ -57,6 +58,7 @@ Requires:       {{ py2pkg('oslo.utils') }}
 Requires:       {{ py2pkg('retrying') }}
 Requires:       {{ py2pkg('six') }}
 Requires:       {{ py2pkg('stevedore') }}
+Requires:       {{ py2pkg('tenacity') }}
 BuildArch:      noarch
 
 %description
