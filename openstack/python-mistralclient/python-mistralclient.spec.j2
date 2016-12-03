@@ -1,5 +1,5 @@
 Name:           {{ py2name('python-mistralclient') }}
-Version:        2.1.1
+Version:        2.1.2
 Release:        0
 Summary:        Python API and CLI for OpenStack Mistral
 License:        {{ license('Apache-2.0') }}
@@ -57,7 +57,7 @@ rm -rf html/.{doctrees,buildinfo}
 %install
 %py2_install
 #man pages
-install -p -D -m 644 build/sphinx/man/mistral_client.1 %{buildroot}%{_mandir}/man1/mistral_client.1
+install -p -D -m 644 doc/build/man/mistral_client.1 %{buildroot}%{_mandir}/man1/mistral_client.1
 
 %check
 find . -type f -name *.pyc -delete
