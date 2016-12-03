@@ -17,7 +17,7 @@ castellan>=0.4.0 # Apache-2.0
 ceilometermiddleware>=0.1.0  # Apache-2.0
 cachetools>=1.1.0 # MIT License
 cffi  # MIT
-cliff>=2.2.0  # Apache-2.0
+cliff>=2.3.0  # Apache-2.0
 cmd2>=0.6.7  # MIT
 PuLP>=1.4.1  # MIT
 contextlib2>=0.4.0 # PSF License
@@ -39,6 +39,7 @@ dnspython>=1.14.0;python_version=='2.7'  # http://www.dnspython.org/LICENSE
 dnspython3>=1.12.0,!=1.13.0,!=1.14.0;python_version>='3.0'  # http://www.dnspython.org/LICENSE
 dogpile.cache>=0.6.2  # BSD
 dogtag-pki>=10.3.5.1  # LGPLv3+
+dulwich>=0.15.0  # Apache-2.0
 elasticsearch>=2.0.0,<=3.0.0 # Apache-2.0
 enum34;python_version=='2.7' or python_version=='2.6' or python_version=='3.3'  # BSD
 # NOTE: New versions of eventlet should not be accepted lightly
@@ -58,6 +59,7 @@ google-api-python-client>=1.4.2        # Apache-2.0
 graphviz>=0.4.0,!=0.5.0 # MIT License
 greenlet>=0.3.2  # MIT
 GitPython>=1.0.1 # BSD License (3 clause)
+gunicorn>=19.0  # MIT
 happybase>=0.5,!=0.7;python_version=='2.7'  # MIT
 heat-translator>=0.4.0 # Apache-2.0
 httplib2>=0.7.5  # MIT
@@ -77,6 +79,7 @@ krest>=1.3.1  # Apache-2.0
 kuryr-lib>=0.1.0  # Apache-2.0
 packaging>=16.5  # Apache-2.0
 positional>=1.1.1 # Apache-2.0
+pypowervm>=1.0.0.3.9 # Apache-2.0
 pyScss>=1.3.4,!=1.3.5  # MIT License
 django-pyscss>=2.0.2  # BSD License (2 clause)
 kombu>=3.0.25,!=4.0.0  # BSD
@@ -114,7 +117,7 @@ oslo.log>=3.11.0  # Apache-2.0
 # NOTE(mriedem): oslo.messaging 3.1.0 breaks Ironic
 oslo.messaging>=5.2.0 # Apache-2.0
 oslo.middleware>=3.0.0                  # Apache-2.0
-oslo.policy>=1.15.0  # Apache-2.0
+oslo.policy>=1.17.0  # Apache-2.0
 oslo.privsep>=1.9.0  # Apache-2.0
 oslo.reports>=0.6.0  # Apache-2.0
 oslo.rootwrap>=5.0.0  # Apache-2.0
@@ -122,7 +125,7 @@ oslo.serialization>=1.10.0              # Apache-2.0
 oslo.service>=1.10.0                     # Apache-2.0
 oslo.utils>=3.18.0                       # Apache-2.0
 oslo.vmware>=2.11.0                     # Apache-2.0
-oslo.versionedobjects>=1.13.0            # Apache-2.0
+oslo.versionedobjects>=1.17.0            # Apache-2.0
 osprofiler>=1.4.0                       # Apache-2.0
 os-apply-config  # Apache-2.0
 os-brick>=1.8.0  # Apache-2.0
@@ -134,10 +137,11 @@ os-testr>=0.8.0  # Apache-2.0
 os-vif>=1.3.0                           # Apache-2.0
 ovs>=2.6.1                              # Apache-2.0
 os-win>=1.1.0                           # Apache-2.0
+os-xenapi>=0.1.0  # Apache-2.0
 paramiko>=2.0 # LGPLv2.1+
 Parsley  # MIT
 pathlib2>=2.1.0  # MIT
-passlib>=1.6  # BSD
+passlib>=1.7.0  # BSD
 Paste  # MIT
 PasteDeploy>=1.5.0  # MIT
 pbr>=1.8  # Apache-2.0
@@ -148,7 +152,7 @@ pika>=0.10.0  # BSD
 pika-pool>=0.1.3  # BSD
 Pillow>=2.4.0  # PIL License
 Pint>=0.5  # BSD
-pip>=6.0  # MIT
+pip>=7.1.0  # MIT
 posix_ipc  # BSD
 PrettyTable>=0.7.1,<0.8  # BSD
 psutil>=1.1.1,<2.0.0  # BSD
@@ -166,7 +170,7 @@ pylxd>=2.1.1  # Apache-2.0
 pymemcache>=1.2.9,!=1.3.0  # Apache 2.0 License
 pymod2pkg>=0.6.1  # Apache-2.0
 pymongo>=3.0.2,!=3.1  # Apache-2.0
-PyMySQL>=0.6.2,!=0.7.7  # MIT License
+PyMySQL>=0.7.6,!=0.7.7  # MIT License
 python-etcd>=0.4.3  # MIT License
 python-k8sclient>=0.2.0  # Apache-2.0
 typing>=3.5.2.2  # PSF
@@ -201,12 +205,13 @@ python-ceilometerclient>=2.5.0  # Apache-2.0
 python-cinderclient>=1.6.0,!=1.7.0,!=1.7.1  # Apache-2.0
 python-congressclient>=1.3.0,<2000  # Apache-2.0
 python-designateclient>=1.5.0  # Apache-2.0
-python-heatclient>=1.5.0  # Apache-2.0
+python-freezerclient>=1.0.0 # Apache-2.0
+python-heatclient>=1.6.1  # Apache-2.0
 python-glanceclient>=2.5.0  # Apache-2.0
 python-ironic-inspector-client>=1.5.0  # Apache-2.0
 python-ironicclient>=1.6.0  # Apache-2.0
-python-karborclient>=0.0.9  # Apache-2.0
-python-keystoneclient>=3.6.0  # Apache-2.0
+python-karborclient>=0.1.1  # Apache-2.0
+python-keystoneclient>=3.8.0  # Apache-2.0
 python-magnumclient>=2.0.0  # Apache-2.0
 python-manilaclient>=1.10.0  # Apache-2.0
 python-mistralclient>=2.0.0  # Apache-2.0
@@ -235,7 +240,7 @@ pyudev  # LGPLv2.1+
 PyYAML>=3.10.0  # MIT
 qpid-python;python_version=='2.7'  # Apache-2.0
 reno>=1.8.0  # Apache-2.0
-requests>=2.10.0  # Apache-2.0
+requests>=2.10.0,!=2.12.2  # Apache-2.0
 requests-aws>=0.1.4    # BSD License (3 clause)
 requests-kerberos>=0.6  # ISC
 requestsexceptions>=1.1.1  # Apache-2.0
@@ -299,7 +304,7 @@ XStatic-Magic-Search>=0.2.5.1  # Apache 2.0 License
 XStatic-mdi>=1.4.57.0 # SIL OPEN FONT LICENSE Version 1.1
 XStatic-objectpath>=1.2.1.0 # MIT
 XStatic-Rickshaw>=1.5.0  # BSD License (prior)
-XStatic-roboto-fontface>=0.4.3.2 # Apache 2.0 License
+XStatic-roboto-fontface>=0.5.0.0 # Apache 2.0 License
 XStatic-smart-table>=1.4.5.3,!=1.4.13.0  # MIT License
 XStatic-Spin>=1.2.5.2  # MIT License
 XStatic-term.js>=0.0.4.1 # MIT License
@@ -315,7 +320,7 @@ cliff-tablib>=1.0  # Apache-2.0
 couchdb>=0.8 # Apache-2.0
 coverage>=4.0  # Apache-2.0
 demjson # GLGPLv3+
-docker-py>=1.6.0,<1.8.0  # Apache-2.0
+docker-py>=1.6.0,!=1.8.0  # Apache-2.0
 discover  # BSD
 django-nose>=1.4.4  # BSD
 doc8  # Apache-2.0
@@ -331,14 +336,14 @@ mock>=2.0  # BSD
 mox>=0.5.3  # Apache-2.0
 mox3>=0.7.0  # Apache-2.0
 MySQL-python;python_version=='2.7'  # GPL with FOSS exception
-nodeenv>=0.9.4 # BSD License  # BSD
+nodeenv>=0.9.4  # BSD
 nose  # LGPL
 nose-exclude  # LGPL
 nosehtmloutput>=0.0.3  # Apache-2.0
 nosexcover  # BSD
 openstack-doc-tools>=0.23  # Apache-2.0
 openstack.nose_plugin>=0.7  # Apache-2.0
-openstacksdk>=0.9.7  # Apache-2.0
+openstacksdk>=0.9.10  # Apache-2.0
 os-api-ref>=1.0.0  # Apache-2.0
 oslosphinx>=4.7.0  # Apache-2.0
 oslotest>=1.10.0  # Apache-2.0
@@ -376,7 +381,7 @@ testtools>=1.4.0  # MIT
 trollius>=1.0  # Apache-2.0
 ujson>=1.35  # BSD
 unittest2  # BSD
-virtualenv  # MIT
+virtualenv>=13.1.0  # MIT
 wrapt>=1.7.0 # BSD License
 WebTest>=2.0  # MIT
 Werkzeug>=0.7  # BSD License
