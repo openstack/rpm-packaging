@@ -1,6 +1,6 @@
 %global sname oslo.db
 Name:           {{ py2name('oslo.db') }}
-Version:        4.13.3
+Version:        4.13.4
 Release:        0
 Summary:        OpenStack oslo.db library
 License:        {{ license('Apache-2.0') }}
@@ -29,6 +29,7 @@ BuildRequires:  {{ py2pkg('six') }}
 BuildRequires:  {{ py2pkg('sqlalchemy-migrate') }}
 BuildRequires:  {{ py2pkg('testrepository') }}
 BuildRequires:  {{ py2pkg('testresources') }}
+BuildRequires:  {{ py2pkg('testscenarios') }}
 BuildRequires:  {{ py2pkg('testtools') }}
 Requires:       {{ py2pkg('PyMySQL') }}
 Requires:       {{ py2pkg('SQLAlchemy') }}
