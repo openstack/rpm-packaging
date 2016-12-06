@@ -9,3 +9,5 @@
 %python2_sitearch %(%{__python2} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")
 # Make %license work like %doc for now - discussion started with openSUSE
 %_defaultlicensedir %_defaultdocdir
+
+%py_req_cleanup true
