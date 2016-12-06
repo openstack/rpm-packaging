@@ -1,6 +1,6 @@
 %global sname oslo.messaging
 Name:           {{ py2name('oslo.messaging') }}
-Version:        5.12.0
+Version:        5.13.0
 Release:        0
 Summary:        OpenStack oslo.messaging library
 License:        {{ license('Apache-2.0') }}
@@ -38,9 +38,9 @@ BuildRequires:  {{ py2pkg('pifpaf') }}
 BuildRequires:  {{ py2pkg('pika') }}
 BuildRequires:  {{ py2pkg('pika-pool') }}
 BuildRequires:  {{ py2pkg('python-subunit') }}
-BuildRequires:  {{ py2pkg('retrying') }}
 BuildRequires:  {{ py2pkg('six') }}
 BuildRequires:  {{ py2pkg('stevedore') }}
+BuildRequires:  {{ py2pkg('tenacity') }}
 BuildRequires:  {{ py2pkg('testrepository') }}
 BuildRequires:  {{ py2pkg('testscenarios') }}
 BuildRequires:  {{ py2pkg('testtools') }}
@@ -65,9 +65,9 @@ Requires:       {{ py2pkg('oslo.service') }}
 Requires:       {{ py2pkg('oslo.utils') }}
 Requires:       {{ py2pkg('pika') }}
 Requires:       {{ py2pkg('pika-pool') }}
-Requires:       {{ py2pkg('retrying') }}
 Requires:       {{ py2pkg('six') }}
 Requires:       {{ py2pkg('stevedore') }}
+Requires:       {{ py2pkg('tenacity') }}
 BuildArch:      noarch
 
 %description
