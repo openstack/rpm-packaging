@@ -1,6 +1,6 @@
 %global sname oslo.i18n
 Name:           {{ py2name('oslo.i18n') }}
-Version:        3.10.0
+Version:        3.11.0
 Release:        0
 Summary:        OpenStack i18n library
 License:        {{ license('Apache-2.0') }}
@@ -12,6 +12,7 @@ BuildRequires:  {{ py2pkg('Babel') }}
 BuildRequires:  {{ py2pkg('mock') }}
 BuildRequires:  {{ py2pkg('oslotest') }}
 BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('testscenarios') }}
 Requires:       {{ py2pkg('Babel') }}
 Requires:       {{ py2pkg('six') }}
 BuildArch:      noarch
