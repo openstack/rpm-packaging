@@ -1,0 +1,52 @@
+Name:           {{ py2name('python-distilclient') }}
+Version:        0.1.1
+Release:        0
+Summary:        Python API and CLI for OpenStack Distil
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            http://launchpad.net/%{name}
+Source0:        https://pypi.io/packages/source/p/%{name}/%{name}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('Tempest') }}
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('fixtures') }}
+BuildRequires:  {{ py2pkg('keyring') }}
+BuildRequires:  {{ py2pkg('python-keystoneclient') }}
+BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('os-client-config') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('requests-mock') }}
+BuildRequires:  {{ py2pkg('setuptools') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testscenarios') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+Requires:       {{ py2pkg('python-keystoneclient') }}
+Requires:       {{ py2pkg('pbr') }}
+Requires:       {{ py2pkg('six') }}
+Requires:       {{ py2pkg('stevedore') }}
+BuildArch:      noarch
+
+%description
+Client library for Distil built on the Distil API. It provides a Python API
+(the distilclient module) and a command-line tool (distil).
+
+%prep
+%autosetup -n %{name}-%{version}
+%py_req_cleanup
+
+%build
+%py2_build
+
+%install
+%py2_install
+
+%check
+%{__python2} setup.py testr
+
+%files
+%doc README.rst
+%{python2_sitelib}/distilclient
+%{python2_sitelib}/*.egg-info
+%{_bindir}/distil
+
+%changelog
