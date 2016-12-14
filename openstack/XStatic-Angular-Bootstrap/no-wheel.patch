@@ -1,0 +1,17 @@
+--- a/setup.py
++++ b/setup.py
+@@ -6,12 +6,13 @@
+
+ setup(
+     name='XStatic-Angular-Bootstrap',
++    version='0.11.0.8',
+     summary="""Angular-Bootstrap 0.11.0 (XStatic packaging standard)""",
+     description=long_description,
+     maintainer="Maxime Vidori",
+     maintainer_email='maxime.vidori@enovance.com',
+     use_scm_version=True,
+-    setup_requires=['setuptools_scm', 'wheel'],
++#    setup_requires=['setuptools_scm', 'wheel'],
+     packages=find_packages(),
+     include_package_data=True
+ )
