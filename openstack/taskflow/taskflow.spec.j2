@@ -1,4 +1,7 @@
 %global pypi_name taskflow
+%if 0%{?rhel} || 0%{?fedora}
+%global rdo 1
+%endif
 Name:           {{ py2name('taskflow') }}
 Version:        2.8.0
 Release:        0
@@ -80,6 +83,11 @@ This package contains the associated documentation.
 %autosetup -n %{pypi_name}-%{version}
 %py_req_cleanup
 
+%if 0%{?rdo}
+# TODO(jpena) remove once python-networking subpackaging is fixed
+sed -i /networkx.drawing/d taskflow/types/graph.py
+%endif
+
 %build
 %py2_build
 
@@ -91,8 +99,10 @@ This package contains the associated documentation.
 # remove the sphinx-build leftovers
 rm -rf html/.{doctrees,buildinfo}
 
+%if ! 0%{?rdo}
 %check
 PYTHONPATH=. %{__python2} setup.py testr
+%endif
 
 %files
 %doc README.rst
