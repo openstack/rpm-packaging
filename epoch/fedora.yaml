@@ -1,0 +1,23 @@
+epochs:
+  oslo.config: 2
+  ceilometer: 1
+  cinder: 1
+  designate: 1
+  glance: 1
+  heat: 1
+  horizon: 1
+  ironic: 1
+  keystone: 1
+  manila: 1
+  neutron: 1
+  neutron-fwaas: 1
+  neutron-lbaas: 1
+  neutron-vpnaas: 1
+  nova: 1
+  python-glanceclient: 1
+  python-keystoneclient: 1
+  python-novaclient: 1
+  sahara: 1
+  tempest: 1
+  trove: 1
+  zaqar: 1
