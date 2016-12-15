@@ -1,0 +1,41 @@
+%global sname XStatic-Magic-Search
+Name:           {{ py2name('XStatic-Magic-Search') }}
+Version:        0.2.5.1
+Release:        0
+Summary:        Magic Search %{version} (XStatic packaging standard)
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            https://git.openstack.org/cgit/openstack/xstatic-magic-search/
+Source0:        https://pypi.io/packages/source/X/%{sname}/%{sname}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('setuptools') }}
+Requires:       {{ py2pkg('XStatic') }}
+BuildArch:      noarch
+
+%description
+Magic Search JavaScript library packaged for setuptools (easy_install) / pip.
+
+%prep
+%autosetup -n %{sname}-%{version}
+%py_req_cleanup
+
+%build
+#Correct permission for README.txt
+chmod -x README.txt
+
+#Remove unneeded files type from source
+find . -name *~ -exec rm -rf {} \;
+
+%{py2_build}
+
+%install
+%{py2_install}
+
+%files
+%doc README.txt
+%{python2_sitelib}/xstatic
+%{python2_sitelib}/XStatic_Magic_Search-%{version}-py?.?.egg-info
+%{python2_sitelib}/XStatic_Magic_Search-%{version}-py?.?-nspkg.pth
+
+%changelog
