@@ -27,6 +27,9 @@ Requires:       {{ py2pkg('oslo.policy') }}
 Requires:       {{ py2pkg('pbr') }}
 Requires:       {{ py2pkg('six') }}
 BuildArch:      noarch
+%if 0%{?rhel} || 0%{?fedora}
+BuildRequires:  gettext
+%endif
 
 %description
 Django OpenStack Auth is a pluggable Django authentication backend
@@ -64,10 +67,22 @@ PYTHONPATH=. %{__python2} openstack_auth/tests/run_tests.py
 %install
 %py2_install
 
-%files
+# compile mo files from po files
+(cd %{buildroot}%{python2_sitelib}/openstack_auth && %{_bindir}/django-admin compilemessages)
+
+# Remove po files
+find %{buildroot}%{python2_sitelib} -name "*.po" -delete -print
+
+%find_lang django --all-name
+
+%files -f django.lang
 %license LICENSE
 %doc README.rst
-%{python2_sitelib}/openstack_auth
+%dir %{python2_sitelib}/openstack_auth
+%{python2_sitelib}/openstack_auth/locale
+%{python2_sitelib}/openstack_auth/*.py*
+%{python2_sitelib}/openstack_auth/plugin
+%{python2_sitelib}/openstack_auth/tests
 %{python2_sitelib}/%{pypi_name}-*.egg-info
 
 %files doc
