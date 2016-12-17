@@ -1,5 +1,5 @@
 Name:           {{ py2name('python-watcherclient') }}
-Version:        0.26.0
+Version:        0.27.0
 Release:        0
 Summary:        Python API and CLI for OpenStack Watcher
 License:        {{ license('Apache-2.0') }}
@@ -8,6 +8,7 @@ Url:            http://launchpad.net/%{name}
 Source0:        https://pypi.io/packages/source/p/%{name}/%{name}-%{version}.tar.gz
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('PrettyTable') }}
+BuildRequires:  {{ py2pkg('PyYAML') }}
 BuildRequires:  {{ py2pkg('cliff') }}
 BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('fixtures') }}
@@ -25,6 +26,7 @@ BuildRequires:  {{ py2pkg('testscenarios') }}
 BuildRequires:  {{ py2pkg('testtools') }}
 Requires:       {{ py2pkg('Babel') }}
 Requires:       {{ py2pkg('PrettyTable') }}
+Requires:       {{ py2pkg('PyYAML') }}
 Requires:       {{ py2pkg('cliff') }}
 Requires:       {{ py2pkg('python-keystoneclient') }}
 Requires:       {{ py2pkg('osc-lib') }}
