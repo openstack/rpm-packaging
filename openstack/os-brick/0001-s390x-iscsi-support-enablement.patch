@@ -1,0 +1,45 @@
+From 71716015c5c5bbad7680879023f303e48c4fecd3 Mon Sep 17 00:00:00 2001
+From: Arne Recknagel <arecknag@de.ibm.com>
+Date: Fri, 23 Sep 2016 13:43:23 +0200
+Subject: [PATCH] s390x iscsi support enablement
+
+s390x supports a number of storage technologies that were, up to now, not
+included in the initiator list. This fix addresses this issues by simply
+adding all initiators that are known to work.
+
+Change-Id: I7208a34f1924146757401af14e765d2ef294dbea
+Closes-bug: #1626991
+---
+ os_brick/initiator/connector.py | 16 ++++++++++++++--
+ 1 file changed, 14 insertions(+), 2 deletions(-)
+
+diff --git a/os_brick/initiator/connector.py b/os_brick/initiator/connector.py
+index 86adfa8..fc1afbe 100644
+--- a/os_brick/initiator/connector.py
++++ b/os_brick/initiator/connector.py
+@@ -148,8 +148,20 @@ _connector_mapping_linux = {
+ # Mapping for the S390X platform
+ _connector_mapping_linux_s390x = {
+     initiator.FIBRE_CHANNEL:
+-        ('os_brick.initiator.connectors.fibre_channel_s390x.'
+-         'FibreChannelConnectorS390X'),
++        'os_brick.initiator.connectors.fibre_channel_s390x.'
++        'FibreChannelConnectorS390X',
++    initiator.DRBD:
++        'os_brick.initiator.connectors.drbd.DRBDConnector',
++    initiator.NFS:
++        'os_brick.initiator.connectors.remotefs.RemoteFsConnector',
++    initiator.ISCSI:
++        'os_brick.initiator.connectors.iscsi.ISCSIConnector',
++    initiator.LOCAL:
++        'os_brick.initiator.connectors.local.LocalConnector',
++    initiator.RBD:
++        'os_brick.initiator.connectors.rbd.RBDConnector',
++    initiator.GPFS:
++        'os_brick.initiator.connectors.gpfs.GPFSConnector',
+ }
+ 
+ # Mapping for the windows connectors
+-- 
+2.10.2
+
