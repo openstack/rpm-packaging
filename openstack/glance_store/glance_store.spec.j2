@@ -1,6 +1,6 @@
 %global sname glance_store
 Name:           {{ py2name('glance_store') }}
-Version:        0.18.0
+Version:        0.19.0
 Release:        0
 Summary:        OpenStack Image Service Store Library
 License:        {{ license('Apache-2.0') }}
@@ -40,6 +40,7 @@ Requires:       {{ py2pkg('enum34') }}
 Requires:       {{ py2pkg('eventlet') }}
 Requires:       {{ py2pkg('httplib2') }}
 Requires:       {{ py2pkg('jsonschema') }}
+Requires:       {{ py2pkg('keystoneauth1') }}
 Requires:       {{ py2pkg('python-keystoneclient') }}
 Requires:       {{ py2pkg('os-brick') }}
 Requires:       {{ py2pkg('oslo.concurrency') }}
@@ -71,8 +72,6 @@ Documentation for the Glance store library.
 %prep
 %autosetup -n %{sname}-%{version}
 %py_req_cleanup
-# NOTE(toabctl): Can be removed when https://review.openstack.org/364532 is included
-sed -i -e 's/^\(html_last_updated_fmt.*\)\(git_cmd\)/\1"\/usr\/bin\/true"/' doc/source/conf.py
 
 %build
 %{py2_build}
