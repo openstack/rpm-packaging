@@ -1,11 +1,12 @@
 %global sname XStatic-smart-table
+%global openstack_name xstatic-angular-smart-table
 Name:           {{ py2name('XStatic-smart-table') }}
 Version:        1.4.13.2
 Release:        0
 Summary:        smart-table %{version} (XStatic packaging standard)
 License:        {{ license('MIT') }}
 Group:          Development/Languages/Python
-Url:            https://git.openstack.org/cgit/openstack/{sname}/
+Url:            https://git.openstack.org/cgit/openstack/%{openstack_name}/
 Source0:        https://pypi.io/packages/source/X/%{sname}/%{sname}-%{version}.tar.gz
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('devel') }}
