@@ -7,7 +7,6 @@ License:        {{ license('MIT') }}
 Group:          Development/Languages/Python
 Url:            https://git.openstack.org/cgit/openstack/{sname}/
 Source0:        https://pypi.io/packages/source/X/%{sname}/%{sname}-%{version}.tar.gz
-Patch0:         no-wheel.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('setuptools') }}
@@ -19,6 +18,8 @@ angular-ui-router javascript library packaged for setuptools (easy_install) / pi
 
 %prep
 %autosetup -n %{sname}-%{version}
+sed -i 's/    setup_requires/#   setup_requires/' setup.py
+sed -i '/name=.*/a \ \ \ \ version="0.3.1.2",' setup.py
 %py_req_cleanup
 
 %build
