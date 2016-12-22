@@ -1,0 +1,12 @@
+[Unit]
+Description=Mistral API Server
+After=syslog.target network.target
+
+[Service]
+Type=simple
+User=mistral
+Restart=on-failure
+ExecStart=/usr/bin/mistral-server --config-file=/etc/mistral/mistral.conf --server=api
+
+[Install]
+WantedBy=multi-user.target

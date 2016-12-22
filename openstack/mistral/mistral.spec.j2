@@ -1,0 +1,287 @@
+%global sname mistral
+Name:           {{ py2name('mistral') }}
+Version:        3.0.2
+Release:        0
+Summary:        Workflow Service for OpenStack cloud
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Libraries
+Url:            https://launchpad.net/mistral
+Source0:        http://tarballs.openstack.org/%{sname}/%{sname}-%{version}.tar.gz
+Source1:        mistral-api.service
+Source2:        mistral-engine.service
+Source3:        mistral-executor.service
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('python-barbicanclient') }}
+BuildRequires:  {{ py2pkg('python-ceilometerclient') }}
+BuildRequires:  {{ py2pkg('python-cinderclient') }}
+BuildRequires:  {{ py2pkg('croniter') }}
+BuildRequires:  {{ py2pkg('python-designateclient') }}
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('fixtures') }}
+BuildRequires:  {{ py2pkg('python-glanceclient') }}
+BuildRequires:  {{ py2pkg('python-heatclient') }}
+BuildRequires:  {{ py2pkg('python-ironic-inspector-client') }}
+BuildRequires:  {{ py2pkg('python-ironicclient') }}
+BuildRequires:  {{ py2pkg('kazoo') }}
+BuildRequires:  {{ py2pkg('python-keystoneclient') }}
+BuildRequires:  {{ py2pkg('keystonemiddleware') }}
+BuildRequires:  {{ py2pkg('python-magnumclient') }}
+BuildRequires:  {{ py2pkg('python-mistralclient') }}
+BuildRequires:  {{ py2pkg('python-muranoclient') }}
+BuildRequires:  {{ py2pkg('python-neutronclient') }}
+BuildRequires:  {{ py2pkg('nose') }}
+BuildRequires:  {{ py2pkg('python-novaclient') }}
+BuildRequires:  {{ py2pkg('oslo.concurrency') }}
+BuildRequires:  {{ py2pkg('oslo.config') }}
+BuildRequires:  {{ py2pkg('oslo.db') }}
+BuildRequires:  {{ py2pkg('oslo.i18n') }}
+BuildRequires:  {{ py2pkg('oslo.log') }}
+BuildRequires:  {{ py2pkg('oslo.messaging') }}
+BuildRequires:  {{ py2pkg('oslo.middleware') }}
+BuildRequires:  {{ py2pkg('oslo.policy') }}
+BuildRequires:  {{ py2pkg('oslo.service') }}
+BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('osprofiler') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('python-subunit') }}
+BuildRequires:  {{ py2pkg('reno') }}
+BuildRequires:  {{ py2pkg('requests-mock') }}
+BuildRequires:  {{ py2pkg('six') }}
+BuildRequires:  {{ py2pkg('stevedore') }}
+BuildRequires:  {{ py2pkg('python-swiftclient') }}
+BuildRequires:  {{ py2pkg('python-tackerclient') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testscenarios') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+BuildRequires:  {{ py2pkg('tooz') }}
+BuildRequires:  {{ py2pkg('python-troveclient') }}
+BuildRequires:  {{ py2pkg('unittest2') }}
+BuildRequires:  {{ py2pkg('python-zaqarclient') }}
+BuildArch:      noarch
+%if 0%{?suse_version}
+BuildRequires:  systemd-rpm-macros
+%else
+BuildRequires:  systemd
+%endif
+
+%description
+System package - %{name}
+Python package - python=%{sname}
+
+%package        doc
+Summary:        Documentation for OpenStack Workflow Service
+BuildRequires:  git
+BuildRequires:  {{ py2pkg('Tempest') }}
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('WSME') }}
+BuildRequires:  {{ py2pkg('jsonschema') }}
+BuildRequires:  {{ py2pkg('networkx') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('paramiko') }}
+BuildRequires:  {{ py2pkg('pecan') }}
+BuildRequires:  {{ py2pkg('pep8') }}
+BuildRequires:  {{ py2pkg('sphinxcontrib-httpdomain') }}
+BuildRequires:  {{ py2pkg('sphinxcontrib-pecanwsme') }}
+BuildRequires:  {{ py2pkg('yaql') }}
+
+%description    doc
+OpenStack Mistral documentaion.
+.
+This package contains the documentation
+
+%package -n     python-%{sname}
+Summary:        Mistral Python libraries
+Requires:       {{ py2pkg('Babel') }}
+Requires:       {{ py2pkg('PyYAML') }}
+Requires:       {{ py2pkg('SQLAlchemy') }}
+Requires:       {{ py2pkg('WSME') }}
+Requires:       {{ py2pkg('alembic') }}
+Requires:       {{ py2pkg('python-barbicanclient') }}
+Requires:       {{ py2pkg('cachetools') }}
+Requires:       {{ py2pkg('python-ceilometerclient') }}
+Requires:       {{ py2pkg('python-cinderclient') }}
+Requires:       {{ py2pkg('croniter') }}
+Requires:       {{ py2pkg('python-designateclient') }}
+Requires:       {{ py2pkg('eventlet') }}
+Requires:       {{ py2pkg('python-glanceclient') }}
+Requires:       {{ py2pkg('python-heatclient') }}
+Requires:       {{ py2pkg('python-ironic-inspector-client') }}
+Requires:       {{ py2pkg('python-ironicclient') }}
+Requires:       {{ py2pkg('jsonschema') }}
+Requires:       {{ py2pkg('python-keystoneclient') }}
+Requires:       {{ py2pkg('keystonemiddleware') }}
+Requires:       {{ py2pkg('python-magnumclient') }}
+Requires:       {{ py2pkg('python-mistralclient') }}
+Requires:       {{ py2pkg('mock') }}
+Requires:       {{ py2pkg('python-muranoclient') }}
+Requires:       {{ py2pkg('networkx') }}
+Requires:       {{ py2pkg('python-neutronclient') }}
+Requires:       {{ py2pkg('python-novaclient') }}
+Requires:       {{ py2pkg('oslo.concurrency') }}
+Requires:       {{ py2pkg('oslo.config') }}
+Requires:       {{ py2pkg('oslo.db') }}
+Requires:       {{ py2pkg('oslo.log') }}
+Requires:       {{ py2pkg('oslo.messaging') }}
+Requires:       {{ py2pkg('oslo.middleware') }}
+Requires:       {{ py2pkg('oslo.policy') }}
+Requires:       {{ py2pkg('oslo.serialization') }}
+Requires:       {{ py2pkg('oslo.service') }}
+Requires:       {{ py2pkg('oslo.utils') }}
+Requires:       {{ py2pkg('osprofiler') }}
+Requires:       {{ py2pkg('paramiko') }}
+Requires:       {{ py2pkg('pbr') }}
+Requires:       {{ py2pkg('pecan') }}
+Requires:       {{ py2pkg('requests') }}
+Requires:       {{ py2pkg('retrying') }}
+Requires:       {{ py2pkg('setuptools') }}
+Requires:       {{ py2pkg('six') }}
+Requires:       {{ py2pkg('stevedore') }}
+Requires:       {{ py2pkg('python-swiftclient') }}
+Requires:       {{ py2pkg('python-tackerclient') }}
+Requires:       {{ py2pkg('tooz') }}
+Requires:       {{ py2pkg('python-troveclient') }}
+Requires:       {{ py2pkg('yaql') }}
+Requires:       {{ py2pkg('zake') }}
+Requires:       {{ py2pkg('python-zaqarclient') }}
+
+%description -n python-%{sname}
+Mistral is a workflow service.
+Most business processes consist of multiple distinct interconnected steps that need to be executed in a particular order
+in a distributed environment. One can describe such process as a set of tasks and task relations and upload such description
+to Mistral so that it takes care of state management, correct execution order, parallelism, synchronization and high availability.
+.
+This package contains the Python libraries.
+
+%package        common
+Summary: Components common for OpenStack Mistral
+Requires:       python-%{sname} = %{version}-%{release}
+Requires(post):   systemd
+Requires(postun): systemd
+Requires(preun):  systemd
+
+%description    common
+Mistral is a workflow service.
+Most business processes consist of multiple distinct interconnected steps that need to be executed in a particular order
+in a distributed environment. One can describe such process as a set of tasks and task relations and upload such description
+to Mistral so that it takes care of state management, correct execution order, parallelism, synchronization and high availability.
+.
+This package contains the common files.
+
+%package        api
+Summary: OpenStack Mistral API service
+Requires:       %{name}-common = %{version}-%{release}
+
+%description    api
+OpenStack rest API to the Mistral api.
+.
+This package contains the ReST API.
+
+%package        engine
+Summary: OpenStack Mistral Engine service
+Requires:       %{name}-common = %{version}-%{release}
+
+%description    engine
+OpenStack Mistral Engine service.
+.
+This package contains the mistral engine, which is one of core services of mistral.
+
+%package        executor
+Summary: OpenStack Mistral Executor service
+Requires:       %{name}-common = %{version}-%{release}
+
+%description    executor
+OpenStack Mistral Executor service.
+.
+This package contains the mistral executor, which is one of core services of mistral, and
+which the API servers will use.
+
+%prep
+%autosetup -n %{sname}-%{version}
+%py_req_cleanup
+
+%build
+%{py2_build}
+export PYTHONPATH="."
+oslo-config-generator --config-file tools/config/config-generator.mistral.conf \
+--output-file etc/mistral.conf.sample
+
+%{__python2} setup.py build_sphinx
+# remove the sphinx-build leftovers
+rm -rf doc/build/html/.{doctrees,buildinfo}
+
+
+%install
+%{py2_install}
+
+mkdir -p %{buildroot}%{_sysconfdir}/mistral/
+mkdir -p %{buildroot}%{_localstatedir}/log/mistral
+mkdir -p %{buildroot}%{_localstatedir}/run/mistral
+#systemd unitfiles
+install -p -D -m 644 %SOURCE1 %{buildroot}%{_unitdir}/openstack-mistral-api.service
+install -p -D -m 644 %SOURCE2 %{buildroot}%{_unitdir}/openstack-mistral-engine.service
+install -p -D -m 644 %SOURCE3 %{buildroot}%{_unitdir}/openstack-mistral-executor.service
+
+install -p -D -m 640 etc/mistral.conf.sample %{buildroot}%{_sysconfdir}/mistral/mistral.conf
+install -p -D -m 640 etc/logging.conf.sample %{buildroot}%{_sysconfdir}/mistral/logging.conf
+install -p -D -m 640 etc/wf_trace_logging.conf.sample %{buildroot}%{_sysconfdir}/mistral/wf_trace_logging.conf
+chmod +x %{buildroot}%{_bindir}/mistral*
+
+%pre common
+%openstack_pre_user_group_create mistral mistral /sbin/nologin
+exit 0
+
+%check
+testr init
+testr list-tests | grep -v   mistral.tests.unit.engine.test_with_items.WithItemsEngineTest.test_with_items_and_adhoc_action > list
+testr run --load-list=list
+
+%post api
+%systemd_post openstack-mistral-api.service
+
+%preun api
+%systemd_preun openstack-mistral-api.service
+
+%postun api
+%systemd_postun_with_restart openstack-mistral-api.service
+
+%post engine
+%systemd_post openstack-mistral-engine.service
+
+%preun engine
+%systemd_preun openstack-mistral-engine.service
+
+%postun engine
+%systemd_postun_with_restart openstack-mistral-engine.service
+
+%post executor
+%systemd_post openstack-mistral-executor.service
+
+%preun executor
+%systemd_preun openstack-mistral-executor.service
+
+%postun executor
+%systemd_postun_with_restart openstack-mistral-executor.service
+
+%files    api
+%config(noreplace) %attr(-, root, root) %{_unitdir}/openstack-mistral-api.service
+
+%files   common
+%dir %{_sysconfdir}/mistral
+%config(noreplace) %attr(-, mistral, mistral) %{_sysconfdir}/mistral/*
+%{_bindir}/mistral-*
+%dir %attr(755, mistral, mistral) %{_localstatedir}/run/mistral
+%dir %attr(755, mistral, mistral) %{_localstatedir}/log/mistral
+
+%files doc
+%doc doc/build/html
+
+%files    engine
+%config(noreplace) %attr(-, root, root) %{_unitdir}/openstack-mistral-engine.service
+
+%files    executor
+%config(noreplace) %attr(-, root, root) %{_unitdir}/openstack-mistral-executor.service
+
+%files -n python-%{sname}
+%{python_sitelib}/%{sname}*
+
+%changelog
