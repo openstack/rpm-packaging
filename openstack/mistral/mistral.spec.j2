@@ -57,6 +57,7 @@ BuildRequires:  {{ py2pkg('tooz') }}
 BuildRequires:  {{ py2pkg('python-troveclient') }}
 BuildRequires:  {{ py2pkg('unittest2') }}
 BuildRequires:  {{ py2pkg('python-zaqarclient') }}
+Requires:       python-mistral = %{version}-%{release}
 BuildArch:      noarch
 %if 0%{?suse_version}
 BuildRequires:  systemd-rpm-macros
@@ -152,24 +153,9 @@ to Mistral so that it takes care of state management, correct execution order, p
 .
 This package contains the Python libraries.
 
-%package        common
-Summary: Components common for OpenStack Mistral
-Requires:       python-%{sname} = %{version}-%{release}
-Requires(post):   systemd
-Requires(postun): systemd
-Requires(preun):  systemd
-
-%description    common
-Mistral is a workflow service.
-Most business processes consist of multiple distinct interconnected steps that need to be executed in a particular order
-in a distributed environment. One can describe such process as a set of tasks and task relations and upload such description
-to Mistral so that it takes care of state management, correct execution order, parallelism, synchronization and high availability.
-.
-This package contains the common files.
-
 %package        api
-Summary: OpenStack Mistral API service
-Requires:       %{name}-common = %{version}-%{release}
+Summary:        OpenStack Mistral API service
+Requires:       %{name} = %{version}
 
 %description    api
 OpenStack rest API to the Mistral api.
@@ -177,8 +163,8 @@ OpenStack rest API to the Mistral api.
 This package contains the ReST API.
 
 %package        engine
-Summary: OpenStack Mistral Engine service
-Requires:       %{name}-common = %{version}-%{release}
+Summary:        OpenStack Mistral Engine service
+Requires:       %{name} = %{version}
 
 %description    engine
 OpenStack Mistral Engine service.
@@ -186,8 +172,8 @@ OpenStack Mistral Engine service.
 This package contains the mistral engine, which is one of core services of mistral.
 
 %package        executor
-Summary: OpenStack Mistral Executor service
-Requires:       %{name}-common = %{version}-%{release}
+Summary:        OpenStack Mistral Executor service
+Requires:       %{name} = %{version}
 
 %description    executor
 OpenStack Mistral Executor service.
@@ -226,9 +212,8 @@ install -p -D -m 640 etc/logging.conf.sample %{buildroot}%{_sysconfdir}/mistral/
 install -p -D -m 640 etc/wf_trace_logging.conf.sample %{buildroot}%{_sysconfdir}/mistral/wf_trace_logging.conf
 chmod +x %{buildroot}%{_bindir}/mistral*
 
-%pre common
-%openstack_pre_user_group_create mistral mistral /sbin/nologin
-exit 0
+%pre
+%openstack_pre_user_group_create mistral mistral
 
 %check
 testr init
@@ -262,10 +247,11 @@ testr run --load-list=list
 %postun executor
 %systemd_postun_with_restart openstack-mistral-executor.service
 
-%files    api
-%config(noreplace) %attr(-, root, root) %{_unitdir}/openstack-mistral-api.service
+%files api
+%{_unitdir}/openstack-mistral-api.service
 
-%files   common
+%files
+%license LICENSE
 %dir %{_sysconfdir}/mistral
 %config(noreplace) %attr(-, mistral, mistral) %{_sysconfdir}/mistral/*
 %{_bindir}/mistral-*
@@ -273,13 +259,14 @@ testr run --load-list=list
 %dir %attr(755, mistral, mistral) %{_localstatedir}/log/mistral
 
 %files doc
+%license LICENSE
 %doc doc/build/html
 
-%files    engine
-%config(noreplace) %attr(-, root, root) %{_unitdir}/openstack-mistral-engine.service
+%files engine
+%{_unitdir}/openstack-mistral-engine.service
 
-%files    executor
-%config(noreplace) %attr(-, root, root) %{_unitdir}/openstack-mistral-executor.service
+%files executor
+%{_unitdir}/openstack-mistral-executor.service
 
 %files -n python-%{sname}
 %{python_sitelib}/%{sname}*
