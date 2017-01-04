@@ -1,0 +1,54 @@
+%global sname monasca-common
+Name:           {{ py2name('monasca-common') }}
+Version:        1.3.0
+Release:        0
+Summary:        Reusable code for building monitoring related services.
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            https://wiki.openstack.org/wiki/Monasca
+Source0:        https://pypi.io/packages/source/m/%{sname}/%{sname}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('nose') }}
+BuildRequires:  {{ py2pkg('mox') }}
+BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('setuptools') }}
+BuildRequires:  {{ py2pkg('oslo.config') }}
+BuildRequires:  {{ py2pkg('six') }}
+BuildRequires:  {{ py2pkg('kazoo') }}
+BuildRequires:  {{ py2pkg('PyMySQL') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('ujson') }}
+BuildRequires:  {{ py2pkg('kafka-python') }}
+Requires:       {{ py2pkg('oslo.config') }}
+Requires:       {{ py2pkg('six') }}
+Requires:       {{ py2pkg('kazoo') }}
+Requires:       {{ py2pkg('PyMySQL') }}
+Requires:       {{ py2pkg('ujson') }}
+Requires:       {{ py2pkg('kafka-python') }}
+BuildArch:      noarch
+
+%description
+Collection of sub-projects containing reusable application and
+platform code for building monitoring related services.
+
+%prep
+%autosetup -n %{sname}-%{version}
+%py_req_cleanup
+
+%build
+%{py2_build}
+
+%install
+%{py2_install}
+
+%check
+nosetests monasca_common --verbose
+
+%files
+%license LICENSE
+%doc README.md ChangeLog
+%{python2_sitelib}/monasca_common
+%{python2_sitelib}/*.egg-info
+
+%changelog
