@@ -1,9 +1,11 @@
 %global pypi_name Bareon
 %global sname bareon
 %global sversion 0.0.1a3
+{% set upstream_version = '0.0.1.a3' %}
+{% set rpm_release = '1' %}
 Name:           {{ py2name('Bareon') }}
-Version:        0.0.1~a3
-Release:        0
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
 Summary:        OpenStack bareon tool
 License:        {{ license('Apache-2.0') }}
 Group:          System/Management
