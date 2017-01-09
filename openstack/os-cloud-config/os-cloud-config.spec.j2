@@ -1,0 +1,96 @@
+%global sname os-cloud-config
+%bcond_with test
+%bcond_with docs
+Name:           {{ py2name('os-cloud-config') }}
+Version:        5.1.0
+Release:        0
+Summary:        Configuration for OpenStack clouds
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            https://launchpad.net/%{sname}
+Source0:        https://pypi.io/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  python-devel
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('setuptools') }}
+Requires:       {{ py2pkg('python-glanceclient') }}
+Requires:       {{ py2pkg('python-ironicclient') }}
+Requires:       {{ py2pkg('python-keystoneclient') }}
+Requires:       {{ py2pkg('python-neutronclient') }}
+Requires:       {{ py2pkg('python-novaclient') }}
+BuildArch:      noarch
+%if %{with test}
+BuildRequires:  {{ py2pkg('extras') }}
+BuildRequires:  {{ py2pkg('fixtures') }}
+BuildRequires:  {{ py2pkg('python-glanceclient') }}
+BuildRequires:  {{ py2pkg('python-ironicclient') }}
+BuildRequires:  {{ py2pkg('python-keystoneclient') }}
+BuildRequires:  {{ py2pkg('python-subunit') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testscenarios') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+%endif
+
+%description
+When first installing an OpenStack cloud there are a number of common
+up-front configuration tasks that need to be performed. To alleviate
+the need for different sets of tooling to reinvent solutions to these
+problems, this package provides a set of tools.
+
+These tools are intended to be well-tested, and available as
+importable Python modules as well as command-line tools.
+
+%if %{with docs}
+%package doc
+Summary:        Documentation for OpenStack clouds configuration library
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('reno') }}
+
+%description doc
+Documentation for the os-cloud-config library.
+%endif
+
+%prep
+%autosetup -n %{sname}-%{version}
+%py_req_cleanup
+
+%build
+%{py2_build}
+%if %{with docs}
+# generate html docs
+%{__python2} setup.py build_sphinx
+# remove the sphinx-build leftovers
+rm -rf html/.{doctrees,buildinfo}
+%endif
+
+%install
+%{py2_install}
+
+%if %{with test}
+%check
+export PYTHONPATH="%{python2_sitearch}:%{python2_sitelib}:%{buildroot}%{python2_sitelib}"
+testr init && testr run
+%endif
+
+%files
+%license LICENSE
+%doc README.rst AUTHORS
+%{_bindir}/generate-keystone-pki
+%{_bindir}/init-keystone
+%{_bindir}/init-keystone-heat-domain
+%{_bindir}/register-nodes
+%{_bindir}/setup-endpoints
+%{_bindir}/setup-flavors
+%{_bindir}/setup-neutron
+%{_bindir}/upload-kernel-ramdisk
+%{python2_sitelib}/os_cloud_config
+%{python2_sitelib}/*.egg-info
+
+%if %{with docs}
+%files doc
+%doc doc/build/html
+%license LICENSE
+%endif
+
+%changelog
