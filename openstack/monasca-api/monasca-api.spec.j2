@@ -1,0 +1,175 @@
+%define component           monasca-api
+
+# apache settings
+%if 0%{?suse_version}
+%define apache_name apache2
+%define apache_site_dir %{_sysconfdir}/%{apache_name}/vhosts.d/
+%else
+%define apache_name httpd
+%define apache_site_dir %{_sysconfdir}/%{apache_name}/conf.d/
+%endif
+
+Name:           {{ py2name('monasca-api') }}
+Version:        1.6.1
+Release:        0
+License:        {{ license('Apache-2.0') }}
+Summary:        Monasca REST API
+Group:          Development/Languages/Python
+Url:            https://wiki.openstack.org/wiki/Monasca
+
+Source0:        https://pypi.io/packages/source/m/%{component}/%{component}-%{version}.tar.gz
+Source1:        api-config.conf
+Source2:        api-logging.conf
+Source3:        api-config.ini
+Source4:        api-wsgi.conf
+Source5:        api-wsgi.py
+
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('cassandra-driver') }}
+BuildRequires:  {{ py2pkg('coverage') }}
+BuildRequires:  {{ py2pkg('eventlet') }}
+BuildRequires:  {{ py2pkg('falcon') }}
+BuildRequires:  {{ py2pkg('fixtures') }}
+BuildRequires:  {{ py2pkg('funcsigs') }}
+BuildRequires:  {{ py2pkg('httplib2') }}
+BuildRequires:  {{ py2pkg('influxdb') }}
+BuildRequires:  {{ py2pkg('keystonemiddleware') }}
+BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('monasca-common') }}
+BuildRequires:  {{ py2pkg('mox') }}
+BuildRequires:  {{ py2pkg('nose') }}
+BuildRequires:  {{ py2pkg('oslo.config') }}
+BuildRequires:  {{ py2pkg('oslo.context') }}
+BuildRequires:  {{ py2pkg('oslo.log') }}
+BuildRequires:  {{ py2pkg('oslo.middleware') }}
+BuildRequires:  {{ py2pkg('oslo.serialization') }}
+BuildRequires:  {{ py2pkg('oslo.utils') }}
+BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('PasteDeploy') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('pyparsing') }}
+BuildRequires:  {{ py2pkg('python-keystoneclient') }}
+BuildRequires:  {{ py2pkg('python-subunit') }}
+BuildRequires:  {{ py2pkg('simplejson') }}
+BuildRequires:  {{ py2pkg('six') }}
+BuildRequires:  {{ py2pkg('SQLAlchemy') }}
+BuildRequires:  {{ py2pkg('tempest-lib') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testscenarios') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+BuildRequires:  {{ py2pkg('voluptuous') }}
+BuildRequires:  fdupes
+%if 0%{?suse_version}
+BuildRequires:  apache2-mod_wsgi
+Requires:       apache2-mod_wsgi
+%else
+BuildRequires:  mod_wsgi
+Requires:       mod_wsgi
+%endif
+Requires:       python-%{component} = %{version}-%{release}
+BuildArch:      noarch
+
+%description
+The Monasca API provides a RESTful JSON interface for interacting with
+and managing monitoring related resources.
+
+%package -n python-%{component}
+Summary:        Monasca REST API
+Group:          Development/Languages/Python
+
+Requires:       {{ py2pkg('eventlet') }}
+Requires:       {{ py2pkg('falcon') }}
+Requires:       {{ py2pkg('keystonemiddleware') }}
+Requires:       {{ py2pkg('monasca-common') }}
+Requires:       {{ py2pkg('oslo.config') }}
+Requires:       {{ py2pkg('oslo.context') }}
+Requires:       {{ py2pkg('oslo.log') }}
+Requires:       {{ py2pkg('oslo.middleware') }}
+Requires:       {{ py2pkg('oslo.serialization') }}
+Requires:       {{ py2pkg('oslo.utils') }}
+Requires:       {{ py2pkg('PasteDeploy') }}
+Requires:       {{ py2pkg('pbr') }}
+Requires:       {{ py2pkg('pyparsing') }}
+Requires:       {{ py2pkg('python-keystoneclient') }}
+Requires:       {{ py2pkg('simplejson') }}
+Requires:       {{ py2pkg('six') }}
+Requires:       {{ py2pkg('SQLAlchemy') }}
+Requires:       {{ py2pkg('voluptuous') }}
+BuildArch:      noarch
+
+%description -n python-%{component}
+The Monasca API provides a RESTful JSON interface for interacting with
+and managing monitoring related resources.
+
+%prep
+%autosetup -n %{component}-%{version}
+%py_req_cleanup
+
+%build
+%py2_build
+
+%install
+%py2_install
+
+# create all necessary directories
+%{__install} -d -m 755 %{buildroot}%{_sysconfdir}/monasca
+%{__install} -d -m 755 %{buildroot}%{_var}/log/%{component}
+%{__install} -d -m 755 %{buildroot}%{apache_site_dir}
+
+# copy embedded configuration files
+
+## copy configs
+%{__install} -D -m 640 %{SOURCE1} %{buildroot}%{_sysconfdir}/monasca/api-config.conf
+%{__install} -D -m 640 %{SOURCE2} %{buildroot}%{_sysconfdir}/monasca/api-logging.conf
+%{__install} -D -m 640 %{SOURCE3} %{buildroot}%{_sysconfdir}/monasca/api-config.ini
+
+## install apache configuration
+%{__install} -p -D -m 640 %{SOURCE4} %{buildroot}%{apache_site_dir}/%{component}.conf.sample
+sed -e "
+  s|__APACHE_NAME__|%{apache_name}|g;
+" -i %{buildroot}%{apache_site_dir}/%{component}.conf.sample
+
+## install WSGIScriptAlias
+%{__install} -D -m 755 %{SOURCE5} %{buildroot}%{_bindir}/monasca-api-wsgi.py
+
+# remove duplicates
+%fdupes $RPM_BUILD_ROOT%{python2_sitelib}/monasca_api
+%fdupes $RPM_BUILD_ROOT%{python2_sitelib}/monasca_tempest_tests
+
+%check
+find . -type f -name *.pyc -delete
+OS_TEST_PATH=./monasca_api/tests PYTHONPATH=. ostestr
+
+%pre
+%openstack_pre_user_group_create monasca-api monasca /sbin/nologin
+
+%postun
+if [ $1 -eq 0 ] ; then
+  getent passwd monasca-api > /dev/null
+  if [ "$?" == "0" ] ; then
+      userdel monasca-api
+  fi
+fi
+
+%files
+%defattr(-, root, root)
+%{_bindir}/monasca-api
+%{_bindir}/monasca-api-wsgi.py
+
+%dir %attr(-, root, monasca) %{_sysconfdir}/monasca
+%dir %attr(-, root, monasca) %{_var}/log/%{component}
+
+%config(noreplace) %attr(0640, root, monasca) %{_sysconfdir}/monasca/api-config.conf
+%config(noreplace) %attr(0640, root, monasca) %{_sysconfdir}/monasca/api-logging.conf
+%config(noreplace) %attr(0640, root, monasca) %{_sysconfdir}/monasca/api-config.ini
+%config(noreplace) %attr(0640, root, monasca) %{apache_site_dir}/%{component}.conf.sample
+
+%files -n python-%{component}
+%defattr(-, root, root,-)
+%license LICENSE
+%doc README.md ChangeLog
+%{python2_sitelib}/monasca_api
+%{python2_sitelib}/monasca_tempest_tests
+%{python2_sitelib}/*.egg-info
+
+%changelog
