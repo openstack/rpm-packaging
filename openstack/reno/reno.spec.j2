@@ -1,0 +1,58 @@
+%global sname reno
+Name:           {{ py2name('reno') }}
+Version:        2.0.3
+Release:        0
+License:        Apache-2.0
+Summary:        RElease NOtes manager
+Url:            http://www.openstack.org/
+Group:          Development/Languages/Python
+Source0:        https://pypi.io/packages/source/r/reno/reno-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('Babel') }}
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('PyYAML') }}
+BuildRequires:  {{ py2pkg('dulwich') }}
+BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('setuptools') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testscenarios') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+Requires:       {{ py2pkg('Babel') }}
+Requires:       {{ py2pkg('PyYAML') }}
+Requires:       {{ py2pkg('dulwich') }}
+BuildArch:      noarch
+%if 0%{?suse_version}
+BuildRequires:  git-core
+BuildRequires:  gpg2
+%else
+BuildRequires:  git
+BuildRequires:  gnupg
+%endif
+
+%description
+Reno is a release notes manager for storing release notes in a git
+repository and then building documentation from them.
+
+%prep
+%autosetup -p 1 -n %{sname}-%{version}
+%py_req_cleanup
+
+%build
+%{py2_build}
+
+%install
+%{py2_install}
+
+%check
+git init .
+python setup.py test
+
+%files
+%license LICENSE
+%doc ChangeLog README.rst
+%{_bindir}/reno
+%{python2_sitelib}/reno
+%{python2_sitelib}/*.egg-info
+
+%changelog
