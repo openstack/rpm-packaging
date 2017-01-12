@@ -1,0 +1,86 @@
+%global sname python-tripleoclient
+%global sversion 5.7.0
+Name:           {{ py2name('python-tripleoclient') }}
+Version:        5.7.0
+Release:        0
+Summary:        OpenstackClient plugin for tripleoclient
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            https://launchpad.net/%{sname}
+Source0:        https://pypi.io/packages/source/p/%{sname}/%{sname}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('cliff') }}
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('fixtures') }}
+BuildRequires:  {{ py2pkg('python-heatclient') }}
+BuildRequires:  {{ py2pkg('python-ironic-inspector-client') }}
+BuildRequires:  {{ py2pkg('python-ironicclient') }}
+BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('os-cloud-config') }}
+BuildRequires:  {{ py2pkg('python-openstackclient') }}
+BuildRequires:  {{ py2pkg('passlib') }}
+BuildRequires:  {{ py2pkg('requests-mock') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+BuildRequires:  {{ py2pkg('tripleo-common') }}
+Requires:       {{ py2pkg('Babel') }}
+Requires:       {{ py2pkg('cliff') }}
+Requires:       {{ py2pkg('python-heatclient') }}
+Requires:       {{ py2pkg('ipaddress') }}
+Requires:       {{ py2pkg('python-ironic-inspector-client') }}
+Requires:       {{ py2pkg('python-ironicclient') }}
+Requires:       {{ py2pkg('python-mistralclient') }}
+Requires:       {{ py2pkg('python-openstackclient') }}
+Requires:       {{ py2pkg('os-cloud-config') }}
+Requires:       {{ py2pkg('passlib') }}
+Requires:       {{ py2pkg('six') }}
+Requires:       {{ py2pkg('tripleo-common') }}
+Requires:       {{ py2pkg('websocket-client') }}
+BuildArch:      noarch
+
+%description
+python-tripleoclient is a Python plugin to OpenstackClient
+for TripleO.
+
+%package doc
+Summary:        Documentation for OpenstackClient plugin for tripleoclient
+Group:          Documentation
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+
+%description      doc
+python-tripleoclient is a Python plugin to OpenstackClient
+for TripleO.
+This package contains auto-generated documentation.
+
+%prep
+%autosetup -n %{sname}-%{version}
+
+%build
+%{py2_build}
+
+%{__python2} setup.py build_sphinx
+# remove the sphinx-build leftovers
+rm -rf doc/build/html/.{doctrees,buildinfo}
+
+%install
+%{py2_install}
+# man page
+install -p -D -m 644 doc/build/man/python-tripleoclient.1 %{buildroot}%{_mandir}/man1/python-tripleoclient.1
+
+
+%check
+%{__python2} setup.py testr
+
+%files
+%doc README.rst
+%license LICENSE
+%{python2_sitelib}/tripleoclient
+%{python2_sitelib}/*.egg-info
+%{_mandir}/man1/python-tripleoclient.1.gz
+
+%files doc
+%license LICENSE
+%doc doc/build/html
+
+%changelog
