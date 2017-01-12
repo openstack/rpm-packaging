@@ -1,0 +1,59 @@
+%global sname renderspec
+Name:           {{ py2name('renderspec') }}
+Version:        1.3.0
+Release:        0
+Url:            http://launchpad.net/%{sname}
+Summary:        Generate spec files from Jinja2 templates
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Source0:        https://pypi.io/packages/source/r/%{sname}/%{sname}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+Requires:       {{ py2pkg('Jinja2') }}
+Requires:       {{ py2pkg('PyYAML') }}
+Requires:       {{ py2pkg('packaging') }}
+Requires:       {{ py2pkg('pymod2pkg') }}
+BuildArch:      noarch
+
+%description
+renderspec is a tool to convert a .spec.j2 Jinja2 template to
+a rpm .spec file which is usable for different distributions
+and follow their policies and processes.
+
+%package doc
+Summary:        Documentation for the renderspec utility
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+Requires:       %{name} = %{version}
+
+%description doc
+Documentation for the renderspec tool which is a tool to convert
+a spec.j2 Jinja2 template into a rpm .spec file.
+
+%prep
+%autosetup -p 1 -n %{sname}-%{version}
+%py_req_cleanup
+
+%build
+%{py2_build}
+
+%{__python2} setup.py build_sphinx
+# remove the sphinx-build leftovers
+rm -rf doc/build/html/.{doctrees,buildinfo}
+
+%install
+%{py2_install}
+
+%files
+%license LICENSE
+%doc README.rst ChangeLog
+%{_bindir}/%{sname}
+%{python2_sitelib}/%{sname}
+%{python2_sitelib}/*.egg-info
+
+%files doc
+%doc doc/build/html
+%license LICENSE
+
+%changelog
