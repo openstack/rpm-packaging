@@ -1,7 +1,7 @@
 %global sname python-keystoneclient
 Name:           {{ py2name('python-keystoneclient') }}
 Epoch:          {{ epoch('python-keystoneclient') }}
-Version:        3.8.0
+Version:        3.9.0
 Release:        0
 Summary:        Client library for OpenStack Identity API
 License:        {{ license('Apache-2.0') }}
@@ -72,9 +72,6 @@ rm -fr %{buildroot}%{python2_sitelib}/tests
 rm -fr html/.doctrees html/.buildinfo
 
 %check
-export PYTHONPATH="%{python2_sitearch}:%{python2_sitelib}:%{buildroot}%{python2_sitelib}"
-# don't want to depend on hacking for package building
-rm keystoneclient/tests/unit/test_hacking_checks.py
 %{__python2} setup.py testr
 
 %files
