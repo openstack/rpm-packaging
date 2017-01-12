@@ -1,0 +1,92 @@
+From 4bd75a49cecbebc8391d1a25d76362a631ca2c04 Mon Sep 17 00:00:00 2001
+From: Dirk Mueller <dirk@dmllr.de>
+Date: Sun, 20 Nov 2016 19:15:09 +0100
+Subject: [PATCH] Fix unittest run on s390x host
+
+Explicitely mention a supported architecture when doing factory
+tests, otherwise instantiation fails on hosts that do not support
+them
+
+Change-Id: Icccd955a27c8606b520f4426205d5489fc1c736d
+---
+ os_brick/tests/initiator/connectors/test_hgst.py |  2 +-
+ os_brick/tests/initiator/test_connector.py       | 23 +++++++++++++++--------
+ 2 files changed, 16 insertions(+), 9 deletions(-)
+
+Index: os-brick-1.6.1/os_brick/tests/initiator/connectors/test_hgst.py
+===================================================================
+--- os-brick-1.6.1.orig/os_brick/tests/initiator/connectors/test_hgst.py
++++ os-brick-1.6.1/os_brick/tests/initiator/connectors/test_hgst.py
+@@ -96,7 +96,7 @@ Request Succeeded
+ 
+     def test_factory(self):
+         """Can we instantiate a HGSTConnector of the right kind?"""
+-        obj = connector.InitiatorConnector.factory('HGST', None)
++        obj = connector.InitiatorConnector.factory('HGST', None, arch='x86_64')
+         self.assertEqual("HGSTConnector", obj.__class__.__name__)
+ 
+     def test_get_search_path(self):
+Index: os-brick-1.6.1/os_brick/tests/initiator/test_connector.py
+===================================================================
+--- os-brick-1.6.1.orig/os_brick/tests/initiator/test_connector.py
++++ os-brick-1.6.1/os_brick/tests/initiator/test_connector.py
+@@ -184,14 +184,15 @@ class ConnectorTestCase(test_base.TestCa
+         obj = connector.InitiatorConnector.factory('iscsi', None)
+         self.assertEqual("ISCSIConnector", obj.__class__.__name__)
+ 
+-        obj = connector.InitiatorConnector.factory('fibre_channel', None)
++        obj = connector.InitiatorConnector.factory('fibre_channel', None,
++                                                   arch='x86_64')
+         self.assertEqual("FibreChannelConnector", obj.__class__.__name__)
+ 
+         obj = connector.InitiatorConnector.factory('fibre_channel', None,
+                                                    arch='s390x')
+         self.assertEqual("FibreChannelConnectorS390X", obj.__class__.__name__)
+ 
+-        obj = connector.InitiatorConnector.factory('aoe', None)
++        obj = connector.InitiatorConnector.factory('aoe', None, arch='x86_64')
+         self.assertEqual("AoEConnector", obj.__class__.__name__)
+ 
+         obj = connector.InitiatorConnector.factory(
+@@ -199,11 +200,13 @@ class ConnectorTestCase(test_base.TestCa
+         self.assertEqual("RemoteFsConnector", obj.__class__.__name__)
+ 
+         obj = connector.InitiatorConnector.factory(
+-            'glusterfs', None, glusterfs_mount_point_base='/mnt/test')
++            'glusterfs', None, glusterfs_mount_point_base='/mnt/test',
++            arch='x86_64')
+         self.assertEqual("RemoteFsConnector", obj.__class__.__name__)
+ 
+         obj = connector.InitiatorConnector.factory(
+-            'scality', None, scality_mount_point_base='/mnt/test')
++            'scality', None, scality_mount_point_base='/mnt/test',
++            arch='x86_64')
+         self.assertEqual("RemoteFsConnector", obj.__class__.__name__)
+ 
+         obj = connector.InitiatorConnector.factory('local', None)
+@@ -212,17 +215,21 @@ class ConnectorTestCase(test_base.TestCa
+         obj = connector.InitiatorConnector.factory('gpfs', None)
+         self.assertEqual("GPFSConnector", obj.__class__.__name__)
+ 
+-        obj = connector.InitiatorConnector.factory('huaweisdshypervisor', None)
++        obj = connector.InitiatorConnector.factory(
++            'huaweisdshypervisor', None, arch='x86_64')
+         self.assertEqual("HuaweiStorHyperConnector", obj.__class__.__name__)
+ 
+-        obj = connector.InitiatorConnector.factory("scaleio", None)
++        obj = connector.InitiatorConnector.factory(
++            "scaleio", None, arch='x86_64')
+         self.assertEqual("ScaleIOConnector", obj.__class__.__name__)
+ 
+         obj = connector.InitiatorConnector.factory(
+-            'quobyte', None, quobyte_mount_point_base='/mnt/test')
++            'quobyte', None, quobyte_mount_point_base='/mnt/test',
++            arch='x86_64')
+         self.assertEqual("RemoteFsConnector", obj.__class__.__name__)
+ 
+-        obj = connector.InitiatorConnector.factory("disco", None)
++        obj = connector.InitiatorConnector.factory(
++            "disco", None, arch='x86_64')
+         self.assertEqual("DISCOConnector", obj.__class__.__name__)
+ 
+         self.assertRaises(ValueError,
