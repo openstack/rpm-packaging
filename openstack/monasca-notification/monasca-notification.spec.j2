@@ -1,0 +1,50 @@
+%global sname monasca-notification
+Name:           {{ py2name('monasca-notification') }}
+Version:        1.6.0
+Release:        0
+Summary:        Notification engine sends notifications based on alarm transitions
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            https://wiki.openstack.org/wiki/Monasca
+Source0:        https://pypi.io/packages/source/m/%{sname}/%{sname}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('nose') }}
+BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('six') }}
+Requires:       {{ py2pkg('six') }}
+Requires:       {{ py2pkg('monasca-statsd') }}
+Requires:       {{ py2pkg('monasca-common') }}
+Requires:       {{ py2pkg('requests') }}
+BuildArch:      noarch
+
+%description
+This engine reads alarms from Kafka and then notifies the customer using
+their configured notification method.
+Multiple notification and retry engines can run in
+parallel up to one per available Kafka partition. Zookeeper
+is used to negotiate access to the Kafka partitions
+whenever a new process joins or leaves the working set.
+
+%prep
+%autosetup -n %{sname}-%{version}
+%py_req_cleanup
+
+%build
+%{py2_build}
+
+%install
+%{py2_install}
+
+%check
+nosetests monasca_notification --verbose
+
+%files
+%license LICENSE
+%doc README.md ChangeLog
+%{python2_sitelib}/monasca_notification
+%{python2_sitelib}/*.egg-info
+%{_bindir}/monasca-notification
+%{_bindir}/monasca_notification_offsets.py
+
+%changelog
