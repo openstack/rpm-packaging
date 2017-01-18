@@ -1,0 +1,258 @@
+%define component horizon
+
+{% set upstream_version = '11.0.0' %}
+{% set rpm_release = '1' %}
+
+%if 0%{?rhel} || 0%{?fedora}
+%global rdo 1
+%global http_confdir %{_sysconfdir}/httpd/conf.d
+%global http_user apache
+%global http_group apache
+%global http_dashboard_dir %{_datarootdir}/openstack-dashboard
+%else
+%global http_confdir %{_sysconfdir}/apache2/conf.d
+%global http_user wwwrun
+%global http_group www
+%global http_dashboard_dir /srv/www/openstack-dashboard
+%endif
+
+Name:           openstack-dashboard
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
+Epoch:          {{ epoch('horizon') }}
+Summary:        OpenStack Dashboard (Horizon)
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            http://wiki.openstack.org/OpenStackDashboard
+Source0:        http://tarballs.openstack.org/%{component}/%{component}-{{upstream_version}}.tar.gz
+# Apache2 example configuration:
+%if 0%{?rdo}
+Source2:        openstack-dashboard.conf.sample.rdo
+%else
+Source2:        openstack-dashboard.conf.sample.suse
+%endif
+BuildRequires:  fdupes
+BuildRequires:  gettext
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('Django') }}
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+# Test requirements
+BuildRequires:  {{ py2pkg('Pint') }}
+BuildRequires:  {{ py2pkg('django-nose') }}
+BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('mox3') }}
+BuildRequires:  {{ py2pkg('netaddr') }}
+BuildRequires:  {{ py2pkg('nose') }}
+BuildRequires:  {{ py2pkg('nose-exclude') }}
+BuildRequires:  {{ py2pkg('nosexcover') }}
+BuildRequires:  {{ py2pkg('openstack.nose_plugin') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+# Now BuildRequires to be able to import the local_settings.py for collectstatic
+BuildRequires:  {{ py2pkg('XStatic') }}
+BuildRequires:  {{ py2pkg('XStatic-Angular') }}
+BuildRequires:  {{ py2pkg('XStatic-Angular-Bootstrap') }}
+BuildRequires:  {{ py2pkg('XStatic-Angular-FileUpload') }}
+BuildRequires:  {{ py2pkg('XStatic-Angular-Gettext') }}
+BuildRequires:  {{ py2pkg('XStatic-Angular-Schema-Form') }}
+BuildRequires:  {{ py2pkg('XStatic-Angular-lrdragndrop') }}
+BuildRequires:  {{ py2pkg('XStatic-Bootstrap-Datepicker') }}
+BuildRequires:  {{ py2pkg('XStatic-Bootstrap-SCSS') }}
+BuildRequires:  {{ py2pkg('XStatic-D3') }}
+BuildRequires:  {{ py2pkg('XStatic-Font-Awesome') }}
+BuildRequires:  {{ py2pkg('XStatic-Hogan') }}
+BuildRequires:  {{ py2pkg('XStatic-JQuery-Migrate') }}
+BuildRequires:  {{ py2pkg('XStatic-JQuery.TableSorter') }}
+BuildRequires:  {{ py2pkg('XStatic-JQuery.quicksearch') }}
+BuildRequires:  {{ py2pkg('XStatic-JSEncrypt') }}
+BuildRequires:  {{ py2pkg('XStatic-Jasmine') }}
+BuildRequires:  {{ py2pkg('XStatic-Rickshaw') }}
+BuildRequires:  {{ py2pkg('XStatic-Spin') }}
+BuildRequires:  {{ py2pkg('XStatic-bootswatch') }}
+BuildRequires:  {{ py2pkg('XStatic-jQuery') }}
+BuildRequires:  {{ py2pkg('XStatic-jquery-ui') }}
+BuildRequires:  {{ py2pkg('XStatic-mdi') }}
+BuildRequires:  {{ py2pkg('XStatic-objectpath') }}
+BuildRequires:  {{ py2pkg('XStatic-roboto-fontface') }}
+BuildRequires:  {{ py2pkg('XStatic-smart-table') }}
+BuildRequires:  {{ py2pkg('XStatic-term.js') }}
+BuildRequires:  {{ py2pkg('XStatic-tv4') }}
+BuildRequires:  {{ py2pkg('python-cinderclient') }}
+BuildRequires:  {{ py2pkg('django-pyscss') }}
+BuildRequires:  {{ py2pkg('django_compressor') }}
+BuildRequires:  {{ py2pkg('django_openstack_auth') }}
+BuildRequires:  {{ py2pkg('python-glanceclient') }}
+BuildRequires:  {{ py2pkg('python-heatclient') }}
+BuildRequires:  {{ py2pkg('python-keystoneclient') }}
+BuildRequires:  {{ py2pkg('python-neutronclient') }}
+BuildRequires:  {{ py2pkg('python-novaclient') }}
+BuildRequires:  {{ py2pkg('oslo.concurrency') }}
+BuildRequires:  {{ py2pkg('oslo.policy') }}
+BuildRequires:  {{ py2pkg('python-swiftclient') }}
+BuildRequires:  {{ py2pkg('python-troveclient') }}
+%if 0%{?suse_version}
+BuildRequires:  apache2
+Requires:       apache2
+Requires:       apache2-mod_wsgi
+%endif
+%if 0%{?rdo}
+Requires:       httpd
+Requires:       mod_wsgi
+%endif
+Requires:       {{ py2pkg('horizon') }} = %{epoch}:%{version}-%{release}
+Provides:       openstack-%{component} = %{version}-%{release}
+
+# To generate a self-signed certificate to be used in demo setups:
+%if 0%{?suse_version}
+Requires(post):  apache2-utils
+%endif
+%if 0%{?rdo}
+Requires(post):  httpd-tools
+%endif
+
+BuildArch:      noarch
+
+%description
+The OpenStack dashboard provides administrators and users a graphical
+interface to access, provision and automate cloud-based resources. The
+extensible design makes it easy to plug in and expose third party
+products and services, such as billing, monitoring and additional
+management tools.
+
+The dashboard is just one way to interact with OpenStack resources.
+Developers can automate access or build tools to manage their resources
+using the native OpenStack API or the EC2 compatibility API.
+
+%package -n {{ py2pkg('horizon') }}
+Summary:        OpenStack Dashboard (Horizon) - Python Module
+Group:          Development/Languages/Python
+Requires:       {{ py2pkg('Babel') }}
+Requires:       {{ py2pkg('Django') }}
+Requires:       {{ py2pkg('Pint') }}
+Requires:       {{ py2pkg('PyYAML') }}
+Requires:       {{ py2pkg('XStatic') }}
+Requires:       {{ py2pkg('XStatic-Angular') }}
+Requires:       {{ py2pkg('XStatic-Angular-Bootstrap') }}
+Requires:       {{ py2pkg('XStatic-Angular-FileUpload') }}
+Requires:       {{ py2pkg('XStatic-Angular-Gettext') }}
+Requires:       {{ py2pkg('XStatic-Angular-Schema-Form') }}
+Requires:       {{ py2pkg('XStatic-Angular-lrdragndrop') }}
+Requires:       {{ py2pkg('XStatic-Bootstrap-Datepicker') }}
+Requires:       {{ py2pkg('XStatic-Bootstrap-SCSS') }}
+Requires:       {{ py2pkg('XStatic-D3') }}
+Requires:       {{ py2pkg('XStatic-Font-Awesome') }}
+Requires:       {{ py2pkg('XStatic-Hogan') }}
+Requires:       {{ py2pkg('XStatic-JQuery-Migrate') }}
+Requires:       {{ py2pkg('XStatic-JQuery.TableSorter') }}
+Requires:       {{ py2pkg('XStatic-JQuery.quicksearch') }}
+Requires:       {{ py2pkg('XStatic-JSEncrypt') }}
+Requires:       {{ py2pkg('XStatic-Jasmine') }}
+Requires:       {{ py2pkg('XStatic-Rickshaw') }}
+Requires:       {{ py2pkg('XStatic-Spin') }}
+Requires:       {{ py2pkg('XStatic-bootswatch') }}
+Requires:       {{ py2pkg('XStatic-jQuery') }}
+Requires:       {{ py2pkg('XStatic-jquery-ui') }}
+Requires:       {{ py2pkg('XStatic-mdi') }}
+Requires:       {{ py2pkg('XStatic-objectpath') }}
+Requires:       {{ py2pkg('XStatic-roboto-fontface') }}
+Requires:       {{ py2pkg('XStatic-smart-table') }}
+Requires:       {{ py2pkg('XStatic-term.js') }}
+Requires:       {{ py2pkg('XStatic-tv4') }}
+Requires:       {{ py2pkg('python-ceilometerclient') }}
+Requires:       {{ py2pkg('python-cinderclient') }}
+Requires:       {{ py2pkg('django-babel') }}
+Requires:       {{ py2pkg('django-pyscss') }}
+Requires:       {{ py2pkg('django_compressor') }}
+Requires:       {{ py2pkg('django_openstack_auth') }}
+Requires:       {{ py2pkg('python-glanceclient') }}
+Requires:       {{ py2pkg('python-heatclient') }}
+Requires:       {{ py2pkg('httplib2') }}
+Requires:       {{ py2pkg('iso8601') }}
+Requires:       {{ py2pkg('python-keystoneclient') }}
+Requires:       {{ py2pkg('netaddr') }}
+Requires:       {{ py2pkg('python-neutronclient') }}
+Requires:       {{ py2pkg('python-novaclient') }}
+Requires:       {{ py2pkg('oslo.concurrency') }}
+Requires:       {{ py2pkg('oslo.config') }}
+Requires:       {{ py2pkg('oslo.i18n') }}
+Requires:       {{ py2pkg('oslo.policy') }}
+Requires:       {{ py2pkg('oslo.serialization') }}
+Requires:       {{ py2pkg('oslo.utils') }}
+Requires:       {{ py2pkg('pbr') }}
+Requires:       {{ py2pkg('pyScss') }}
+Requires:       {{ py2pkg('pytz') }}
+Requires:       {{ py2pkg('six') }}
+Requires:       {{ py2pkg('python-swiftclient') }}
+
+%description -n {{ py2pkg('horizon') }}
+The Python module horizon is the core component of the OpenStack
+dashboard.
+
+%prep
+%autosetup  -n %{component}-{{upstream_version}}
+%py_req_cleanup
+
+%build
+# compile mo files before build
+pushd horizon
+python ../manage.py compilemessages
+popd
+pushd openstack_dashboard
+python ../manage.py compilemessages
+popd
+%{py2_build}
+
+%check
+python manage.py test horizon --settings=horizon.test.settings --ignore-files="(test_hacking|firefox_binary|webdriver)"
+# TODO
+# python manage.py test openstack_dashboard --settings=openstack_dashboard.test.settings --exclude-dir=openstack_dashboard/test/integration_tests
+
+
+%install
+%{py2_install}
+
+# Move openstack_dashboard files
+install -d -m 755 %{buildroot}%{http_dashboard_dir}
+mv %{buildroot}%{python2_sitelib}/openstack_dashboard/ %{buildroot}%{http_dashboard_dir}
+install -m 755 manage.py %{buildroot}%{http_dashboard_dir}/manage.py
+
+# Create a local_settings.py
+mv %{buildroot}%{http_dashboard_dir}/openstack_dashboard/local/local_settings.py{.example,}
+
+# create root and static files
+install -m 0755 -d %{buildroot}%{http_dashboard_dir}/static
+install -m 0755 -d %{buildroot}%{http_dashboard_dir}/media
+pushd %{buildroot}%{http_dashboard_dir}
+PYTHONPATH=%{buildroot}%{python2_sitelib} python manage.py collectstatic --noinput
+popd
+
+# cleanup after manage.py run
+rm %{buildroot}%{http_dashboard_dir}/openstack_dashboard/local/local_settings.pyc
+rm %{buildroot}%{http_dashboard_dir}/openstack_dashboard/local/.secret_key_store
+rm %{buildroot}%{http_dashboard_dir}/openstack_dashboard/local/*secret_key_store*
+
+# Remove duplicate files
+%if 0%{?suse_version}
+%fdupes %{buildroot}%{python2_sitelib}
+%fdupes %{buildroot}%{http_dashboard_dir}
+%endif
+rm -f %{buildroot}%{http_dashboard_dir}/openstack_dashboard/.eslintrc
+
+install -D -m 644 %{SOURCE2} %{buildroot}%{http_confdir}/openstack-dashboard.conf.sample
+
+%files
+%doc README.rst
+%{http_dashboard_dir}
+%attr(0750, %{http_user}, %{http_group}) %{http_dashboard_dir}/openstack_dashboard/local
+%attr(0640, %{http_user}, %{http_group}) %{http_dashboard_dir}/openstack_dashboard/local/__init__.py*
+%config(noreplace) %attr(0640, %{http_user}, %{http_group}) %{http_dashboard_dir}/openstack_dashboard/local/local_settings.py*
+%attr(0770, root, %{http_group}) %{http_dashboard_dir}/static/
+%attr(0770, root, %{http_group}) %{http_dashboard_dir}/media/
+%{http_confdir}/openstack-dashboard.conf.sample
+
+%files -n {{ py2pkg('horizon') }}
+%license LICENSE
+%{python2_sitelib}/horizon
+%{python2_sitelib}/horizon-*.egg-info
+
+%changelog
