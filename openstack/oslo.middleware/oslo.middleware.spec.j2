@@ -1,6 +1,6 @@
 %global sname oslo.middleware
 Name:           {{ py2name('oslo.middleware') }}
-Version:        3.22.0
+Version:        3.23.0
 Release:        0
 Summary:        OpenStack oslo.middleware library
 License:        {{ license('Apache-2.0') }}
@@ -21,6 +21,7 @@ BuildRequires:  {{ py2pkg('oslo.utils') }}
 BuildRequires:  {{ py2pkg('oslotest') }}
 BuildRequires:  {{ py2pkg('pbr') }}
 BuildRequires:  {{ py2pkg('six') }}
+BuildRequires:  {{ py2pkg('statsd') }}
 BuildRequires:  {{ py2pkg('stevedore') }}
 BuildRequires:  {{ py2pkg('testtools') }}
 Requires:       {{ py2pkg('Jinja2') }}
@@ -31,6 +32,7 @@ Requires:       {{ py2pkg('oslo.context') }}
 Requires:       {{ py2pkg('oslo.i18n') }}
 Requires:       {{ py2pkg('oslo.utils') }}
 Requires:       {{ py2pkg('six') }}
+Requires:       {{ py2pkg('statsd') }}
 Requires:       {{ py2pkg('stevedore') }}
 BuildArch:      noarch
 
