@@ -1,0 +1,45 @@
+%global sname monasca-persister
+Name:           {{ py2name('monasca-persister') }}
+Version:        1.3.0
+Release:        0
+Summary:        Consumes metrics and alarm state transitions from message queue and stores them in database
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            https://wiki.openstack.org/wiki/Monasca
+Source0:        https://pypi.io/packages/source/m/%{sname}/%{sname}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('six') }}
+BuildRequires:  {{ py2pkg('nose') }}
+BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('setuptools') }}
+BuildRequires:  {{ py2pkg('monasca-common') }}
+Requires:       {{ py2pkg('six') }}
+Requires:       {{ py2pkg('monasca-common') }}
+BuildArch:      noarch
+
+%description
+Consumes metrics and alarm state transitions from message queue and stores them in database.
+Data is read from Kafka queue and saved either in InfluxDB or Cassandra
+
+%prep
+%autosetup -n %{sname}-%{version}
+%py_req_cleanup
+
+%build
+%{py2_build}
+
+%install
+%{py2_install}
+
+%check
+find . -type f -name *.pyc -delete
+nosetests monasca_persister --verbose
+
+%files
+%license LICENSE
+%doc README.md ChangeLog
+%{_bindir}/monasca-persister
+%{python2_sitelib}/monasca_persister
+%{python2_sitelib}/monasca_persister-*.egg-info
+
+%changelog
