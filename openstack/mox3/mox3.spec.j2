@@ -1,6 +1,6 @@
 %global pypi_name mox3
 Name:           {{ py2name('mox3') }}
-Version:        0.18.0
+Version:        0.20.0
 Release:        0
 Summary:        An unofficial port of the Google mox framework to Python 3
 License:        {{ license('Apache-2.0') }}
@@ -48,8 +48,6 @@ This package contains documentation in HTML format.
 
 # generate html docs
 %{__python2} setup.py build_sphinx
-# remove the Sphinx-build leftovers
-rm build/sphinx/html/.buildinfo
 
 %check
 %{__python2} setup.py testr
@@ -65,6 +63,6 @@ rm build/sphinx/html/.buildinfo
 
 %files doc
 %license COPYING.txt
-%doc build/sphinx/html
+%doc doc/build/html
 
 %changelog
