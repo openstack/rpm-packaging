@@ -1,0 +1,14 @@
+[Unit]
+Description=OpenStack Neutron Metering Agent
+After=syslog.target network.target
+
+[Service]
+Type=simple
+User=neutron
+ExecStart=/usr/bin/neutron-metering-agent --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/metering_agent.ini
+PrivateTmp=false
+KillMode=process
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

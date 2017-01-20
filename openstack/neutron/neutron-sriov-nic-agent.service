@@ -1,0 +1,14 @@
+[Unit]
+Description=OpenStack Neutron SR-IOV NIC Agent
+After=syslog.target network.target
+
+[Service]
+Type=simple
+User=neutron
+ExecStart=/usr/bin/neutron-sriov-nic-agent  --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugins/ml2/sriov_agent.ini
+PrivateTmp=false
+KillMode=process
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

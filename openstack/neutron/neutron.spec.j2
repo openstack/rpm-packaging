@@ -1,0 +1,545 @@
+%global with_doc 1
+%global sname neutron
+{% set upstream_version = '10.0.0' %}
+{% set rpm_release = '1' %}
+%if 0%{?rhel} || 0%{?fedora}
+%global rdo 1
+%endif
+Name:           {{ py2name('neutron') }}
+Epoch:          {{ epoch('neutron') }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
+Summary:        OpenStack Networking Service
+License:        {{ license('Apache-2.0') }}
+Url:            https://launchpad.net/neutron
+Source0:        http://tarballs.openstack.org/%{sname}/%{sname}-{{upstream_version}}.tar.gz
+Source1:        openstack-neutron.logrotate
+Source2:        neutron-sudoers
+Source3:        neutron-server.service
+Source4:        neutron-linuxbridge-agent.service
+Source5:        neutron-openvswitch-agent.service
+Source6:        neutron-dhcp-agent.service
+Source7:        neutron-l3-agent.service
+Source8:        neutron-metadata-agent.service
+Source9:        neutron-macvtap-agent.service
+Source10:       neutron-metering-agent.service
+Source11:       neutron-sriov-nic-agent.service
+Source12:       neutron-rpc-server.service
+Source13:       neutron-server.defaultconf
+Source14:       neutron-server.README.config
+Source15:       neutron-enable-bridge-firewall.sh
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('PyMySQL') }}
+BuildRequires:  {{ py2pkg('Tempest') }}
+BuildRequires:  {{ py2pkg('WebTest') }}
+BuildRequires:  {{ py2pkg('ddt') }}
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('fixtures') }}
+BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('os-testr') }}
+BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('python-subunit') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testresources') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+BuildRequires:  {{ py2pkg('reno') }}
+BuildRequires:  sudo
+Requires:       python-%{sname} = %{epoch}:%{version}-%{release}
+Requires:       sudo
+BuildArch:      noarch
+%if 0%{?suse_version}
+BuildRequires:  systemd-rpm-macros
+%{?systemd_requires}
+%else
+BuildRequires:  systemd
+Requires(post): systemd
+Requires(preun): systemd
+Requires(postun): systemd
+%endif
+
+
+%description
+Neutron is a virtual network service for Openstack.
+
+This package contains the base supporting files.
+
+%package -n     python-%{sname}
+Summary:        Neutron Python libraries
+Group:          Applications/System
+BuildRequires:  {{ py2pkg('python-designateclient') }}
+BuildRequires:  {{ py2pkg('httplib2') }}
+BuildRequires:  {{ py2pkg('keystoneauth1') }}
+BuildRequires:  {{ py2pkg('keystonemiddleware') }}
+BuildRequires:  {{ py2pkg('neutron-lib') }}
+BuildRequires:  {{ py2pkg('python-neutronclient') }}
+BuildRequires:  {{ py2pkg('python-novaclient') }}
+BuildRequires:  {{ py2pkg('oslo.cache') }}
+BuildRequires:  {{ py2pkg('oslo.privsep') }}
+BuildRequires:  {{ py2pkg('oslo.reports') }}
+BuildRequires:  {{ py2pkg('oslo.rootwrap') }}
+BuildRequires:  {{ py2pkg('oslo.versionedobjects') }}
+BuildRequires:  {{ py2pkg('osprofiler') }}
+BuildRequires:  {{ py2pkg('ovs') }}
+BuildRequires:  {{ py2pkg('pecan') }}
+BuildRequires:  {{ py2pkg('pyroute2') }}
+BuildRequires:  {{ py2pkg('weakrefmethod') }}
+Requires:       {{ py2pkg('Jinja2') }}
+Requires:       {{ py2pkg('Paste') }}
+Requires:       {{ py2pkg('PasteDeploy') }}
+Requires:       {{ py2pkg('Routes') }}
+Requires:       {{ py2pkg('SQLAlchemy') }}
+Requires:       {{ py2pkg('WebOb') }}
+Requires:       {{ py2pkg('alembic') }}
+Requires:       {{ py2pkg('debtcollector') }}
+Requires:       {{ py2pkg('python-designateclient') }}
+Requires:       {{ py2pkg('eventlet') }}
+Requires:       {{ py2pkg('httplib2') }}
+Requires:       {{ py2pkg('keystoneauth1') }}
+Requires:       {{ py2pkg('keystonemiddleware') }}
+Requires:       {{ py2pkg('netaddr') }}
+Requires:       {{ py2pkg('netifaces') }}
+Requires:       {{ py2pkg('neutron-lib') }}
+Requires:       {{ py2pkg('python-neutronclient') }}
+Requires:       {{ py2pkg('python-novaclient') }}
+Requires:       {{ py2pkg('oslo.cache') }}
+Requires:       {{ py2pkg('oslo.concurrency') }}
+Requires:       {{ py2pkg('oslo.config') }}
+Requires:       {{ py2pkg('oslo.context') }}
+Requires:       {{ py2pkg('oslo.db') }}
+Requires:       {{ py2pkg('oslo.i18n') }}
+Requires:       {{ py2pkg('oslo.log') }}
+Requires:       {{ py2pkg('oslo.messaging') }}
+Requires:       {{ py2pkg('oslo.middleware') }}
+Requires:       {{ py2pkg('oslo.policy') }}
+Requires:       {{ py2pkg('oslo.privsep') }}
+Requires:       {{ py2pkg('oslo.reports') }}
+Requires:       {{ py2pkg('oslo.rootwrap') }}
+Requires:       {{ py2pkg('oslo.serialization') }}
+Requires:       {{ py2pkg('oslo.service') }}
+Requires:       {{ py2pkg('oslo.utils') }}
+Requires:       {{ py2pkg('oslo.versionedobjects') }}
+Requires:       {{ py2pkg('osprofiler') }}
+Requires:       {{ py2pkg('ovs') }}
+Requires:       {{ py2pkg('pbr') }}
+Requires:       {{ py2pkg('pecan') }}
+Requires:       {{ py2pkg('pyroute2') }}
+Requires:       {{ py2pkg('requests') }}
+Requires:       {{ py2pkg('ryu') }}
+Requires:       {{ py2pkg('six') }}
+Requires:       {{ py2pkg('stevedore') }}
+Requires:       {{ py2pkg('tenacity') }}
+Requires:       {{ py2pkg('weakrefmethod') }}
+
+%description -n   python-%{sname}
+Neutron is a virtual network service for Openstack.
+
+This package contains the Neutron Python library.
+
+%package api
+Summary:        Neutron API server
+Requires:       openstack-%{sname} = %{epoch}:%{version}-%{release}
+
+%description api
+Neutron is a virtual network service for Openstack.
+
+This package contains the Neutron API server.
+
+%package linuxbridge
+Summary:        Neutron Linuxbridge agent
+Requires:       bridge-utils
+Requires:       ebtables
+Requires:       ipset
+Requires:       iptables
+Requires:       /sbin/modprobe
+Requires:       openstack-%{sname} = %{epoch}:%{version}-%{release}
+
+%description linuxbridge
+Neutron is a virtual network service for Openstack.
+
+This package contains the Neutron agent that implements virtual
+networks using VLAN or VXLAN using Linuxbridge technology.
+
+%package macvtap-agent
+Summary:        Neutron macvtap agent
+Requires:       openstack-%{sname} = %{epoch}:%{version}-%{release}
+
+%description macvtap-agent
+Neutron is a virtual network service for Openstack.
+
+This package contains the Neutron agent that implements
+macvtap attachments for libvirt qemu/kvm instances.
+
+
+%package ml2
+Summary:        Neutron ML2 plugin
+Requires:       openstack-%{sname} = %{epoch}:%{version}-%{release}
+
+%description ml2
+Neutron is a virtual network service for Openstack.
+
+This package contains a Neutron plugin that allows the use of drivers
+to support separately extensible sets of network types and the mechanisms
+for accessing those types.
+
+%package openvswitch
+Summary:        Neutron openvswitch plugin
+Requires:       openstack-%{sname} = %{epoch}:%{version}-%{release}
+#TODO(jpena): find equivalences in SUSE packaging
+Requires:       ipset
+Requires:       iptables
+Requires:       openvswitch
+Requires:       /sbin/modprobe
+
+
+%description openvswitch
+Neutron is a virtual network service for Openstack.
+
+This package contains the Neutron plugin that implements virtual
+networks using Open vSwitch.
+
+%package metering-agent
+Summary:        Neutron bandwidth metering agent
+Requires:       iptables
+Requires:       openstack-%{sname} = %{epoch}:%{version}-%{release}
+
+
+%description metering-agent
+Neutron is a virtual network service for Openstack.
+
+This package contains the Neutron agent responsible for generating bandwidth
+utilization notifications.
+
+
+%package rpc-server
+Summary:        Neutron (RPC only) Server
+Requires:       openstack-%{sname} = %{epoch}:%{version}-%{release}
+
+
+%description rpc-server
+Neutron is a virtual network service for Openstack.
+
+This package contains an alternative Neutron server that handles AMQP RPC
+workload only.
+
+
+%package sriov-nic-agent
+Summary:        Neutron SR-IOV NIC agent
+Requires:       openstack-%{sname} = %{epoch}:%{version}-%{release}
+
+
+%description sriov-nic-agent
+Neutron is a virtual network service for Openstack.
+
+This package contains the Neutron agent to support advanced features of
+SR-IOV network cards.
+
+
+%if 0%{?with_doc}
+%package doc
+Summary:        Documentation for OpenStack Networking Service
+Group:          Documentation
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+
+%description doc
+OpenStack Neutron documentaion.
+
+This package contains the documentation
+%endif
+
+%prep
+%autosetup -n %{sname}-{{upstream_version}}
+%py_req_cleanup
+
+%build
+%py2_build
+
+%if 0%{?with_doc}
+# generate html docs
+%{__python2} setup.py build_sphinx
+# remove the Sphinx-build leftovers
+rm -rf html/.{doctrees,buildinfo}
+%endif
+
+# Generate configuration files
+PYTHONPATH=. tools/generate_config_file_samples.sh
+find etc -name *.sample | while read filename
+do
+    filedir=$(dirname $filename)
+    file=$(basename $filename .sample)
+    mv ${filename} ${filedir}/${file}
+done
+
+%install
+%py2_install
+
+# Move rootwrap files to proper location
+install -d -m 755 %{buildroot}%{_datarootdir}/%{sname}/rootwrap
+mv %{buildroot}/usr/etc/%{sname}/rootwrap.d/*.filters %{buildroot}%{_datarootdir}/%{sname}/rootwrap
+
+# Move config files to proper location
+install -d -m 755 %{buildroot}%{_sysconfdir}/%{sname}
+mv %{buildroot}/usr/etc/%{sname}/* %{buildroot}%{_sysconfdir}/%{sname}
+install -p -D -m 640 etc/api-paste.ini %{buildroot}%{_sysconfdir}/%{sname}/api-paste.ini
+install -p -D -m 640 etc/policy.json %{buildroot}%{_sysconfdir}/%{sname}/policy.json
+install -p -D -m 640 etc/l3_agent.ini %{buildroot}%{_sysconfdir}/%{sname}/l3_agent.ini
+install -p -D -m 640 etc/dhcp_agent.ini %{buildroot}%{_sysconfdir}/%{sname}/dhcp_agent.ini
+install -p -D -m 640 etc/metadata_agent.ini %{buildroot}%{_sysconfdir}/%{sname}/metadata_agent.ini
+install -d -m 755 %{buildroot}%{_sysconfdir}/%{sname}.conf.d
+install -D -m 640 %{SOURCE13} %{buildroot}/%{_sysconfdir}/%{sname}/%{sname}.conf.d/010-neutron.conf
+install -D -m 440 %{SOURCE14} %{buildroot}/%{_sysconfdir}/%{sname}/README.config
+
+
+# The generated config files are not moved automatically by setup.py
+install -d -m 755 %{buildroot}%{_sysconfdir}/%{sname}/plugins/ml2
+
+mv etc/%{sname}.conf %{buildroot}%{_sysconfdir}/%{sname}/%{sname}.conf
+for agent in dhcp l3 metadata metering
+do
+  mv etc/${agent}_agent.ini %{buildroot}%{_sysconfdir}/%{sname}/${agent}_agent.ini
+done
+
+for file in linuxbridge_agent ml2_conf openvswitch_agent sriov_agent
+do
+  mv etc/%{sname}/plugins/ml2/${file}.ini %{buildroot}%{_sysconfdir}/%{sname}/plugins/ml2/${file}.ini
+done
+
+# Install logrotate
+install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/openstack-neutron.logrotate
+
+# Install sudoers
+install -p -D -m 440 %{SOURCE2} %{buildroot}%{_sysconfdir}/sudoers.d/%{sname}
+
+# Install systemd units
+install -p -D -m 644 %{SOURCE3} %{buildroot}%{_unitdir}/neutron-server.service
+install -p -D -m 644 %{SOURCE4} %{buildroot}%{_unitdir}/neutron-linuxbridge-agent.service
+install -p -D -m 644 %{SOURCE5} %{buildroot}%{_unitdir}/neutron-openvswitch-agent.service
+install -p -D -m 644 %{SOURCE6} %{buildroot}%{_unitdir}/neutron-dhcp-agent.service
+install -p -D -m 644 %{SOURCE7} %{buildroot}%{_unitdir}/neutron-l3-agent.service
+install -p -D -m 644 %{SOURCE8} %{buildroot}%{_unitdir}/neutron-metadata-agent.service
+install -p -D -m 644 %{SOURCE9} %{buildroot}%{_unitdir}/neutron-macvtap-agent.service
+install -p -D -m 644 %{SOURCE10} %{buildroot}%{_unitdir}/neutron-metering-agent.service
+install -p -D -m 644 %{SOURCE11} %{buildroot}%{_unitdir}/neutron-sriov-nic-agent.service
+install -p -D -m 644 %{SOURCE12} %{buildroot}%{_unitdir}/neutron-rpc-server.service
+
+# Install helper scripts
+install -p -D -m 755 %{SOURCE15} %{buildroot}%{_bindir}/neutron-enable-bridge-firewall.sh
+
+# Create configuration directories for all services that can be populated by users with custom *.conf files
+for service in neutron server rpc-server ovs-cleanup netns-cleanup linuxbridge-cleanup macvtap-agent; do
+    mkdir -p %{buildroot}/%{_sysconfdir}/%{sname}/$service.conf.d
+done
+for service in linuxbridge openvswitch dhcp l3 metadata metering sriov-nic; do
+    mkdir -p %{buildroot}/%{_sysconfdir}/%{sname}/$service-agent.conf.d
+done
+
+
+%pre
+%openstack_pre_user_group_create neutron neutron
+exit 0
+
+%check
+# don't want to depend on hacking for package building
+rm neutron/tests/unit/hacking/test_checks.py
+# FIXME(jpena): Reduce the number of unit tests, we have issues when testing time goes > 1h
+OS_TEST_PATH=./neutron/tests/unit ostestr --black-regex '(neutron.tests.unit.objects|neutron.tests.unit.plugins)' 
+
+%post
+%systemd_post neutron-dhcp-agent.service
+%systemd_post neutron-l3-agent.service
+%systemd_post neutron-metadata-agent.service
+
+
+%preun
+%systemd_preun neutron-dhcp-agent.service
+%systemd_preun neutron-l3-agent.service
+%systemd_preun neutron-metadata-agent.service
+
+%postun
+%systemd_postun_with_restart neutron-dhcp-agent.service
+%systemd_postun_with_restart neutron-l3-agent.service
+%systemd_postun_with_restart neutron-metadata-agent.service
+
+%post api
+%systemd_post neutron-server.service
+
+%preun api
+%systemd_preun neutron-server.service
+
+%postun api
+%systemd_postun_with_restart neutron-server.service
+
+%post linuxbridge
+%systemd_post neutron-linuxbridge-agent.service
+
+%preun linuxbridge
+%systemd_preun neutron-linuxbridge-agent.service
+
+%postun linuxbridge
+%systemd_postun_with_restart neutron-linuxbridge-agent.service
+
+%post macvtap-agent
+%systemd_post neutron-macvtap-agent.service
+
+%preun macvtap-agent
+%systemd_preun neutron-macvtap-agent.service
+
+%postun macvtap-agent
+%systemd_postun_with_restart neutron-macvtap-agent.service
+
+%post openvswitch
+%systemd_post neutron-openvswitch-agent.service
+
+%preun openvswitch
+%systemd_preun neutron-openvswitch-agent.service
+
+%postun openvswitch
+%systemd_postun_with_restart neutron-openvswitch-agent.service
+
+%post metering-agent
+%systemd_post neutron-metering-agent.service
+
+%preun metering-agent
+%systemd_preun neutron-metering-agent.service
+
+%postun metering-agent
+%systemd_postun_with_restart neutron-metering-agent.service
+
+%post rpc-server
+%systemd_post neutron-rpc-server.service
+
+%preun rpc-server
+%systemd_preun neutron-rpc-server.service
+
+%postun rpc-server
+%systemd_postun_with_restart neutron-rpc-server.service
+
+%post sriov-nic-agent
+%systemd_post neutron-sriov-nic-agent.service
+
+%preun sriov-nic-agent
+%systemd_preun neutron-sriov-nic-agent.service
+
+%postun sriov-nic-agent
+%systemd_postun_with_restart neutron-sriov-nic-agent.service
+
+%files
+%license LICENSE
+%{_bindir}/neutron-enable-bridge-firewall.sh
+%{_bindir}/neutron-db-manage
+%{_bindir}/neutron-debug
+%{_bindir}/neutron-dhcp-agent
+%{_bindir}/neutron-ipset-cleanup
+%{_bindir}/neutron-keepalived-state-change
+%{_bindir}/neutron-l3-agent
+%{_bindir}/neutron-metadata-agent
+%{_bindir}/neutron-netns-cleanup
+%{_bindir}/neutron-ns-metadata-proxy
+%{_bindir}/neutron-pd-notify
+%{_bindir}/neutron-rootwrap
+%{_bindir}/neutron-rootwrap-daemon
+%{_bindir}/neutron-rootwrap-xen-dom0
+%{_bindir}/neutron-sanity-check
+%{_bindir}/neutron-usage-audit
+%{_unitdir}/neutron-dhcp-agent.service
+%{_unitdir}/neutron-l3-agent.service
+%{_unitdir}/neutron-metadata-agent.service
+%attr(-, root, %{sname}) %{_sysconfdir}/%{sname}/api-paste.ini
+%config(noreplace) %attr(0640, root, %{sname}) %{_sysconfdir}/%{sname}/dhcp_agent.ini
+%config(noreplace) %attr(0640, root, %{sname}) %{_sysconfdir}/%{sname}/l3_agent.ini
+%config(noreplace) %attr(0640, root, %{sname}) %{_sysconfdir}/%{sname}/metadata_agent.ini
+%config(noreplace) %attr(0640, root, %{sname}) %{_sysconfdir}/%{sname}/policy.json
+%config(noreplace) %attr(0640, root, %{sname}) %{_sysconfdir}/%{sname}/rootwrap.conf
+%config(noreplace) %attr(0640, root, %{sname}) %{_sysconfdir}/%{sname}/%{sname}.conf
+%{_sysconfdir}/%{sname}/README.config
+%dir %{_sysconfdir}/%{sname}
+%dir %{_sysconfdir}/%{sname}/plugins
+%dir %{_sysconfdir}/%{sname}/%{sname}.conf.d
+%config(noreplace) %attr(0640, root, %{sname}) %{_sysconfdir}/%{sname}/%{sname}.conf.d/010-neutron.conf
+%{_sysconfdir}/sudoers.d/%{sname}
+%config(noreplace) %{_sysconfdir}/logrotate.d/*
+%dir %{_datarootdir}/%{sname}
+%dir %{_datarootdir}/%{sname}/rootwrap
+%{_datarootdir}/%{sname}/rootwrap/debug.filters
+%{_datarootdir}/%{sname}/rootwrap/dhcp.filters
+%{_datarootdir}/%{sname}/rootwrap/dibbler.filters
+%{_datarootdir}/%{sname}/rootwrap/ebtables.filters
+%{_datarootdir}/%{sname}/rootwrap/ipset-firewall.filters
+%{_datarootdir}/%{sname}/rootwrap/iptables-firewall.filters
+%{_datarootdir}/%{sname}/rootwrap/l3.filters
+%{_datarootdir}/%{sname}/rootwrap/netns-cleanup.filters
+
+%files api
+%license LICENSE
+%{_bindir}/neutron-server
+%{_unitdir}/neutron-server.service
+%dir %{_sysconfdir}/%{sname}/server.conf.d
+
+%files -n python-%{sname}
+%defattr(-,root,root,-)
+%license LICENSE
+%{python2_sitelib}/%{sname}
+%{python2_sitelib}/%{sname}-*.egg-info
+
+%if 0%{?with_doc}
+%files doc
+%license LICENSE
+%doc doc/build/html
+%endif
+
+%files linuxbridge
+%license LICENSE
+%{_bindir}/neutron-linuxbridge-agent
+%{_bindir}/neutron-linuxbridge-cleanup
+%{_unitdir}/neutron-linuxbridge-agent.service
+%{_datarootdir}/%{sname}/rootwrap/linuxbridge-plugin.filters
+%dir %{_sysconfdir}/%{sname}/plugins/ml2
+%config(noreplace) %attr(0640, root, %{sname}) %{_sysconfdir}/%{sname}/plugins/ml2/linuxbridge_agent.ini
+%dir %{_sysconfdir}/%{sname}/linuxbridge-agent.conf.d
+
+%files macvtap-agent
+%license LICENSE
+%{_bindir}/neutron-macvtap-agent
+%{_unitdir}/neutron-macvtap-agent.service
+%dir %{_sysconfdir}/%{sname}/macvtap-agent.conf.d
+
+%files ml2
+%license LICENSE
+%doc %{sname}/plugins/ml2/README
+%dir %{_sysconfdir}/%{sname}/plugins/ml2
+%config(noreplace) %attr(0640, root, %{sname}) %{_sysconfdir}/%{sname}/plugins/ml2/*.ini
+%exclude %{_sysconfdir}/%{sname}/plugins/ml2/linuxbridge_agent.ini
+%exclude %{_sysconfdir}/%{sname}/plugins/ml2/openvswitch_agent.ini
+%exclude %{_sysconfdir}/%{sname}/plugins/ml2/sriov_agent.ini
+
+%files openvswitch
+%license LICENSE
+%{_bindir}/neutron-openvswitch-agent
+%{_bindir}/neutron-ovs-cleanup
+%{_unitdir}/neutron-openvswitch-agent.service
+%{_datarootdir}/%{sname}/rootwrap/openvswitch-plugin.filters
+%dir %{_sysconfdir}/%{sname}/plugins/ml2
+%config(noreplace) %attr(0640, root, %{sname}) %{_sysconfdir}/%{sname}/plugins/ml2/openvswitch_agent.ini
+%dir %{_sysconfdir}/%{sname}/openvswitch-agent.conf.d
+
+%files metering-agent
+%license LICENSE
+%config(noreplace) %attr(0640, root, %{sname}) %{_sysconfdir}/%{sname}/metering_agent.ini
+%{_unitdir}/neutron-metering-agent.service
+%{_bindir}/neutron-metering-agent
+%dir %{_sysconfdir}/%{sname}/metering-agent.conf.d
+
+%files rpc-server
+%license LICENSE
+%{_bindir}/neutron-rpc-server
+%{_unitdir}/neutron-rpc-server.service
+%dir %{_sysconfdir}/%{sname}/rpc-server.conf.d
+
+%files sriov-nic-agent
+%license LICENSE
+%{_unitdir}/neutron-sriov-nic-agent.service
+%{_bindir}/neutron-sriov-nic-agent
+%config(noreplace) %attr(0640, root, %{sname}) %{_sysconfdir}/%{sname}/plugins/ml2/sriov_agent.ini
+%dir %{_sysconfdir}/%{sname}/sriov-nic-agent.conf.d
+
+%changelog
