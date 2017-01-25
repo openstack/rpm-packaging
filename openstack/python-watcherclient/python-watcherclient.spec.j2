@@ -1,5 +1,5 @@
 Name:           {{ py2name('python-watcherclient') }}
-Version:        0.27.0
+Version:        1.0.0
 Release:        0
 Summary:        Python API and CLI for OpenStack Watcher
 License:        {{ license('Apache-2.0') }}
@@ -21,6 +21,7 @@ BuildRequires:  {{ py2pkg('oslotest') }}
 BuildRequires:  {{ py2pkg('pbr') }}
 BuildRequires:  {{ py2pkg('python-subunit') }}
 BuildRequires:  {{ py2pkg('setuptools') }}
+BuildRequires:  {{ py2pkg('Tempest') }}
 BuildRequires:  {{ py2pkg('testrepository') }}
 BuildRequires:  {{ py2pkg('testscenarios') }}
 BuildRequires:  {{ py2pkg('testtools') }}
@@ -66,6 +67,7 @@ rm -rf html/.{doctrees,buildinfo}
 %py2_install
 
 %check
+export OS_TEST_PATH=./watcherclient/tests/unit
 %{__python2} setup.py testr
 
 %files
