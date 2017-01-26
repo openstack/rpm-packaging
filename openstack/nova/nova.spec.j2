@@ -1,0 +1,856 @@
+%global with_doc 1
+# fix me IgorYozhikov
+%global with_tests 0
+%global sname nova
+{% set upstream_version = '15.0.0' %}
+{% set rpm_release = '1' %}
+%if 0%{?rhel} || 0%{?fedora}
+%global rdo 1
+%endif
+Name:           {{ py2name('nova') }}
+Epoch:          {{ epoch('nova') }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
+Summary:        OpenStack Compute (nova)
+License:        {{ license('Apache-2.0') }}
+URL:            https://launchpad.net/nova
+Source0:        http://tarballs.openstack.org/%{sname}/%{sname}-{{upstream_version}}.tar.gz
+Source1:        nova-dist.conf
+Source3:        nova.logrotate
+Source4:        nova-polkit.pkla
+Source5:        nova-ifc-template
+Source6:        nova-polkit.rules
+Source7:        nova-sudoers
+Source8:        unittests.blacklist
+
+Source10:       openstack-nova-api.service
+Source11:       openstack-nova-cert.service
+Source12:       openstack-nova-compute.service
+Source13:       openstack-nova-network.service
+Source14:       openstack-nova-scheduler.service
+Source15:       openstack-nova-xvpvncproxy.service
+Source16:       openstack-nova-console.service
+Source17:       openstack-nova-consoleauth.service
+Source18:       openstack-nova-metadata-api.service
+Source19:       openstack-nova-conductor.service
+Source20:       openstack-nova-cells.service
+Source21:       openstack-nova-spicehtml5proxy.service
+Source22:       openstack-nova-novncproxy.service
+Source23:       openstack-nova-serialproxy.service
+Source24:       openstack-nova-os-compute-api.service
+Source25:       wsgi-nova-placement-api.conf
+
+BuildRequires:  fdupes
+BuildRequires:  intltool
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('PyMySQL') }}
+BuildRequires:  polkit
+BuildRequires:  {{ py2pkg('ddt') }}
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('fixtures') }}
+BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('mox3') }}
+BuildRequires:  {{ py2pkg('os-api-ref') }}
+BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('osprofiler') }}
+BuildRequires:  {{ py2pkg('oslo.cache') }}
+BuildRequires:  {{ py2pkg('oslo.concurrency') }}
+BuildRequires:  {{ py2pkg('oslo.config') }}
+BuildRequires:  {{ py2pkg('oslo.context') }}
+BuildRequires:  {{ py2pkg('oslo.db') }}
+BuildRequires:  {{ py2pkg('oslo.i18n') }}
+BuildRequires:  {{ py2pkg('oslo.log') }}
+BuildRequires:  {{ py2pkg('oslo.messaging') }}
+BuildRequires:  {{ py2pkg('oslo.middleware') }}
+BuildRequires:  {{ py2pkg('oslo.policy') }}
+BuildRequires:  {{ py2pkg('oslo.privsep') }}
+BuildRequires:  {{ py2pkg('oslo.reports') }}
+BuildRequires:  {{ py2pkg('oslo.rootwrap') }}
+BuildRequires:  {{ py2pkg('oslo.serialization') }}
+BuildRequires:  {{ py2pkg('oslo.service') }}
+BuildRequires:  {{ py2pkg('oslo.utils') }}
+BuildRequires:  {{ py2pkg('oslo.versionedobjects') }}
+BuildRequires:  {{ py2pkg('oslo.vmware') }}
+BuildRequires:  {{ py2pkg('os-brick') }}
+BuildRequires:  {{ py2pkg('os-testr') }}
+BuildRequires:  {{ py2pkg('os-vif') }}
+BuildRequires:  {{ py2pkg('os-win') }}
+BuildRequires:  {{ py2pkg('psycopg2') }}
+BuildRequires:  {{ py2pkg('python-barbicanclient') }}
+BuildRequires:  {{ py2pkg('python-cinderclient') }}
+BuildRequires:  {{ py2pkg('python-glanceclient') }}
+BuildRequires:  {{ py2pkg('python-ironicclient') }}
+BuildRequires:  {{ py2pkg('python-keystoneclient') }}
+BuildRequires:  {{ py2pkg('microversion_parse') }}
+BuildRequires:  {{ py2pkg('python-neutronclient') }}
+BuildRequires:  {{ py2pkg('python-novaclient') }}
+BuildRequires:  {{ py2pkg('python-subunit') }}
+BuildRequires:  {{ py2pkg('requests-mock') }}
+BuildRequires:  {{ py2pkg('tempest-lib') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testresources') }}
+BuildRequires:  {{ py2pkg('testscenarios') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+BuildRequires:  sudo
+Requires:       logrotate
+Requires:       python-%{sname} = %{epoch}:%{version}-%{release}
+BuildArch:      noarch
+%if 0%{?suse_version}
+BuildRequires:  systemd-rpm-macros
+%{?systemd_requires}
+Requires(pre):  pwdutils
+%else
+BuildRequires:  systemd
+Requires(pre):  shadow-utils
+Requires(post): systemd
+Requires(preun): systemd
+Requires(postun): systemd
+%endif
+
+%description
+OpenStack Compute (codename Nova) is open source software designed to
+provision and manage large networks of virtual machines, creating a
+redundant and scalable cloud computing platform. It gives you the
+software, control panels, and APIs required to orchestrate a cloud,
+including running instances, managing networks, and controlling access
+through users and projects. OpenStack Compute strives to be both
+hardware and hypervisor agnostic, currently supporting a variety of
+standard hardware configurations and seven major hypervisors.
+
+%package -n     python-%{sname}
+Summary:        Nova Python library
+Group:          Applications/System
+# Require openssh for ssh-keygen
+Requires:       openssh
+Requires:       openssl
+Requires:       {{ py2pkg('Babel') }}
+Requires:       {{ py2pkg('Jinja2') }}
+Requires:       {{ py2pkg('Paste') }}
+Requires:       {{ py2pkg('PasteDeploy') }}
+Requires:       {{ py2pkg('PrettyTable') }}
+Requires:       {{ py2pkg('Routes') }}
+Requires:       {{ py2pkg('SQLAlchemy') }}
+Requires:       {{ py2pkg('WebOb') }}
+Requires:       {{ py2pkg('castellan') }}
+Requires:       {{ py2pkg('cryptography') }}
+Requires:       {{ py2pkg('decorator') }}
+Requires:       {{ py2pkg('eventlet') }}
+Requires:       {{ py2pkg('greenlet') }}
+Requires:       {{ py2pkg('iso8601') }}
+Requires:       {{ py2pkg('jsonschema') }}
+Requires:       {{ py2pkg('keystoneauth1') }}
+Requires:       {{ py2pkg('keystonemiddleware') }}
+Requires:       {{ py2pkg('lxml') }}
+Requires:       {{ py2pkg('microversion-parse') }}
+Requires:       {{ py2pkg('netaddr') }}
+Requires:       {{ py2pkg('netifaces') }}
+Requires:       {{ py2pkg('oslo.cache') }}
+Requires:       {{ py2pkg('oslo.concurrency') }}
+Requires:       {{ py2pkg('oslo.config') }}
+Requires:       {{ py2pkg('oslo.context') }}
+Requires:       {{ py2pkg('oslo.db') }}
+Requires:       {{ py2pkg('oslo.i18n') }}
+Requires:       {{ py2pkg('oslo.log') }}
+Requires:       {{ py2pkg('oslo.messaging') }}
+Requires:       {{ py2pkg('oslo.middleware') }}
+Requires:       {{ py2pkg('oslo.policy') }}
+Requires:       {{ py2pkg('oslo.privsep') }}
+Requires:       {{ py2pkg('oslo.reports') }}
+Requires:       {{ py2pkg('oslo.rootwrap') }}
+Requires:       {{ py2pkg('oslo.serialization') }}
+Requires:       {{ py2pkg('oslo.service') }}
+Requires:       {{ py2pkg('oslo.utils') }}
+Requires:       {{ py2pkg('oslo.versionedobjects') }}
+Requires:       {{ py2pkg('os-brick') }}
+Requires:       {{ py2pkg('os-vif') }}
+Requires:       {{ py2pkg('os-win') }}
+Requires:       {{ py2pkg('paramiko') }}
+Requires:       {{ py2pkg('pbr') }}
+Requires:       {{ py2pkg('psutil') }}
+Requires:       {{ py2pkg('python-cinderclient') }}
+Requires:       {{ py2pkg('python-glanceclient') }}
+Requires:       {{ py2pkg('python-neutronclient') }}
+Requires:       {{ py2pkg('requests') }}
+Requires:       {{ py2pkg('rfc3986') }}
+Requires:       {{ py2pkg('setuptools') }}
+Requires:       {{ py2pkg('six') }}
+Requires:       {{ py2pkg('sqlalchemy-migrate') }}
+Requires:       {{ py2pkg('stevedore') }}
+Requires:       {{ py2pkg('websockify') }}
+Requires:       sudo
+
+%description -n python-%{sname}
+OpenStack Compute (codename Nova) is open source software designed to
+provision and manage large networks of virtual machines, creating a
+redundant and scalable cloud computing platform.
+
+This package contains the nova Python library.
+
+%package api
+Summary:        OpenStack Nova - API service
+Group:          Applications/System
+Requires:       %{name} = %{epoch}:%{version}-%{release}
+
+%description api
+OpenStack Compute (codename Nova) is open source software designed to
+provision and manage large networks of virtual machines, creating a
+redundant and scalable cloud computing platform. It gives you the
+software, control panels, and APIs required to orchestrate a cloud,
+including running instances, managing networks, and controlling access
+through users and projects. OpenStack Compute strives to be both
+hardware and hypervisor agnostic, currently supporting a variety of
+standard hardware configurations and seven major hypervisors.
+
+This package contains the Nova services providing programmatic access.
+
+%package placement-api
+Summary:        OpenStack Nova - Placement API service
+Group:          Applications/System
+Requires:       %{name} = %{epoch}:%{version}-%{release}
+%if 0%{?suse_version}
+%define apache_name         apache2
+%define apache_site_dir     %{_sysconfdir}/%{apache_name}/vhosts.d/
+BuildRequires:  apache2-mod_wsgi
+Requires:       apache2-mod_wsgi
+%else
+%define apache_name         httpd
+%define apache_site_dir     %{_sysconfdir}/%{apache_name}/conf.d/
+BuildRequires:  mod_wsgi
+Requires:       mod_wsgi
+%endif
+
+%description placement-api
+This package contains the OpenStack Nova Placement API.
+
+%package cells
+Summary:        OpenStack Nova Cells service
+Group:          Applications/System
+Requires:       %{name} = %{epoch}:%{version}-%{release}
+
+%description cells
+OpenStack Compute (codename Nova) is open source software designed to
+provision and manage large networks of virtual machines, creating a
+redundant and scalable cloud computing platform. It gives you the
+software, control panels, and APIs required to orchestrate a cloud,
+including running instances, managing networks, and controlling access
+through users and projects. OpenStack Compute strives to be both
+hardware and hypervisor agnostic, currently supporting a variety of
+standard hardware configurations and seven major hypervisors.
+
+This package contains the Nova Cells service providing additional
+scaling and (geographic) distribution for compute services.
+
+%package cert
+Summary:        OpenStack Nova certificate management service
+Group:          Applications/System
+Requires:       %{name} = %{epoch}:%{version}-%{release}
+
+%description cert
+OpenStack Compute (codename Nova) is open source software designed to
+provision and manage large networks of virtual machines, creating a
+redundant and scalable cloud computing platform. It gives you the
+software, control panels, and APIs required to orchestrate a cloud,
+including running instances, managing networks, and controlling access
+through users and projects. OpenStack Compute strives to be both
+hardware and hypervisor agnostic, currently supporting a variety of
+standard hardware configurations and seven major hypervisors.
+
+This package contains the Nova service for managing certificates.
+
+%package compute
+Summary:        OpenStack Nova Virtual Machine control service
+Group:          Applications/System
+Requires(pre):  qemu-kvm
+Requires:       bridge-utils
+Requires:       curl
+Requires:       genisoimage
+Requires:       ipmitool
+Requires:       iptables
+Requires:       iscsi-initiator-utils
+Requires:       libvirt-daemon-kvm
+Requires:       libvirt-daemon-lxc
+Requires:       {{ py2pkg('libvirt-python') }}
+Requires:       lvm2
+Requires:       openssh-clients
+Requires:       %{name} = %{epoch}:%{version}-%{release}
+Requires:       {{ py2pkg('libguestfs') }}
+Requires:       rsync
+
+%description compute
+OpenStack Compute (codename Nova) is open source software designed to
+provision and manage large networks of virtual machines, creating a
+redundant and scalable cloud computing platform. It gives you the
+software, control panels, and APIs required to orchestrate a cloud,
+including running instances, managing networks, and controlling access
+through users and projects. OpenStack Compute strives to be both
+hardware and hypervisor agnostic, currently supporting a variety of
+standard hardware configurations and seven major hypervisors.
+
+This package contains the Nova service for controlling Virtual Machines.
+
+%package conductor
+Summary:        OpenStack Nova Conductor services
+Group:          Applications/System
+Requires:       %{name} = %{epoch}:%{version}-%{release}
+
+%description conductor
+OpenStack Compute (codename Nova) is open source software designed to
+provision and manage large networks of virtual machines, creating a
+redundant and scalable cloud computing platform. It gives you the
+software, control panels, and APIs required to orchestrate a cloud,
+including running instances, managing networks, and controlling access
+through users and projects. OpenStack Compute strives to be both
+hardware and hypervisor agnostic, currently supporting a variety of
+standard hardware configurations and seven major hypervisors.
+
+This package contains the Nova services providing database access for
+the compute service
+
+%package console
+Summary:        OpenStack Nova console access services
+Group:          Applications/System
+Requires:       %{name} = %{epoch}:%{version}-%{release}
+
+%description console
+OpenStack Compute (codename Nova) is open source software designed to
+provision and manage large networks of virtual machines, creating a
+redundant and scalable cloud computing platform. It gives you the
+software, control panels, and APIs required to orchestrate a cloud,
+including running instances, managing networks, and controlling access
+through users and projects. OpenStack Compute strives to be both
+hardware and hypervisor agnostic, currently supporting a variety of
+standard hardware configurations and seven major hypervisors.
+
+This package contains the Nova services providing
+console access services to Virtual Machines.
+
+%package network
+Summary:        OpenStack Nova Network control service
+Group:          Applications/System
+Requires:       bridge-utils
+Requires:       dnsmasq
+Requires:       dnsmasq-utils
+Requires:       ebtables
+Requires:       iptables
+Requires:       %{name} = %{epoch}:%{version}-%{release}
+Requires:       radvd
+
+%description network
+OpenStack Compute (codename Nova) is open source software designed to
+provision and manage large networks of virtual machines, creating a
+redundant and scalable cloud computing platform. It gives you the
+software, control panels, and APIs required to orchestrate a cloud,
+including running instances, managing networks, and controlling access
+through users and projects. OpenStack Compute strives to be both
+hardware and hypervisor agnostic, currently supporting a variety of
+standard hardware configurations and seven major hypervisors.
+
+This package contains the Nova service for controlling networking.
+
+%package novncproxy
+Summary:        OpenStack Nova noVNC proxy service
+Group:          Applications/System
+Requires:       novnc
+Requires:       %{name} = %{epoch}:%{version}-%{release}
+
+%description novncproxy
+OpenStack Compute (codename Nova) is open source software designed to
+provision and manage large networks of virtual machines, creating a
+redundant and scalable cloud computing platform. It gives you the
+software, control panels, and APIs required to orchestrate a cloud,
+including running instances, managing networks, and controlling access
+through users and projects. OpenStack Compute strives to be both
+hardware and hypervisor agnostic, currently supporting a variety of
+standard hardware configurations and seven major hypervisors.
+
+This package contains the Nova noVNC Proxy service that can proxy
+VNC traffic over browser websockets connections.
+
+
+%package scheduler
+Summary:        OpenStack Nova VM distribution service
+Group:          Applications/System
+Requires:       %{name} = %{epoch}:%{version}-%{release}
+
+%description scheduler
+OpenStack Compute (codename Nova) is open source software designed to
+provision and manage large networks of virtual machines, creating a
+redundant and scalable cloud computing platform. It gives you the
+software, control panels, and APIs required to orchestrate a cloud,
+including running instances, managing networks, and controlling access
+through users and projects. OpenStack Compute strives to be both
+hardware and hypervisor agnostic, currently supporting a variety of
+standard hardware configurations and seven major hypervisors.
+
+This package contains the service for scheduling where
+to run Virtual Machines in the cloud.
+
+%package serialproxy
+Summary:        OpenStack Nova serial console access service
+Group:          Applications/System
+Requires:       %{name} = %{epoch}:%{version}-%{release}
+Requires:       novnc
+
+%description serialproxy
+OpenStack Compute (codename Nova) is open source software designed to
+provision and manage large networks of virtual machines, creating a
+redundant and scalable cloud computing platform. It gives you the
+software, control panels, and APIs required to orchestrate a cloud,
+including running instances, managing networks, and controlling access
+through users and projects. OpenStack Compute strives to be both
+hardware and hypervisor agnostic, currently supporting a variety of
+standard hardware configurations and seven major hypervisors.
+
+This package contains the Nova services providing the
+serial console access service to Virtual Machines.
+
+%package spicehtml5proxy
+Summary:        OpenStack Nova - Spice HTML5 console access service
+Group:          Applications/System
+Requires:       %{name} = %{epoch}:%{version}-%{release}
+
+%description spicehtml5proxy
+OpenStack Compute (codename Nova) is open source software designed to
+provision and manage large networks of virtual machines, creating a
+redundant and scalable cloud computing platform. It gives you the
+software, control panels, and APIs required to orchestrate a cloud,
+including running instances, managing networks, and controlling access
+through users and projects. OpenStack Compute strives to be both
+hardware and hypervisor agnostic, currently supporting a variety of
+standard hardware configurations and seven major hypervisors.
+
+This package contains the Nova services providing the
+spice HTML5 console access service to Virtual Machines.
+
+%if 0%{?with_doc}
+%package doc
+Summary:        Documentation for OpenStack Compute
+Group:          Documentation
+BuildRequires:  graphviz
+BuildRequires:  {{ py2pkg('Babel') }}
+BuildRequires:  {{ py2pkg('MySQL-python') }}
+BuildRequires:  {{ py2pkg('Paste') }}
+BuildRequires:  {{ py2pkg('PasteDeploy') }}
+BuildRequires:  {{ py2pkg('PrettyTable') }}
+BuildRequires:  {{ py2pkg('Routes') }}
+BuildRequires:  {{ py2pkg('SQLAlchemy') }}
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('WebOb') }}
+BuildRequires:  {{ py2pkg('castellan') }}
+BuildRequires:  {{ py2pkg('cryptography') }}
+BuildRequires:  {{ py2pkg('decorator') }}
+BuildRequires:  {{ py2pkg('greenlet') }}
+BuildRequires:  {{ py2pkg('greenlet') }}
+BuildRequires:  {{ py2pkg('iso8601') }}
+BuildRequires:  {{ py2pkg('jinja2') }}
+BuildRequires:  {{ py2pkg('jsonschema') }}
+BuildRequires:  {{ py2pkg('keystonemiddleware') }}
+BuildRequires:  {{ py2pkg('lxml') }}
+BuildRequires:  {{ py2pkg('python-memcached') }}
+BuildRequires:  {{ py2pkg('netifaces') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('paramiko') }}
+BuildRequires:  {{ py2pkg('psutil') }}
+BuildRequires:  {{ py2pkg('reno') }}
+BuildRequires:  {{ py2pkg('requests') }}
+BuildRequires:  {{ py2pkg('rfc3986') }}
+BuildRequires:  {{ py2pkg('sqlalchemy-migrate') }}
+BuildRequires:  {{ py2pkg('stevedore') }}
+BuildRequires:  {{ py2pkg('websockify') }}
+
+%description doc
+OpenStack Compute (codename Nova) is open source software designed to
+provision and manage large networks of virtual machines, creating a
+redundant and scalable cloud computing platform.
+
+This package contains documentation files for nova.
+%endif
+
+%prep
+%autosetup -n %{sname}-{{upstream_version}}
+%py_req_cleanup
+find . \( -name .gitignore -o -name .placeholder \) -delete
+find nova -name \*.py -exec sed -i '/\/usr\/bin\/env python/{d;q}' {} +
+
+%build
+%{py2_build}
+%if 0%{?with_doc}
+%{__python2} setup.py build_sphinx
+# remove the sphinx-build leftovers
+rm -rf doc/build/html/.{doctrees,buildinfo}
+%fdupes doc/build/html/
+%endif
+# config file generation
+PYTHONPATH=. oslo-config-generator --config-file=etc/nova/nova-config-generator.conf
+PYTHONPATH=. oslopolicy-sample-generator --config-file=etc/nova/nova-policy-generator.conf
+
+%install
+%{py2_install}
+# man pages
+mkdir -p %{buildroot}%{_mandir}/man1
+install -p -D -m 644 doc/build/man/*.1 %{buildroot}%{_mandir}/man1/
+
+# Setup directories
+install -d -m 755 %{buildroot}%{_localstatedir}/lib/nova
+install -d -m 755 %{buildroot}%{_localstatedir}/lib/nova/buckets
+install -d -m 755 %{buildroot}%{_localstatedir}/lib/nova/instances
+install -d -m 755 %{buildroot}%{_localstatedir}/lib/nova/keys
+install -d -m 755 %{buildroot}%{_localstatedir}/lib/nova/networks
+install -d -m 755 %{buildroot}%{_localstatedir}/lib/nova/tmp
+install -d -m 750 %{buildroot}%{_localstatedir}/log/nova
+
+# Setup ghost CA cert
+install -d -m 755 %{buildroot}%{_localstatedir}/lib/nova/CA
+install -p -m 755 nova/CA/*.sh %{buildroot}%{_localstatedir}/lib/nova/CA
+install -p -m 644 nova/CA/openssl.cnf.tmpl %{buildroot}%{_localstatedir}/lib/nova/CA
+install -d -m 755 %{buildroot}%{_localstatedir}/lib/nova/CA/{certs,crl,newcerts,projects,reqs}
+touch %{buildroot}%{_localstatedir}/lib/nova/CA/{cacert.pem,crl.pem,index.txt,openssl.cnf,serial}
+install -d -m 750 %{buildroot}%{_localstatedir}/lib/nova/CA/private
+touch %{buildroot}%{_localstatedir}/lib/nova/CA/private/cakey.pem
+# WSGI apache config for nova-placement-api
+%if 0%{?rdo}
+# adjust paths to WSGI scripts
+sed -i 's#/local/bin#/bin#' %{SOURCE25}
+sed -i 's#apache2#httpd#' %{SOURCE25}
+%endif
+# Install apache configuration files
+install -d -m 755 %{buildroot}%{apache_site_dir}
+install -p -D -m 644 %{SOURCE25}  %{buildroot}%{_datarootdir}/nova/wsgi-nova-placement-api.conf
+install -p -D -m 644 %{SOURCE25}  %{buildroot}%{apache_site_dir}/nova-placement-api.conf
+
+
+# Install config files
+install -d -m 755 %{buildroot}%{_sysconfdir}/nova
+install -d -m 755 %{buildroot}%{_sysconfdir}/nova/nova.conf.d
+install -p -D -m 640 %{SOURCE1} %{buildroot}%{_datarootdir}/nova/nova-dist.conf
+install -p -D -m 640 etc/nova/api-paste.ini %{buildroot}%{_sysconfdir}/nova/api-paste.ini
+install -p -D -m 640 etc/nova/cells.json %{buildroot}%{_sysconfdir}/nova/cells.json
+install -p -D -m 640 etc/nova/logging_sample.conf %{buildroot}%{_sysconfdir}/nova/logging.conf
+install -p -D -m 640 etc/nova/nova.conf.sample  %{buildroot}%{_sysconfdir}/nova/nova.conf
+install -p -D -m 640 etc/nova/policy.yaml.sample %{buildroot}%{_sysconfdir}/nova/policy.yaml
+install -p -D -m 640 etc/nova/rootwrap.conf %{buildroot}%{_sysconfdir}/nova/rootwrap.conf
+
+# Install version info file
+cat > %{buildroot}%{_sysconfdir}/nova/release <<EOF
+[Nova]
+vendor = %{?dist}
+product = OpenStack Nova
+package = %{release}
+EOF
+# Install completion, logrotate and policykit
+install -p -D -m 644 %{SOURCE3} %{buildroot}%{_sysconfdir}/logrotate.d/%{name}
+install -p -D -m 644 tools/nova-manage.bash_completion %{buildroot}%{_sysconfdir}/bash_completion.d/openstack-nova-manage.sh
+%if 0%{?rdo}
+install -d -m 755 %{buildroot}%{_sysconfdir}/polkit-1/localauthority/50-local.d
+install -p -D -m 644 %{SOURCE4} %{buildroot}%{_sysconfdir}/polkit-1/localauthority/50-local.d/50-nova.pkla
+%endif
+install -d -m 755 %{buildroot}%{_sysconfdir}/polkit-1/rules.d
+install -p -D -m 644 %{SOURCE6} %{buildroot}%{_sysconfdir}/polkit-1/rules.d/50-nova.rules
+# Install sudoers
+install -p -D -m 440 %{SOURCE7} %{buildroot}%{_sysconfdir}/sudoers.d/%{name}
+# Install initscripts for Nova services
+install -p -D -m 755 %{SOURCE10} %{buildroot}%{_unitdir}/openstack-nova-api.service
+install -p -D -m 755 %{SOURCE11} %{buildroot}%{_unitdir}/openstack-nova-cert.service
+install -p -D -m 755 %{SOURCE12} %{buildroot}%{_unitdir}/openstack-nova-compute.service
+install -p -D -m 755 %{SOURCE13} %{buildroot}%{_unitdir}/openstack-nova-network.service
+install -p -D -m 755 %{SOURCE14} %{buildroot}%{_unitdir}/openstack-nova-scheduler.service
+install -p -D -m 755 %{SOURCE15} %{buildroot}%{_unitdir}/openstack-nova-xvpvncproxy.service
+install -p -D -m 755 %{SOURCE16} %{buildroot}%{_unitdir}/openstack-nova-console.service
+install -p -D -m 755 %{SOURCE17} %{buildroot}%{_unitdir}/openstack-nova-consoleauth.service
+install -p -D -m 755 %{SOURCE18} %{buildroot}%{_unitdir}/openstack-nova-metadata-api.service
+install -p -D -m 755 %{SOURCE19} %{buildroot}%{_unitdir}/openstack-nova-conductor.service
+install -p -D -m 755 %{SOURCE20} %{buildroot}%{_unitdir}/openstack-nova-cells.service
+install -p -D -m 755 %{SOURCE21} %{buildroot}%{_unitdir}/openstack-nova-spicehtml5proxy.service
+install -p -D -m 755 %{SOURCE22} %{buildroot}%{_unitdir}/openstack-nova-novncproxy.service
+install -p -D -m 755 %{SOURCE23} %{buildroot}%{_unitdir}/openstack-nova-serialproxy.service
+install -p -D -m 755 %{SOURCE24} %{buildroot}%{_unitdir}/openstack-nova-os-compute-api.service
+
+# Install template files
+install -p -D -m 644 nova/cloudpipe/client.ovpn.template %{buildroot}%{_datarootdir}/nova/client.ovpn.template
+install -p -D -m 644 nova/cloudpipe/bootscript.template %{buildroot}%{_datarootdir}/nova/bootscript.template
+install -p -D -m 644 nova/console/xvp.conf.template %{buildroot}%{_datarootdir}/nova/xvp.conf.template
+install -p -D -m 644 nova/virt/interfaces.template %{buildroot}%{_datarootdir}/nova/interfaces_deb.template
+install -p -D -m 644 %{SOURCE5} %{buildroot}%{_datarootdir}/nova/interfaces.template
+# Install rootwrap files in /usr/share/nova/rootwrap
+mkdir -p %{buildroot}%{_datarootdir}/nova/rootwrap/
+install -p -D -m 644 etc/nova/rootwrap.d/* %{buildroot}%{_datarootdir}/nova/rootwrap/
+cp -a etc/nova/rootwrap.d/ %{buildroot}%{_sysconfdir}/nova/
+# Install pid directory
+install -d -m 755 %{buildroot}%{_localstatedir}/run/nova
+%fdupes %{buildroot}/%{python2_sitelib}
+
+%if 0%{?with_tests}
+%check
+export OS_TEST_PATH=./nova/tests/unit
+export PYTHONPATH=.
+rm -v nova/tests/unit/test_hacking.py
+rm -v nova/tests/unit/compute/test_compute_xen.py
+rm -rf nova/tests/unit/virt/xenapi/
+testr init 2>&1
+#for debug only - FIX ME
+#testr list-tests 2>&1
+testr list-tests | grep -vE '(vif|OVS|Network|test_wsgi)' > list
+testr run --load-list=list
+%endif
+
+%pre
+%openstack_pre_user_group_create nova nova -s /bin/bash
+
+%pre compute
+usermod -a -G qemu nova
+
+#POST actions
+%post api
+%systemd_post %{name}-api.service %{name}-metadata-api.service %{name}-os-compute-api.service
+
+%post placement-api
+%systemd_post %{apache_name}.service
+
+%post cells
+%systemd_post %{name}-cells.service
+
+%post cert
+%systemd_post %{name}-cert.service
+
+%post compute
+%systemd_post %{name}-compute.service
+
+%post conductor
+%systemd_post %{name}-conductor.service
+
+%post console
+%systemd_post %{name}-console.service %{name}-consoleauth.service %{name}-xvpvncproxy.service
+
+%post network
+%systemd_post %{name}-network.service
+
+%post novncproxy
+%systemd_post %{name}-novncproxy.service
+
+%post scheduler
+%systemd_post %{name}-scheduler.service
+
+%post serialproxy
+%systemd_post %{name}-serialproxy.service
+
+%post spicehtml5proxy
+%systemd_post %{name}-spicehtml5proxy.service
+
+#PREUN actions
+%preun api
+%systemd_preun %{name}-api.service %{name}-metadata-api.service %{name}-os-compute-api.service
+
+%preun cells
+%systemd_preun %{name}-cells.service
+
+%preun cert
+%systemd_preun %{name}-cert.service
+
+%preun compute
+%systemd_preun %{name}-compute.service
+
+%preun conductor
+%systemd_preun %{name}-conductor.service
+
+%preun console
+%systemd_preun %{name}-console.service %{name}-consoleauth.service %{name}-xvpvncproxy.service
+
+%preun network
+%systemd_preun %{name}-network.service
+
+%preun novncproxy
+%systemd_preun %{name}-novncproxy.service
+
+%preun scheduler
+%systemd_preun %{name}-scheduler.service
+
+%preun spicehtml5proxy
+%systemd_preun %{name}-spicehtml5proxy.service
+
+%preun serialproxy
+%systemd_preun %{name}-serialproxy.service
+
+#POSTUN actions
+%postun api
+%systemd_postun_with_restart %{name}-api.service %{name}-metadata-api.service %{name}-os-compute-api.service
+
+%postun placement-api
+%systemd_postun_with_restart %{apache_name}.service
+
+%postun cells
+%systemd_postun_with_restart %{name}-cells.service
+
+%postun cert
+%systemd_postun_with_restart %{name}-cert.service
+
+%postun compute
+%systemd_postun_with_restart %{name}-compute.service
+
+%postun conductor
+%systemd_postun_with_restart %{name}-conductor.service
+
+%postun console
+%systemd_postun_with_restart %{name}-console.service %{name}-consoleauth.service %{name}-xvpvncproxy.service
+
+%postun network
+%systemd_postun_with_restart %{name}-network.service
+
+%postun novncproxy
+%systemd_postun_with_restart %{name}-novncproxy.service
+
+%postun scheduler
+%systemd_postun_with_restart %{name}-scheduler.service
+
+%postun spicehtml5proxy
+%systemd_postun_with_restart %{name}-spicehtml5proxy.service
+
+%postun serialproxy
+%systemd_postun_with_restart %{name}-serialproxy.service
+
+#FILES
+%files
+%license LICENSE
+
+%files
+%defattr(-,root,root,-)
+%license LICENSE
+%doc README.rst
+%dir %{_datarootdir}/nova/
+%dir %{_datarootdir}/nova/rootwrap
+%attr(-, root, nova) %{_datarootdir}/nova/nova-dist.conf
+%dir %{_sysconfdir}/nova
+%dir %{_sysconfdir}/nova/rootwrap.d
+%dir %{_localstatedir}/lib/nova
+%dir %{_localstatedir}/lib/nova/buckets
+%dir %{_localstatedir}/lib/nova/instances
+%dir %{_localstatedir}/lib/nova/keys
+%dir %{_localstatedir}/lib/nova/networks
+%dir %{_localstatedir}/lib/nova/tmp
+%dir %attr(0750, nova, root) %{_localstatedir}/log/nova
+%dir %attr(0755, nova, root) %{_localstatedir}/run/nova
+%{_datarootdir}/nova/bootscript.template
+%{_datarootdir}/nova/client.ovpn.template
+%{_datarootdir}/nova/interfaces.template
+%{_datarootdir}/nova/interfaces_deb.template
+%{_datarootdir}/nova/xvp.conf.template
+%{_sysconfdir}/bash_completion.d/openstack-nova-manage.sh
+%{_sysconfdir}/nova/release
+%config(noreplace) %{_sysconfdir}/logrotate.d/%{name}
+%config(noreplace) %{_sysconfdir}/sudoers.d/%{name}
+%config(noreplace) %attr(-, root, nova) %{_sysconfdir}/nova/api-paste.ini
+%config(noreplace) %attr(-, root, nova) %{_sysconfdir}/nova/logging.conf
+%config(noreplace) %attr(-, root, nova) %{_sysconfdir}/nova/nova.conf
+%config(noreplace) %attr(-, root, nova) %{_sysconfdir}/nova/policy.yaml
+%config(noreplace) %attr(-, root, nova) %{_sysconfdir}/nova/rootwrap.conf
+%{_bindir}/nova-idmapshift
+%{_bindir}/nova-manage
+%{_bindir}/nova-policy
+%{_bindir}/nova-rootwrap
+%{_bindir}/nova-rootwrap-daemon
+%{_bindir}/nova-status
+%{_mandir}/man1/nova*.1.gz
+
+%files -n python-nova
+%license LICENSE
+%{python2_sitelib}/nova/
+%{python2_sitelib}/nova-*.egg-info
+
+%files api
+%license LICENSE
+%config %{_sysconfdir}/nova/rootwrap.d/api-metadata.filters
+%{_bindir}/nova-api*
+%{_unitdir}/%{name}-*api.service
+%{_datarootdir}/nova/rootwrap/api-metadata.filters
+
+%files placement-api
+%license LICENSE
+%{_bindir}/nova-placement-api
+%{apache_site_dir}/nova-placement-api.conf
+%{_datarootdir}/nova/wsgi-nova-placement-api.conf
+
+%files cells
+%license LICENSE
+%config(noreplace) %attr(-, root, nova) %{_sysconfdir}/nova/cells.json
+%{_bindir}/nova-cells
+%{_unitdir}/%{name}-cells.service
+
+%files cert
+%license LICENSE
+%{_bindir}/nova-cert
+%{_unitdir}/openstack-nova-cert.service
+%defattr(-, nova, nova, -)
+%dir %{_localstatedir}/lib/nova/CA/
+%dir %{_localstatedir}/lib/nova/CA/certs
+%dir %{_localstatedir}/lib/nova/CA/crl
+%dir %{_localstatedir}/lib/nova/CA/newcerts
+%dir %{_localstatedir}/lib/nova/CA/projects
+%dir %{_localstatedir}/lib/nova/CA/reqs
+%{_localstatedir}/lib/nova/CA/*.sh
+%{_localstatedir}/lib/nova/CA/openssl.cnf.tmpl
+%ghost %config(missingok,noreplace) %verify(not md5 size mtime) %{_localstatedir}/lib/nova/CA/cacert.pem
+%ghost %config(missingok,noreplace) %verify(not md5 size mtime) %{_localstatedir}/lib/nova/CA/crl.pem
+%ghost %config(missingok,noreplace) %verify(not md5 size mtime) %{_localstatedir}/lib/nova/CA/index.txt
+%ghost %config(missingok,noreplace) %verify(not md5 size mtime) %{_localstatedir}/lib/nova/CA/openssl.cnf
+%ghost %config(missingok,noreplace) %verify(not md5 size mtime) %{_localstatedir}/lib/nova/CA/serial
+%dir %attr(0750, -, -) %{_localstatedir}/lib/nova/CA/private
+%ghost %config(missingok,noreplace) %verify(not md5 size mtime) %{_localstatedir}/lib/nova/CA/private/cakey.pem
+
+%files compute
+%license LICENSE
+%{_bindir}/nova-compute
+%{_unitdir}/%{name}-compute.service
+%{_datarootdir}/nova/rootwrap/compute.filters
+%config %{_sysconfdir}/nova/rootwrap.d/compute.filters
+%if 0%{?rdo}
+%config(noreplace) %{_sysconfdir}/polkit-1/localauthority/50-local.d/50-nova.pkla
+%endif
+%config(noreplace) %{_sysconfdir}/polkit-1/rules.d/50-nova.rules
+
+%files conductor
+%license LICENSE
+%{_bindir}/nova-conductor
+%{_unitdir}/%{name}-conductor.service
+
+%files console
+%license LICENSE
+%{_bindir}/nova-console*
+%{_bindir}/nova-xvpvncproxy
+%{_unitdir}/%{name}-console*.service
+%{_unitdir}/%{name}-xvpvncproxy.service
+
+%files network
+%license LICENSE
+%config %{_sysconfdir}/nova/rootwrap.d/network.filters
+%{_bindir}/nova-network
+%{_bindir}/nova-dhcpbridge
+%{_unitdir}/%{name}-network.service
+%{_datarootdir}/nova/rootwrap/network.filters
+
+%files novncproxy
+%license LICENSE
+%{_bindir}/nova-novncproxy
+%{_unitdir}/%{name}-novncproxy.service
+
+%files scheduler
+%license LICENSE
+%{_bindir}/nova-scheduler
+%{_unitdir}/%{name}-scheduler.service
+
+%files spicehtml5proxy
+%license LICENSE
+%{_bindir}/nova-spicehtml5proxy
+%{_unitdir}/%{name}-spicehtml5proxy.service
+
+%files serialproxy
+%license LICENSE
+%{_bindir}/nova-serialproxy
+%{_unitdir}/%{name}-serialproxy.service
+
+%if 0%{?with_doc}
+%files doc
+%license LICENSE
+%doc doc/build/html
+%endif
+
+%changelog
