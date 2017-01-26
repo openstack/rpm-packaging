@@ -1,5 +1,5 @@
 Name:           {{ py2name('python-muranoclient') }}
-Version:        0.11.1
+Version:        0.12.0
 Release:        0
 Summary:        Python API and CLI for OpenStack Murano
 License:        {{ license('Apache-2.0') }}
@@ -13,6 +13,7 @@ BuildRequires:  {{ py2pkg('fixtures') }}
 BuildRequires:  {{ py2pkg('python-glanceclient') }}
 BuildRequires:  {{ py2pkg('python-keystoneclient') }}
 BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('murano-pkg-check') }}
 BuildRequires:  {{ py2pkg('osc-lib') }}
 BuildRequires:  {{ py2pkg('oslo.log') }}
 BuildRequires:  {{ py2pkg('oslo.serialization') }}
@@ -30,6 +31,7 @@ Requires:       {{ py2pkg('PrettyTable') }}
 Requires:       {{ py2pkg('PyYAML') }}
 Requires:       {{ py2pkg('python-glanceclient') }}
 Requires:       {{ py2pkg('iso8601') }}
+Requires:       {{ py2pkg('murano-pkg-check') }}
 Requires:       {{ py2pkg('python-keystoneclient') }}
 Requires:       {{ py2pkg('osc-lib') }}
 Requires:       {{ py2pkg('oslo.i18n') }}
