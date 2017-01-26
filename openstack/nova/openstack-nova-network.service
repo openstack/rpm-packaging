@@ -1,0 +1,17 @@
+[Unit]
+Description=OpenStack Nova Network Server
+After=syslog.target network.target
+
+[Service]
+Type=notify
+NotifyAccess=all
+TimeoutStartSec=0
+Restart=on-failure
+User=nova
+ExecStart=/usr/bin/nova-network
+
+# Don't kill dnsmasq on shutdown (#805947)
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target
