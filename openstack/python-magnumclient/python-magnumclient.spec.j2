@@ -1,12 +1,11 @@
 Name:           {{ py2name('python-magnumclient') }}
-Version:        2.3.1
+Version:        2.4.0
 Release:        0
 Summary:        Python API and CLI for OpenStack Magnum
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            http://launchpad.net/%{name}
 Source0:        https://pypi.io/packages/source/p/%{name}/%{name}-%{version}.tar.gz
-Patch0:         0001-Add-magnum.bash_completion.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('PrettyTable') }}
 BuildRequires:  {{ py2pkg('cryptography') }}
@@ -20,6 +19,7 @@ BuildRequires:  {{ py2pkg('oslo.i18n') }}
 BuildRequires:  {{ py2pkg('oslo.serialization') }}
 BuildRequires:  {{ py2pkg('oslo.utils') }}
 BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('osprofiler') }}
 BuildRequires:  {{ py2pkg('pbr') }}
 BuildRequires:  {{ py2pkg('python-subunit') }}
 BuildRequires:  {{ py2pkg('setuptools') }}
