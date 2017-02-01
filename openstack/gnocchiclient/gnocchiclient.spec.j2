@@ -1,6 +1,6 @@
 %global sname gnocchiclient
 Name:           {{ py2name('gnocchiclient') }}
-Version:        2.8.2
+Version:        3.0.0
 Release:        0
 Summary:        Python API and CLI for OpenStack Gnocchi
 License:        {{ license('Apache-2.0') }}
@@ -8,20 +8,27 @@ Group:          Development/Languages/Python
 Url:            https://github.com/openstack/python-gnocchiclient
 Source0:        https://pypi.io/packages/source/g/%{sname}/%{sname}-%{version}.tar.gz
 BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('cliff') }}
 BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('futurist') }}
 BuildRequires:  {{ py2pkg('keystoneauth1') }}
+BuildRequires:  {{ py2pkg('openstack-doc-tools') }}
+BuildRequires:  {{ py2pkg('osc-lib') }}
+BuildRequires:  {{ py2pkg('oslo.serialization') }}
+BuildRequires:  {{ py2pkg('oslo.utils') }}
 BuildRequires:  {{ py2pkg('oslotest') }}
 BuildRequires:  {{ py2pkg('pbr') }}
 BuildRequires:  {{ py2pkg('pyparsing') }}
 BuildRequires:  {{ py2pkg('python-subunit') }}
 BuildRequires:  {{ py2pkg('requests') }}
 BuildRequires:  {{ py2pkg('setuptools') }}
+BuildRequires:  {{ py2pkg('six') }}
 BuildRequires:  {{ py2pkg('testrepository') }}
 BuildRequires:  {{ py2pkg('testtools') }}
 Requires:       {{ py2pkg('cliff') }}
 Requires:       {{ py2pkg('futurist') }}
 Requires:       {{ py2pkg('keystoneauth1') }}
+Requires:       {{ py2pkg('openstack-doc-tools') }}
 Requires:       {{ py2pkg('osc-lib') }}
 Requires:       {{ py2pkg('oslo.serialization') }}
 Requires:       {{ py2pkg('oslo.utils') }}
@@ -57,9 +64,13 @@ This package contains auto-generated documentation.
 %install
 %py2_install
 
+# Some env variables required to successfully build our doc
+export PATH=$PATH:%{buildroot}%{_bindir}
+export PYTHONPATH=.
+export LANG=en_US.utf8
 %{__python2} setup.py build_sphinx
 # Fix hidden-file-or-dir warnings
-rm -rf html/.doctrees html/.buildinfo
+rm -rf doc/build/html/.doctrees doc/build/html/.buildinfo
 
 %check
 # FIXME: only run unittests for now. Functional tests need gnocchi
