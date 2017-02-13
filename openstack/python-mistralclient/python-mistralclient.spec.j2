@@ -1,10 +1,12 @@
 Name:           {{ py2name('python-mistralclient') }}
-Version:        2.1.2
+Version:        3.0.0
 Release:        0
 Summary:        Python API and CLI for OpenStack Mistral
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            http://launchpad.net/%{name}
+# https://review.openstack.org/#/c/422784/
+Patch1:         0001-Fix-doc-build-if-git-is-absent.patch
 Source0:        https://pypi.io/packages/source/p/%{name}/%{name}-%{version}.tar.gz
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('PyYAML') }}
@@ -13,19 +15,24 @@ BuildRequires:  {{ py2pkg('fixtures') }}
 BuildRequires:  {{ py2pkg('mock') }}
 BuildRequires:  {{ py2pkg('nose') }}
 BuildRequires:  {{ py2pkg('python-openstackclient') }}
+BuildRequires:  {{ py2pkg('oslotest') }}
 BuildRequires:  {{ py2pkg('osprofiler') }}
 BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('requests-mock') }}
 BuildRequires:  {{ py2pkg('setuptools') }}
 BuildRequires:  {{ py2pkg('testrepository') }}
 BuildRequires:  {{ py2pkg('testtools') }}
 Requires:       {{ py2pkg('PyYAML') }}
 Requires:       {{ py2pkg('cliff') }}
 Requires:       {{ py2pkg('python-keystoneclient') }}
+Requires:       {{ py2pkg('oslo.i18n') }}
+Requires:       {{ py2pkg('oslo.utils') }}
 Requires:       {{ py2pkg('os-client-config') }}
 Requires:       {{ py2pkg('osc-lib') }}
 Requires:       {{ py2pkg('osprofiler') }}
 Requires:       {{ py2pkg('requests') }}
 Requires:       {{ py2pkg('six') }}
+Requires:       {{ py2pkg('stevedore') }}
 BuildArch:      noarch
 
 %description
@@ -44,7 +51,7 @@ Client library for Mistral built on the Mistral API. It provides a Python API
 This package contains the documentation.
 
 %prep
-%autosetup -n %{name}-%{version}
+%autosetup -p1 -n %{name}-%{version}
 %py_req_cleanup
 
 %build
@@ -61,7 +68,7 @@ install -p -D -m 644 doc/build/man/mistral_client.1 %{buildroot}%{_mandir}/man1/
 
 %check
 find . -type f -name *.pyc -delete
-nosetests mistralclient/tests/unit
+PYTHONPATH=. nosetests mistralclient/tests/unit
 
 %files
 %license LICENSE

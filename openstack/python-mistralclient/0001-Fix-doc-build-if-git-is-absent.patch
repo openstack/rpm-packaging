@@ -1,0 +1,45 @@
+From 92c382632c3d2fca1b531072962b3055a6c53d5a Mon Sep 17 00:00:00 2001
+From: Corey Bryant <corey.bryant@canonical.com>
+Date: Thu, 19 Jan 2017 12:52:32 -0500
+Subject: [PATCH] Fix doc build if git is absent
+
+When building packages if git is absent, then we should not set
+html_last_updated_fmt. It can still be set via the -D switch
+when building with sphinx-build.
+
+Change-Id: I153c8c7ce89c7f8ed498d22cf24459054ac9b8d4
+Closes-Bug: #1552251
+---
+ doc/source/conf.py | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/doc/source/conf.py b/doc/source/conf.py
+index 0f3df39..411645f 100644
+--- a/doc/source/conf.py
++++ b/doc/source/conf.py
+@@ -14,6 +14,7 @@ import os
+ import pbr.version
+ import subprocess
+ import sys
++import warnings
+ 
+ on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
+ 
+@@ -119,8 +120,12 @@ htmlhelp_basename = '%sdoc' % project
+ # html_last_updated_fmt = '%b %d, %Y'
+ git_cmd = ["git", "log", "--pretty=format:'%ad, commit %h'", "--date=local",
+            "-n1"]
+-html_last_updated_fmt = subprocess.Popen(
+-    git_cmd, stdout=subprocess.PIPE).communicate()[0]
++try:
++    html_last_updated_fmt = subprocess.Popen(
++        git_cmd, stdout=subprocess.PIPE).communicate()[0]
++except Exception:
++    warnings.warn('Cannot get last updated time from git repository. '
++                  'Not setting "html_last_updated_fmt".')
+ 
+ # Add any paths that contain custom themes here, relative to this directory.
+ # html_theme_path = []
+-- 
+2.11.0
+
