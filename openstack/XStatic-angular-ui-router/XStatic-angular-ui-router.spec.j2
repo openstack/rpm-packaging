@@ -19,7 +19,7 @@ angular-ui-router javascript library packaged for setuptools (easy_install) / pi
 %prep
 %autosetup -n %{sname}-%{version}
 sed -i 's/    setup_requires/#   setup_requires/' setup.py
-sed -i '/name=.*/a \ \ \ \ version="0.3.1.2",' setup.py
+sed -i 's/    version=.*/    version="0.3.1.2",/' setup.py
 %py_req_cleanup
 
 %build
@@ -27,6 +27,8 @@ sed -i '/name=.*/a \ \ \ \ version="0.3.1.2",' setup.py
 
 %install
 %{py2_install}
+# FIXME(jpena): No *pth files are created by some CIs
+rm -f %{buildroot}%{python2_sitelib}/XStatic_angular_ui_router*-nspkg.pth
 
 %files
 %doc README.txt
