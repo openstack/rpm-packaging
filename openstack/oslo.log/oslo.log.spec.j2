@@ -7,6 +7,8 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            https://launchpad.net/%{sname}
 Source0:        https://pypi.io/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
+# 0001-Must-not-go-underneath-the-context-object-and-access.patch -- https://review.openstack.org/#/c/426587/
+Patch1:         0001-Must-not-go-underneath-the-context-object-and-access.patch
 BuildRequires:  openstack-macros
 BuildRequires:  python-devel
 BuildRequires:  {{ py2pkg('mock') }}
@@ -51,7 +53,7 @@ BuildRequires:  {{ py2pkg('oslosphinx') }}
 Documentation for the oslo.log library.
 
 %prep
-%autosetup -n %{sname}-%{version}
+%autosetup -n %{sname}-%{version} -p1
 %py_req_cleanup
 
 %build

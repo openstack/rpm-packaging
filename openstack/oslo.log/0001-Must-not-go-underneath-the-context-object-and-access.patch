@@ -1,0 +1,33 @@
+From 60d66d2a7f517ff22da40824cb840e6697d78dba Mon Sep 17 00:00:00 2001
+From: Joshua Harlow <jxharlow@godaddy.com>
+Date: Wed, 25 Jan 2017 12:32:17 -0800
+Subject: [PATCH] Must not go underneath the context object and access __dict__
+
+We have moved properties that no longer make directly accessing
+the __dict__ a good practice to go forward with (because those
+properties redirect to other members) so prefer to go through
+the correct conversion method to get at the dict that represents
+a context.
+
+Change-Id: I6fbf2192f477f62b1843321d2ec2147a3536a888
+(cherry picked from commit 1640564dd15bda135ea37be3b76d5ae0ac28b7bc)
+---
+ oslo_log/formatters.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/oslo_log/formatters.py b/oslo_log/formatters.py
+index b66654d..275ceac 100644
+--- a/oslo_log/formatters.py
++++ b/oslo_log/formatters.py
+@@ -337,7 +337,7 @@ class ContextFormatter(logging.Formatter):
+         if context:
+             record.user_identity = (
+                 self.conf.logging_user_identity_format %
+-                _ReplaceFalseValue(context.__dict__)
++                _ReplaceFalseValue(_dictify_context(context))
+             )
+ 
+         if record.__dict__.get('request_id'):
+-- 
+2.11.0
+
