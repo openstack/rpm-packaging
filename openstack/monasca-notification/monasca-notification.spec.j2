@@ -1,23 +1,41 @@
-%global sname monasca-notification
+%global sname   monasca-notification
+
+%define username    monasca-notification
+%define groupname   monasca
+
+%define notification_conf_dir %{_sysconfdir}/%{sname}
+%define notification_log_dir /var/log/%{sname}
+
 Name:           {{ py2name('monasca-notification') }}
-Version:        1.6.0
+Version:        1.7.0
 Release:        0
 Summary:        Notification engine sends notifications based on alarm transitions
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            https://wiki.openstack.org/wiki/Monasca
 Source0:        https://pypi.io/packages/source/m/%{sname}/%{sname}-%{version}.tar.gz
+Source1:        %{sname}.service
+Source2:        %{sname}.yaml
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('mock') }}
-BuildRequires:  {{ py2pkg('nose') }}
 BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('monasca-statsd') }}
+BuildRequires:  {{ py2pkg('monasca-common') }}
+BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('os-testr') }}
+BuildRequires:  {{ py2pkg('requests') }}
 BuildRequires:  {{ py2pkg('six') }}
-Requires:       {{ py2pkg('PyYAML') }}
-Requires:       {{ py2pkg('monasca-common') }}
-Requires:       {{ py2pkg('monasca-statsd') }}
-Requires:       {{ py2pkg('requests') }}
-Requires:       {{ py2pkg('six') }}
+Requires:       python-%{sname} = %{version}-%{release}
 BuildArch:      noarch
+%if 0%{?suse_version}
+BuildRequires:  systemd-rpm-macros
+Requires(pre):  pwdutils
+%else
+BuildRequires:  systemd
+Requires(post): systemd
+Requires(preun):    systemd
+Requires(postun):   systemd
+%endif
 
 %description
 This engine reads alarms from Kafka and then notifies the customer using
@@ -27,25 +45,87 @@ parallel up to one per available Kafka partition. Zookeeper
 is used to negotiate access to the Kafka partitions
 whenever a new process joins or leaves the working set.
 
+%package -n python-%{sname}
+Summary:        Python core module for monasca-notification
+Group:          Development/Languages/Python
+Requires:       {{ py2pkg('PyYAML') }}
+Requires:       {{ py2pkg('monasca-common') }}
+Requires:       {{ py2pkg('monasca-statsd') }}
+Requires:       {{ py2pkg('requests') }}
+Requires:       {{ py2pkg('six') }}
+
+%description -n python-%{sname}
+This engine reads alarms from Kafka and then notifies the customer using
+their configured notification method.
+Multiple notification and retry engines can run in
+parallel up to one per available Kafka partition. Zookeeper
+is used to negotiate access to the Kafka partitions
+whenever a new process joins or leaves the working set.
+
+This package contains the core Python module of Monasca-notification
+
 %prep
 %autosetup -n %{sname}-%{version}
 %py_req_cleanup
 
 %build
-%{py2_build}
+%py2_build
 
 %install
-%{py2_install}
+%py2_install
+
+## usr
+%{__install} -d -m 755 %{buildroot}%{_sbindir}
+
+## log dir
+%{__install} -d -m 750 %{buildroot}%{notification_log_dir}
+
+## etc
+%{__install} -d -m 755 %{buildroot}%{notification_conf_dir}
+%{__install} -D -m 644 %{SOURCE2} %{buildroot}%{notification_conf_dir}/%{sname}.yaml.sample
+
+## system stuff
+%{__install} -p -D -m 644 %{SOURCE1} %{buildroot}%{_unitdir}/%{name}.service
+
+## log dir
+%{__install} -d -m 750 %{buildroot}%{notification_log_dir}
 
 %check
-nosetests monasca_notification --verbose
+export OS_TEST_PATH=./tests
+find . -type f -name *.pyc -delete
+PYTHONPATH=. %{__python2} setup.py testr
+
+%pre
+# create monasca group and monasca-notification user
+%openstack_pre_user_group_create %{username} %{groupname}
+
+%post
+%systemd_post %{name}.service
+
+%preun
+%systemd_preun %{name}.service
+
+%postun
+%systemd_postun %{name}.service
+
+if [ $1 -eq 0 ] ; then
+  getent passwd %{username} > /dev/null
+  if [ "$?" == "0" ] ; then
+      userdel %{username}
+  fi
+fi
 
 %files
+%defattr(-, %{username}, %{groupname})
+%{_bindir}/monasca-notification
+%{_unitdir}/%{name}.service
+%dir %{notification_conf_dir}
+%config(noreplace) %{notification_conf_dir}/%{sname}.yaml.sample
+
+%files -n python-monasca-notification
 %license LICENSE
 %doc README.md ChangeLog
 %{python2_sitelib}/monasca_notification
 %{python2_sitelib}/*.egg-info
-%{_bindir}/monasca-notification
-%{_bindir}/monasca_notification_offsets.py
 
 %changelog
