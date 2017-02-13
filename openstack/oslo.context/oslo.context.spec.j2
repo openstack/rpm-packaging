@@ -1,7 +1,7 @@
 %global sname oslo.context
 %bcond_without test
 Name:           {{ py2name('oslo.context') }}
-Version:        2.11.0
+Version:        2.12.1
 Release:        0
 Summary:        OpenStack Oslo context library
 License:        {{ license('Apache-2.0') }}
@@ -11,9 +11,11 @@ Source0:        https://pypi.io/packages/source/o/%{sname}/%{sname}-%{version}.t
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('pbr') }}
 BuildRequires:  {{ py2pkg('positional') }}
+Requires:       {{ py2pkg('debtcollector') }}
 Requires:       {{ py2pkg('positional') }}
 BuildArch:      noarch
 %if %{with test}
+BuildRequires:  {{ py2pkg('debtcollector') }}
 BuildRequires:  {{ py2pkg('oslotest') }}
 %endif
 
