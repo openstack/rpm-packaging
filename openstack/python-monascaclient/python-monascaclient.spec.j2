@@ -1,6 +1,6 @@
 %global sname python-monascaclient
 Name:           {{ py2name('python-monascaclient') }}
-Version:        1.4.0
+Version:        1.5.0
 Release:        0
 Summary:        Python API and CLI for OpenStack Monasca
 License:        {{ license('Apache-2.0') }}
@@ -22,6 +22,7 @@ BuildRequires:  {{ py2pkg('oslo.log') }}
 BuildRequires:  {{ py2pkg('oslo.serialization') }}
 BuildRequires:  {{ py2pkg('oslo.utils') }}
 BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('requests-mock') }}
 BuildRequires:  {{ py2pkg('setuptools') }}
 BuildRequires:  {{ py2pkg('testrepository') }}
 BuildRequires:  {{ py2pkg('testscenarios') }}
