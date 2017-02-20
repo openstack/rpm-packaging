@@ -1,6 +1,6 @@
 %global sname zaqarclient
 Name:           {{ py2name('python-zaqarclient') }}
-Version:        1.3.0
+Version:        1.4.0
 Release:        0
 Summary:        Client Library for OpenStack Zaqar Queueing API
 License:        {{ license('Apache-2.0') }}
@@ -20,6 +20,7 @@ BuildRequires:  {{ py2pkg('openstack-doc-tools') }}
 BuildRequires:  {{ py2pkg('os-client-config') }}
 BuildRequires:  {{ py2pkg('osc-lib') }}
 BuildRequires:  {{ py2pkg('oslo.i18n') }}
+BuildRequires:  {{ py2pkg('oslo.log') }}
 BuildRequires:  {{ py2pkg('pbr') }}
 BuildRequires:  {{ py2pkg('python-subunit') }}
 BuildRequires:  {{ py2pkg('requests') }}
@@ -33,6 +34,7 @@ Requires:       {{ py2pkg('python-keystoneclient') }}
 Requires:       {{ py2pkg('openstack-doc-tools') }}
 Requires:       {{ py2pkg('osc-lib') }}
 Requires:       {{ py2pkg('oslo.i18n') }}
+Requires:       {{ py2pkg('oslo.log') }}
 Requires:       {{ py2pkg('pbr') }}
 Requires:       {{ py2pkg('requests') }}
 Requires:       {{ py2pkg('six') }}
