@@ -1,16 +1,45 @@
+#  Licensed under the Apache License, Version 2.0 (the "License"); you may
+#  not use this file except in compliance with the License. You may obtain
+#  a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#  License for the specific language governing permissions and limitations
+#  under the License.
+
 %global sname monasca-agent
+
+%define username            monasca-agent
+%define groupname           monasca
+
 Name:           {{ py2name('monasca-agent') }}
-Version:        1.7.0
+Version:        1.8.0
 Release:        0
 Summary:        OpenStack Monasca metrics agent
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            https://wiki.openstack.org/wiki/Monasca
 Source0:        https://pypi.io/packages/source/m/%{sname}/%{sname}-%{version}.tar.gz
+Source1:        %{name}-sudoers
+Source2:        %{name}.service
 BuildRequires:  openstack-macros
+
+%if 0%{?suse_version}
+BuildRequires:  systemd-rpm-macros
+%{?systemd_requires}
+%else
+BuildRequires:  systemd
+Requires(post): systemd
+Requires(preun):    systemd
+Requires(postun):   systemd
+%endif
+
 BuildRequires:  {{ py2pkg('PyYAML') }}
 BuildRequires:  {{ py2pkg('devel') }}
-BuildRequires:  {{ py2pkg('gevent', ('>=', '1.1.1')) }}
+BuildRequires:  {{ py2pkg('gevent') }}
 BuildRequires:  {{ py2pkg('httplib2') }}
 BuildRequires:  {{ py2pkg('mock') }}
 BuildRequires:  {{ py2pkg('python-monascaclient') }}
@@ -29,10 +58,21 @@ BuildRequires:  {{ py2pkg('python-memcached') }}
 BuildRequires:  {{ py2pkg('redis') }}
 BuildRequires:  {{ py2pkg('requests') }}
 BuildRequires:  {{ py2pkg('stevedore') }}
-BuildRequires:  {{ py2pkg('supervisor', ('>=', '3.1.3')) }}
-BuildRequires:  {{ py2pkg('tornado', ('>=', '4.3')) }}
+BuildRequires:  sudo
+BuildRequires:  {{ py2pkg('supervisor') }}
+BuildRequires:  {{ py2pkg('tornado') }}
+Requires:       python-%{sname} = %{version}-%{release}
+BuildArch:      noarch
+
+%description
+The Monasca Agent is a modern Python monitoring agent for gathering metrics and
+sending them to the Monasca API.
+
+%package -n python-%{sname}
+Summary:        Python module for monasca-agent
+Group:          Development/Languages/Python
 Requires:       {{ py2pkg('PyYAML') }}
-Requires:       {{ py2pkg('gevent', ('>=', '1.1.1')) }}
+Requires:       {{ py2pkg('gevent') }}
 Requires:       {{ py2pkg('httplib2') }}
 Requires:       {{ py2pkg('python-monascaclient') }}
 Requires:       {{ py2pkg('netaddr') }}
@@ -49,13 +89,14 @@ Requires:       {{ py2pkg('python-memcached') }}
 Requires:       {{ py2pkg('redis') }}
 Requires:       {{ py2pkg('requests') }}
 Requires:       {{ py2pkg('stevedore') }}
-Requires:       {{ py2pkg('supervisor', ('>=', '3.1.3')) }}
-Requires:       {{ py2pkg('tornado', ('>=', '4.3')) }}
-BuildArch:      noarch
+Requires:       {{ py2pkg('supervisor') }}
+Requires:       {{ py2pkg('tornado') }}
 
-%description
+%description -n python-%{sname}
 The Monasca Agent is a modern Python monitoring agent for gathering metrics and
 sending them to the Monasca API.
+
+This package contains monasca-agent Python module.
 
 %prep
 %autosetup -n %{sname}-%{version}
@@ -67,11 +108,42 @@ sending them to the Monasca API.
 %install
 %py2_install
 
+# /etc
+%{__install} -d -m 750 %{buildroot}%{_sysconfdir}/monasca/agent/conf.d
+
+# /usr/lib
+%{__install} -d -m 750 %{buildroot}%{_exec_prefix}/lib/monasca/agent/custom_checks.d
+%{__install} -d -m 750 %{buildroot}%{_exec_prefix}/lib/monasca/agent/custom_detect.d
+
+# /var
+%{__install} -d -m 750  %{buildroot}%{_localstatedir}/log/%{sname}
+%{__install} -d -m 700  %{buildroot}%{_localstatedir}/run/%{sname}
+
+# sudoers configuration
+%{__install} -D -m 440 %{SOURCE1} %{buildroot}%{_sysconfdir}/sudoers.d/%{name}
+
+# systemd unit file
+%{__install} -D -m 644 %{SOURCE2} %{buildroot}%{_unitdir}/%{name}.service
+
+%pre
+# create user and groups
+%openstack_pre_user_group_create %{username} %{groupname}
+
 %check
 find . -type f -name *.pyc -delete
 PYTHONPATH=. NOSE_EXCLUDE=test_override_values nosetests tests -v
 
 %files
+%defattr(-, %{username}, %{groupname})
+%dir %{_sysconfdir}/monasca
+%config %{_sysconfdir}/monasca/agent
+%config %{_sysconfdir}/sudoers.d/%{name}
+%dir %{_exec_prefix}/lib/monasca
+%{_exec_prefix}/lib/monasca/agent
+%dir %{_localstatedir}/log/%{sname}
+%{_unitdir}/%{name}.service
+
+%files -n python-%{sname}
 %doc README.md
 %license LICENSE
 %{_bindir}/monasca-collector
@@ -85,4 +157,3 @@ PYTHONPATH=. NOSE_EXCLUDE=test_override_values nosetests tests -v
 %{_datadir}/monasca/agent
 
 %changelog
-
