@@ -1,0 +1,55 @@
+%global sname murano-pkg-check
+Name:           {{ py2name('murano-pkg-check') }}
+Version:        0.3.0
+Release:        0
+License:        {{ license('Apache-2.0') }}
+Summary:        Murano package validator tool
+Url:            http://docs.openstack.org/developer/murano/
+Group:          Development/Languages/Python
+Source0:        https://pypi.io/packages/source/m/murano-pkg-check/murano-pkg-check-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  python-devel
+BuildRequires:  {{ py2pkg('PyYAML') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('oslo.i18n') }}
+BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('python-subunit') }}
+BuildRequires:  {{ py2pkg('semantic_version') }}
+BuildRequires:  {{ py2pkg('setuptools') }}
+BuildRequires:  {{ py2pkg('stevedore') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testscenarios') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+BuildRequires:  {{ py2pkg('yaql') }}
+Requires:       {{ py2pkg('PyYAML') }}
+Requires:       {{ py2pkg('oslo.i18n') }}
+Requires:       {{ py2pkg('semantic_version') }}
+Requires:       {{ py2pkg('six') }}
+Requires:       {{ py2pkg('stevedore') }}
+Requires:       {{ py2pkg('yaql') }}
+BuildArch:      noarch
+
+%description
+Murano package validator tool
+
+%prep
+%autosetup -n %{sname}-%{version}
+%py_req_cleanup
+
+%build
+%{py2_build}
+
+%install
+%{py2_install}
+
+%check
+%{__python2} setup.py testr
+
+%files
+%doc README.rst
+%license LICENSE
+%{_bindir}/murano-pkg-check
+%{python2_sitelib}/muranopkgcheck
+%{python2_sitelib}/*.egg-info
+
+%changelog
