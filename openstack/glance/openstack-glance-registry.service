@@ -1,0 +1,14 @@
+[Unit]
+Description=OpenStack Image Service registry server
+After=syslog.target network.target
+
+[Service]
+Type=simple
+User=glance
+Group=glance
+WorkingDirectory=/var/lib/glance
+PrivateTmp=yes
+ExecStart=/usr/bin/glance-registry
+
+[Install]
+WantedBy=multi-user.target

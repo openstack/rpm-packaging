@@ -1,0 +1,347 @@
+{% set pypi_name = 'glance' %}
+{% set source = fetch_source('http://tarballs.openstack.org/glance/glance-master.tar.gz') %}
+{% set upstream_version = upstream_version() %}
+{% set rpm_release = '1' %}
+%global with_doc 1
+%if 0%{?rhel} || 0%{?fedora}
+%global rdo 1
+%endif
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
+Epoch:          {{ epoch('glance') }}
+Summary:        OpenStack Image Service (Glance)
+License:        {{ license('Apache-2.0') }}
+URL:            https://launchpad.net/glance
+Source0:        {{ source|basename }}
+Source1:        openstack-glance.logrotate
+Source2:        openstack-glance.conf
+Source3:        openstack-glance-api.service
+Source5:        openstack-glance-registry.service
+Source6:        openstack-glance.defaultconf
+Source7:        openstack-glance.README.config
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('Paste') }}
+BuildRequires:  {{ py2pkg('PasteDeploy') }}
+BuildRequires:  {{ py2pkg('Routes') }}
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('WSME') }}
+BuildRequires:  {{ py2pkg('WebOb') }}
+BuildRequires:  {{ py2pkg('cursive') }}
+BuildRequires:  {{ py2pkg('ddt') }}
+BuildRequires:  {{ py2pkg('debtcollector') }}
+BuildRequires:  {{ py2pkg('defusedxml') }}
+BuildRequires:  {{ py2pkg('eventlet') }}
+BuildRequires:  {{ py2pkg('futurist') }}
+BuildRequires:  {{ py2pkg('glance_store') }}
+BuildRequires:  {{ py2pkg('keystoneclient') }}
+BuildRequires:  {{ py2pkg('keystonemiddleware') }}
+BuildRequires:  {{ py2pkg('os-testr') }}
+BuildRequires:  {{ py2pkg('oslo.concurrency') }}
+BuildRequires:  {{ py2pkg('oslo.config') }}
+BuildRequires:  {{ py2pkg('oslo.context') }}
+BuildRequires:  {{ py2pkg('oslo.db') }}
+BuildRequires:  {{ py2pkg('oslo.log') }}
+BuildRequires:  {{ py2pkg('oslo.messaging') }}
+BuildRequires:  {{ py2pkg('oslo.middleware') }}
+BuildRequires:  {{ py2pkg('oslo.policy') }}
+BuildRequires:  {{ py2pkg('oslo.utils') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('osprofiler') }}
+BuildRequires:  {{ py2pkg('pyOpenSSL') }}
+BuildRequires:  {{ py2pkg('stevedore') }}
+BuildRequires:  {{ py2pkg('taskflow') }}
+BuildRequires:  {{ py2pkg('xattr') }}
+Requires:       logrotate
+Requires:       python-{{ pypi_name }} = %{epoch}:%{version}-%{release}
+BuildArch:      noarch
+%if 0%{?suse_version}
+BuildRequires:  systemd-rpm-macros
+%{?systemd_requires}
+%else
+BuildRequires:  systemd
+Requires(post): systemd
+Requires(postun): systemd
+Requires(preun): systemd
+%endif
+%if 0%{?suse_version}
+Requires(pre):  pwdutils
+%endif
+%if 0%{?rdo}
+Requires(pre):  shadow-utils
+%endif
+
+%description
+The Glance project provides a service where users can upload and discover
+data assets that are meant to be used with other services. This currently
+includes images and metadata definitions.
+Glance image services include discovering, registering, and retrieving
+virtual machine images. Glance has a RESTful API that allows querying of
+VM image metadata as well as retrieval of the actual image.
+VM images made available through Glance can be stored in a variety of
+locations from simple filesystems to object-storage systems like the
+OpenStack Swift project.
+
+%package -n     python-{{ pypi_name }}
+Summary:        OpenStack Image Service (Glance) - Python module
+Group:          Applications/System
+Requires:       {{ py2pkg('Paste') }}
+Requires:       {{ py2pkg('PasteDeploy') }}
+Requires:       {{ py2pkg('PrettyTable') }}
+Requires:       {{ py2pkg('Routes') }}
+Requires:       {{ py2pkg('SQLAlchemy') }}
+Requires:       {{ py2pkg('WSME') }}
+Requires:       {{ py2pkg('WebOb') }}
+Requires:       {{ py2pkg('alembic') }}
+Requires:       {{ py2pkg('cryptography') }}
+Requires:       {{ py2pkg('cursive') }}
+Requires:       {{ py2pkg('debtcollector') }}
+Requires:       {{ py2pkg('defusedxml') }}
+Requires:       {{ py2pkg('eventlet') }}
+Requires:       {{ py2pkg('futurist') }}
+Requires:       {{ py2pkg('glance_store') }}
+Requires:       {{ py2pkg('httplib2') }}
+Requires:       {{ py2pkg('iso8601') }}
+Requires:       {{ py2pkg('jsonschema') }}
+Requires:       {{ py2pkg('keystoneauth1') }}
+Requires:       {{ py2pkg('python-keystoneclient') }}
+Requires:       {{ py2pkg('keystonemiddleware') }}
+Requires:       {{ py2pkg('monotonic') }}
+Requires:       {{ py2pkg('oslo.concurrency') }}
+Requires:       {{ py2pkg('oslo.config') }}
+Requires:       {{ py2pkg('oslo.context') }}
+Requires:       {{ py2pkg('oslo.db') }}
+Requires:       {{ py2pkg('oslo.i18n') }}
+Requires:       {{ py2pkg('oslo.log') }}
+Requires:       {{ py2pkg('oslo.messaging') }}
+Requires:       {{ py2pkg('oslo.middleware') }}
+Requires:       {{ py2pkg('oslo.policy') }}
+Requires:       {{ py2pkg('oslo.utils') }}
+Requires:       {{ py2pkg('osprofiler') }}
+Requires:       {{ py2pkg('pbr') }}
+Requires:       {{ py2pkg('pyOpenSSL') }}
+Requires:       {{ py2pkg('retrying') }}
+Requires:       {{ py2pkg('six') }}
+Requires:       {{ py2pkg('sqlalchemy-migrate') }}
+Requires:       {{ py2pkg('sqlparse') }}
+Requires:       {{ py2pkg('stevedore') }}
+Requires:       {{ py2pkg('taskflow') }}
+
+%description -n python-{{ pypi_name }}
+The Glance project provides a service where users can upload and discover
+data assets that are meant to be used with other services. This currently
+includes images and metadata definitions.
+Glance image services include discovering, registering, and retrieving
+virtual machine images. Glance has a RESTful API that allows querying of
+VM image metadata as well as retrieval of the actual image.
+VM images made available through Glance can be stored in a variety of
+locations from simple filesystems to object-storage systems like the
+OpenStack Swift project.
+
+This package contains the Glance Python library.
+
+%if 0%{?with_doc}
+%package doc
+Summary:        Documentation for OpenStack Image Service
+Group:          Documentation
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
+
+%description doc
+The Glance project provides a service where users can upload and discover
+data assets that are meant to be used with other services. This currently
+includes images and metadata definitions.
+Glance image services include discovering, registering, and retrieving
+virtual machine images. Glance has a RESTful API that allows querying of
+VM image metadata as well as retrieval of the actual image.
+VM images made available through Glance can be stored in a variety of
+locations from simple filesystems to object-storage systems like the
+OpenStack Swift project.
+
+This package contains the documentation.
+%endif
+
+%package api
+Summary:        OpenStack Image service (Glance) - API
+Group:          Development/Languages/Python
+Requires:       python-{{ pypi_name }} = %{epoch}:%{version}-%{release}
+
+%description api
+The Glance project provides a service where users can upload and discover
+data assets that are meant to be used with other services. This currently
+includes images and metadata definitions.
+Glance image services include discovering, registering, and retrieving
+virtual machine images. Glance has a RESTful API that allows querying of
+VM image metadata as well as retrieval of the actual image.
+VM images made available through Glance can be stored in a variety of
+locations from simple filesystems to object-storage systems like the
+OpenStack Swift project.
+
+This package contains the %{name} API server.
+
+%package registry
+Summary:        OpenStack Image service (Glance) - Registry
+Group:          Development/Languages/Python
+Requires:       %{name} = %{epoch}:%{version}-%{release}
+
+%description registry
+The Glance project provides a service where users can upload and discover
+data assets that are meant to be used with other services. This currently
+includes images and metadata definitions.
+Glance image services include discovering, registering, and retrieving
+virtual machine images. Glance has a RESTful API that allows querying of
+VM image metadata as well as retrieval of the actual image.
+VM images made available through Glance can be stored in a variety of
+locations from simple filesystems to object-storage systems like the
+OpenStack Swift project.
+
+This package contains the %{name} Registry server.
+
+%prep
+%autosetup -n {{ pypi_name }}-{{ upstream_version }}
+%py_req_cleanup
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
+
+%build
+%{py2_build}
+# build documentation
+%if 0%{?with_doc}
+%{__python2} setup.py build_sphinx
+rm -rf doc/build/html/.{doctrees,buildinfo}
+%endif
+# regenerate the sample config files
+for service in api registry scrubber cache manage image-import; do
+    PYTHONPATH=. oslo-config-generator --config-file etc/oslo-config-generator/glance-$service.conf
+done
+
+%install
+%{py2_install}
+# directories
+install -d -m 755 %{buildroot}%{_sysconfdir}/{{ pypi_name }}
+install -d -m 755 %{buildroot}%{_sysconfdir}/glance/glance.conf.d/
+install -d -m 755 %{buildroot}%{_sysconfdir}/glance/glance-api.conf.d/
+install -d -m 755 %{buildroot}%{_sysconfdir}/glance/glance-registry.conf.d/
+install -d -m 755 %{buildroot}%{_localstatedir}/lib/{{ pypi_name }}
+install -d -m 755 %{buildroot}%{_localstatedir}/lib/{{ pypi_name }}/images
+install -d -m 750 %{buildroot}%{_localstatedir}/log/{{ pypi_name }}
+install -d -m 750 %{buildroot}%{_localstatedir}/cache/{{ pypi_name }}
+install -d -m 700 %{buildroot}%{_rundir}/{{ pypi_name }}
+mkdir -p %{buildroot}%{_mandir}/man1
+# tmpfile generator
+install -D -m 644 %{SOURCE2} %{buildroot}/%{_tmpfilesdir}/glance.conf
+# install sample configs
+cp -pr etc/* %{buildroot}%{_sysconfdir}/{{ pypi_name }}
+for service in api registry scrubber cache manage swift image-import; do
+    mv %{buildroot}%{_sysconfdir}/{{ pypi_name }}/glance-$service.conf{.sample,}
+done
+install -p -D -m 640 %{SOURCE6} %{buildroot}%{_sysconfdir}/{{ pypi_name }}/README.config
+rm -rf %{buildroot}%{_sysconfdir}/{{ pypi_name }}/oslo-config-generator
+# default config
+install -D -m 640 %{SOURCE6} %{buildroot}/%{_sysconfdir}/glance/glance.conf.d/010-glance.conf
+# systemd
+install -p -D -m 444 %{SOURCE3} %{buildroot}%{_unitdir}/openstack-glance-api.service
+install -p -D -m 444 %{SOURCE5} %{buildroot}%{_unitdir}/openstack-glance-registry.service
+# logrotate
+install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/openstack-glance
+# man pages
+install -p -D -m 644 doc/build/man/*.1 %{buildroot}%{_mandir}/man1/
+# move metadefs
+mv %{buildroot}%{_prefix}%{_sysconfdir}/glance/metadefs/* %{buildroot}%{_sysconfdir}/glance/metadefs
+# Remove duplicate files under /usr/etc
+rm -rf %{buildroot}%{_prefix}%{_sysconfdir}/glance
+
+
+%pre
+%openstack_pre_user_group_create glance glance /sbin/nologin
+exit 0
+
+%check
+OS_TEST_PATH=./glance/tests/unit PYTHONPATH=. ostestr
+
+%post
+%tmpfiles_create %{_tmpfilesdir}/glance.conf
+
+%post api
+%systemd_post %{name}-api.service
+
+%preun api
+%systemd_preun %{name}-api.service
+
+%postun api
+%systemd_postun_with_restart %{name}-api.service
+
+%post registry
+%systemd_post %{name}-registry.service
+
+%preun registry
+%systemd_preun %{name}-registry.service
+
+%postun registry
+%systemd_postun_with_restart %{name}-registry.service
+
+%files
+%license LICENSE
+%_tmpfilesdir/glance.conf
+%dir %attr(0750, root, glance) %{_sysconfdir}/{{ pypi_name }}
+%dir %attr(0750, root, glance) %{_sysconfdir}/glance/glance.conf.d/
+%dir %attr(0750, root, glance) %{_sysconfdir}/glance/glance-api.conf.d/
+%dir %attr(0750, root, glance) %{_sysconfdir}/glance/glance-registry.conf.d/
+%config(noreplace) %attr(0640, root, glance) %{_sysconfdir}/glance/glance.conf.d/010-glance.conf
+%{_sysconfdir}/{{ pypi_name }}/README.config
+%config(noreplace) %attr(0640, root, glance) %{_sysconfdir}/{{ pypi_name }}/rootwrap.conf
+%config(noreplace) %attr(0640, root, glance) %{_sysconfdir}/{{ pypi_name }}/glance-api.conf
+%config(noreplace) %attr(0640, root, glance) %{_sysconfdir}/{{ pypi_name }}/glance-cache.conf
+%config(noreplace) %attr(0640, root, glance) %{_sysconfdir}/{{ pypi_name }}/glance-image-import.conf
+%config(noreplace) %attr(0640, root, glance) %{_sysconfdir}/{{ pypi_name }}/glance-registry.conf
+%config(noreplace) %attr(0640, root, glance) %{_sysconfdir}/{{ pypi_name }}/glance-scrubber.conf
+%config(noreplace) %attr(0640, root, glance) %{_sysconfdir}/{{ pypi_name }}/glance-swift.conf
+%config(noreplace) %attr(0640, root, glance) %{_sysconfdir}/{{ pypi_name }}/glance-manage.conf
+%config %{_sysconfdir}/{{ pypi_name }}/glance-api-paste.ini
+%config %{_sysconfdir}/{{ pypi_name }}/glance-registry-paste.ini
+%config %{_sysconfdir}/{{ pypi_name }}/policy.json
+%config %{_sysconfdir}/{{ pypi_name }}/property-protections-policies.conf.sample
+%config %{_sysconfdir}/{{ pypi_name }}/property-protections-roles.conf.sample
+%config %{_sysconfdir}/{{ pypi_name }}/ovf-metadata.json.sample
+%config %{_sysconfdir}/{{ pypi_name }}/schema-image.json
+%dir %config %{_sysconfdir}/{{ pypi_name }}/metadefs
+%{_sysconfdir}/{{ pypi_name }}/metadefs/README
+%config %{_sysconfdir}/{{ pypi_name }}/metadefs/*.json
+%config(noreplace) %{_sysconfdir}/logrotate.d/%{name}
+%dir %attr(0755, glance, glance) %{_localstatedir}/lib/{{ pypi_name }}
+%dir %attr(0755, glance, glance) %{_localstatedir}/lib/{{ pypi_name }}/images
+%dir %attr(0750, glance, glance) %{_localstatedir}/log/{{ pypi_name }}
+%dir %attr(0750, glance, glance) %{_localstatedir}/cache/{{ pypi_name }}
+%{_bindir}/glance-cache-cleaner
+%{_bindir}/glance-cache-manage
+%{_bindir}/glance-cache-prefetcher
+%{_bindir}/glance-cache-pruner
+%{_bindir}/glance-control
+%{_bindir}/glance-manage
+%{_bindir}/glance-replicator
+%{_bindir}/glance-scrubber
+%{_mandir}/man1/glance*.1%{?ext_man}
+
+%files -n python-glance
+%defattr(-,root,root,-)
+%license LICENSE
+%{python_sitelib}/{{ pypi_name }}*
+
+%if 0%{?with_doc}
+%files doc
+%license LICENSE
+%doc doc/build/html
+%endif
+
+%files api
+%defattr(-,root,root,-)
+%{_unitdir}/openstack-glance-api.service
+%{_bindir}/{{ pypi_name }}-api
+%{_bindir}/{{ pypi_name }}-wsgi-api
+
+%files registry
+%defattr(-,root,root,-)
+%{_unitdir}/openstack-glance-registry.service
+%{_bindir}/{{ pypi_name }}-registry
+
+%changelog
