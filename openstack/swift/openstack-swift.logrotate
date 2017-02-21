@@ -1,0 +1,13 @@
+/var/log/swift/*.log {
+    weekly
+    dateext
+    rotate 10
+    size 1M
+    missingok
+    compress
+    notifempty
+    copytruncate
+    su swift swift
+    minsize 100k
+    sharedscripts
+}

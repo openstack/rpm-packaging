@@ -1,0 +1,14 @@
+[Unit]
+Description=OpenStack Swift Account Replicator
+After=syslog.target network.target
+
+[Service]
+Type=simple
+User=swift
+Group=swift
+WorkingDirectory=/var/lib/swift
+PrivateTmp=yes
+ExecStart=/usr/bin/swift-account-replicator /etc/swift/account-server.conf
+
+[Install]
+WantedBy=multi-user.target

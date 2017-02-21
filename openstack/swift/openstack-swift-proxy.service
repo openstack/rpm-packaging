@@ -1,0 +1,14 @@
+[Unit]
+Description=OpenStack Swift Proxy Server
+After=syslog.target network.target
+
+[Service]
+Type=simple
+User=swift
+Group=swift
+WorkingDirectory=/var/lib/swift
+PrivateTmp=yes
+ExecStart=/usr/bin/swift-proxy-server /etc/swift/proxy-server.conf
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,14 @@
+[Unit]
+Description=OpenStack Swift Container Replicator
+After=syslog.target network.target
+
+[Service]
+Type=simple
+User=swift
+Group=swift
+WorkingDirectory=/var/lib/swift
+PrivateTmp=yes
+ExecStart=/usr/bin/swift-container-replicator /etc/swift/container-server.conf
+
+[Install]
+WantedBy=multi-user.target

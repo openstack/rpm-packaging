@@ -1,0 +1,417 @@
+{% set pypi_name = 'swift' %}
+{% set source = fetch_source('https://tarballs.openstack.org/swift/swift-master.tar.gz') %}
+{% set upstream_version = upstream_version() %}
+{% set rpm_release = '1' %}
+%define groupname {{ pypi_name }}
+%define username {{ pypi_name }}
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
+Summary:        OpenStack Storage (Swift)
+License:        {{ license('Apache-2.0') }}
+URL:            http://launchpad.net/swift
+Source0:        {{ source|basename }}
+Source1:        %{name}-account.service
+Source2:        %{name}-account-auditor.service
+Source3:        %{name}-account-reaper.service
+Source4:        %{name}-account-replicator.service
+Source5:        %{name}-container.service
+Source6:        %{name}-container-auditor.service
+Source7:        %{name}-container-replicator.service
+Source8:        %{name}-container-updater.service
+Source9:        %{name}-container-sync.service
+Source10:       %{name}-object.service
+Source11:       %{name}-object-replicator.service
+Source12:       %{name}-object-expirer.service
+Source13:       %{name}-object-updater.service
+Source14:       %{name}-object-auditor.service
+Source15:       %{name}-object-reconstructor.service
+Source16:       %{name}-proxy.service
+Source20:       %{name}.logrotate
+Source30:       %{name}.tmpfiles
+BuildRequires:  crudini
+BuildRequires:  fdupes
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('setuptools') }}
+Requires:       logrotate
+Requires:       python3-{{ pypi_name }} = %{version}-%{release}
+Requires:       rsync
+BuildArch:      noarch
+%if 0%{?suse_version}
+BuildRequires:  systemd-rpm-macros
+Requires(pre):  pwdutils
+%{?systemd_requires}
+%else
+BuildRequires:  systemd
+Requires(post): systemd
+Requires(postun): systemd
+Requires(pre):  shadow-utils
+Requires(preun): systemd
+%endif
+
+%description
+OpenStack Object Storage (swift) aggregates commodity servers to work
+together in clusters for reliable, redundant, and large-scale storage
+of static objects. Objects are written to multiple hardware devices in
+the data center, with the OpenStack software responsible for ensuring
+data replication and integrity across the cluster. Storage clusters can
+scale horizontally by adding new nodes, which are automatically
+configured. Should a node fail, OpenStack works to replicate its
+content from other active nodes. Because OpenStack uses software logic
+to ensure data replication and distribution across different devices,
+inexpensive commodity hard drives and servers can be used in lieu of
+more expensive equipment.
+
+%package -n python3-{{ pypi_name }}
+Summary:        OpenStack Storage (Swift) - Python module
+Requires:       {{ py3('PasteDeploy') }}
+Requires:       {{ py3('PyECLib') }}
+Requires:       {{ py3('cryptography') }}
+Requires:       {{ py3('dnspython') }}
+Requires:       {{ py3('eventlet') }}
+Requires:       {{ py3('greenlet') }}
+Requires:       {{ py3('netifaces') }}
+Requires:       {{ py3('pbr') }}
+Requires:       {{ py3('simplejson') }}
+Requires:       {{ py3('six') }}
+Requires:       {{ py3('python-swiftclient') }}
+Requires:       {{ py3('xattr') }}
+
+%description -n python3-swift
+This package contains the core Python module of OpenStack Swift.
+
+%package account
+Summary:        OpenStack Storage (Swift) - Account Server
+Group:          Productivity/Clustering/Computing
+Requires:       %{name} = %{version}-%{release}
+
+%description account
+OpenStack Object Storage (swift) aggregates commodity servers to work
+together in clusters for reliable, redundant, and large-scale storage
+of static objects.
+
+This package contains the openstack-swift account server.
+
+%package container
+Summary:        OpenStack Storage (Swift) - Container Server
+Group:          Productivity/Clustering/Computing
+Requires:       %{name} = %{version}-%{release}
+
+%description container
+OpenStack Object Storage (swift) aggregates commodity servers to work
+together in clusters for reliable, redundant, and large-scale storage
+of static objects.
+
+This package contains the openstack-swift container server.
+
+%package object
+Summary:        OpenStack Storage (Swift) - Object Server
+Group:          Productivity/Clustering/Computing
+Requires:       %{name} = %{version}-%{release}
+
+%description object
+OpenStack Object Storage (swift) aggregates commodity servers to work
+together in clusters for reliable, redundant, and large-scale storage
+of static objects.
+
+This package contains the openstack-swift object server.
+
+%package proxy
+Summary:        OpenStack Storage (Swift) - Proxy Server
+Group:          Productivity/Clustering/Computing
+Requires:       %{name} = %{version}-%{release}
+Requires:       memcached
+
+%description proxy
+OpenStack Object Storage (swift) aggregates commodity servers to work
+together in clusters for reliable, redundant, and large-scale storage
+of static objects.
+
+This package contains the openstack-swift proxy server.
+
+%prep
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
+%py_req_cleanup
+
+%build
+%{py3_build}
+
+%install
+%{py3_install}
+
+### directories
+install -d -m 750 %{buildroot}%{_localstatedir}/cache/{{ pypi_name }}
+install -d -m 750 %{buildroot}%{_localstatedir}/lib/{{ pypi_name }}
+install -d -m 750 %{buildroot}%{_localstatedir}/log/{{ pypi_name }}
+install -D -m 644 %{SOURCE30} %{buildroot}/%_tmpfilesdir/%{name}.conf
+
+# systemd unit files
+mkdir -p %{buildroot}%{_unitdir}
+install -p -D -m 444 %{SOURCE1} %{buildroot}%{_unitdir}/%{name}-account.service
+install -p -D -m 444 %{SOURCE2} %{buildroot}%{_unitdir}/%{name}-account-auditor.service
+install -p -D -m 444 %{SOURCE3} %{buildroot}%{_unitdir}/%{name}-account-reaper.service
+install -p -D -m 444 %{SOURCE4} %{buildroot}%{_unitdir}/%{name}-account-replicator.service
+install -p -D -m 444 %{SOURCE5} %{buildroot}%{_unitdir}/%{name}-container.service
+install -p -D -m 444 %{SOURCE6} %{buildroot}%{_unitdir}/%{name}-container-auditor.service
+install -p -D -m 444 %{SOURCE7} %{buildroot}%{_unitdir}/%{name}-container-replicator.service
+install -p -D -m 444 %{SOURCE8} %{buildroot}%{_unitdir}/%{name}-container-updater.service
+install -p -D -m 444 %{SOURCE9} %{buildroot}%{_unitdir}/%{name}-container-sync.service
+install -p -D -m 444 %{SOURCE10} %{buildroot}%{_unitdir}/%{name}-object.service
+install -p -D -m 444 %{SOURCE11} %{buildroot}%{_unitdir}/%{name}-object-replicator.service
+install -p -D -m 444 %{SOURCE12} %{buildroot}%{_unitdir}/%{name}-object-expirer.service
+install -p -D -m 444 %{SOURCE13} %{buildroot}%{_unitdir}/%{name}-object-updater.service
+install -p -D -m 444 %{SOURCE14} %{buildroot}%{_unitdir}/%{name}-object-auditor.service
+install -p -D -m 444 %{SOURCE15} %{buildroot}%{_unitdir}/%{name}-object-reconstructor.service
+install -p -D -m 444 %{SOURCE16} %{buildroot}%{_unitdir}/%{name}-proxy.service
+
+# install symlinks on SUSE
+%if 0%{?suse_version}
+mkdir -p %{buildroot}%{_sbindir}
+for server in account account-auditor account-reaper account-replicator container container-auditor container-replicator container-updater container-sync object object-replicator object-expirer object-updater object-auditor object-reconstructor proxy; do
+    ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-$server
+done
+%endif
+
+# Install manpages
+install -d %{buildroot}%{_mandir}/man{1,5}/
+install -m 0644 doc/manpages/*.1 %{buildroot}%{_mandir}/man1/
+install -m 0644 doc/manpages/*.5 %{buildroot}%{_mandir}/man5/
+
+# Remove tests
+rm -fr %{buildroot}/%{python3_sitelib}/test
+
+# Misc other
+install -d -m 755 %{buildroot}%{_sysconfdir}/{{ pypi_name }}
+for c in account-server container-server dispersion object-expirer object-server proxy-server swift; do
+    install -m 644 etc/$c.conf-sample %{buildroot}%{_sysconfdir}/swift/$c.conf
+done
+for c in account-server container-server object-expirer object-server proxy-server ; do
+    crudini --set %{buildroot}%{_sysconfdir}/swift/$c.conf DEFAULT user %{username}
+done
+crudini --set %{buildroot}%{_sysconfdir}/swift/dispersion.conf dispersion auth_user %{username}
+# NOTE(saschpe): dispersion checks for localhost:8080/auth... by default...
+crudini --set %{buildroot}%{_sysconfdir}/swift/proxy-server.conf DEFAULT bind_port 8080
+
+install -p -D -m 644 %{SOURCE20} %{buildroot}%{_sysconfdir}/logrotate.d/%{name}
+
+%fdupes %{buildroot}%{python3_sitelib}/swift
+
+%pre
+%openstack_pre_user_group_create %{username} %{groupname}
+
+%post
+%tmpfiles_create %{_tmpfilesdir}/%{name}.conf
+
+%post account
+%systemd_post %{name}-account.service
+%systemd_post %{name}-account-auditor.service
+%systemd_post %{name}-account-reaper.service
+%systemd_post %{name}-account-replicator.service
+
+%preun account
+%systemd_preun %{name}-account.service
+%systemd_preun %{name}-account-auditor.service
+%systemd_preun %{name}-account-reaper.service
+%systemd_preun %{name}-account-replicator.service
+
+
+%postun account
+%systemd_postun_with_restart %{name}-account.service
+%systemd_postun_with_restart %{name}-account-auditor.service
+%systemd_postun_with_restart %{name}-account-reaper.service
+%systemd_postun_with_restart %{name}-account-replicator.service
+
+
+%post container
+%systemd_post %{name}-container.service
+%systemd_post %{name}-container-auditor.service
+%systemd_post %{name}-container-reaper.service
+%systemd_post %{name}-container-replicator.service
+%systemd_post %{name}-container-sync.service
+
+%preun container
+%systemd_preun %{name}-container.service
+%systemd_preun %{name}-container-auditor.service
+%systemd_preun %{name}-container-reaper.service
+%systemd_preun %{name}-container-replicator.service
+%systemd_preun %{name}-container-sync.service
+
+%postun container
+%systemd_postun_with_restart %{name}-container.service
+%systemd_postun_with_restart %{name}-container-auditor.service
+%systemd_postun_with_restart %{name}-container-reaper.service
+%systemd_postun_with_restart %{name}-container-replicator.service
+%systemd_postun_with_restart %{name}-container-sync.service
+
+%post object
+%systemd_post %{name}-object.service
+%systemd_post %{name}-object-replicator.service
+%systemd_post %{name}-object-expirer.service
+%systemd_post %{name}-object-updater.service
+%systemd_post %{name}-object-auditor.service
+%systemd_post %{name}-object-reconstructor.service
+
+%preun object
+%systemd_preun %{name}-object.service
+%systemd_preun %{name}-object-replicator.service
+%systemd_preun %{name}-object-expirer.service
+%systemd_preun %{name}-object-updater.service
+%systemd_preun %{name}-object-auditor.service
+%systemd_preun %{name}-object-reconstructor.service
+
+%postun object
+%systemd_postun_with_restart %{name}-object.service
+%systemd_postun_with_restart %{name}-object-replicator.service
+%systemd_postun_with_restart %{name}-object-expirer.service
+%systemd_postun_with_restart %{name}-object-updater.service
+%systemd_postun_with_restart %{name}-object-auditor.service
+%systemd_postun_with_restart %{name}-object-reconstructor.service
+
+%post proxy
+%systemd_post %{name}-proxy.service
+
+%preun proxy
+%systemd_preun %{name}-proxy.service
+
+%postun proxy
+%systemd_postun_with_restart %{name}-proxy.service
+
+%files
+%license LICENSE
+%doc README.rst
+%_tmpfilesdir/%{name}.conf
+%dir %attr(0750, %{username}, %{groupname}) %{_localstatedir}/log/{{ pypi_name }}
+%dir %attr(0755, %{username}, %{groupname}) %{_sysconfdir}/{{ pypi_name }}
+%dir %attr(0750, %{username}, %{groupname}) %{_localstatedir}/lib/{{ pypi_name }}
+%dir %attr(0750, %{username}, %{groupname}) %{_localstatedir}/cache/{{ pypi_name }}
+%{_bindir}/swift-account-audit
+%{_bindir}/swift-dispersion-populate
+%{_bindir}/swift-dispersion-report
+%{_bindir}/swift-drive-audit
+%{_bindir}/swift-form-signature
+%{_bindir}/swift-get-nodes
+%{_bindir}/swift-init
+%{_bindir}/swift-config
+%{_bindir}/swift-oldies
+%{_bindir}/swift-orphans
+%{_bindir}/swift-recon
+%{_bindir}/swift-recon-cron
+%{_bindir}/swift-ring-builder
+%{_bindir}/swift-ring-builder-analyzer
+%{_bindir}/swift-ring-composer
+%{_bindir}/swift-manage-shard-ranges
+%{_mandir}/man1/swift-account-audit.1*
+%{_mandir}/man1/swift-config.1*
+%{_mandir}/man1/swift-dispersion-populate.1*
+%{_mandir}/man1/swift-dispersion-report.1*
+%{_mandir}/man1/swift-drive-audit.1*
+%{_mandir}/man1/swift-form-signature.1*
+%{_mandir}/man1/swift-get-nodes.1*
+%{_mandir}/man1/swift-oldies.1*
+%{_mandir}/man1/swift-init.1*
+%{_mandir}/man1/swift-orphans.1*
+%{_mandir}/man1/swift-recon.1*
+%{_mandir}/man1/swift-recon-cron.1*
+%{_mandir}/man1/swift-ring-builder.1*
+%{_mandir}/man1/swift-ring-builder-analyzer.1*
+%{_mandir}/man1/swift-ring-composer.1*
+%{_mandir}/man5/dispersion.conf.5*
+%{_mandir}/man5/swift.conf.5*
+%config(noreplace) %{_sysconfdir}/swift/swift.conf
+%config(noreplace) %attr(0400, %{username}, %{groupname}) %{_sysconfdir}/swift/dispersion.conf
+%config(noreplace) %{_sysconfdir}/logrotate.d/%{name}
+
+%files -n python3-{{ pypi_name }}
+%license LICENSE
+%{python3_sitelib}/swift
+%{python3_sitelib}/swift-2.*.egg-info
+
+%files account
+%license LICENSE
+%{_unitdir}/%{name}-account*.service
+%if 0%{?suse_version}
+%{_sbindir}/rc%{name}-account*
+%endif
+%config(noreplace) %{_sysconfdir}/swift/account-server.conf
+%{_bindir}/swift-account-auditor
+%{_bindir}/swift-account-info
+%{_bindir}/swift-account-reaper
+%{_bindir}/swift-account-replicator
+%{_bindir}/swift-account-server
+%{_mandir}/man1/swift-account-auditor.1*
+%{_mandir}/man1/swift-account-info.1*
+%{_mandir}/man1/swift-account-reaper.1*
+%{_mandir}/man1/swift-account-replicator.1*
+%{_mandir}/man1/swift-account-server.1*
+%{_mandir}/man5/account-server.conf.5*
+
+%files container
+%license LICENSE
+%{_unitdir}/%{name}-container*.service
+%if 0%{?suse_version}
+%{_sbindir}/rc%{name}-container*
+%endif
+%config(noreplace) %{_sysconfdir}/swift/container-server.conf
+%{_bindir}/swift-container-auditor
+%{_bindir}/swift-container-deleter
+%{_bindir}/swift-container-reconciler
+%{_bindir}/swift-container-info
+%{_bindir}/swift-container-server
+%{_bindir}/swift-container-replicator
+%{_bindir}/swift-container-updater
+%{_bindir}/swift-container-sync
+%{_bindir}/swift-container-sharder
+%{_bindir}/swift-reconciler-enqueue
+%{_mandir}/man1/swift-container-auditor.1*
+%{_mandir}/man1/swift-container-info.1*
+%{_mandir}/man1/swift-container-server.1*
+%{_mandir}/man1/swift-container-sync.1*
+%{_mandir}/man1/swift-container-reconciler.1*
+%{_mandir}/man1/swift-container-replicator.1*
+%{_mandir}/man1/swift-container-updater.1*
+%{_mandir}/man1/swift-reconciler-enqueue.1*
+%{_mandir}/man5/container-server.conf.5*
+%{_mandir}/man5/container-sync-realms.conf.5*
+%{_mandir}/man5/container-reconciler.conf.5*
+
+%files object
+%license LICENSE
+%doc etc/rsyncd.conf-sample
+%{_unitdir}/%{name}-object*.service
+%if 0%{?suse_version}
+%{_sbindir}/rc%{name}-object*
+%endif
+%config(noreplace) %{_sysconfdir}/swift/object-server.conf
+%{_sysconfdir}/swift/object-expirer.conf
+%{_bindir}/swift-object-auditor
+%{_bindir}/swift-object-expirer
+%{_bindir}/swift-object-info
+%{_bindir}/swift-object-reconstructor
+%{_bindir}/swift-object-replicator
+%{_bindir}/swift-object-relinker
+%{_bindir}/swift-object-server
+%{_bindir}/swift-object-updater
+%{_mandir}/man1/swift-object-auditor.1*
+%{_mandir}/man1/swift-object-expirer.1*
+%{_mandir}/man1/swift-object-info.1*
+%{_mandir}/man1/swift-object-reconstructor.1*
+%{_mandir}/man1/swift-object-replicator.1*
+%{_mandir}/man1/swift-object-server.1*
+%{_mandir}/man1/swift-object-updater.1*
+%{_mandir}/man1/swift-object-relinker.1*
+%{_mandir}/man5/object-expirer.conf.5*
+%{_mandir}/man5/object-server.conf.5*
+
+%files proxy
+%license LICENSE
+%{_unitdir}/%{name}-proxy.service
+%if 0%{?suse_version}
+%{_sbindir}/rc%{name}-proxy
+%endif
+%config(noreplace) %{_sysconfdir}/swift/proxy-server.conf
+%{_bindir}/swift-proxy-server
+%{_mandir}/man1/swift-proxy-server.1*
+%{_mandir}/man5/proxy-server.conf.5*
+
+%changelog
