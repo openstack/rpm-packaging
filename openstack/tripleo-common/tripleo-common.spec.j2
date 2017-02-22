@@ -1,7 +1,7 @@
 %global sname tripleo-common
-%global sversion 5.7.0
+%global sversion 5.8.0
 Name:           {{ py2name('tripleo-common') }}
-Version:        5.7.0
+Version:        5.8.0
 Release:        0
 Summary:        Python library for code used by TripleO projects
 License:        {{ license('Apache-2.0') }}
@@ -75,6 +75,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %{python2_sitelib}/*.egg-info
 %dir %{_prefix}/lib/heat
 %{_prefix}/lib/heat/undercloud_heat_plugins
+%{_bindir}/create_freeipa_enroll_envfile.py
 %{_bindir}/run-validation
 %{_bindir}/upgrade-non-controller.sh
 %{_bindir}/upload-puppet-modules
