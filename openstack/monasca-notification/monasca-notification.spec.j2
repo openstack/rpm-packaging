@@ -8,15 +8,15 @@ Group:          Development/Languages/Python
 Url:            https://wiki.openstack.org/wiki/Monasca
 Source0:        https://pypi.io/packages/source/m/%{sname}/%{sname}-%{version}.tar.gz
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('nose') }}
 BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('nose') }}
+BuildRequires:  {{ py2pkg('pbr') }}
 BuildRequires:  {{ py2pkg('six') }}
-Requires:       {{ py2pkg('six') }}
-Requires:       {{ py2pkg('monasca-statsd') }}
-Requires:       {{ py2pkg('monasca-common') }}
 Requires:       {{ py2pkg('PyYAML') }}
+Requires:       {{ py2pkg('monasca-common') }}
+Requires:       {{ py2pkg('monasca-statsd') }}
 Requires:       {{ py2pkg('requests') }}
+Requires:       {{ py2pkg('six') }}
 BuildArch:      noarch
 
 %description

@@ -2,17 +2,17 @@
 Name:           {{ py2name('murano-pkg-check') }}
 Version:        0.3.0
 Release:        0
-License:        {{ license('Apache-2.0') }}
 Summary:        Murano package validator tool
-Url:            http://docs.openstack.org/developer/murano/
+License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
+Url:            http://docs.openstack.org/developer/murano/
 Source0:        https://pypi.io/packages/source/m/murano-pkg-check/murano-pkg-check-%{version}.tar.gz
 BuildRequires:  openstack-macros
-BuildRequires:  python-devel
 BuildRequires:  {{ py2pkg('PyYAML') }}
-BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  python-devel
 BuildRequires:  {{ py2pkg('oslo.i18n') }}
 BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('pbr') }}
 BuildRequires:  {{ py2pkg('python-subunit') }}
 BuildRequires:  {{ py2pkg('semantic_version') }}
 BuildRequires:  {{ py2pkg('setuptools') }}

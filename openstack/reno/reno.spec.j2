@@ -2,18 +2,18 @@
 Name:           {{ py2name('reno') }}
 Version:        2.0.3
 Release:        0
-License:        Apache-2.0
 Summary:        RElease NOtes manager
-Url:            http://www.openstack.org/
+License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
+Url:            http://www.openstack.org/
 Source0:        https://pypi.io/packages/source/r/reno/reno-%{version}.tar.gz
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('Babel') }}
-BuildRequires:  {{ py2pkg('devel') }}
-BuildRequires:  {{ py2pkg('pbr') }}
 BuildRequires:  {{ py2pkg('PyYAML') }}
+BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('dulwich') }}
 BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('pbr') }}
 BuildRequires:  {{ py2pkg('setuptools') }}
 BuildRequires:  {{ py2pkg('testrepository') }}
 BuildRequires:  {{ py2pkg('testscenarios') }}

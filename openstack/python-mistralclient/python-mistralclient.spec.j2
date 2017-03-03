@@ -5,9 +5,9 @@ Summary:        Python API and CLI for OpenStack Mistral
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            http://launchpad.net/%{name}
+Source0:        https://pypi.io/packages/source/p/%{name}/%{name}-%{version}.tar.gz
 # https://review.openstack.org/#/c/422784/
 Patch1:         0001-Fix-doc-build-if-git-is-absent.patch
-Source0:        https://pypi.io/packages/source/p/%{name}/%{name}-%{version}.tar.gz
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('PyYAML') }}
 BuildRequires:  {{ py2pkg('devel') }}
@@ -25,10 +25,10 @@ BuildRequires:  {{ py2pkg('testtools') }}
 Requires:       {{ py2pkg('PyYAML') }}
 Requires:       {{ py2pkg('cliff') }}
 Requires:       {{ py2pkg('python-keystoneclient') }}
-Requires:       {{ py2pkg('oslo.i18n') }}
-Requires:       {{ py2pkg('oslo.utils') }}
 Requires:       {{ py2pkg('os-client-config') }}
 Requires:       {{ py2pkg('osc-lib') }}
+Requires:       {{ py2pkg('oslo.i18n') }}
+Requires:       {{ py2pkg('oslo.utils') }}
 Requires:       {{ py2pkg('osprofiler') }}
 Requires:       {{ py2pkg('requests') }}
 Requires:       {{ py2pkg('six') }}

@@ -29,8 +29,8 @@ Source13:       neutron-server.defaultconf
 Source14:       neutron-server.README.config
 Source15:       neutron-enable-bridge-firewall.sh
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('PyMySQL') }}
 BuildRequires:  {{ py2pkg('Tempest') }}
+BuildRequires:  {{ py2pkg('PyMySQL') }}
 BuildRequires:  {{ py2pkg('WebTest') }}
 BuildRequires:  {{ py2pkg('ddt') }}
 BuildRequires:  {{ py2pkg('devel') }}
@@ -39,10 +39,10 @@ BuildRequires:  {{ py2pkg('mock') }}
 BuildRequires:  {{ py2pkg('os-testr') }}
 BuildRequires:  {{ py2pkg('oslotest') }}
 BuildRequires:  {{ py2pkg('python-subunit') }}
+BuildRequires:  {{ py2pkg('reno') }}
 BuildRequires:  {{ py2pkg('testrepository') }}
 BuildRequires:  {{ py2pkg('testresources') }}
 BuildRequires:  {{ py2pkg('testtools') }}
-BuildRequires:  {{ py2pkg('reno') }}
 BuildRequires:  sudo
 Requires:       python-%{sname} = %{epoch}:%{version}-%{release}
 Requires:       sudo
@@ -53,10 +53,9 @@ BuildRequires:  systemd-rpm-macros
 %else
 BuildRequires:  systemd
 Requires(post): systemd
-Requires(preun): systemd
 Requires(postun): systemd
+Requires(preun): systemd
 %endif
-
 
 %description
 Neutron is a virtual network service for Openstack.
@@ -146,11 +145,11 @@ This package contains the Neutron API server.
 
 %package linuxbridge
 Summary:        Neutron Linuxbridge agent
+Requires:       /sbin/modprobe
 Requires:       bridge-utils
 Requires:       ebtables
 Requires:       ipset
 Requires:       iptables
-Requires:       /sbin/modprobe
 Requires:       openstack-%{sname} = %{epoch}:%{version}-%{release}
 
 %description linuxbridge
@@ -169,7 +168,6 @@ Neutron is a virtual network service for Openstack.
 This package contains the Neutron agent that implements
 macvtap attachments for libvirt qemu/kvm instances.
 
-
 %package ml2
 Summary:        Neutron ML2 plugin
 Requires:       openstack-%{sname} = %{epoch}:%{version}-%{release}
@@ -183,13 +181,11 @@ for accessing those types.
 
 %package openvswitch
 Summary:        Neutron openvswitch plugin
-Requires:       openstack-%{sname} = %{epoch}:%{version}-%{release}
-#TODO(jpena): find equivalences in SUSE packaging
+Requires:       /sbin/modprobe
 Requires:       ipset
 Requires:       iptables
+Requires:       openstack-%{sname} = %{epoch}:%{version}-%{release}
 Requires:       openvswitch
-Requires:       /sbin/modprobe
-
 
 %description openvswitch
 Neutron is a virtual network service for Openstack.
@@ -202,18 +198,15 @@ Summary:        Neutron bandwidth metering agent
 Requires:       iptables
 Requires:       openstack-%{sname} = %{epoch}:%{version}-%{release}
 
-
 %description metering-agent
 Neutron is a virtual network service for Openstack.
 
 This package contains the Neutron agent responsible for generating bandwidth
 utilization notifications.
 
-
 %package rpc-server
 Summary:        Neutron (RPC only) Server
 Requires:       openstack-%{sname} = %{epoch}:%{version}-%{release}
-
 
 %description rpc-server
 Neutron is a virtual network service for Openstack.
@@ -221,18 +214,15 @@ Neutron is a virtual network service for Openstack.
 This package contains an alternative Neutron server that handles AMQP RPC
 workload only.
 
-
 %package sriov-nic-agent
 Summary:        Neutron SR-IOV NIC agent
 Requires:       openstack-%{sname} = %{epoch}:%{version}-%{release}
-
 
 %description sriov-nic-agent
 Neutron is a virtual network service for Openstack.
 
 This package contains the Neutron agent to support advanced features of
 SR-IOV network cards.
-
 
 %if 0%{?with_doc}
 %package doc
@@ -275,11 +265,11 @@ done
 
 # Move rootwrap files to proper location
 install -d -m 755 %{buildroot}%{_datarootdir}/%{sname}/rootwrap
-mv %{buildroot}/usr/etc/%{sname}/rootwrap.d/*.filters %{buildroot}%{_datarootdir}/%{sname}/rootwrap
+mv %{buildroot}%{_prefix}%{_sysconfdir}/%{sname}/rootwrap.d/*.filters %{buildroot}%{_datarootdir}/%{sname}/rootwrap
 
 # Move config files to proper location
 install -d -m 755 %{buildroot}%{_sysconfdir}/%{sname}
-mv %{buildroot}/usr/etc/%{sname}/* %{buildroot}%{_sysconfdir}/%{sname}
+mv %{buildroot}%{_prefix}%{_sysconfdir}/%{sname}/* %{buildroot}%{_sysconfdir}/%{sname}
 install -p -D -m 640 etc/api-paste.ini %{buildroot}%{_sysconfdir}/%{sname}/api-paste.ini
 install -p -D -m 640 etc/policy.json %{buildroot}%{_sysconfdir}/%{sname}/policy.json
 install -p -D -m 640 etc/l3_agent.ini %{buildroot}%{_sysconfdir}/%{sname}/l3_agent.ini
