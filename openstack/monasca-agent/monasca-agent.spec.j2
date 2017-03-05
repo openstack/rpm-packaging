@@ -1,0 +1,88 @@
+%global sname monasca-agent
+Name:           {{ py2name('monasca-agent') }}
+Version:        1.7.0
+Release:        0
+Summary:        OpenStack Monasca metrics agent
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            https://wiki.openstack.org/wiki/Monasca
+Source0:        https://pypi.io/packages/source/m/%{sname}/%{sname}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('PyYAML') }}
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('gevent', ('>=', '1.1.1')) }}
+BuildRequires:  {{ py2pkg('httplib2') }}
+BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('python-monascaclient') }}
+BuildRequires:  {{ py2pkg('netaddr') }}
+BuildRequires:  {{ py2pkg('nose') }}
+BuildRequires:  {{ py2pkg('ntplib') }}
+BuildRequires:  {{ py2pkg('oslo.concurrency') }}
+BuildRequires:  {{ py2pkg('oslo.config') }}
+BuildRequires:  {{ py2pkg('oslo.i18n') }}
+BuildRequires:  {{ py2pkg('oslo.middleware') }}
+BuildRequires:  {{ py2pkg('oslo.utils') }}
+BuildRequires:  {{ py2pkg('oslo.vmware') }}
+BuildRequires:  {{ py2pkg('psutil') }}
+BuildRequires:  {{ py2pkg('pymongo') }}
+BuildRequires:  {{ py2pkg('python-memcached') }}
+BuildRequires:  {{ py2pkg('redis') }}
+BuildRequires:  {{ py2pkg('requests') }}
+BuildRequires:  {{ py2pkg('stevedore') }}
+BuildRequires:  {{ py2pkg('supervisor', ('>=', '3.1.3')) }}
+BuildRequires:  {{ py2pkg('tornado', ('>=', '4.3')) }}
+Requires:       {{ py2pkg('PyYAML') }}
+Requires:       {{ py2pkg('gevent', ('>=', '1.1.1')) }}
+Requires:       {{ py2pkg('httplib2') }}
+Requires:       {{ py2pkg('python-monascaclient') }}
+Requires:       {{ py2pkg('netaddr') }}
+Requires:       {{ py2pkg('ntplib') }}
+Requires:       {{ py2pkg('oslo.concurrency') }}
+Requires:       {{ py2pkg('oslo.config') }}
+Requires:       {{ py2pkg('oslo.i18n') }}
+Requires:       {{ py2pkg('oslo.middleware') }}
+Requires:       {{ py2pkg('oslo.utils') }}
+Requires:       {{ py2pkg('oslo.vmware') }}
+Requires:       {{ py2pkg('psutil') }}
+Requires:       {{ py2pkg('pymongo') }}
+Requires:       {{ py2pkg('python-memcached') }}
+Requires:       {{ py2pkg('redis') }}
+Requires:       {{ py2pkg('requests') }}
+Requires:       {{ py2pkg('stevedore') }}
+Requires:       {{ py2pkg('supervisor', ('>=', '3.1.3')) }}
+Requires:       {{ py2pkg('tornado', ('>=', '4.3')) }}
+BuildArch:      noarch
+
+%description
+The Monasca Agent is a modern Python monitoring agent for gathering metrics and
+sending them to the Monasca API.
+
+%prep
+%autosetup -n %{sname}-%{version}
+%py_req_cleanup
+
+%build
+%py2_build
+
+%install
+%py2_install
+
+%check
+find . -type f -name *.pyc -delete
+PYTHONPATH=. NOSE_EXCLUDE=test_override_values nosetests tests -v
+
+%files
+%doc README.md
+%license LICENSE
+%{_bindir}/monasca-collector
+%{_bindir}/monasca-forwarder
+%{_bindir}/monasca-setup
+%{_bindir}/monasca-statsd
+%{python2_sitelib}/monasca_agent
+%{python2_sitelib}/monasca_agent-*.egg-info
+%{python2_sitelib}/monasca_setup
+%dir %{_datadir}/monasca
+%{_datadir}/monasca/agent
+
+%changelog
+
