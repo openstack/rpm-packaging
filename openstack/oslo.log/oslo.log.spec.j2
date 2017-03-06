@@ -1,14 +1,12 @@
 %global sname oslo.log
 Name:           {{ py2name('oslo.log') }}
-Version:        3.20.0
+Version:        3.20.1
 Release:        0
 Summary:        OpenStack log library
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            https://launchpad.net/%{sname}
 Source0:        https://pypi.io/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
-# 0001-Must-not-go-underneath-the-context-object-and-access.patch -- https://review.openstack.org/#/c/426587/
-Patch1:         0001-Must-not-go-underneath-the-context-object-and-access.patch
 BuildRequires:  openstack-macros
 BuildRequires:  python-devel
 BuildRequires:  {{ py2pkg('mock') }}
