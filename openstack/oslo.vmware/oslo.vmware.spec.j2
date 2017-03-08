@@ -1,6 +1,6 @@
 %global pypi_name oslo.vmware
 Name:           {{ py2name('oslo.vmware') }}
-Version:        2.17.0
+Version:        2.18.0
 Release:        0
 Summary:        Oslo VMware library for OpenStack projects
 License:        {{ license('Apache-2.0') }}
@@ -11,6 +11,7 @@ Source0:        https://pypi.io/packages/source/o/%{pypi_name}/%{pypi_name}-%{ve
 Patch0001:      0001-Make-the-mock-call-in-MemoryCacheTest-forward-compat.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('Babel') }}
+BuildRequires:  {{ py2pkg('ddt') }}
 BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('eventlet') }}
 BuildRequires:  {{ py2pkg('fixtures') }}
