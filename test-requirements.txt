@@ -1,2 +1,2 @@
 renderspec==1.0.0
-spec_cleaner >= 0.8.9
+spec_cleaner==0.9.0
