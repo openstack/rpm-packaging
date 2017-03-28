@@ -39,7 +39,7 @@ notification_types:
         user:
         password:
         timeout: 60
-        from_addr: hpcs.mon@hp.com
+        from_addr: monasca-notification@none.invalid
 
 processors:
     alarm:
