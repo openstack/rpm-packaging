@@ -1,12 +1,13 @@
 %global sname python-tripleoclient
 Name:           {{ py2name('python-tripleoclient') }}
-Version:        6.0.0
+Version:        6.1.0
 Release:        0
 Summary:        OpenstackClient plugin for tripleoclient
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            https://launchpad.net/%{sname}
 Source0:        https://pypi.io/packages/source/p/%{sname}/%{sname}-%{version}.tar.gz
+Patch1:         0001-Stop-using-os-cloud-config.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('cliff') }}
 BuildRequires:  {{ py2pkg('devel') }}
@@ -16,7 +17,6 @@ BuildRequires:  {{ py2pkg('python-ironic-inspector-client') }}
 BuildRequires:  {{ py2pkg('python-ironicclient') }}
 BuildRequires:  {{ py2pkg('mock') }}
 BuildRequires:  {{ py2pkg('python-openstackclient') }}
-BuildRequires:  {{ py2pkg('os-cloud-config') }}
 BuildRequires:  {{ py2pkg('passlib') }}
 BuildRequires:  {{ py2pkg('requests-mock') }}
 BuildRequires:  {{ py2pkg('testrepository') }}
@@ -30,7 +30,6 @@ Requires:       {{ py2pkg('python-ironic-inspector-client') }}
 Requires:       {{ py2pkg('python-ironicclient') }}
 Requires:       {{ py2pkg('python-mistralclient') }}
 Requires:       {{ py2pkg('python-openstackclient') }}
-Requires:       {{ py2pkg('os-cloud-config') }}
 Requires:       {{ py2pkg('passlib') }}
 Requires:       {{ py2pkg('six') }}
 Requires:       {{ py2pkg('tripleo-common') }}
@@ -53,7 +52,7 @@ for TripleO.
 This package contains auto-generated documentation.
 
 %prep
-%autosetup -n %{sname}-%{version}
+%autosetup -p1 -n %{sname}-%{version}
 
 %build
 %{py2_build}
