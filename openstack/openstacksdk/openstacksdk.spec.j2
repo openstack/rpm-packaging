@@ -1,6 +1,6 @@
 %global sname openstacksdk
 Name:           {{ py2name('openstacksdk') }}
-Version:        0.9.13
+Version:        0.9.16
 Release:        0
 Summary:        An SDK for building applications to work with OpenStack
 License:        {{ license('Apache-2.0') }}
@@ -8,9 +8,14 @@ Group:          Development/Languages/Python
 Url:            https://launchpad.net/python-openstacksdk
 Source0:        https://pypi.io/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
 BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('beautifulsoup4') }}
+BuildRequires:  {{ py2pkg('deprecation') }}
 BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('fixtures') }}
 BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
+BuildRequires:  {{ py2pkg('os-testr') }}
 BuildRequires:  {{ py2pkg('pbr') }}
 BuildRequires:  {{ py2pkg('requests') }}
 BuildRequires:  {{ py2pkg('requests-mock') }}
@@ -20,6 +25,7 @@ BuildRequires:  {{ py2pkg('stevedore') }}
 BuildRequires:  {{ py2pkg('testrepository') }}
 BuildRequires:  {{ py2pkg('testscenarios') }}
 BuildRequires:  {{ py2pkg('testtools') }}
+Requires:       {{ py2pkg('deprecation') }}
 Requires:       {{ py2pkg('keystoneauth1') }}
 Requires:       {{ py2pkg('os-client-config') }}
 Requires:       {{ py2pkg('six') }}
@@ -50,11 +56,12 @@ many services, along with complete documentation, examples, and tools.
 This package contains documentation files for %{name}.
 
 %prep
-%autosetup -n %{sname}-%{version}
+%autosetup -p1 -n %{sname}-%{version}
 %py_req_cleanup
 
 %build
 %py2_build
+export PYTHONPATH=.
 %{__python2} setup.py build_sphinx
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
