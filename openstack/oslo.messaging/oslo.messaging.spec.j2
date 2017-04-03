@@ -1,12 +1,14 @@
 %global sname oslo.messaging
 Name:           {{ py2name('oslo.messaging') }}
-Version:        5.19.0
+Version:        5.20.0
 Release:        0
 Summary:        OpenStack oslo.messaging library
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            https://launchpad.net/%{sname}
 Source0:        https://pypi.io/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
+# https://review.openstack.org/#/c/453037/
+Patch1:         0001-Mock-oslo_messaging.notify._impl_routing.LOG-in-noti.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('PyYAML') }}
 BuildRequires:  {{ py2pkg('WebOb') }}
@@ -87,7 +89,7 @@ of different messaging transports.
 This package contains the documentation.
 
 %prep
-%autosetup -n %{sname}-%{version}
+%autosetup -p1 -n %{sname}-%{version}
 %py_req_cleanup
 
 %build
