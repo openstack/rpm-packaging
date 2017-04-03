@@ -1,0 +1,77 @@
+%global sname monasca-ui
+
+%if 0%{?rhel} || 0%{?fedora}
+%global rdo 1
+%global http_confdir %{_sysconfdir}/httpd/conf.d
+%global http_user apache
+%global http_group apache
+%global http_dashboard_dir %{_datarootdir}/openstack-dashboard
+%else
+%global http_confdir %{_sysconfdir}/apache2/conf.d
+%global http_user wwwrun
+%global http_group www
+%global http_dashboard_dir /srv/www/openstack-dashboard
+%endif
+
+Name:           openstack-horizon-plugin-monasca-ui
+Version:        1.5.0
+Release:        0
+Summary:        OpenStack Monasca Horizon plugin
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            https://wiki.openstack.org/wiki/Monasca
+Source0:        https://pypi.io/packages/source/m/%{sname}/%{sname}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  fdupes
+BuildRequires:  openstack-horizon
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('python-monascaclient') }}
+Requires:       {{ py2pkg('horizon-plugin-monasca-ui') }} = %{version}
+BuildArch:      noarch
+
+%description
+The Monasca UI Horizon plugin adds Monitoring panel to the OpenStack dashboard.
+
+%package -n {{ py2pkg('horizon-plugin-monasca-ui') }}
+Summary:       Monasca Plugin for Horizon - Python module
+Requires:      {{ py2pkg('Django') }}
+Requires:      {{ py2pkg('pbr') }}
+Requires:      {{ py2pkg('python-monascaclient') }}
+
+%description -n {{ py2pkg('horizon-plugin-monasca-ui') }}
+The Monasca UI Horizon plugin adds Monitoring panel to the OpenStack dashboard.
+
+%prep
+%autosetup -n %{sname}-%{version}
+%py_req_cleanup
+
+%build
+%py2_build
+
+%install
+%py2_install
+
+install -m 0755 -d %{buildroot}%{http_dashboard_dir}/openstack_dashboard/enabled/
+cp -a monitoring/enabled/_50_admin_add_monitoring_panel.py %{buildroot}%{http_dashboard_dir}/openstack_dashboard/enabled/
+%fdupes %{buildroot}%{python2_sitelib}
+%fdupes %{buildroot}%{http_dashboard_dir}
+
+%post
+su %{http_user} -s /bin/sh -c "python %{http_dashboard_dir}/manage.py collectstatic --noinput --clear > /dev/null"
+
+%postun
+su %{http_user} -s /bin/sh -c "python %{http_dashboard_dir}/manage.py collectstatic --noinput --clear > /dev/null"
+
+%files
+%{http_dashboard_dir}/openstack_dashboard/enabled/_50_admin_add_monitoring_panel.py
+%doc ChangeLog README.md LICENSE
+
+%files -n {{ py2pkg('horizon-plugin-monasca-ui') }}
+%doc README.md
+%license LICENSE
+%{python2_sitelib}/monitoring
+%{python2_sitelib}/monasca_ui-*.egg-info
+%exclude %{http_dashboard_dir}/openstack_dashboard/enabled/_50_admin_add_monitoring_panel.pyc
+%exclude %{http_dashboard_dir}/openstack_dashboard/enabled/_50_admin_add_monitoring_panel.pyo
+
+%changelog
