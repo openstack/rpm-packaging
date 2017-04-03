@@ -86,9 +86,9 @@ This package contains the core Python module of Monasca-notification
 
 ## system stuff
 %{__install} -p -D -m 644 %{SOURCE1} %{buildroot}%{_unitdir}/%{name}.service
-
-## log dir
-%{__install} -d -m 750 %{buildroot}%{notification_log_dir}
+%if 0%{?suse_version}
+ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}
+%endif
 
 %check
 export OS_TEST_PATH=./tests
@@ -116,15 +116,19 @@ if [ $1 -eq 0 ] ; then
 fi
 
 %files
-%defattr(-, %{username}, %{groupname})
+%license LICENSE
+%doc README.md
 %{_bindir}/monasca-notification
 %{_unitdir}/%{name}.service
 %dir %{notification_conf_dir}
-%config(noreplace) %{notification_conf_dir}/%{sname}.yaml.sample
+%config(noreplace) %attr(640, root, %{groupname}) %{notification_conf_dir}/%{sname}.yaml.sample
+%dir %attr(750, %{username}, %{groupname}) %notification_log_dir
+%if 0%{?suse_version}
+%{_sbindir}/rc%{name}
+%endif
 
 %files -n python-monasca-notification
 %license LICENSE
-%doc README.md ChangeLog
 %{python2_sitelib}/monasca_notification
 %{python2_sitelib}/*.egg-info
 
