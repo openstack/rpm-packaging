@@ -1,4 +1,8 @@
-%define component           monasca-api
+{% set pypi_name = 'monasca-api' %}
+{% set upstream_version = upstream_version('1.6.1') %}
+{% set rpm_release = '1' %}
+
+%define component           {{ pypi_name }}
 
 # apache settings
 %if 0%{?suse_version}
@@ -9,9 +13,9 @@
 %define apache_site_dir %{_sysconfdir}/%{apache_name}/conf.d/
 %endif
 
-Name:           {{ py2name('monasca-api') }}
-Version:        1.6.1
-Release:        0
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
 License:        {{ license('Apache-2.0') }}
 Summary:        Monasca REST API
 Group:          Development/Languages/Python

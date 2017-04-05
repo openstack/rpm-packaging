@@ -1,7 +1,11 @@
-%global sname monasca-common
-Name:           {{ py2name('monasca-common') }}
-Version:        1.5.0
-Release:        0
+{% set pypi_name = 'monasca-common' %}
+{% set upstream_version = upstream_version('1.5.0') %}
+{% set rpm_release = '1' %}
+
+%global sname {{ pypi_name }}
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
 Summary:        Reusable code for building monitoring related services.
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python

@@ -1,7 +1,11 @@
-%global sname monasca-persister
-Name:           {{ py2name('monasca-persister') }}
-Version:        1.4.0
-Release:        0
+{% set pypi_name = 'monasca-persister' %}
+{% set upstream_version = upstream_version('1.4.0') %}
+{% set rpm_release = '1' %}
+
+%global sname {{ pypi_name }}
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
 Summary:        Consumes metrics and alarm state transitions from message queue and stores them in database
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python

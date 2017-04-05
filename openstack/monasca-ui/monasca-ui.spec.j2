@@ -1,4 +1,8 @@
-%global sname monasca-ui
+{% set pypi_name = 'monasca-ui' %}
+{% set upstream_version = upstream_version('1.5.0') %}
+{% set rpm_release = '1' %}
+
+%global sname {{ pypi_name }}
 
 %if 0%{?rhel} || 0%{?fedora}
 %global rdo 1
@@ -13,9 +17,9 @@
 %global http_dashboard_dir /srv/www/openstack-dashboard
 %endif
 
-Name:           openstack-horizon-plugin-monasca-ui
-Version:        1.5.0
-Release:        0
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
 Summary:        OpenStack Monasca Horizon plugin
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
