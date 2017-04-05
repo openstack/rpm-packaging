@@ -10,14 +10,18 @@
 #  License for the specific language governing permissions and limitations
 #  under the License.
 
-%global sname monasca-agent
+{% set pypi_name = 'monasca-agent' %}
+{% set upstream_version = upstream_version('1.8.0') %}
+{% set rpm_release = '1' %}
+
+%global sname {{ pypi_name }}
 
 %define username            monasca-agent
 %define groupname           monasca
 
-Name:           {{ py2name('monasca-agent') }}
-Version:        1.8.0
-Release:        0
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
 Summary:        OpenStack Monasca metrics agent
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
