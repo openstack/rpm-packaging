@@ -62,4 +62,11 @@ cp -r $egg_path/PKG-INFO $tempest_egg_path \
 sed -i "s/%{2}/%{1}_tests/g" $tempest_egg_path/PKG-INFO \
 %nil
 
-
+#
+# Apache related macros
+#
+%apache_name apache2
+%apache_site_dir %{_sysconfdir}/%{apache_name}/vhosts.d/
+%apache_conf_dir %{_sysconfdir}/%{apache_name}/conf.d/
+%apache_user wwwrun
+%apache_group www
