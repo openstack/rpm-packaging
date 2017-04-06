@@ -1,0 +1,150 @@
+{% set pypi_name = 'monasca-log-api' %}
+{% set upstream_version = upstream_version('1.4.1') %}
+{% set rpm_release = '1' %}
+
+%define sname           {{ pypi_name }}
+
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
+Summary:        OpenStack Monasca Log Api plugin
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            https://wiki.openstack.org/wiki/Monasca
+
+Source0:        https://pypi.io/packages/source/m/%{sname}/%{sname}-%{version}.tar.gz
+Source1:        %{name}.conf
+Source3:        %{name}-wsgi.conf
+
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('fixtures') }}
+BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('keystonemiddleware') }}
+BuildRequires:  {{ py2pkg('oslo.config') }}
+BuildRequires:  {{ py2pkg('oslo.context') }}
+BuildRequires:  {{ py2pkg('oslo.middleware') }}
+BuildRequires:  {{ py2pkg('oslo.log') }}
+BuildRequires:  {{ py2pkg('oslo.serialization') }}
+BuildRequires:  {{ py2pkg('oslo.utils') }}
+BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('os-testr') }}
+BuildRequires:  {{ py2pkg('monasca-common') }}
+BuildRequires:  {{ py2pkg('monasca-statsd') }}
+BuildRequires:  {{ py2pkg('simplejson') }}
+BuildRequires:  {{ py2pkg('falcon') }}
+%if 0%{?suse_version}
+BuildRequires:  apache2-mod_wsgi
+Requires:       apache2-mod_wsgi
+%else
+BuildRequires:  mod_wsgi
+Requires:       mod_wsgi
+%endif
+Requires:       python-%{sname} = %{version}
+
+BuildArch:      noarch
+
+%description
+monasca-log-api is a RESTful API server receiving logs from the deployed
+log agents.
+
+%package -n python-%{sname}
+Summary:        OpenStack Monasca Log Api plugin
+Group:          Development/Languages/Python
+
+Requires:       {{ py2pkg('pbr') }}
+Requires:       {{ py2pkg('keystonemiddleware') }}
+Requires:       {{ py2pkg('oslo.config') }}
+Requires:       {{ py2pkg('oslo.context') }}
+Requires:       {{ py2pkg('oslo.middleware') }}
+Requires:       {{ py2pkg('oslo.log') }}
+Requires:       {{ py2pkg('oslo.serialization') }}
+Requires:       {{ py2pkg('oslo.utils') }}
+Requires:       {{ py2pkg('monasca-common') }}
+Requires:       {{ py2pkg('monasca-statsd') }}
+Requires:       {{ py2pkg('eventlet') }}
+Requires:       {{ py2pkg('falcon') }}
+
+BuildArch:      noarch
+
+%description -n python-%{sname}
+monasca-log-api is a RESTful API server receiving logs from the deployed
+log agents.
+
+%prep
+%autosetup -n %{sname}-%{version}
+%py_req_cleanup
+
+%build
+%py2_build
+
+%install
+%py2_install
+
+## directories
+%{__install} -d -m 750 %{buildroot}%{_sysconfdir}/monasca
+%{__install} -d -m 750 %{buildroot}%{_var}/log/monasca
+%{__install} -d -m 755 %{buildroot}%{_var}/lib/monasca-log-api
+%{__install} -d -m 755 %{buildroot}%{apache_site_dir}
+
+## configuration directory
+find %{buildroot}%{_prefix}%{_sysconfdir}/ -type f -name 'log-api-*' -print0 | xargs -0 mv -t %{buildroot}%{_sysconfdir}/monasca/
+rm -rf %{buildroot}%{_prefix}%{_sysconfdir}/monasca
+
+# configuration bits
+# NOTEtrebskit) file names are hardcoded in monasca-log-api
+# should be refactored when Bug#1670277 is resolved
+%{__install} -D -m 640 %{SOURCE1} %{buildroot}%{_sysconfdir}/monasca/log-api-config.conf
+%{__install} -D -m 640 etc/monasca/log-api-config.ini %{buildroot}%{_sysconfdir}/monasca/log-api-config.ini
+%{__install} -D -m 640 etc/monasca/log-api-logging.conf %{buildroot}%{_sysconfdir}/monasca/log-api-logging.conf
+
+# WSGI application
+%{__install} -D -m 755 monasca_log_api/wsgi/monasca_log_api.py %{buildroot}%{_bindir}/monasca-log-api.wsgi
+
+## install apache configuration
+%{__install} -p -D -m 640 %{SOURCE3} %{buildroot}%{apache_site_dir}/%{sname}.conf.sample
+sed -e "
+    s|__APACHE_NAME__|%{apache_name}|g;
+" -i %{buildroot}%{apache_site_dir}/%{sname}.conf.sample
+
+# there is extra directory /etc/monasca/monasca created, get rid of it
+rm -rf %{_sysconfdir}/monasca/monasca || true
+
+rm -f %{buildroot}%{python2_sitelib}/monasca_log_api/.gitignore
+
+%check
+find . -type f -name *.pyc -delete
+OS_TEST_PATH=./monasca_log_api/tests PYTHONPATH=. ostestr
+
+%pre
+%openstack_pre_user_group_create monasca-log-api monasca
+
+%postun
+if [ $1 -eq 0 ] ; then
+  getent passwd monasca-log-api > /dev/null
+  if [ "$?" == "0" ] ; then
+      userdel monasca-log-api
+  fi
+fi
+
+%files
+%doc README.md ChangeLog
+%{_bindir}/monasca-log-api
+%{_bindir}/monasca-log-api.wsgi
+
+%dir %attr(0750, root, monasca) %{_sysconfdir}/monasca
+%dir %attr(0750, root, monasca) %{_var}/log/monasca
+%dir %attr(0750, monasca-log-api, monasca) %{_var}/lib/monasca-log-api
+
+%config(noreplace) %attr(0640, root, monasca) %{_sysconfdir}/monasca/log-api-config.conf
+%config(noreplace) %attr(0640, root, monasca) %{_sysconfdir}/monasca/log-api-logging.conf
+%config(noreplace) %attr(0640, root, monasca) %{_sysconfdir}/monasca/log-api-config.ini
+%config(noreplace) %attr(0640, root, monasca) %{apache_site_dir}/%{sname}.conf.sample
+
+%files -n python-%{sname}
+%license LICENSE
+%{python2_sitelib}/monasca_log_api
+%{python2_sitelib}/monasca_log_api_tempest
+%{python2_sitelib}/*.egg-info
+
+%changelog
