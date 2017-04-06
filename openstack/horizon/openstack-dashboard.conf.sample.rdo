@@ -1,0 +1,87 @@
+#
+# OpenStack Horizon (Dashboard) Apache2 example configuration.
+#
+# Required Apache2 modules:
+#  - mod_rewrite (If you use the port 80 -> 443 rewrite rule below)
+#  - mod_ssl (If you enable the HTTPS vhost)
+#
+
+<VirtualHost *:80>
+    ServerName openstack-dashboard.example.com
+    ServerAdmin webmaster@openstack-dashboard.example.com
+
+    ErrorLog /var/log/httpd/openstack-dashboard-error_log
+    TransferLog /var/log/httpd/openstack-dashboard-access_log
+
+    WSGIScriptAlias / /var/lib/openstack-dashboard/openstack_dashboard/wsgi/django.wsgi
+    WSGIDaemonProcess horizon user=apache group=apache processes=3 threads=10
+    WSGIApplicationGroup %{GLOBAL}
+    WSGIProcessGroup horizon
+    SetEnv APACHE_RUN_USER  apache
+    SetEnv APACHE_RUN_GROUP apache
+
+    DocumentRoot /var/lib/openstack-dashboard/
+    Alias /media /var/lib/openstack-dashboard/media
+    Alias /static /var/lib/openstack-dashboard/static
+
+    <Location /static>
+        SetOutputFilter DEFLATE
+        ExpiresActive On
+        ExpiresDefault "access plus 1 month"
+    </Location>
+
+    <Directory /var/lib/openstack-dashboard/>
+        Options FollowSymLinks MultiViews
+        AllowOverride None
+        Require all granted
+    </Directory>
+</VirtualHost>
+
+
+<IfDefine SSL>
+<IfDefine !NOSSL>
+
+# Uncomment the following if you want to redirect all HTTP traffic to HTTPS.
+# Make sure to comment out the above <VirtualHost *:80>
+#RewriteEngine On
+#RewriteCond %{SERVER_PORT} ^80$
+#RewriteRule / https://%{HTTP_HOST}%{REQUEST_URI} [L,R]
+
+<VirtualHost *:443>
+    ServerName openstack-dashboard.example.com
+    ServerAdmin webmaster@openstack-dashboard.example.com
+
+    ErrorLog /var/log/httpd/openstack-dashboard-error_log
+    TransferLog /var/log/httpd/openstack-dashboard-access_log
+
+    SSLEngine On
+    # Generate those certificates by running
+    # (umask 377 ; /usr/bin/gensslcert -C openstack-dashboard -n $(hostname -fqdn))
+    SSLCertificateFile /etc/httpd/ssl.crt/openstack-dashboard-server.crt
+    SSLCertificateKeyFile /etc/httpd/ssl.key/openstack-dashboard-server.key
+
+    DocumentRoot /var/lib/openstack-dashboard/
+    Alias /media /var/lib/openstack-dashboard/media
+    Alias /static /var/lib/openstack-dashboard/static
+
+    <Location /static>
+        ExpiresActive on
+        ExpiresDefault "access plus 1 month"
+    </Location>
+
+    <Location /static>
+        SetOutputFilter DEFLATE
+        ExpiresActive On
+        ExpiresDefault "access plus 1 month"
+    </Location>
+
+    <Directory /var/lib/openstack-dashboard/>
+        Options FollowSymLinks MultiViews
+        AllowOverride None
+        Require all granted
+    </Directory>
+</VirtualHost>
+
+</IfDefine>
+</IfDefine>
+
