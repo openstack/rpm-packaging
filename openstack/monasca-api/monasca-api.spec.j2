@@ -4,15 +4,6 @@
 
 %define component           {{ pypi_name }}
 
-# apache settings
-%if 0%{?suse_version}
-%define apache_name apache2
-%define apache_site_dir %{_sysconfdir}/%{apache_name}/vhosts.d/
-%else
-%define apache_name httpd
-%define apache_site_dir %{_sysconfdir}/%{apache_name}/conf.d/
-%endif
-
 Name:           {{ py2name() }}
 Version:        {{ py2rpmversion() }}
 Release:        {{ py2rpmrelease() }}

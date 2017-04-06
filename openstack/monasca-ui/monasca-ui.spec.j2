@@ -6,14 +6,8 @@
 
 %if 0%{?rhel} || 0%{?fedora}
 %global rdo 1
-%global http_confdir %{_sysconfdir}/httpd/conf.d
-%global http_user apache
-%global http_group apache
 %global http_dashboard_dir %{_datarootdir}/openstack-dashboard
 %else
-%global http_confdir %{_sysconfdir}/apache2/conf.d
-%global http_user wwwrun
-%global http_group www
 %global http_dashboard_dir /srv/www/openstack-dashboard
 %endif
 
@@ -61,10 +55,10 @@ cp -a monitoring/enabled/_50_admin_add_monitoring_panel.py %{buildroot}%{http_da
 %fdupes %{buildroot}%{http_dashboard_dir}
 
 %post
-su %{http_user} -s /bin/sh -c "python %{http_dashboard_dir}/manage.py collectstatic --noinput --clear > /dev/null"
+su %{apache_user} -s /bin/sh -c "python %{http_dashboard_dir}/manage.py collectstatic --noinput --clear > /dev/null"
 
 %postun
-su %{http_user} -s /bin/sh -c "python %{http_dashboard_dir}/manage.py collectstatic --noinput --clear > /dev/null"
+su %{apache_user} -s /bin/sh -c "python %{http_dashboard_dir}/manage.py collectstatic --noinput --clear > /dev/null"
 
 %files
 %{http_dashboard_dir}/openstack_dashboard/enabled/_50_admin_add_monitoring_panel.py
