@@ -1,7 +1,8 @@
-%define component horizon
-
+{% set pypi_name = 'horizon' %}
 {% set upstream_version = '11.0.0' %}
 {% set rpm_release = '1' %}
+
+%define component {{ pypi_name }}
 
 %if 0%{?rhel} || 0%{?fedora}
 %global rdo 1
@@ -10,7 +11,7 @@
 %global http_dashboard_dir /srv/www/openstack-dashboard
 %endif
 
-Name:           openstack-dashboard
+Name:           {{ py2name() }}
 Version:        {{ py2rpmversion() }}
 Release:        {{ py2rpmrelease() }}
 Epoch:          {{ epoch('horizon') }}
@@ -93,7 +94,7 @@ Requires:       apache2-mod_wsgi
 Requires:       httpd
 Requires:       mod_wsgi
 %endif
-Requires:       {{ py2pkg('horizon') }} = %{epoch}:%{version}-%{release}
+Requires:       python-horizon = %{epoch}:%{version}-%{release}
 Provides:       openstack-%{component} = %{version}-%{release}
 
 # To generate a self-signed certificate to be used in demo setups:
@@ -117,7 +118,7 @@ The dashboard is just one way to interact with OpenStack resources.
 Developers can automate access or build tools to manage their resources
 using the native OpenStack API or the EC2 compatibility API.
 
-%package -n {{ py2pkg('horizon') }}
+%package -n python-horizon
 Summary:        OpenStack Dashboard (Horizon) - Python Module
 Group:          Development/Languages/Python
 Requires:       {{ py2pkg('Babel') }}
@@ -178,7 +179,7 @@ Requires:       {{ py2pkg('pytz') }}
 Requires:       {{ py2pkg('six') }}
 Requires:       {{ py2pkg('python-swiftclient') }}
 
-%description -n {{ py2pkg('horizon') }}
+%description -n python-horizon
 The Python module horizon is the core component of the OpenStack
 dashboard.
 
@@ -244,7 +245,7 @@ install -D -m 644 %{SOURCE2} %{buildroot}%{apache_conf_dir}/openstack-dashboard.
 %attr(0770, root, %{apache_group}) %{http_dashboard_dir}/media/
 %{apache_conf_dir}/openstack-dashboard.conf.sample
 
-%files -n {{ py2pkg('horizon') }}
+%files -n python-horizon
 %license LICENSE
 %{python2_sitelib}/horizon
 %{python2_sitelib}/horizon-*.egg-info
