@@ -6,7 +6,7 @@ Type=simple
 User=monasca-agent
 Group=monasca
 Restart=on-failure
-ExecStart=/usr/bin/supervisord -c /etc/monasca/agent/supervisor.conf -n
+ExecStart=/usr/bin/supervisord -c /etc/monasca/agent/supervisor.conf -n --pidfile /run/openstack-monasca-agent/monasca-agent-supervisord.pid
 
 [Install]
 WantedBy=multi-user.target

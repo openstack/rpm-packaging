@@ -1,0 +1,1 @@
+d /run/openstack-monasca-agent 0700 monasca-agent monasca -
