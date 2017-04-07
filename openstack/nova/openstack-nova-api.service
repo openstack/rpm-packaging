@@ -1,0 +1,16 @@
+[Unit]
+Description=OpenStack Nova API Server
+After=syslog.target network.target mysql.service postgresql.service rabbitmq-server.service
+
+[Service]
+Type=notify
+NotifyAccess=all
+TimeoutStartSec=0
+Restart=on-failure
+User=nova
+ExecStartPre=-/usr/bin/nova-manage db sync
+ExecStartPre=-/usr/bin/nova-manage api_db sync
+ExecStart=/usr/bin/nova-api
+
+[Install]
+WantedBy=multi-user.target
