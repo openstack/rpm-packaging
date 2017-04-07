@@ -21,7 +21,7 @@ Url:            https://wiki.openstack.org/wiki/Monasca
 Source0:        https://pypi.io/packages/source/m/%{sname}/%{sname}-%{version}.tar.gz
 BuildRequires:  openstack-macros
 BuildRequires:  fdupes
-BuildRequires:  openstack-horizon
+BuildRequires:  {{ py2pkg('horizon') }}
 BuildRequires:  {{ py2pkg('pbr') }}
 BuildRequires:  {{ py2pkg('python-monascaclient') }}
 Requires:       {{ py2pkg('horizon-plugin-monasca-ui') }} = %{version}
