@@ -30,6 +30,7 @@ Url:            https://wiki.openstack.org/wiki/Monasca
 Source0:        {{ source }}
 Source1:        %{name}-sudoers
 Source2:        %{name}.service
+Source3:        openstack-monasca-agent.tmpfiles
 BuildRequires:  openstack-macros
 
 %if 0%{?suse_version}
@@ -125,32 +126,53 @@ fi
 %{__install} -d -m 750 %{buildroot}%{_exec_prefix}/lib/monasca/agent/custom_detect.d
 
 # /var
-%{__install} -d -m 750  %{buildroot}%{_localstatedir}/log/%{sname}
-%{__install} -d -m 700  %{buildroot}%{_localstatedir}/run/%{sname}
+install -d -m 750  %{buildroot}%{_localstatedir}/log/%{sname}
 
 # sudoers configuration
 %{__install} -D -m 440 %{SOURCE1} %{buildroot}%{_sysconfdir}/sudoers.d/%{name}
 
 # systemd unit file
-%{__install} -D -m 644 %{SOURCE2} %{buildroot}%{_unitdir}/%{name}.service
+install -D -m 644 %{SOURCE2} %{buildroot}%{_unitdir}/%{name}.service
+%if 0%{?suse_version}
+mkdir -p %{buildroot}%{_sbindir}
+ln -sr %{buildroot}%{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}
+%endif
+
+# systemd tmpfile
+install -D -m 644 %{SOURCE3} %{buildroot}/%{_tmpfilesdir}/openstack-monasca-agent.conf
 
 %pre
 # create user and groups
 %openstack_pre_user_group_create %{username} %{groupname}
+
+%post
+%tmpfiles_create %{_tmpfilesdir}/openstack-monasca-agent.conf
+%systemd_post %{name}.service
+
+%preun
+%systemd_preun %{name}.service
+
+%postun
+%systemd_postun %{name}.service
 
 %check
 find . -type f -name *.pyc -delete
 PYTHONPATH=. NOSE_EXCLUDE=test_override_values nosetests tests -v
 
 %files
-%defattr(-, %{username}, %{groupname})
 %dir %{_sysconfdir}/monasca
+%dir %attr(0750, %{username}, %{groupname}) %{_sysconfdir}/monasca/agent
+%dir %attr(0750, %{username}, %{groupname}) %{_sysconfdir}/monasca/agent/conf.d
+%_tmpfilesdir/openstack-monasca-agent.conf
 %config %{_sysconfdir}/monasca/agent
 %config %{_sysconfdir}/sudoers.d/%{name}
 %dir %{_exec_prefix}/lib/monasca
 %{_exec_prefix}/lib/monasca/agent
 %dir %{_localstatedir}/log/%{sname}
 %{_unitdir}/%{name}.service
+%if 0%{?suse_version}
+%{_sbindir}/rc%{name}
+%endif
 
 %files -n python-%{sname}
 %doc README.md
