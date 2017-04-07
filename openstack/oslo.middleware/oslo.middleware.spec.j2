@@ -7,6 +7,8 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            https://launchpad.net/%{sname}
 Source0:        https://pypi.io/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
+# https://bugs.launchpad.net/oslo.middleware/+bug/1679658
+Patch1:         0001-Fix-test_request_too_large_no_content_length-failure.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('Jinja2') }}
 BuildRequires:  {{ py2pkg('WebOb') }}
@@ -56,7 +58,7 @@ for limiting size/connection etc.
 This package contains the documentation.
 
 %prep
-%autosetup -n %{sname}-%{version}
+%autosetup -p1 -n %{sname}-%{version}
 %py_req_cleanup
 
 %build

@@ -1,0 +1,50 @@
+From d19143da0f7fb42621512dddcd2d189287fe8008 Mon Sep 17 00:00:00 2001
+From: "ChangBo Guo(gcb)" <eric.guo@easystack.cn>
+Date: Wed, 5 Apr 2017 23:12:13 +0800
+Subject: [PATCH] Fix test_request_too_large_no_content_length failure
+
+Webob >=1.7.0 change its way to check if body is readable [1],
+The is_body_readable() method returns False now. request.content_length
+will be set when set request.body automatically, and if
+request.context_length is None request.body will return returns b''.[3]
+So just set request.body in test.
+
+[1] https://github.com/Pylons/webob/commit/0e6fcbfbc58af6fdd4e125543bf8f5fb91b984c6
+[2] https://github.com/Pylons/webob/blame/master/webob/request.py#L699
+[3] https://github.com/Pylons/webob/blame/master/webob/request.py#L692
+
+Closes-Bug: #1679658
+
+Change-Id: I4e0932dd8664d96b2733c5d3b1fa846af0c7d132
+---
+ oslo_middleware/sizelimit.py            | 2 +-
+ oslo_middleware/tests/test_sizelimit.py | 1 -
+ 2 files changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/oslo_middleware/sizelimit.py b/oslo_middleware/sizelimit.py
+index bba9886..026b709 100644
+--- a/oslo_middleware/sizelimit.py
++++ b/oslo_middleware/sizelimit.py
+@@ -89,7 +89,7 @@ class RequestBodySizeLimiter(base.ConfigurableMiddleware):
+                 req.content_length > max_size):
+             msg = _("Request is too large.")
+             raise webob.exc.HTTPRequestEntityTooLarge(explanation=msg)
+-        if req.content_length is None and req.is_body_readable:
++        if req.content_length is None:
+             limiter = LimitingReader(req.body_file, max_size)
+             req.body_file = limiter
+         return self.application
+diff --git a/oslo_middleware/tests/test_sizelimit.py b/oslo_middleware/tests/test_sizelimit.py
+index 42622ae..dc8d81b 100644
+--- a/oslo_middleware/tests/test_sizelimit.py
++++ b/oslo_middleware/tests/test_sizelimit.py
+@@ -103,6 +103,5 @@ class TestRequestBodySizeLimiter(test_base.BaseTestCase):
+ 
+     def test_request_too_large_no_content_length(self):
+         self.request.body = b"0" * (self.MAX_REQUEST_BODY_SIZE + 1)
+-        self.request.headers['Content-Length'] = None
+         response = self.request.get_response(self.middleware)
+         self.assertEqual(413, response.status_int)
+-- 
+2.12.2
+

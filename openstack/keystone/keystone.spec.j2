@@ -18,6 +18,8 @@ Source2:        openstack-keystone.sysctl
 Source3:        openstack-keystone.tmpfiles
 Source4:        openstack-keystone.defaultconf
 Source5:        openstack-keystone.README.config
+# https://review.openstack.org/#/c/422234/
+Patch1:         0001-Small-fixes-for-WebOb-1.7-compatibiltity.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('Tempest') }}
 BuildRequires:  {{ py2pkg('WebTest') }}
@@ -140,7 +142,7 @@ This package contains the documentation
 %endif
 
 %prep
-%autosetup -n %{sname}-{{upstream_version}}
+%autosetup -p1 -n %{sname}-{{upstream_version}}
 %if 0%{?rdo}
 find . \( -name .gitignore -o -name .placeholder \) -delete
 find keystone -name \*.py -exec sed -i '/\/usr\/bin\/env python/d' {} \;

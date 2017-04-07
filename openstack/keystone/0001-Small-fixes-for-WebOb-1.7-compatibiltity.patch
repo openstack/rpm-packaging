@@ -1,0 +1,60 @@
+From 38bce1d869264a6f1ea0e13a0301c8cc4bfc84af Mon Sep 17 00:00:00 2001
+From: David Stanek <dstanek@dstanek.com>
+Date: Fri, 24 Mar 2017 15:12:27 +0000
+Subject: [PATCH] Small fixes for WebOb 1.7 compatibiltity
+
+WebOb 1.7 includes a few changes that are not backward
+compatible. The ones I noticed and fixed are:
+ 1. When supplying unicode content for the response body
+    the charset is now required if headers are also provided.
+    Previously a default was used.
+ 2. Content-Length is no longer being set when creating a
+    webob.Response object. It appears to be correctly set
+    when directly setting the body property.
+
+Upstream change that caused the issues:
+  https://github.com/Pylons/webob/commit/35fd585
+
+Closes-bug: #1657452
+Change-Id: Iaf2dd45fc86e3eb5e56be0a3e1582a6ddf960bc1
+---
+ keystone/federation/controllers.py | 2 +-
+ keystone/tests/unit/test_wsgi.py   | 2 --
+ 2 files changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/keystone/federation/controllers.py b/keystone/federation/controllers.py
+index 6748ba1a1..9b511e13b 100644
+--- a/keystone/federation/controllers.py
++++ b/keystone/federation/controllers.py
+@@ -353,7 +353,7 @@ class Auth(auth_controllers.Auth):
+ 
+         subs = {'host': host, 'token': token_id}
+         body = src.substitute(subs)
+-        return webob.Response(body=body, status='200',
++        return webob.Response(body=body, status='200', charset='utf-8',
+                               headerlist=headers)
+ 
+     def _create_base_saml_assertion(self, context, auth):
+diff --git a/keystone/tests/unit/test_wsgi.py b/keystone/tests/unit/test_wsgi.py
+index 1caeeeaa5..8534d9c84 100644
+--- a/keystone/tests/unit/test_wsgi.py
++++ b/keystone/tests/unit/test_wsgi.py
+@@ -164,7 +164,6 @@ class ApplicationTest(BaseWSGITest):
+             headers=[('Byte-Header', 'Byte-Value'),
+                      (u'Unicode-Header', u'Unicode-Value')])
+         # assert that all headers are identified.
+-        self.assertThat(resp.headers, matchers.HasLength(4))
+         self.assertEqual('Unicode-Value', resp.headers.get('Unicode-Header'))
+         # assert that unicode value is converted, the expected type is str
+         # on both python2 and python3.
+@@ -176,7 +175,6 @@ class ApplicationTest(BaseWSGITest):
+         self.assertEqual('204 No Content', resp.status)
+         self.assertEqual(http_client.NO_CONTENT, resp.status_int)
+         self.assertEqual(b'', resp.body)
+-        self.assertEqual('0', resp.headers.get('Content-Length'))
+         self.assertIsNone(resp.headers.get('Content-Type'))
+ 
+     def test_render_response_head_with_body(self):
+-- 
+2.12.2
+
