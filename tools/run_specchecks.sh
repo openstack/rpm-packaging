@@ -18,6 +18,10 @@ for spec in $WORKSPACE/logs/*.suse ; do
         echo "$spec should not use '%setup'. Please use '%autosetup' instead."
         failed=1
     }
+    rpmspec -q --qf "%{VERSION}\n" $spec >/dev/null || {
+        echo "$spec does not parse properly. Please check your syntax."
+        failed=1
+    }
 done
 
 exit $failed
