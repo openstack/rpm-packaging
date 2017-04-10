@@ -107,6 +107,10 @@ This package contains monasca-agent Python module.
 %py_req_cleanup
 
 %build
+# Super hack: in a Newton env, make it Newton compatible
+if rpm -q --qf "%{VERSION}\n" {{ py2pkg('oslo.utils') }} | grep -q 3.16; then
+    sed -i -e "s,oslo.utils>=3.18.0,oslo.utils>=3.16.0," requirements.txt
+fi
 %py2_build
 
 %install
