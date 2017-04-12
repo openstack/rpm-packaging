@@ -122,9 +122,6 @@ and managing monitoring related resources.
 
 ## install apache configuration
 %{__install} -p -D -m 640 %{SOURCE4} %{buildroot}%{apache_site_dir}/%{component}.conf.sample
-sed -e "
-  s|__APACHE_NAME__|%{apache_name}|g;
-" -i %{buildroot}%{apache_site_dir}/%{component}.conf.sample
 
 ## install WSGIScriptAlias
 %{__install} -D -m 755 %{SOURCE5} %{buildroot}%{_bindir}/monasca-api-wsgi.py
@@ -155,7 +152,7 @@ fi
 
 %dir %attr(-, root, monasca) %{_sysconfdir}/monasca
 %dir %attr(0750, monasca-api, monasca) %{_var}/lib/%{component}
-%dir %attr(-, root, monasca) %{_var}/log/%{component}
+%dir %attr(0750, monasca-api, monasca) %{_var}/log/%{component}
 
 %config(noreplace) %attr(0640, root, monasca) %{_sysconfdir}/monasca/api-config.conf
 %config(noreplace) %attr(0640, root, monasca) %{_sysconfdir}/monasca/api-logging.conf
