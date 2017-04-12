@@ -109,6 +109,7 @@ and managing monitoring related resources.
 
 # create all necessary directories
 %{__install} -d -m 755 %{buildroot}%{_sysconfdir}/monasca
+%{__install} -d -m 755 %{buildroot}%{_var}/lib/%{component}
 %{__install} -d -m 755 %{buildroot}%{_var}/log/%{component}
 %{__install} -d -m 755 %{buildroot}%{apache_site_dir}
 
@@ -153,6 +154,7 @@ fi
 %{_bindir}/monasca-api-wsgi.py
 
 %dir %attr(-, root, monasca) %{_sysconfdir}/monasca
+%dir %attr(0750, monasca-api, monasca) %{_var}/lib/%{component}
 %dir %attr(-, root, monasca) %{_var}/log/%{component}
 
 %config(noreplace) %attr(0640, root, monasca) %{_sysconfdir}/monasca/api-config.conf
