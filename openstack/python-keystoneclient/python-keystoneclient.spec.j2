@@ -8,6 +8,8 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            http://launchpad.net/%{sname}
 Source0:        https://pypi.io/packages/source/p/%{sname}/%{sname}-%{version}.tar.gz
+# https://review.openstack.org/#/c/447377/
+Patch1:         0001-Fix-failing-PY2-and-PY3-gate-jobs.patch
 BuildRequires:  openssl
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('debtcollector') }}
@@ -53,7 +55,7 @@ Documentation for the client library for interacting with Openstack
 Identity API.
 
 %prep
-%autosetup -n %{sname}-%{version}
+%autosetup -p1 -n %{sname}-%{version}
 %py_req_cleanup
 
 %build
