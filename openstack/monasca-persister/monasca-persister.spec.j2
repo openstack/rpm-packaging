@@ -15,11 +15,13 @@ BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('mock') }}
 BuildRequires:  {{ py2pkg('monasca-common') }}
 BuildRequires:  {{ py2pkg('nose') }}
+BuildRequires:  {{ py2pkg('oslo.config') }}
 BuildRequires:  {{ py2pkg('oslo.log') }}
 BuildRequires:  {{ py2pkg('oslotest') }}
 BuildRequires:  {{ py2pkg('setuptools') }}
 BuildRequires:  {{ py2pkg('six') }}
 Requires:       {{ py2pkg('monasca-common') }}
+Requires:       {{ py2pkg('oslo.config') }}
 Requires:       {{ py2pkg('oslo.log') }}
 Requires:       {{ py2pkg('six') }}
 BuildArch:      noarch
