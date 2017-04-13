@@ -108,6 +108,8 @@ and managing monitoring related resources.
 %py2_install
 
 # create all necessary directories
+%{__install} -d -m 755 %{buildroot}%{_usr}/share/%{component}/vertica
+%{__install} -d -m 755 %{buildroot}%{_usr}/share/%{component}/schema
 %{__install} -d -m 755 %{buildroot}%{_sysconfdir}/monasca
 %{__install} -d -m 755 %{buildroot}%{_var}/lib/%{component}
 %{__install} -d -m 755 %{buildroot}%{_var}/log/%{component}
@@ -119,6 +121,13 @@ and managing monitoring related resources.
 %{__install} -D -m 640 %{SOURCE1} %{buildroot}%{_sysconfdir}/monasca/api-config.conf
 %{__install} -D -m 640 %{SOURCE2} %{buildroot}%{_sysconfdir}/monasca/api-logging.conf
 %{__install} -D -m 640 %{SOURCE3} %{buildroot}%{_sysconfdir}/monasca/api-config.ini
+# some files from the devstack dir needed to do basic deployment
+%{__install} -D -m 640 devstack/files/schema/mon_postgresql.sql %{buildroot}%{_usr}/share/%{component}/schema/
+%{__install} -D -m 640 devstack/files/schema/mon_mysql.sql %{buildroot}%{_usr}/share/%{component}/schema/
+%{__install} -D -m 640 devstack/files/vertica/mon_alarms.sql %{buildroot}%{_usr}/share/%{component}/vertica/
+%{__install} -D -m 640 devstack/files/vertica/mon_metrics.sql %{buildroot}%{_usr}/share/%{component}/vertica/
+%{__install} -D -m 640 devstack/files/vertica/users.sql %{buildroot}%{_usr}/share/%{component}/vertica/
+%{__install} -D -m 640 devstack/files/vertica/roles.sql %{buildroot}%{_usr}/share/%{component}/vertica/
 
 ## install apache configuration
 %{__install} -p -D -m 640 %{SOURCE4} %{buildroot}%{apache_site_dir}/%{component}.conf.sample
@@ -153,7 +162,11 @@ fi
 %dir %attr(-, root, monasca) %{_sysconfdir}/monasca
 %dir %attr(0750, monasca-api, monasca) %{_var}/lib/%{component}
 %dir %attr(0750, monasca-api, monasca) %{_var}/log/%{component}
-
+%dir %attr(0755, monasca-api, monasca) %{_usr}/share/%{component}
+%dir %attr(0755, monasca-api, monasca) %{_usr}/share/%{component}/schema
+%dir %attr(0755, monasca-api, monasca) %{_usr}/share/%{component}/vertica
+%{_usr}/share/%{component}/schema/*
+%{_usr}/share/%{component}/vertica/*
 %config(noreplace) %attr(0640, root, monasca) %{_sysconfdir}/monasca/api-config.conf
 %config(noreplace) %attr(0640, root, monasca) %{_sysconfdir}/monasca/api-logging.conf
 %config(noreplace) %attr(0640, root, monasca) %{_sysconfdir}/monasca/api-config.ini
