@@ -1,5 +1,6 @@
 {% set pypi_name = 'monasca-statsd' %}
-{% set upstream_version = upstream_version('1.5.0') %}
+{% set source = fetch_source('http://tarballs.openstack.org/monasca-statsd/monasca-statsd-stable-ocata.tar.gz') %}
+{% set upstream_version = upstream_version() %}
 {% set rpm_release = '1' %}
 
 %global sname {{ pypi_name }}
@@ -10,7 +11,7 @@ Summary:        Python Statsd library for sending statsd messages via the Monasc
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            https://wiki.openstack.org/wiki/Monasca
-Source0:        https://pypi.io/packages/source/m/%{sname}/%{sname}-%{version}.tar.gz
+Source0:        {{ source }}
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('six') }}
 BuildRequires:  {{ py2pkg('nose') }}
@@ -23,7 +24,7 @@ BuildArch:      noarch
 Python Statsd library for sending statsd messages via the Monasca Agent
 
 %prep
-%autosetup -n %{sname}-%{version}
+%autosetup -n %{sname}-{{ upstream_version }}
 %py_req_cleanup
 
 %build
