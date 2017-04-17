@@ -1,14 +1,12 @@
 %global sname oslo.middleware
 Name:           {{ py2name('oslo.middleware') }}
-Version:        3.25.0
+Version:        3.26.0
 Release:        0
 Summary:        OpenStack oslo.middleware library
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            https://launchpad.net/%{sname}
 Source0:        https://pypi.io/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
-# https://bugs.launchpad.net/oslo.middleware/+bug/1679658
-Patch1:         0001-Fix-test_request_too_large_no_content_length-failure.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('Jinja2') }}
 BuildRequires:  {{ py2pkg('WebOb') }}
