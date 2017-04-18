@@ -704,10 +704,6 @@ usermod -a -G qemu nova
 %postun serialproxy
 %systemd_postun_with_restart %{name}-serialproxy.service
 
-#FILES
-%files
-%license LICENSE
-
 %files
 %defattr(-,root,root,-)
 %license LICENSE
