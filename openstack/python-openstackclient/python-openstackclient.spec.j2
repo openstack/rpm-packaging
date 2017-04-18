@@ -7,6 +7,8 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            https://launchpad.net/%{sname}
 Source0:        https://pypi.io/packages/source/p/%{sname}/%{sname}-%{version}.tar.gz
+# patch from https://review.openstack.org/#/c/385138/
+Patch0:         0001-Fix-shared-block-migration-options.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('python-cinderclient') }}
 BuildRequires:  {{ py2pkg('cliff') }}
@@ -74,7 +76,7 @@ actual REST API client actions.
 This package contains auto-generated documentation.
 
 %prep
-%setup -q -n %{sname}-%{version}
+%autosetup -p1 -n %{sname}-%{version}
 
 %build
 %{py2_build}

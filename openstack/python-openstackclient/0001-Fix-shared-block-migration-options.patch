@@ -1,0 +1,55 @@
+From 694a24c3093f5b2595b63ccf988da7972e532084 Mon Sep 17 00:00:00 2001
+From: Cedric Brandily <zzelle@gmail.com>
+Date: Tue, 11 Oct 2016 22:01:16 +0200
+Subject: [PATCH] Fix --shared/block-migration options in server migrate command
+
+Currently, --shared-migration and --block-migration options effects are
+reversed: --block-migration requests a migration with share,
+--shared-migration a block-migration.
+
+This change corrects OSC implementation and clarifies arguments passed
+to novaclient (the root cause of the bug).
+
+Change-Id: Ib682cff0c44d3b1304670f8606907b1762d8b1e7
+Closes-Bug: #1518059
+---
+
+diff --git a/openstackclient/compute/v2/server.py b/openstackclient/compute/v2/server.py
+index 1ca3149..df46c7d 100644
+--- a/openstackclient/compute/v2/server.py
++++ b/openstackclient/compute/v2/server.py
+@@ -973,15 +973,15 @@
+         migration_group = parser.add_mutually_exclusive_group()
+         migration_group.add_argument(
+             '--shared-migration',
+-            dest='shared_migration',
+-            action='store_true',
+-            default=True,
++            dest='block_migration',
++            action='store_false',
++            default=False,
+             help=_('Perform a shared live migration (default)'),
+         )
+         migration_group.add_argument(
+             '--block-migration',
+-            dest='shared_migration',
+-            action='store_false',
++            dest='block_migration',
++            action='store_true',
+             help=_('Perform a block live migration'),
+         )
+         disk_group = parser.add_mutually_exclusive_group()
+@@ -1016,9 +1016,9 @@
+         )
+         if parsed_args.live:
+             server.live_migrate(
+-                parsed_args.live,
+-                parsed_args.shared_migration,
+-                parsed_args.disk_overcommit,
++                host=parsed_args.live,
++                block_migration=parsed_args.block_migration,
++                disk_over_commit=parsed_args.disk_overcommit,
+             )
+         else:
+             server.migrate()
+
