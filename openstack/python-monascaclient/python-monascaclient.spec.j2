@@ -7,6 +7,8 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            https://launchpad.net/%{sname}
 Source0:        https://pypi.io/packages/source/p/%{sname}/%{sname}-%{version}.tar.gz
+# from https://review.openstack.org/#/c/457663/
+Patch1:         0001-Added-support-for-os_auth_version-when-os_auth_url-i.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('PrettyTable') }}
 BuildRequires:  {{ py2pkg('PyYAML') }}
@@ -51,7 +53,7 @@ provides a Python API (the ``monascaclient`` module) and a command-line tool
 The Monasca Client was written using the OpenStack Heat Python client as a framework.
 
 %prep
-%autosetup -n %{sname}-%{version}
+%autosetup -p1 -n %{sname}-%{version}
 %py_req_cleanup
 
 %build

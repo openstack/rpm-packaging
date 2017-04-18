@@ -1,0 +1,86 @@
+From 3a320ee5d14e343debf97a5d06b1af8f24ed8e02 Mon Sep 17 00:00:00 2001
+From: Sumit Jamgade <sjamgade@suse.com>
+Date: Tue, 4 Apr 2017 15:32:46 +0200
+Subject: [PATCH] Added support for os_auth_version when os_auth_url is
+ unversiond
+
+Change-Id: I89e9b040e41caabcf366def480bb5c5cd0eb965d
+Story: 2000965
+---
+ README.rst             |  6 +++++-
+ monascaclient/shell.py | 14 ++++++++++++++
+ 2 files changed, 19 insertions(+), 1 deletion(-)
+
+diff --git a/README.rst b/README.rst
+index 970afbe..ddee5cd 100644
+--- a/README.rst
++++ b/README.rst
+@@ -91,6 +91,8 @@ When using Keystone to obtain the token and endpoint::
+   export OS_PROJECT_NAME=
+   export OS_AUTH_URL=
+   export OS_REGION_NAME=
++  # Optional(specific version added to OS_AUTH_URL if (v2.0 or v3) not present already)
++  export OS_AUTH_VERSION=
+ 
+ When OS_USER_DOMAIN_NAME is not set, then 'Default' is assumed. Alternatively IDs can be used instead of names.
+ 
+@@ -112,7 +114,7 @@ You'll find complete documentation on the shell by running
+                [--os-user-domain-id OS_USER_DOMAIN_ID] [--os-user-domain-name OS_USER_DOMAIN_NAME]
+                [--os-project-name OS_PROJECT_NAME]
+                [--os-project-domain-id OS_PROJECT_DOMAIN_ID] [--os-project-domain-name OS_PROJECT_DOMAIN_NAME]
+-               [--os-auth-url OS_AUTH_URL] [--os-region-name OS_REGION_NAME]
++               [--os-auth-url OS_AUTH_URL] [--os-auth-version OS_AUTH_VERSION] [--os-region-name OS_REGION_NAME]
+                [--os-auth-token OS_AUTH_TOKEN] [--os-no-client-auth]
+                [--monasca-api-url MONASCA_API_URL]
+                [--monasca-api-version MONASCA_API_VERSION]
+@@ -187,6 +189,8 @@ You'll find complete documentation on the shell by running
+     --os-domain-name OS_DOMAIN_NAME
+                                Defaults to env[OS_DOMAIN_NAME].
+     --os-auth-url OS_AUTH_URL  Defaults to env[OS_AUTH_URL].
++  --os-auth-version OS_AUTH_VERSION
++                               Defaults to env[OS_AUTH_VERSION].
+     --os-region-name OS_REGION_NAME
+                                Defaults to env[OS_REGION_NAME].
+     --os-auth-token OS_AUTH_TOKEN
+diff --git a/monascaclient/shell.py b/monascaclient/shell.py
+index 6fcffc1..bc85a10 100644
+--- a/monascaclient/shell.py
++++ b/monascaclient/shell.py
+@@ -24,6 +24,8 @@ import logging
+ import string
+ import sys
+ 
++from six.moves.urllib.parse import urljoin
++
+ import monascaclient
+ from monascaclient import client as monasca_client
+ from monascaclient.common import utils
+@@ -155,6 +157,13 @@ class MonascaShell(object):
+         parser.add_argument('--os_auth_url',
+                             help=argparse.SUPPRESS)
+ 
++        parser.add_argument('--os-auth-version',
++                            default=utils.env('OS_AUTH_VERSION'),
++                            help='Defaults to env[OS_AUTH_VERSION].')
++
++        parser.add_argument('--os_auth_version',
++                            help=argparse.SUPPRESS)
++
+         parser.add_argument('--os-region-name',
+                             default=utils.env('OS_REGION_NAME'),
+                             help='Defaults to env[OS_REGION_NAME].')
+@@ -327,6 +336,11 @@ class MonascaShell(object):
+                                        " either --os-auth-url or via"
+                                        " env[OS_AUTH_URL]")
+ 
++        auth_vars_present = args.os_auth_url and args.os_auth_version
++        versioned = 'v2.0' in args.os_auth_url or 'v3' in args.os_auth_url
++        if auth_vars_present and not versioned:
++            args.os_auth_url = urljoin(args.os_auth_url, args.os_auth_version)
++
+         if args.os_auth_url and 'v2.0' in args.os_auth_url:
+             args.os_auth_url = string.replace(args.os_auth_url, 'v2.0', 'v3')
+ 
+-- 
+2.12.2
+
