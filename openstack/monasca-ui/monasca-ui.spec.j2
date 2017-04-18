@@ -3,14 +3,12 @@
 {% set rpm_release = '1' %}
 
 %global sname {{ pypi_name }}
-
 %if 0%{?rhel} || 0%{?fedora}
 %global rdo 1
 %global http_dashboard_dir %{_datarootdir}/openstack-dashboard
 %else
 %global http_dashboard_dir /srv/www/openstack-dashboard
 %endif
-
 Name:           {{ py2name() }}
 Version:        {{ py2rpmversion() }}
 Release:        {{ py2rpmrelease() }}
@@ -19,11 +17,11 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            https://wiki.openstack.org/wiki/Monasca
 Source0:        https://pypi.io/packages/source/m/%{sname}/%{sname}-%{version}.tar.gz
-BuildRequires:  openstack-macros
 BuildRequires:  fdupes
 BuildRequires:  {{ py2pkg('horizon') }}
-BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('python-monascaclient') }}
+BuildRequires:  {{ py2pkg('pbr') }}
 Requires:       {{ py2pkg('horizon-plugin-monasca-ui') }} = %{version}
 BuildArch:      noarch
 
@@ -33,8 +31,8 @@ The Monasca UI Horizon plugin adds Monitoring panel to the OpenStack dashboard.
 %package -n {{ py2pkg('horizon-plugin-monasca-ui') }}
 Summary:       Monasca Plugin for Horizon - Python module
 Requires:      {{ py2pkg('Django') }}
-Requires:      {{ py2pkg('pbr') }}
 Requires:      {{ py2pkg('python-monascaclient') }}
+Requires:      {{ py2pkg('pbr') }}
 
 %description -n {{ py2pkg('horizon-plugin-monasca-ui') }}
 The Monasca UI Horizon plugin adds Monitoring panel to the OpenStack dashboard.

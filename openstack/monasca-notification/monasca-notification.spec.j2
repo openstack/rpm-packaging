@@ -3,13 +3,10 @@
 {% set rpm_release = '1' %}
 
 %global sname   monasca-notification
-
 %define username    monasca-notification
 %define groupname   monasca
-
 %define notification_conf_dir %{_sysconfdir}/%{sname}
-%define notification_log_dir /var/log/%{sname}
-
+%define notification_log_dir %{_localstatedir}/%{sname}
 Name:           {{ py2name() }}
 Version:        {{ py2rpmversion() }}
 Release:        {{ py2rpmrelease() }}
@@ -21,12 +18,12 @@ Source0:        https://pypi.io/packages/source/m/%{sname}/%{sname}-%{version}.t
 Source1:        openstack-%{sname}.service
 Source2:        %{sname}.yaml
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('pbr') }}
 BuildRequires:  {{ py2pkg('mock') }}
-BuildRequires:  {{ py2pkg('monasca-statsd') }}
 BuildRequires:  {{ py2pkg('monasca-common') }}
-BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('monasca-statsd') }}
 BuildRequires:  {{ py2pkg('os-testr') }}
+BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('pbr') }}
 BuildRequires:  {{ py2pkg('requests') }}
 BuildRequires:  {{ py2pkg('six') }}
 Requires:       python-%{sname} = %{version}-%{release}
@@ -37,8 +34,8 @@ Requires(pre):  pwdutils
 %else
 BuildRequires:  systemd
 Requires(post): systemd
-Requires(preun):    systemd
 Requires(postun):   systemd
+Requires(preun):    systemd
 %endif
 
 %description
@@ -79,17 +76,17 @@ This package contains the core Python module of Monasca-notification
 %py2_install
 
 ## usr
-%{__install} -d -m 755 %{buildroot}%{_sbindir}
+install -d -m 755 %{buildroot}%{_sbindir}
 
 ## log dir
-%{__install} -d -m 750 %{buildroot}%{notification_log_dir}
+install -d -m 750 %{buildroot}%{notification_log_dir}
 
 ## etc
-%{__install} -d -m 755 %{buildroot}%{notification_conf_dir}
-%{__install} -D -m 644 %{SOURCE2} %{buildroot}%{notification_conf_dir}/%{sname}.yaml.sample
+install -d -m 755 %{buildroot}%{notification_conf_dir}
+install -D -m 644 %{SOURCE2} %{buildroot}%{notification_conf_dir}/%{sname}.yaml.sample
 
 ## system stuff
-%{__install} -p -D -m 644 %{SOURCE1} %{buildroot}%{_unitdir}/%{name}.service
+install -p -D -m 644 %{SOURCE1} %{buildroot}%{_unitdir}/%{name}.service
 %if 0%{?suse_version}
 ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}
 %endif

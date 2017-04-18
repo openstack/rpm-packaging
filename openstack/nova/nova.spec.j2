@@ -13,7 +13,7 @@ Version:        {{ py2rpmversion() }}
 Release:        {{ py2rpmrelease() }}
 Summary:        OpenStack Compute (nova)
 License:        {{ license('Apache-2.0') }}
-URL:            https://launchpad.net/nova
+Url:            https://launchpad.net/nova
 Source0:        http://tarballs.openstack.org/%{sname}/%{sname}-{{upstream_version}}.tar.gz
 Source1:        nova-dist.conf
 Source3:        nova.logrotate
@@ -22,7 +22,6 @@ Source5:        nova-ifc-template
 Source6:        nova-polkit.rules
 Source7:        nova-sudoers
 Source8:        unittests.blacklist
-
 Source10:       openstack-nova-api.service
 Source11:       openstack-nova-cert.service
 Source12:       openstack-nova-compute.service
@@ -39,20 +38,29 @@ Source22:       openstack-nova-novncproxy.service
 Source23:       openstack-nova-serialproxy.service
 Source24:       openstack-nova-os-compute-api.service
 Source25:       wsgi-nova-placement-api.conf
-
 BuildRequires:  fdupes
 BuildRequires:  intltool
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('PyMySQL') }}
 BuildRequires:  polkit
+BuildRequires:  {{ py2pkg('PyMySQL') }}
+BuildRequires:  {{ py2pkg('python-barbicanclient') }}
+BuildRequires:  {{ py2pkg('python-cinderclient') }}
 BuildRequires:  {{ py2pkg('ddt') }}
 BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('fixtures') }}
+BuildRequires:  {{ py2pkg('python-glanceclient') }}
+BuildRequires:  {{ py2pkg('python-ironicclient') }}
+BuildRequires:  {{ py2pkg('python-keystoneclient') }}
+BuildRequires:  {{ py2pkg('microversion_parse') }}
 BuildRequires:  {{ py2pkg('mock') }}
 BuildRequires:  {{ py2pkg('mox3') }}
+BuildRequires:  {{ py2pkg('python-neutronclient') }}
+BuildRequires:  {{ py2pkg('python-novaclient') }}
 BuildRequires:  {{ py2pkg('os-api-ref') }}
-BuildRequires:  {{ py2pkg('oslotest') }}
-BuildRequires:  {{ py2pkg('osprofiler') }}
+BuildRequires:  {{ py2pkg('os-brick') }}
+BuildRequires:  {{ py2pkg('os-testr') }}
+BuildRequires:  {{ py2pkg('os-vif') }}
+BuildRequires:  {{ py2pkg('os-win') }}
 BuildRequires:  {{ py2pkg('oslo.cache') }}
 BuildRequires:  {{ py2pkg('oslo.concurrency') }}
 BuildRequires:  {{ py2pkg('oslo.config') }}
@@ -71,19 +79,9 @@ BuildRequires:  {{ py2pkg('oslo.service') }}
 BuildRequires:  {{ py2pkg('oslo.utils') }}
 BuildRequires:  {{ py2pkg('oslo.versionedobjects') }}
 BuildRequires:  {{ py2pkg('oslo.vmware') }}
-BuildRequires:  {{ py2pkg('os-brick') }}
-BuildRequires:  {{ py2pkg('os-testr') }}
-BuildRequires:  {{ py2pkg('os-vif') }}
-BuildRequires:  {{ py2pkg('os-win') }}
+BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('osprofiler') }}
 BuildRequires:  {{ py2pkg('psycopg2') }}
-BuildRequires:  {{ py2pkg('python-barbicanclient') }}
-BuildRequires:  {{ py2pkg('python-cinderclient') }}
-BuildRequires:  {{ py2pkg('python-glanceclient') }}
-BuildRequires:  {{ py2pkg('python-ironicclient') }}
-BuildRequires:  {{ py2pkg('python-keystoneclient') }}
-BuildRequires:  {{ py2pkg('microversion_parse') }}
-BuildRequires:  {{ py2pkg('python-neutronclient') }}
-BuildRequires:  {{ py2pkg('python-novaclient') }}
 BuildRequires:  {{ py2pkg('python-subunit') }}
 BuildRequires:  {{ py2pkg('requests-mock') }}
 BuildRequires:  {{ py2pkg('tempest-lib') }}
@@ -97,14 +95,14 @@ Requires:       python-%{sname} = %{epoch}:%{version}-%{release}
 BuildArch:      noarch
 %if 0%{?suse_version}
 BuildRequires:  systemd-rpm-macros
-%{?systemd_requires}
 Requires(pre):  pwdutils
+%{?systemd_requires}
 %else
 BuildRequires:  systemd
-Requires(pre):  shadow-utils
 Requires(post): systemd
-Requires(preun): systemd
 Requires(postun): systemd
+Requires(pre):  shadow-utils
+Requires(preun): systemd
 %endif
 
 %description
@@ -132,9 +130,11 @@ Requires:       {{ py2pkg('Routes') }}
 Requires:       {{ py2pkg('SQLAlchemy') }}
 Requires:       {{ py2pkg('WebOb') }}
 Requires:       {{ py2pkg('castellan') }}
+Requires:       {{ py2pkg('python-cinderclient') }}
 Requires:       {{ py2pkg('cryptography') }}
 Requires:       {{ py2pkg('decorator') }}
 Requires:       {{ py2pkg('eventlet') }}
+Requires:       {{ py2pkg('python-glanceclient') }}
 Requires:       {{ py2pkg('greenlet') }}
 Requires:       {{ py2pkg('iso8601') }}
 Requires:       {{ py2pkg('jsonschema') }}
@@ -144,6 +144,10 @@ Requires:       {{ py2pkg('lxml') }}
 Requires:       {{ py2pkg('microversion-parse') }}
 Requires:       {{ py2pkg('netaddr') }}
 Requires:       {{ py2pkg('netifaces') }}
+Requires:       {{ py2pkg('python-neutronclient') }}
+Requires:       {{ py2pkg('os-brick') }}
+Requires:       {{ py2pkg('os-vif') }}
+Requires:       {{ py2pkg('os-win') }}
 Requires:       {{ py2pkg('oslo.cache') }}
 Requires:       {{ py2pkg('oslo.concurrency') }}
 Requires:       {{ py2pkg('oslo.config') }}
@@ -161,15 +165,9 @@ Requires:       {{ py2pkg('oslo.serialization') }}
 Requires:       {{ py2pkg('oslo.service') }}
 Requires:       {{ py2pkg('oslo.utils') }}
 Requires:       {{ py2pkg('oslo.versionedobjects') }}
-Requires:       {{ py2pkg('os-brick') }}
-Requires:       {{ py2pkg('os-vif') }}
-Requires:       {{ py2pkg('os-win') }}
 Requires:       {{ py2pkg('paramiko') }}
 Requires:       {{ py2pkg('pbr') }}
 Requires:       {{ py2pkg('psutil') }}
-Requires:       {{ py2pkg('python-cinderclient') }}
-Requires:       {{ py2pkg('python-glanceclient') }}
-Requires:       {{ py2pkg('python-neutronclient') }}
 Requires:       {{ py2pkg('requests') }}
 Requires:       {{ py2pkg('rfc3986') }}
 Requires:       {{ py2pkg('setuptools') }}
@@ -204,9 +202,6 @@ standard hardware configurations and seven major hypervisors.
 This package contains the Nova services providing programmatic access.
 
 %package placement-api
-Summary:        OpenStack Nova - Placement API service
-Group:          Applications/System
-Requires:       %{name} = %{epoch}:%{version}-%{release}
 %if 0%{?suse_version}
 %define apache_name         apache2
 %define apache_site_dir     %{_sysconfdir}/%{apache_name}/vhosts.d/
@@ -218,6 +213,9 @@ Requires:       apache2-mod_wsgi
 BuildRequires:  mod_wsgi
 Requires:       mod_wsgi
 %endif
+Summary:        OpenStack Nova - Placement API service
+Group:          Applications/System
+Requires:       %{name} = %{epoch}:%{version}-%{release}
 
 %description placement-api
 This package contains the OpenStack Nova Placement API.
@@ -260,7 +258,7 @@ This package contains the Nova service for managing certificates.
 %package compute
 Summary:        OpenStack Nova Virtual Machine control service
 Group:          Applications/System
-Requires(pre):  qemu-kvm
+Requires:       %{name} = %{epoch}:%{version}-%{release}
 Requires:       bridge-utils
 Requires:       curl
 Requires:       genisoimage
@@ -269,12 +267,12 @@ Requires:       iptables
 Requires:       iscsi-initiator-utils
 Requires:       libvirt-daemon-kvm
 Requires:       libvirt-daemon-lxc
-Requires:       {{ py2pkg('libvirt-python') }}
 Requires:       lvm2
 Requires:       openssh-clients
-Requires:       %{name} = %{epoch}:%{version}-%{release}
 Requires:       {{ py2pkg('libguestfs') }}
+Requires:       {{ py2pkg('libvirt-python') }}
 Requires:       rsync
+Requires(pre):  qemu-kvm
 
 %description compute
 OpenStack Compute (codename Nova) is open source software designed to
@@ -327,12 +325,12 @@ console access services to Virtual Machines.
 %package network
 Summary:        OpenStack Nova Network control service
 Group:          Applications/System
+Requires:       %{name} = %{epoch}:%{version}-%{release}
 Requires:       bridge-utils
 Requires:       dnsmasq
 Requires:       dnsmasq-utils
 Requires:       ebtables
 Requires:       iptables
-Requires:       %{name} = %{epoch}:%{version}-%{release}
 Requires:       radvd
 
 %description network
@@ -350,8 +348,8 @@ This package contains the Nova service for controlling networking.
 %package novncproxy
 Summary:        OpenStack Nova noVNC proxy service
 Group:          Applications/System
-Requires:       novnc
 Requires:       %{name} = %{epoch}:%{version}-%{release}
+Requires:       novnc
 
 %description novncproxy
 OpenStack Compute (codename Nova) is open source software designed to
@@ -365,7 +363,6 @@ standard hardware configurations and seven major hypervisors.
 
 This package contains the Nova noVNC Proxy service that can proxy
 VNC traffic over browser websockets connections.
-
 
 %package scheduler
 Summary:        OpenStack Nova VM distribution service
@@ -440,18 +437,17 @@ BuildRequires:  {{ py2pkg('castellan') }}
 BuildRequires:  {{ py2pkg('cryptography') }}
 BuildRequires:  {{ py2pkg('decorator') }}
 BuildRequires:  {{ py2pkg('greenlet') }}
-BuildRequires:  {{ py2pkg('greenlet') }}
 BuildRequires:  {{ py2pkg('iso8601') }}
 BuildRequires:  {{ py2pkg('jinja2') }}
 BuildRequires:  {{ py2pkg('jsonschema') }}
 BuildRequires:  {{ py2pkg('keystonemiddleware') }}
 BuildRequires:  {{ py2pkg('lxml') }}
-BuildRequires:  {{ py2pkg('python-memcached') }}
 BuildRequires:  {{ py2pkg('netifaces') }}
 BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 BuildRequires:  {{ py2pkg('oslosphinx') }}
 BuildRequires:  {{ py2pkg('paramiko') }}
 BuildRequires:  {{ py2pkg('psutil') }}
+BuildRequires:  {{ py2pkg('python-memcached') }}
 BuildRequires:  {{ py2pkg('reno') }}
 BuildRequires:  {{ py2pkg('requests') }}
 BuildRequires:  {{ py2pkg('rfc3986') }}

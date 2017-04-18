@@ -3,14 +3,12 @@
 {% set rpm_release = '1' %}
 
 %define component {{ pypi_name }}
-
 %if 0%{?rhel} || 0%{?fedora}
 %global rdo 1
 %global http_dashboard_dir %{_datarootdir}/openstack-dashboard
 %else
 %global http_dashboard_dir /srv/www/openstack-dashboard
 %endif
-
 Name:           {{ py2name() }}
 Version:        {{ py2rpmversion() }}
 Release:        {{ py2rpmrelease() }}
@@ -20,30 +18,11 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            http://wiki.openstack.org/OpenStackDashboard
 Source0:        http://tarballs.openstack.org/%{component}/%{component}-{{upstream_version}}.tar.gz
-# Apache2 example configuration:
-%if 0%{?rdo}
-Source2:        openstack-dashboard.conf.sample.rdo
-%else
-Source2:        openstack-dashboard.conf.sample.suse
-%endif
 BuildRequires:  fdupes
 BuildRequires:  gettext
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('Django') }}
-BuildRequires:  {{ py2pkg('devel') }}
-BuildRequires:  {{ py2pkg('pbr') }}
-# Test requirements
 BuildRequires:  {{ py2pkg('Pint') }}
-BuildRequires:  {{ py2pkg('django-nose') }}
-BuildRequires:  {{ py2pkg('mock') }}
-BuildRequires:  {{ py2pkg('mox3') }}
-BuildRequires:  {{ py2pkg('netaddr') }}
-BuildRequires:  {{ py2pkg('nose') }}
-BuildRequires:  {{ py2pkg('nose-exclude') }}
-BuildRequires:  {{ py2pkg('nosexcover') }}
-BuildRequires:  {{ py2pkg('openstack.nose_plugin') }}
-BuildRequires:  {{ py2pkg('testtools') }}
-# Now BuildRequires to be able to import the local_settings.py for collectstatic
 BuildRequires:  {{ py2pkg('XStatic') }}
 BuildRequires:  {{ py2pkg('XStatic-Angular') }}
 BuildRequires:  {{ py2pkg('XStatic-Angular-Bootstrap') }}
@@ -73,18 +52,32 @@ BuildRequires:  {{ py2pkg('XStatic-smart-table') }}
 BuildRequires:  {{ py2pkg('XStatic-term.js') }}
 BuildRequires:  {{ py2pkg('XStatic-tv4') }}
 BuildRequires:  {{ py2pkg('python-cinderclient') }}
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('django-nose') }}
 BuildRequires:  {{ py2pkg('django-pyscss') }}
 BuildRequires:  {{ py2pkg('django_compressor') }}
 BuildRequires:  {{ py2pkg('django_openstack_auth') }}
 BuildRequires:  {{ py2pkg('python-glanceclient') }}
 BuildRequires:  {{ py2pkg('python-heatclient') }}
 BuildRequires:  {{ py2pkg('python-keystoneclient') }}
+BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('mox3') }}
+BuildRequires:  {{ py2pkg('netaddr') }}
 BuildRequires:  {{ py2pkg('python-neutronclient') }}
+BuildRequires:  {{ py2pkg('nose') }}
+BuildRequires:  {{ py2pkg('nose-exclude') }}
+BuildRequires:  {{ py2pkg('nosexcover') }}
 BuildRequires:  {{ py2pkg('python-novaclient') }}
+BuildRequires:  {{ py2pkg('openstack.nose_plugin') }}
 BuildRequires:  {{ py2pkg('oslo.concurrency') }}
 BuildRequires:  {{ py2pkg('oslo.policy') }}
+BuildRequires:  {{ py2pkg('pbr') }}
 BuildRequires:  {{ py2pkg('python-swiftclient') }}
+BuildRequires:  {{ py2pkg('testtools') }}
 BuildRequires:  {{ py2pkg('python-troveclient') }}
+Requires:       python-horizon = %{epoch}:%{version}-%{release}
+Provides:       openstack-%{component} = %{version}-%{release}
+BuildArch:      noarch
 %if 0%{?suse_version}
 BuildRequires:  apache2
 Requires:       apache2
@@ -94,9 +87,12 @@ Requires:       apache2-mod_wsgi
 Requires:       httpd
 Requires:       mod_wsgi
 %endif
-Requires:       python-horizon = %{epoch}:%{version}-%{release}
-Provides:       openstack-%{component} = %{version}-%{release}
-
+# Apache2 example configuration:
+%if 0%{?rdo}
+Source2:        openstack-dashboard.conf.sample.rdo
+%else
+Source2:        openstack-dashboard.conf.sample.suse
+%endif
 # To generate a self-signed certificate to be used in demo setups:
 %if 0%{?suse_version}
 Requires(post):  apache2-utils
@@ -104,8 +100,6 @@ Requires(post):  apache2-utils
 %if 0%{?rdo}
 Requires(post):  httpd-tools
 %endif
-
-BuildArch:      noarch
 
 %description
 The OpenStack dashboard provides administrators and users a graphical

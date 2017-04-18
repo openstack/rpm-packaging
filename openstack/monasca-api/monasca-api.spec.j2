@@ -3,23 +3,23 @@
 {% set rpm_release = '1' %}
 
 %define component           {{ pypi_name }}
-
 Name:           {{ py2name() }}
 Version:        {{ py2rpmversion() }}
 Release:        {{ py2rpmrelease() }}
-License:        {{ license('Apache-2.0') }}
 Summary:        Monasca REST API
+License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            https://wiki.openstack.org/wiki/Monasca
-
 Source0:        https://pypi.io/packages/source/m/%{component}/%{component}-%{version}.tar.gz
 Source1:        api-config.conf
 Source2:        api-logging.conf
 Source3:        api-config.ini
 Source4:        api-wsgi.conf
 Source5:        api-wsgi.py
-
+BuildRequires:  fdupes
 BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('PasteDeploy') }}
+BuildRequires:  {{ py2pkg('SQLAlchemy') }}
 BuildRequires:  {{ py2pkg('cassandra-driver') }}
 BuildRequires:  {{ py2pkg('coverage') }}
 BuildRequires:  {{ py2pkg('eventlet') }}
@@ -28,6 +28,7 @@ BuildRequires:  {{ py2pkg('fixtures') }}
 BuildRequires:  {{ py2pkg('funcsigs') }}
 BuildRequires:  {{ py2pkg('httplib2') }}
 BuildRequires:  {{ py2pkg('influxdb') }}
+BuildRequires:  {{ py2pkg('python-keystoneclient') }}
 BuildRequires:  {{ py2pkg('keystonemiddleware') }}
 BuildRequires:  {{ py2pkg('mock') }}
 BuildRequires:  {{ py2pkg('monasca-common') }}
@@ -40,20 +41,18 @@ BuildRequires:  {{ py2pkg('oslo.middleware') }}
 BuildRequires:  {{ py2pkg('oslo.serialization') }}
 BuildRequires:  {{ py2pkg('oslo.utils') }}
 BuildRequires:  {{ py2pkg('oslotest') }}
-BuildRequires:  {{ py2pkg('PasteDeploy') }}
 BuildRequires:  {{ py2pkg('pbr') }}
 BuildRequires:  {{ py2pkg('pyparsing') }}
-BuildRequires:  {{ py2pkg('python-keystoneclient') }}
 BuildRequires:  {{ py2pkg('python-subunit') }}
 BuildRequires:  {{ py2pkg('simplejson') }}
 BuildRequires:  {{ py2pkg('six') }}
-BuildRequires:  {{ py2pkg('SQLAlchemy') }}
 BuildRequires:  {{ py2pkg('tempest-lib') }}
 BuildRequires:  {{ py2pkg('testrepository') }}
 BuildRequires:  {{ py2pkg('testscenarios') }}
 BuildRequires:  {{ py2pkg('testtools') }}
 BuildRequires:  {{ py2pkg('voluptuous') }}
-BuildRequires:  fdupes
+Requires:       python-%{component} = %{version}-%{release}
+BuildArch:      noarch
 %if 0%{?suse_version}
 BuildRequires:  apache2-mod_wsgi
 Requires:       apache2-mod_wsgi
@@ -61,8 +60,6 @@ Requires:       apache2-mod_wsgi
 BuildRequires:  mod_wsgi
 Requires:       mod_wsgi
 %endif
-Requires:       python-%{component} = %{version}-%{release}
-BuildArch:      noarch
 
 %description
 The Monasca API provides a RESTful JSON interface for interacting with
@@ -71,10 +68,12 @@ and managing monitoring related resources.
 %package -n python-%{component}
 Summary:        Monasca REST API
 Group:          Development/Languages/Python
-
+Requires:       {{ py2pkg('PasteDeploy') }}
+Requires:       {{ py2pkg('SQLAlchemy') }}
 Requires:       {{ py2pkg('eventlet') }}
 Requires:       {{ py2pkg('falcon') }}
 Requires:       {{ py2pkg('influxdb') }}
+Requires:       {{ py2pkg('python-keystoneclient') }}
 Requires:       {{ py2pkg('keystonemiddleware') }}
 Requires:       {{ py2pkg('monasca-common') }}
 Requires:       {{ py2pkg('oslo.config') }}
@@ -83,13 +82,10 @@ Requires:       {{ py2pkg('oslo.log') }}
 Requires:       {{ py2pkg('oslo.middleware') }}
 Requires:       {{ py2pkg('oslo.serialization') }}
 Requires:       {{ py2pkg('oslo.utils') }}
-Requires:       {{ py2pkg('PasteDeploy') }}
 Requires:       {{ py2pkg('pbr') }}
 Requires:       {{ py2pkg('pyparsing') }}
-Requires:       {{ py2pkg('python-keystoneclient') }}
 Requires:       {{ py2pkg('simplejson') }}
 Requires:       {{ py2pkg('six') }}
-Requires:       {{ py2pkg('SQLAlchemy') }}
 Requires:       {{ py2pkg('voluptuous') }}
 BuildArch:      noarch
 
@@ -108,36 +104,36 @@ and managing monitoring related resources.
 %py2_install
 
 # create all necessary directories
-%{__install} -d -m 755 %{buildroot}%{_usr}/share/%{component}/vertica
-%{__install} -d -m 755 %{buildroot}%{_usr}/share/%{component}/schema
-%{__install} -d -m 755 %{buildroot}%{_sysconfdir}/monasca
-%{__install} -d -m 755 %{buildroot}%{_var}/lib/%{component}
-%{__install} -d -m 755 %{buildroot}%{_var}/log/%{component}
-%{__install} -d -m 755 %{buildroot}%{apache_site_dir}
+install -d -m 755 %{buildroot}%{_usr}/share/%{component}/vertica
+install -d -m 755 %{buildroot}%{_usr}/share/%{component}/schema
+install -d -m 755 %{buildroot}%{_sysconfdir}/monasca
+install -d -m 755 %{buildroot}%{_var}/lib/%{component}
+install -d -m 755 %{buildroot}%{_var}/log/%{component}
+install -d -m 755 %{buildroot}%{apache_site_dir}
 
 # copy embedded configuration files
 
 ## copy configs
-%{__install} -D -m 640 %{SOURCE1} %{buildroot}%{_sysconfdir}/monasca/api-config.conf
-%{__install} -D -m 640 %{SOURCE2} %{buildroot}%{_sysconfdir}/monasca/api-logging.conf
-%{__install} -D -m 640 %{SOURCE3} %{buildroot}%{_sysconfdir}/monasca/api-config.ini
+install -D -m 640 %{SOURCE1} %{buildroot}%{_sysconfdir}/monasca/api-config.conf
+install -D -m 640 %{SOURCE2} %{buildroot}%{_sysconfdir}/monasca/api-logging.conf
+install -D -m 640 %{SOURCE3} %{buildroot}%{_sysconfdir}/monasca/api-config.ini
 # some files from the devstack dir needed to do basic deployment
-%{__install} -D -m 640 devstack/files/schema/mon_postgresql.sql %{buildroot}%{_usr}/share/%{component}/schema/
-%{__install} -D -m 640 devstack/files/schema/mon_mysql.sql %{buildroot}%{_usr}/share/%{component}/schema/
-%{__install} -D -m 640 devstack/files/vertica/mon_alarms.sql %{buildroot}%{_usr}/share/%{component}/vertica/
-%{__install} -D -m 640 devstack/files/vertica/mon_metrics.sql %{buildroot}%{_usr}/share/%{component}/vertica/
-%{__install} -D -m 640 devstack/files/vertica/users.sql %{buildroot}%{_usr}/share/%{component}/vertica/
-%{__install} -D -m 640 devstack/files/vertica/roles.sql %{buildroot}%{_usr}/share/%{component}/vertica/
+install -D -m 640 devstack/files/schema/mon_postgresql.sql %{buildroot}%{_usr}/share/%{component}/schema/
+install -D -m 640 devstack/files/schema/mon_mysql.sql %{buildroot}%{_usr}/share/%{component}/schema/
+install -D -m 640 devstack/files/vertica/mon_alarms.sql %{buildroot}%{_usr}/share/%{component}/vertica/
+install -D -m 640 devstack/files/vertica/mon_metrics.sql %{buildroot}%{_usr}/share/%{component}/vertica/
+install -D -m 640 devstack/files/vertica/users.sql %{buildroot}%{_usr}/share/%{component}/vertica/
+install -D -m 640 devstack/files/vertica/roles.sql %{buildroot}%{_usr}/share/%{component}/vertica/
 
 ## install apache configuration
-%{__install} -p -D -m 640 %{SOURCE4} %{buildroot}%{apache_site_dir}/%{component}.conf.sample
+install -p -D -m 640 %{SOURCE4} %{buildroot}%{apache_site_dir}/%{component}.conf.sample
 
 ## install WSGIScriptAlias
-%{__install} -D -m 755 %{SOURCE5} %{buildroot}%{_bindir}/monasca-api-wsgi.py
+install -D -m 755 %{SOURCE5} %{buildroot}%{_bindir}/monasca-api-wsgi.py
 
 # remove duplicates
-%fdupes $RPM_BUILD_ROOT%{python2_sitelib}/monasca_api
-%fdupes $RPM_BUILD_ROOT%{python2_sitelib}/monasca_tempest_tests
+%fdupes %{buildroot}%{python2_sitelib}/monasca_api
+%fdupes %{buildroot}%{python2_sitelib}/monasca_tempest_tests
 
 %check
 find . -type f -name *.pyc -delete
