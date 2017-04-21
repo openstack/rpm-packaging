@@ -11,7 +11,7 @@ Summary:        Consumes metrics and alarm state transitions from message queue 
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            https://wiki.openstack.org/wiki/Monasca
-Source0:        {{ source }}
+Source0:        {{ source|basename }}
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('six') }}
 BuildRequires:  {{ py2pkg('nose') }}

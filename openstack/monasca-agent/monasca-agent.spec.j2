@@ -27,7 +27,7 @@ Summary:        OpenStack Monasca metrics agent
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            https://wiki.openstack.org/wiki/Monasca
-Source0:        {{ source }}
+Source0:        {{ source|basename }}
 Source1:        %{name}-sudoers
 Source2:        %{name}.service
 BuildRequires:  openstack-macros

@@ -18,7 +18,7 @@ Summary:        Notification engine sends notifications based on alarm transitio
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            https://wiki.openstack.org/wiki/Monasca
-Source0:        {{ source }}
+Source0:        {{ source|basename }}
 Source1:        %{sname}.service
 Source2:        %{sname}.yaml
 BuildRequires:  openstack-macros

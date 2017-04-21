@@ -13,7 +13,7 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            https://wiki.openstack.org/wiki/Monasca
 
-Source0:        {{ source }}
+Source0:        {{ source|basename }}
 Source1:        %{name}.conf
 Source3:        %{name}-wsgi.conf
 
