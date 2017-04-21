@@ -159,7 +159,7 @@ PYTHONPATH=. NOSE_EXCLUDE=test_override_values nosetests tests -v
 %config %{_sysconfdir}/sudoers.d/%{name}
 %dir %{_prefix}/lib/monasca
 %{_prefix}/lib/monasca/agent
-%dir %{_localstatedir}/log/%{sname}
+%dir %attr(0750, %{username}, %{groupname}) %{_localstatedir}/log/%{sname}
 %{_unitdir}/%{name}.service
 %if 0%{?suse_version}
 %{_sbindir}/rc%{name}
