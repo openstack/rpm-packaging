@@ -102,6 +102,8 @@ This package contains monasca-agent Python module.
 %prep
 %autosetup -n %{sname}-%{version}
 %py_req_cleanup
+# contains various binary files etc that we don't need
+rm -rf packaging/monasca-agent{,-deb}
 
 %build
 %py2_build
