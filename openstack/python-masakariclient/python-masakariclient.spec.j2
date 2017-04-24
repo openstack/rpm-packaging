@@ -1,0 +1,78 @@
+%global sname python-masakariclient
+Name:           {{ py2name('python-masakariclient') }}
+Version:        3.0.0
+Release:        0
+Summary:        Python API and CLI for OpenStack Masakari
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            http://launchpad.net/%{name}
+Source0:        https://pypi.io/packages/source/p/%{sname}/%{sname}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('PrettyTable') }}
+BuildRequires:  {{ py2pkg('nose') }}
+BuildRequires:  {{ py2pkg('openstacksdk') }}
+BuildRequires:  {{ py2pkg('osc-lib') }}
+BuildRequires:  {{ py2pkg('oslo.serialization') }}
+BuildRequires:  {{ py2pkg('oslo.utils') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('python-subunit') }}
+BuildRequires:  {{ py2pkg('reno') }}
+BuildRequires:  {{ py2pkg('sphinx') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testscenarios') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+Requires:       {{ py2pkg('openstacksdk') }}
+Requires:       {{ py2pkg('oslo.i18n') }}
+Requires:       {{ py2pkg('oslo.serialization') }}
+Requires:       {{ py2pkg('oslo.utils') }}
+Requires:       {{ py2pkg('pbr') }}
+BuildArch:      noarch
+
+%description
+Client library for Masakari built on the Masakari API. It provides a Python API
+(the masakariclient module) and a command-line tool (masakari).
+
+%package doc
+Summary:        Documentation for OpenStack Masakari API client libary
+Group:          Documentation
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+
+%description doc
+Client library for Masakari built on the Masakari API. It provides a Python API
+(the masakariclient module) and a command-line tool (masakari).
+This package contains the documentation.
+
+%prep
+%autosetup -p1 -n %{sname}-%{version}
+%py_req_cleanup
+
+%build
+%py2_build
+
+# Build HTML docs and man page
+%{__python2} setup.py build_sphinx
+rm -rf html/.{doctrees,buildinfo}
+
+%install
+%py2_install
+#man pages
+install -p -D -m 644 doc/build/man/python-masakariclient.1 %{buildroot}%{_mandir}/man1/python-masakariclient.1
+
+%check
+find . -type f -name *.pyc -delete
+PYTHONPATH=. nosetests masakariclient/tests/unit
+
+%files
+%license LICENSE
+%{python2_sitelib}/masakariclient
+%{python2_sitelib}/*.egg-info
+%{_mandir}/man1/python-masakariclient.1.*
+%{_bindir}/masakari
+
+%files doc
+%license LICENSE
+%doc doc/build/html
+
+%changelog
