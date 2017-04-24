@@ -1,5 +1,5 @@
 {% set pypi_name = 'monasca-api' %}
-{% set upstream_version = upstream_version('1.6.1') %}
+{% set upstream_version = upstream_version('2.0.0') %}
 {% set rpm_release = '1' %}
 
 %define component           {{ pypi_name }}
@@ -36,6 +36,7 @@ BuildRequires:  {{ py2pkg('mox') }}
 BuildRequires:  {{ py2pkg('nose') }}
 BuildRequires:  {{ py2pkg('oslo.config') }}
 BuildRequires:  {{ py2pkg('oslo.context') }}
+BuildRequires:  {{ py2pkg('oslo.db') }}
 BuildRequires:  {{ py2pkg('oslo.log') }}
 BuildRequires:  {{ py2pkg('oslo.middleware') }}
 BuildRequires:  {{ py2pkg('oslo.serialization') }}
