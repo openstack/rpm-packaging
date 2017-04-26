@@ -267,10 +267,10 @@ Requires:       iptables
 Requires:       iscsi-initiator-utils
 Requires:       libvirt-daemon-kvm
 Requires:       libvirt-daemon-lxc
+Requires:       {{ py2pkg('libvirt-python') }}
 Requires:       lvm2
 Requires:       openssh-clients
 Requires:       {{ py2pkg('libguestfs') }}
-Requires:       {{ py2pkg('libvirt-python') }}
 Requires:       rsync
 Requires(pre):  qemu-kvm
 
