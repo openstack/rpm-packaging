@@ -1,0 +1,12 @@
+[Unit]
+Description=Masakari process monitoring service
+After=syslog.target network.target
+
+[Service]
+Type=simple
+User=masakari
+Restart=on-failure
+ExecStart=/usr/bin/masakari-processmonitor
+
+[Install]
+WantedBy=multi-user.target
