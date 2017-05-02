@@ -1,0 +1,14 @@
+[Unit]
+Description=Monasca Persister
+After=syslog.target network.target
+
+[Service]
+Type=simple
+User=monasca-persister
+Group=monasca
+WorkingDirectory=/var/lib/monasca-persister
+Restart=on-failure
+ExecStart=/usr/bin/monasca-persister
+
+[Install]
+WantedBy=multi-user.target
