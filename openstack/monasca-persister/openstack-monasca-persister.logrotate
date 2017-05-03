@@ -1,0 +1,11 @@
+/var/log/monasca-persister/*.log {
+    weekly
+    dateext
+    rotate 10
+    size 1M
+    missingok
+    compress
+    notifempty
+    su monasca-persister monasca
+    minsize 100k
+}
