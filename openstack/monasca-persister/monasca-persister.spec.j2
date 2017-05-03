@@ -12,6 +12,7 @@ Group:          Development/Languages/Python
 Url:            https://wiki.openstack.org/wiki/Monasca
 Source0:        https://pypi.io/packages/source/m/%{sname}/%{sname}-%{version}.tar.gz
 Source1:        openstack-monasca-persister.service
+Source2:        openstack-monasca-persister.logrotate
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('mock') }}
 BuildRequires:  {{ py2pkg('monasca-common') }}
@@ -21,6 +22,7 @@ BuildRequires:  {{ py2pkg('oslo.log') }}
 BuildRequires:  {{ py2pkg('oslotest') }}
 BuildRequires:  {{ py2pkg('setuptools') }}
 BuildRequires:  {{ py2pkg('six') }}
+Requires:       logrotate
 Requires:       python-{{ pypi_name }} = %{version}-%{release}
 BuildArch:      noarch
 %if 0%{?suse_version}
@@ -73,6 +75,9 @@ install -D -m 640 etc/monasca/persister-logging.conf %{buildroot}%{_sysconfdir}/
 # install systemd service
 install -p -D -m 755 %{SOURCE1} %{buildroot}%{_unitdir}/openstack-monasca-persister.service
 
+# Install logrotate
+install -p -D -m 644 %{SOURCE2} %{buildroot}%{_sysconfdir}/logrotate.d/openstack-monasca-persister.logrotate
+
 %check
 find . -type f -name *.pyc -delete
 nosetests monasca_persister --verbose
@@ -104,6 +109,7 @@ fi
 %dir %attr(0750, monasca-persister, monasca) %{_var}/log/{{ pypi_name }}
 %config(noreplace) %attr(0640, root, monasca) %{_sysconfdir}/monasca/persister.conf
 %config(noreplace) %attr(0640, root, monasca) %{_sysconfdir}/monasca/persister-logging.conf
+%config(noreplace) %{_sysconfdir}/logrotate.d/openstack-monasca-persister.logrotate
 %{_unitdir}/openstack-monasca-persister.service
 %{_bindir}/monasca-persister
 
