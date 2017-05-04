@@ -31,6 +31,8 @@ Source0:        {{ source|basename }}
 Source1:        %{name}-sudoers
 Source2:        %{name}.service
 Source3:        openstack-monasca-agent.tmpfiles
+# https://review.openstack.org/#/c/462192/
+Patch1:         0001-Partial-support-for-DogStatsd-extensions.patch
 BuildRequires:  openstack-macros
 
 %if 0%{?suse_version}
@@ -105,7 +107,7 @@ sending them to the Monasca API.
 This package contains monasca-agent Python module.
 
 %prep
-%autosetup -n %{sname}-{{ upstream_version }}
+%autosetup -p1 -n %{sname}-{{ upstream_version }}
 %py_req_cleanup
 # contains various binary files etc that we don't need
 rm -rf packaging/monasca-agent{,-deb}
