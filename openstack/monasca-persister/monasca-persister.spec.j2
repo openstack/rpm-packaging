@@ -48,6 +48,7 @@ Data is read from Kafka queue and saved either in InfluxDB or Cassandra
 %package -n python-{{ pypi_name }}
 Summary:        Consumes metrics and alarm state transitions from message queue and stores them in database
 Group:          Development/Languages/Python
+Requires:       {{ py2pkg('influxdb') }}
 Requires:       {{ py2pkg('monasca-common') }}
 Requires:       {{ py2pkg('oslo.config') }}
 Requires:       {{ py2pkg('oslo.log') }}
