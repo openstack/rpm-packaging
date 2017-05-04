@@ -77,7 +77,7 @@ install -D -m 640 etc/monasca/persister.conf %{buildroot}%{_sysconfdir}/monasca/
 install -D -m 640 etc/monasca/persister-logging.conf %{buildroot}%{_sysconfdir}/monasca/persister-logging.conf
 
 # install systemd service
-install -p -D -m 755 %{SOURCE1} %{buildroot}%{_unitdir}/openstack-monasca-persister.service
+install -p -D -m 444 %{SOURCE1} %{buildroot}%{_unitdir}/openstack-monasca-persister.service
 
 # Install logrotate
 install -p -D -m 644 %{SOURCE2} %{buildroot}%{_sysconfdir}/logrotate.d/openstack-monasca-persister.logrotate
