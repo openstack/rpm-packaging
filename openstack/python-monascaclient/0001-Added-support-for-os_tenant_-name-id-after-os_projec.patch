@@ -1,0 +1,122 @@
+From b35b3cb454a2346fe01f0304a8c6e41ceefcc29f Mon Sep 17 00:00:00 2001
+From: Sumit Jamgade <sjamgade@suse.com>
+Date: Thu, 6 Apr 2017 09:57:02 +0200
+Subject: [PATCH] Added support for os_tenant_{name,id} after os_project_
+
+and deprecation warning for using them.
+
+Change-Id: I69080d4a2e1a2ccae24ee7f181aec30d7754a031
+Story: 2000960
+Task: 4097
+(cherry picked from commit 9269be018fd5aa873616c3cf52f78d6c88fa8c38)
+---
+ README.rst                        |  2 ++
+ monascaclient/shell.py            | 36 ++++++++++++++++++++++++++++++++++++
+ monascaclient/tests/test_shell.py | 10 ++++++++++
+ 3 files changed, 48 insertions(+)
+
+diff --git a/README.rst b/README.rst
+index 06f834c..9fde3c4 100644
+--- a/README.rst
++++ b/README.rst
+@@ -95,6 +95,8 @@ When using Keystone to obtain the token and endpoint::
+   export OS_AUTH_VERSION=
+ 
+ When OS_USER_DOMAIN_NAME is not set, then 'Default' is assumed. Alternatively IDs can be used instead of names.
++Although *deprecated*, but OS_TENANT_NAME and OS_TENANT_ID can be used for
++OS_PROEJCT_NAME and OS_PROJECT_ID respectively.
+ 
+ When using Vagrant Environment with middleware disabled::
+ 
+diff --git a/monascaclient/shell.py b/monascaclient/shell.py
+index bc85a10..0506833 100644
+--- a/monascaclient/shell.py
++++ b/monascaclient/shell.py
+@@ -23,6 +23,7 @@ import argparse
+ import logging
+ import string
+ import sys
++import warnings
+ 
+ from six.moves.urllib.parse import urljoin
+ 
+@@ -36,6 +37,17 @@ from monascaclient import ksclient
+ logger = logging.getLogger(__name__)
+ 
+ 
++class DeprecatedStore(argparse._StoreAction):
++    def __init__(self, *args, **kwargs):
++        super(DeprecatedStore, self).__init__(*args, **kwargs)
++
++    def __call__(self, parser, namespace, values, option_string=None):
++        warnings.filterwarnings(action='default', category=DeprecationWarning, module='.*monascaclient.*')
++        warnings.warn("{} is deprecated".format(",".join(self.option_strings)),
++                      DeprecationWarning)
++        setattr(namespace, self.dest, values)
++
++
+ class MonascaShell(object):
+ 
+     def get_base_parser(self):
+@@ -142,6 +154,30 @@ class MonascaShell(object):
+         parser.add_argument('--os_project_name',
+                             help=argparse.SUPPRESS)
+ 
++        parser.add_argument('--os-tenant-name',
++                            dest='os_project_name',
++                            action=DeprecatedStore,
++                            default=utils.env('OS_TENANT_NAME'),
++                            help='(Deprecated, use --os-project_name) '
++                            'Defaults to env[OS_TENANT_NAME].')
++
++        parser.add_argument('--os_tenant_name',
++                            dest='os_project_name',
++                            action=DeprecatedStore,
++                            help=argparse.SUPPRESS)
++
++        parser.add_argument('--os-tenant-id',
++                            dest='os_project_id',
++                            action=DeprecatedStore,
++                            default=utils.env('OS_TENANT_ID'),
++                            help='(Deprecated, use --os-project_id) '
++                            'Defaults to env[OS_TENANT_ID].')
++
++        parser.add_argument('--os_tenant_id',
++                            dest='os_project_id',
++                            action=DeprecatedStore,
++                            help=argparse.SUPPRESS)
++
+         parser.add_argument('--os-project-domain-id',
+                             default=utils.env('OS_PROJECT_DOMAIN_ID'),
+                             help='Defaults to env[OS_PROJECT_DOMAIN_ID].')
+diff --git a/monascaclient/tests/test_shell.py b/monascaclient/tests/test_shell.py
+index 5980847..a3b346e 100644
+--- a/monascaclient/tests/test_shell.py
++++ b/monascaclient/tests/test_shell.py
+@@ -15,6 +15,7 @@
+ 
+ import re
+ import sys
++import warnings
+ 
+ import fixtures
+ from keystoneclient.v3 import client as ksclient
+@@ -143,6 +144,15 @@ class ShellTestCommon(ShellBase):
+             for r in required:
+                 self.assertRegexpMatches(help_text, r)
+ 
++    def test_deprecated_warning(self):
++        argrequired = [('--help --os-tenant-name=this', '--os-tenant-name is deprecated'),
++                       ('--help --os-tenant-id=this', '--os-tenant-id is deprecated')]
++        for argstr, required in argrequired:
++            with warnings.catch_warnings(record=True) as w:
++                self.shell(argstr)
++                self.assertEqual(str(w[0].message), required)
++                self.assertEqual(w[0].category, DeprecationWarning)
++
+ 
+ class ShellTestMonascaCommands(ShellBase):
+ 
+-- 
+2.12.2
+

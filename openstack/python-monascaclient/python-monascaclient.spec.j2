@@ -9,6 +9,8 @@ Url:            https://launchpad.net/%{sname}
 Source0:        https://pypi.io/packages/source/p/%{sname}/%{sname}-%{version}.tar.gz
 # from https://review.openstack.org/#/c/457663/
 Patch1:         0001-Added-support-for-os_auth_version-when-os_auth_url-i.patch
+# from https://review.openstack.org/#/c/462874/
+Patch2:         0001-Added-support-for-os_tenant_-name-id-after-os_projec.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('PrettyTable') }}
 BuildRequires:  {{ py2pkg('PyYAML') }}
