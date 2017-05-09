@@ -1,6 +1,6 @@
 %global sname cliff
 Name:           {{ py2name('cliff') }}
-Version:        2.6.0
+Version:        2.7.0
 Release:        0
 Summary:        Command Line Interface Formulation Framework
 License:        {{ license('Apache-2.0') }}
@@ -14,10 +14,13 @@ BuildRequires:  {{ py2pkg('cmd2') }}
 BuildRequires:  {{ py2pkg('coverage') }}
 BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('mock') }}
-BuildRequires:  {{ py2pkg('nose') }}
 BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('python-subunit') }}
 BuildRequires:  {{ py2pkg('setuptools') }}
 BuildRequires:  {{ py2pkg('stevedore') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testscenarios') }}
+BuildRequires:  {{ py2pkg('testtools') }}
 BuildRequires:  {{ py2pkg('unicodecsv') }}
 Requires:       {{ py2pkg('PrettyTable') }}
 Requires:       {{ py2pkg('PyYAML') }}
@@ -60,7 +63,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %py2_install
 
 %check
-%{__python2} setup.py nosetests
+%{__python2} setup.py test
 
 %files
 %license LICENSE
