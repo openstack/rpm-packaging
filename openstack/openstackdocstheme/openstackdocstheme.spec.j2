@@ -10,9 +10,11 @@ Source0:        https://pypi.io/packages/source/o/%{sname}/%{sname}-%{version}.t
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('os-api-ref') }}
 BuildRequires:  {{ py2pkg('oslosphinx') }}
 BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('requests') }}
+BuildRequires:  {{ py2pkg('reno') }}
+BuildRequires: {{ py2pkg('requests') }}
 BuildRequires:  {{ py2pkg('setuptools') }}
 Requires:       {{ py2pkg('Sphinx') }}
 Requires:       {{ py2pkg('oslosphinx') }}
@@ -25,6 +27,8 @@ to docs.openstack.org. Intended for use by OpenStack projects.
 
 %prep
 %autosetup -n %{sname}-%{version}
+# we don't need hacking
+sed -i '/^hacking.*/d' test-requirements.txt
 %py_req_cleanup
 
 %build
