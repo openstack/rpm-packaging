@@ -1,6 +1,6 @@
 %global sname keystoneauth1
 Name:           {{ py2name('keystoneauth1') }}
-Version:        2.19.0
+Version:        2.20.0
 Release:        0
 Summary:        OpenStack authenticating tools
 License:        {{ license('Apache-2.0') }}
@@ -57,6 +57,9 @@ Documentation for OpenStack authenticating tools.
 %prep
 %autosetup -n %{sname}-%{version}
 %py_req_cleanup
+
+# cleanup intersphinx (we have no network during build)
+echo "intersphinx_mapping = {}" >> doc/source/conf.py
 
 %build
 %{py2_build}
