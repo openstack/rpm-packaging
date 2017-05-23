@@ -69,7 +69,7 @@ This package contains the testsuite.
 %build
 %{py2_build}
 
-%{__python2} setup.py build_sphinx
+%{__python2} setup.py build_sphinx --builder=html,man
 # remove the sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 

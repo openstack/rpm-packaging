@@ -54,7 +54,7 @@ Documentation for the Hyper-V library.
 
 %build
 %{py2_build}
-%{__python2} setup.py build_sphinx
+%{__python2} setup.py build_sphinx --builder=html,man
 rm -rf html/.{doctrees,buildinfo}
 
 %install
