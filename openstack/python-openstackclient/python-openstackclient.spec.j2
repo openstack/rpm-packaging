@@ -9,6 +9,8 @@ Url:            https://launchpad.net/%{sname}
 Source0:        https://pypi.io/packages/source/p/%{sname}/%{sname}-%{version}.tar.gz
 # patch from https://review.openstack.org/#/c/385138/
 Patch0:         0001-Fix-shared-block-migration-options.patch
+# patch from https://review.openstack.org/#/c/416940/
+Patch1:         0002-Fix-creating-private-flavor-with-ID-auto.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('python-cinderclient') }}
 BuildRequires:  {{ py2pkg('cliff') }}

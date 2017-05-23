@@ -1,0 +1,56 @@
+From d8749f9148f2a78f28e91c58e698779735eae4dc Mon Sep 17 00:00:00 2001
+From: Jens Rosenboom <j.rosenboom@x-ion.de>
+Date: Thu, 05 Jan 2017 12:34:43 +0100
+Subject: [PATCH] Fix creating a private flavor with ID auto
+
+When a private flavor is created with ID auto (=default) and a project
+is specified for it, instead of trying to add the project to the flavor
+called "auto" the ID of the newly created project should be used.
+
+Change-Id: I19f7a0ec26bd5d147f00ecba3312240e3601567e
+Closes-Bug: 1654221
+---
+
+diff --git a/openstackclient/compute/v2/flavor.py b/openstackclient/compute/v2/flavor.py
+index f20d154..e562cd4 100644
+--- a/openstackclient/compute/v2/flavor.py
++++ b/openstackclient/compute/v2/flavor.py
+@@ -167,7 +167,7 @@
+                     parsed_args.project_domain,
+                 ).id
+                 compute_client.flavor_access.add_tenant_access(
+-                    parsed_args.id, project_id)
++                    flavor.id, project_id)
+             except Exception as e:
+                 msg = _("Failed to add project %(project)s access to "
+                         "flavor: %(e)s")
+diff --git a/openstackclient/tests/compute/v2/test_flavor.py b/openstackclient/tests/compute/v2/test_flavor.py
+index 93ad9d1..632fcda 100644
+--- a/openstackclient/tests/compute/v2/test_flavor.py
++++ b/openstackclient/tests/compute/v2/test_flavor.py
+@@ -160,7 +160,7 @@
+
+         self.flavor.is_public = False
+         arglist = [
+-            '--id', self.flavor.id,
++            '--id', 'auto',
+             '--ram', str(self.flavor.ram),
+             '--disk', str(self.flavor.disk),
+             '--ephemeral', str(self.flavor.ephemeral),
+@@ -174,7 +174,6 @@
+             self.flavor.name,
+         ]
+         verifylist = [
+-            ('id', self.flavor.id),
+             ('ram', self.flavor.ram),
+             ('disk', self.flavor.disk),
+             ('ephemeral', self.flavor.ephemeral),
+@@ -193,7 +192,7 @@
+             self.flavor.ram,
+             self.flavor.vcpus,
+             self.flavor.disk,
+-            self.flavor.id,
++            'auto',
+             self.flavor.ephemeral,
+             self.flavor.swap,
+             self.flavor.rxtx_factor,
