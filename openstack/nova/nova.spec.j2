@@ -472,7 +472,7 @@ find nova -name \*.py -exec sed -i '/\/usr\/bin\/env python/{d;q}' {} +
 %build
 %{py2_build}
 %if 0%{?with_doc}
-%{__python2} setup.py build_sphinx
+%{__python2} setup.py build_sphinx --builder=html,man
 # remove the sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 %fdupes doc/build/html/

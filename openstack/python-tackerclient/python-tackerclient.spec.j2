@@ -59,7 +59,7 @@ This package contains the documentation.
 %{py2_build}
 
 # Build HTML docs and man page
-%{__python2} setup.py build_sphinx
+%{__python2} setup.py build_sphinx --builder=html,man
 rm -rf html/.{doctrees,buildinfo}
 
 %install
