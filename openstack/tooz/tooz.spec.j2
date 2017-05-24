@@ -1,6 +1,6 @@
 %global pypi_name tooz
 Name:           {{ py2name('tooz') }}
-Version:        1.56.1
+Version:        1.57.0
 Release:        0
 Summary:        Coordination library for distributed systems
 License:        {{ license('Apache-2.0') }}
@@ -9,9 +9,16 @@ Url:            http://docs.openstack.org/developer/tooz/
 Source0:        https://pypi.io/packages/source/t/%{pypi_name}/%{pypi_name}-%{version}.tar.gz
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('fasteners') }}
+BuildRequires:  {{ py2pkg('futures') }}
+BuildRequires:  {{ py2pkg('futurist') }}
+BuildRequires:  {{ py2pkg('iso8601') }}
+BuildRequires:  {{ py2pkg('oslo.serialization') }}
 BuildRequires:  {{ py2pkg('pbr') }}
 BuildRequires:  {{ py2pkg('setuptools') }}
+BuildRequires:  {{ py2pkg('tenacity') }}
 BuildRequires:  {{ py2pkg('testtools') }}
+BuildRequires:  {{ py2pkg('voluptuous') }}
 Requires:       {{ py2pkg('Babel') }}
 Requires:       {{ py2pkg('enum34') }}
 Requires:       {{ py2pkg('fasteners') }}
