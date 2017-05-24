@@ -1,0 +1,31 @@
+From 2e60acdff20a6170065d8ad073ef987d8dc643ef Mon Sep 17 00:00:00 2001
+From: Armando Migliaccio <armamig@gmail.com>
+Date: Mon, 1 May 2017 12:50:51 -0700
+Subject: [PATCH] Be explicit about the identity plugin required in unit tests
+
+This change fixes UT failures introduced by os-client-config===1.27.0
+(and [1] in particular) that was masking the fact that these tests
+were not specifying the required 'token' identity plugin.
+
+[1] https://github.com/openstack/os-client-config/commit/e6755872ada4978f585bdf15edf623dbcf72c4ee
+
+Change-Id: I9521a7e1bff39c1d25b998ca12c450890517fd2f
+---
+ neutronclient/tests/unit/test_shell.py | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/neutronclient/tests/unit/test_shell.py b/neutronclient/tests/unit/test_shell.py
+index 4e62d78..2ae8bdc 100644
+--- a/neutronclient/tests/unit/test_shell.py
++++ b/neutronclient/tests/unit/test_shell.py
+@@ -233,6 +233,7 @@ class ShellTest(testtools.TestCase):
+ 
+         options.update(base_options)
+         if options.get('os_token'):
++            options.update({'auth_type': 'token'})
+             options.update({'os_token': 'token', 'os_url': 'url'})
+         else:
+             options.update({'os_token': None, 'os_url': None})
+-- 
+2.13.0
+

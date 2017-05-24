@@ -6,6 +6,8 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            http://launchpad.net/%{name}
 Source0:        https://pypi.io/packages/source/p/%{name}/%{name}-%{version}.tar.gz
+# https://review.openstack.org/#/c/461463/
+Patch1:         0001-Be-explicit-about-the-identity-plugin-required-in-un.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('cliff') }}
 BuildRequires:  {{ py2pkg('devel') }}
@@ -64,7 +66,7 @@ Client library and command line utility for interacting with OpenStack
 Neutron's API.
 
 %prep
-%autosetup -n %{name}-%{version}
+%autosetup -p1 -n %{name}-%{version}
 %py_req_cleanup
 
 %build
