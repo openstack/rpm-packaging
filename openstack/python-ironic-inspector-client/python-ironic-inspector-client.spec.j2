@@ -8,11 +8,17 @@ Group:          Development/Languages/Python
 Url:            https://launchpad.net/%{sname}
 Source0:        https://pypi.io/packages/source/p/%{sname}/%{sname}-%{version}.tar.gz
 BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('fixtures') }}
 BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('python-openstackclient') }}
+BuildRequires:  {{ py2pkg('osc-lib') }}
+BuildRequires:  {{ py2pkg('oslo.concurrency') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('reno') }}
 BuildRequires:  {{ py2pkg('requests-mock') }}
-Requires:       {{ py2pkg('cliff') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
 Requires:       {{ py2pkg('keystoneauth1') }}
 Requires:       {{ py2pkg('python-openstackclient') }}
 Requires:       {{ py2pkg('osc-lib') }}
@@ -33,6 +39,9 @@ This package contains Python client and command line tool for Ironic Inspector.
 
 %prep
 %autosetup -n %{sname}-%{version}
+sed -i -e 's,hacking.*,,' test-requirements.txt
+sed -i -e 's,coverage.*,,' test-requirements.txt
+sed -i -e 's,doc8.*,,' test-requirements.txt
 %py_req_cleanup
 
 %build
