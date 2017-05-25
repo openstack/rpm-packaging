@@ -13,10 +13,10 @@ Change-Id: Icccd955a27c8606b520f4426205d5489fc1c736d
  os_brick/tests/initiator/test_connector.py       | 23 +++++++++++++++--------
  2 files changed, 16 insertions(+), 9 deletions(-)
 
-Index: os-brick-1.6.1/os_brick/tests/initiator/connectors/test_hgst.py
+Index: os-brick-1.6.2/os_brick/tests/initiator/connectors/test_hgst.py
 ===================================================================
---- os-brick-1.6.1.orig/os_brick/tests/initiator/connectors/test_hgst.py
-+++ os-brick-1.6.1/os_brick/tests/initiator/connectors/test_hgst.py
+--- os-brick-1.6.2.orig/os_brick/tests/initiator/connectors/test_hgst.py
++++ os-brick-1.6.2/os_brick/tests/initiator/connectors/test_hgst.py
 @@ -96,7 +96,7 @@ Request Succeeded
  
      def test_factory(self):
@@ -26,11 +26,11 @@ Index: os-brick-1.6.1/os_brick/tests/initiator/connectors/test_hgst.py
          self.assertEqual("HGSTConnector", obj.__class__.__name__)
  
      def test_get_search_path(self):
-Index: os-brick-1.6.1/os_brick/tests/initiator/test_connector.py
+Index: os-brick-1.6.2/os_brick/tests/initiator/test_connector.py
 ===================================================================
---- os-brick-1.6.1.orig/os_brick/tests/initiator/test_connector.py
-+++ os-brick-1.6.1/os_brick/tests/initiator/test_connector.py
-@@ -184,14 +184,15 @@ class ConnectorTestCase(test_base.TestCa
+--- os-brick-1.6.2.orig/os_brick/tests/initiator/test_connector.py
++++ os-brick-1.6.2/os_brick/tests/initiator/test_connector.py
+@@ -185,14 +185,15 @@ class ConnectorTestCase(test_base.TestCa
          obj = connector.InitiatorConnector.factory('iscsi', None)
          self.assertEqual("ISCSIConnector", obj.__class__.__name__)
  
@@ -48,7 +48,7 @@ Index: os-brick-1.6.1/os_brick/tests/initiator/test_connector.py
          self.assertEqual("AoEConnector", obj.__class__.__name__)
  
          obj = connector.InitiatorConnector.factory(
-@@ -199,11 +200,13 @@ class ConnectorTestCase(test_base.TestCa
+@@ -200,11 +201,13 @@ class ConnectorTestCase(test_base.TestCa
          self.assertEqual("RemoteFsConnector", obj.__class__.__name__)
  
          obj = connector.InitiatorConnector.factory(
@@ -64,7 +64,7 @@ Index: os-brick-1.6.1/os_brick/tests/initiator/test_connector.py
          self.assertEqual("RemoteFsConnector", obj.__class__.__name__)
  
          obj = connector.InitiatorConnector.factory('local', None)
-@@ -212,17 +215,21 @@ class ConnectorTestCase(test_base.TestCa
+@@ -213,17 +216,21 @@ class ConnectorTestCase(test_base.TestCa
          obj = connector.InitiatorConnector.factory('gpfs', None)
          self.assertEqual("GPFSConnector", obj.__class__.__name__)
  
@@ -89,4 +89,4 @@ Index: os-brick-1.6.1/os_brick/tests/initiator/test_connector.py
 +            "disco", None, arch='x86_64')
          self.assertEqual("DISCOConnector", obj.__class__.__name__)
  
-         self.assertRaises(ValueError,
+         self.assertRaises(exception.InvalidConnectorProtocol,
