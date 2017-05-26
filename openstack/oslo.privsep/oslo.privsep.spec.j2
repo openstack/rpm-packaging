@@ -1,14 +1,12 @@
 %global sname oslo.privsep
 Name:           {{ py2name('oslo.privsep') }}
-Version:        1.13.1
+Version:        1.13.2
 Release:        0
 Summary:        OpenStack library for privilege separation
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            http://launchpad.net/oslo.privsep
 Source0:        https://pypi.io/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
-# 0001-Deal-with-CONF.config_dir-correctly.patch -- https://review.openstack.org/#/c/405544/
-Patch1:         0001-Deal-with-CONF.config_dir-correctly.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('Babel') }}
 BuildRequires:  {{ py2pkg('Sphinx') }}
@@ -50,7 +48,6 @@ Documentation for oslo.privsep
 
 %prep
 %setup -q -n %{sname}-%{version}
-%patch1 -p1
 
 %build
 %py2_build
