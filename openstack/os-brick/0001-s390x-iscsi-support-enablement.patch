@@ -13,11 +13,11 @@ Closes-bug: #1626991
  os_brick/initiator/connector.py | 16 ++++++++++++++--
  1 file changed, 14 insertions(+), 2 deletions(-)
 
-diff --git a/os_brick/initiator/connector.py b/os_brick/initiator/connector.py
-index 86adfa8..fc1afbe 100644
---- a/os_brick/initiator/connector.py
-+++ b/os_brick/initiator/connector.py
-@@ -148,8 +148,20 @@ _connector_mapping_linux = {
+Index: os-brick-1.6.2/os_brick/initiator/connector.py
+===================================================================
+--- os-brick-1.6.2.orig/os_brick/initiator/connector.py
++++ os-brick-1.6.2/os_brick/initiator/connector.py
+@@ -149,8 +149,20 @@ _connector_mapping_linux = {
  # Mapping for the S390X platform
  _connector_mapping_linux_s390x = {
      initiator.FIBRE_CHANNEL:
@@ -40,6 +40,3 @@ index 86adfa8..fc1afbe 100644
  }
  
  # Mapping for the windows connectors
--- 
-2.10.2
-
