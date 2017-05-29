@@ -1,0 +1,49 @@
+From 0f4d4f801081347a12c9f8a8f84db6cdbb955517 Mon Sep 17 00:00:00 2001
+From: Tin Lam <tin@irrational.io>
+Date: Wed, 24 May 2017 22:09:51 -0500
+Subject: [PATCH] Fix oslo.messaging deprecation of get_transport
+
+Oslo.messaging has deprecated get_transport and splits it into
+get_notification_transport and get_rpc_transport.  This patch set updates the
+code and addresses a zuul check/gate error [1].
+
+[1] http://logs.openstack.org/55/467155/2/check/gate-keystonemiddleware-python27-ubuntu-xenial/3b6d9ef/console.html#_2017-05-24_23_49_58_453129
+
+Change-Id: I263bd1076b47749bd14393855803419d0be9d758
+---
+ keystonemiddleware/audit/_notifier.py                            | 5 +++--
+ keystonemiddleware/tests/unit/audit/test_audit_oslo_messaging.py | 2 +-
+ 2 files changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/keystonemiddleware/audit/_notifier.py b/keystonemiddleware/audit/_notifier.py
+index 4bc97b8..8d77eaa 100644
+--- a/keystonemiddleware/audit/_notifier.py
++++ b/keystonemiddleware/audit/_notifier.py
+@@ -42,8 +42,9 @@ class _MessagingNotifier(object):
+ 
+ def create_notifier(conf, log):
+     if oslo_messaging:
+-        transport = oslo_messaging.get_transport(conf.oslo_conf_obj,
+-                                                 url=conf.get('transport_url'))
++        transport = oslo_messaging.get_notification_transport(
++            conf.oslo_conf_obj,
++            url=conf.get('transport_url'))
+ 
+         notifier = oslo_messaging.Notifier(
+             transport,
+diff --git a/keystonemiddleware/tests/unit/audit/test_audit_oslo_messaging.py b/keystonemiddleware/tests/unit/audit/test_audit_oslo_messaging.py
+index 9612789..570972d 100644
+--- a/keystonemiddleware/tests/unit/audit/test_audit_oslo_messaging.py
++++ b/keystonemiddleware/tests/unit/audit/test_audit_oslo_messaging.py
+@@ -69,7 +69,7 @@ class AuditNotifierConfigTest(base.BaseAuditMiddlewareTest):
+             app.get('/foo/bar', extra_environ=self.get_environ_header())
+             self.assertTrue(driver.called)
+ 
+-    @mock.patch('oslo_messaging.get_transport')
++    @mock.patch('oslo_messaging.get_notification_transport')
+     def test_conf_middleware_messaging_and_transport_set(self, m):
+         transport_url = 'rabbit://me:passwd@host:5672/virtual_host'
+         self.cfg.config(driver='messaging',
+-- 
+2.12.2
+
