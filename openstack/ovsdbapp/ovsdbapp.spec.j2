@@ -1,0 +1,70 @@
+%define with_tests 0
+{% set pypi_name = 'ovsdbapp' %}
+{% set upstream_version = upstream_version('0.4.0') %}
+{% set rpm_release = '1' %}
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
+Summary:        A library for creating OVSDB applications
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            https://launchpad.net/{{ pypi_name }}
+Source0:        https://pypi.io/packages/source/o/{{ pypi_name }}/{{ pypi_name }}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  python-devel
+BuildRequires:  {{ py2pkg('fixtures') }}
+BuildRequires:  {{ py2pkg('os-testr') }}
+BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('ovs') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testscenarios') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+Requires:       {{ py2pkg('fixtures') }}
+Requires:       {{ py2pkg('ovs') }}
+Requires:       {{ py2pkg('pbr') }}
+BuildArch:      noarch
+
+%description
+The ovdsbapp library is useful for creating applications that communicate via
+Open_vSwitchs OVSDB protocol (https://tools.ietf.org/html/rfc7047). It wraps
+the Python 'ovs' and adds an event loop and friendly transactions.
+
+%package doc
+Summary:        Documentation for OpenStack log library
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+
+%description doc
+Documentation for the ovsdbap library.
+
+%prep
+%autosetup -p1 -n {{pypi_name }}-%{version}
+%py_req_cleanup
+
+%build
+%{py2_build}
+
+# generate html docs
+%{__python2} setup.py build_sphinx
+rm -rf doc/build/html/.{doctrees,buildinfo}
+
+%install
+%{py2_install}
+
+%if 0%{?with_tests}
+%check
+%{__python2} setup.py test
+%endif
+
+%files
+%license LICENSE
+%doc ChangeLog README.rst
+%{python2_sitelib}/ovsdbapp
+%{python2_sitelib}/*.egg-info
+
+%files doc
+%license LICENSE
+%doc doc/build/html
+
+%changelog
