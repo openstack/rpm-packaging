@@ -1,7 +1,7 @@
 %global sname tripleo-common
-%global sversion 6.0.0
+%global sversion 7.0.0
 Name:           {{ py2name('tripleo-common') }}
-Version:        6.0.0
+Version:        7.0.0
 Release:        0
 Summary:        Python library for code used by TripleO projects
 License:        {{ license('Apache-2.0') }}
@@ -10,9 +10,11 @@ Url:            https://launchpad.net/%{sname}
 Source0:        https://pypi.io/packages/source/t/%{sname}/%{sname}-%{sversion}.tar.gz
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('mistral') }}
+BuildRequires:  {{ py2pkg('GitPython') }}
 BuildRequires:  {{ py2pkg('PyYAML') }}
 BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('docker-py') }}
+BuildRequires:  {{ py2pkg('gitdb') }}
 BuildRequires:  {{ py2pkg('python-heatclient') }}
 BuildRequires:  {{ py2pkg('python-ironicclient') }}
 BuildRequires:  {{ py2pkg('oslo.log') }}
@@ -24,8 +26,10 @@ BuildRequires:  {{ py2pkg('testscenarios') }}
 BuildRequires:  {{ py2pkg('testtools') }}
 Requires:       {{ py2pkg('mistral') }}
 Requires:       {{ py2pkg('Babel') }}
+Requires:       {{ py2pkg('GitPython') }}
 Requires:       {{ py2pkg('Jinja2') }}
 Requires:       {{ py2pkg('docker-py') }}
+Requires:       {{ py2pkg('gitdb') }}
 Requires:       {{ py2pkg('python-glanceclient') }}
 Requires:       {{ py2pkg('python-heatclient') }}
 Requires:       {{ py2pkg('python-ironic-inspector-client') }}
@@ -50,6 +54,14 @@ BuildRequires:  {{ py2pkg('oslosphinx') }}
 %description      doc
 Python library for code used by TripleO projects.
 This package contains auto-generated documentation.
+
+%package devtools
+Summary: A collection of tools for TripleO developers and CI
+Requires: %{name} = %{version}-%{release}
+
+%description devtools
+This package installs the TripleO tools for developers and CI that typically
+don't fit in a product.
 
 %prep
 %autosetup -n %{sname}-%{sversion}
@@ -86,6 +98,9 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %files doc
 %license LICENSE
 %doc doc/build/html
+
+%files devtools
+%{_bindir}/pull-puppet-modules
 
 %changelog
 
