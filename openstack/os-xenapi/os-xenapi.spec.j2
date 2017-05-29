@@ -1,0 +1,77 @@
+%define with_tests 1
+{% set pypi_name = 'os-xenapi' %}
+{% set upstream_version = upstream_version('0.2.0') %}
+{% set rpm_release = '1' %}
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
+Summary:        XenAPI library for OpenStack projects
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            https://launchpad.net/{{ pypi_name }}
+Source0:        https://pypi.io/packages/source/o/{{ pypi_name }}/{{ pypi_name }}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  python-devel
+BuildRequires:  {{ py2pkg('eventlet') }}
+BuildRequires:  {{ py2pkg('os-testr') }}
+BuildRequires:  {{ py2pkg('oslo.concurrency') }}
+BuildRequires:  {{ py2pkg('oslo.i18n') }}
+BuildRequires:  {{ py2pkg('oslo.log') }}
+BuildRequires:  {{ py2pkg('oslo.utils') }}
+BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('six') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testscenarios') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+Requires:       {{ py2pkg('Babel') }}
+Requires:       {{ py2pkg('eventlet') }}
+Requires:       {{ py2pkg('oslo.concurrency') }}
+Requires:       {{ py2pkg('oslo.i18n') }}
+Requires:       {{ py2pkg('oslo.log') }}
+Requires:       {{ py2pkg('oslo.utils') }}
+Requires:       {{ py2pkg('pbr') }}
+Requires:       {{ py2pkg('six') }}
+BuildArch:      noarch
+
+%description
+XenAPI library for OpenStack projects.
+
+%package doc
+Summary:        Documentation for OpenStack log library
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+
+%description doc
+Documentation for the os-xenapi module.
+
+%prep
+%autosetup -p1 -n {{pypi_name }}-%{version}
+%py_req_cleanup
+
+%build
+%{py2_build}
+
+# generate html docs
+%{__python2} setup.py build_sphinx
+rm -rf doc/build/html/.{doctrees,buildinfo}
+
+%install
+%{py2_install}
+
+%if 0%{?with_tests}
+%check
+%{__python2} setup.py test
+%endif
+
+%files
+%license LICENSE
+%doc ChangeLog README.rst
+%{python2_sitelib}/os_xenapi
+%{python2_sitelib}/*.egg-info
+
+%files doc
+%license LICENSE
+%doc doc/build/html
+
+%changelog
