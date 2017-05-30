@@ -1,6 +1,6 @@
 %global sname oslo.config
 Name:           {{ py2name('oslo.config') }}
-Version:        4.1.1
+Version:        4.4.0
 Epoch:          {{ epoch('oslo.config') }}
 Release:        0
 Summary:        OpenStack common configuration library
@@ -9,6 +9,7 @@ Group:          Development/Languages/Python
 Url:            https://launchpad.net/%{sname}
 Source0:        https://pypi.io/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
 BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('PyYAML') }}
 BuildRequires:  {{ py2pkg('debtcollector') }}
 BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('fixtures') }}
@@ -24,6 +25,7 @@ BuildRequires:  {{ py2pkg('stevedore') }}
 BuildRequires:  {{ py2pkg('testrepository') }}
 BuildRequires:  {{ py2pkg('testscenarios') }}
 BuildRequires:  {{ py2pkg('testtools') }}
+Requires:       {{ py2pkg('PyYAML') }}
 Requires:       {{ py2pkg('debtcollector') }}
 Requires:       {{ py2pkg('netaddr') }}
 Requires:       {{ py2pkg('oslo.i18n') }}
