@@ -1,17 +1,16 @@
 %global pypi_name debtcollector
 Name:           {{ py2name('debtcollector') }}
-Version:        1.13.0
+Version:        1.15.0
 Release:        0
 Summary:        A collection of Python deprecation patterns and strategies
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            http://docs.openstack.org/developer/debtcollector/
-Source0:        https://tarballs.openstack.org/debtcollector/%{pypi_name}-%{version}.tar.gz
+Source0:        https://pypi.io/packages/source/d/%{pypi_name}/%{pypi_name}-%{version}.tar.gz
 BuildRequires:  openstack-macros
 BuildRequires:  python-devel
 BuildRequires:  {{ py2pkg('fixtures') }}
 BuildRequires:  {{ py2pkg('funcsigs') }}
-BuildRequires:  {{ py2pkg('oslotest') }}
 BuildRequires:  {{ py2pkg('pbr') }}
 BuildRequires:  {{ py2pkg('python-subunit') }}
 BuildRequires:  {{ py2pkg('setuptools') }}
