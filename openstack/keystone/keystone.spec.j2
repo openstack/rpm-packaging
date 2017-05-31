@@ -1,18 +1,19 @@
-%global with_doc 1
-%global sname keystone
-{% set upstream_version = '12.0.0.0b1' %}
+{% set pypi_name = 'keystone' %}
+{% set source = fetch_source('http://tarballs.openstack.org/keystone/keystone-master.tar.gz') %}
+{% set upstream_version = upstream_version() %}
 {% set rpm_release = '1' %}
+%global with_doc 1
 %if 0%{?rhel} || 0%{?fedora}
 %global rdo 1
 %endif
-Name:           {{ py2name('keystone') }}
+Name:           {{ py2name() }}
 Epoch:          {{ epoch('keystone') }}
 Version:        {{ py2rpmversion() }}
 Release:        {{ py2rpmrelease() }}
 Summary:        OpenStack Identity Service
 License:        {{ license('Apache-2.0') }}
 Url:            https://launchpad.net/keystone
-Source0:        http://tarballs.openstack.org/%{sname}/%{sname}-{{upstream_version}}.tar.gz
+Source0:        {{ source|basename }}
 Source1:        openstack-keystone.logrotate
 Source2:        openstack-keystone.sysctl
 Source3:        openstack-keystone.tmpfiles
@@ -39,7 +40,7 @@ BuildRequires:  {{ py2pkg('requests') }}
 BuildRequires:  {{ py2pkg('testrepository') }}
 BuildRequires:  {{ py2pkg('testresources') }}
 BuildRequires:  {{ py2pkg('testtools') }}
-Requires:       python-%{sname} = %{epoch}:%{version}-%{release}
+Requires:       python-{{ pypi_name }} = %{epoch}:%{version}-%{release}
 BuildArch:      noarch
 %if 0%{?suse_version}
 BuildRequires:  libxmlsec1-openssl1
@@ -56,7 +57,7 @@ Keystone is a Python implementation of the OpenStack
 .
 This package contains the keystone python libraries.
 
-%package -n     python-%{sname}
+%package -n     python-{{ pypi_name }}
 Summary:        Keystone Python libraries
 Group:          Applications/System
 Requires:       {{ py2pkg('Babel') }}
@@ -102,7 +103,7 @@ Requires:       {{ py2pkg('pyldap') }}
 Requires:       {{ py2pkg('python-ldap') }}
 %endif
 
-%description -n   python-%{sname}
+%description -n   python-{{ pypi_name }}
 Keystone is a Python implementation of the OpenStack
 (http://docs.openstack.org/developer/keystone/) identity service API.
 This package contains the Keystone Python library.
@@ -140,7 +141,8 @@ This package contains the documentation
 %endif
 
 %prep
-%autosetup -p1 -n %{sname}-{{upstream_version}}
+%autosetup -p1 -n {{ pypi_name }}-{{upstream_version}}
+%py_req_cleanup
 %if 0%{?rdo}
 find . \( -name .gitignore -o -name .placeholder \) -delete
 find keystone -name \*.py -exec sed -i '/\/usr\/bin\/env python/d' {} \;
@@ -165,7 +167,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 oslo-config-generator --config-file config-generator/keystone.conf \
 --output-file etc/keystone.conf.sample
 # policy file generation
-oslopolicy-sample-generator --config-file etc/keystone-policy-generator.conf --output-file etc/keystone.policy.yaml
+oslopolicy-sample-generator --config-file config-generator/keystone-policy-generator.conf --output-file etc/keystone.policy.yaml
 
 %install
 %{py2_install}
