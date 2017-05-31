@@ -1,0 +1,16 @@
+[Unit]
+Description=Openstack Neutron VMware OVSvApp Plugin Agent
+After=syslog.target network.target
+Wants=openvswitch.service
+
+[Service]
+Type=simple
+User=neutron
+ExecStart=/usr/bin/neutron-ovsvapp-agent --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugins/ml2/ovsvapp_agent.ini --log-file /var/log/neutron/ovsvapp-agent.log 
+PrivateTmp=false
+KillMode=process
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+
