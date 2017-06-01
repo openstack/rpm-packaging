@@ -1,12 +1,14 @@
 %global pypi_name django_openstack_auth
 Name:           {{ py2name('django_openstack_auth') }}
-Version:        3.1.1
+Version:        3.2.0
 Release:        0
 Summary:        Django authentication backend for OpenStack Keystone
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            http://docs.openstack.org/developer/django_openstack_auth/
 Source0:        https://pypi.io/packages/source/d/%{pypi_name}/%{pypi_name}-%{version}.tar.gz
+# https://review.openstack.org/#/c/470900/
+Patch1:         0001-Fix-doc-build.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('Django') }}
 BuildRequires:  python-devel
@@ -50,7 +52,7 @@ user against OpenStack's Keystone Identity API.
 This package contains documentation in HTML format.
 
 %prep
-%autosetup -n %{pypi_name}-%{version}
+%autosetup -p1 -n %{pypi_name}-%{version}
 %py_req_cleanup
 
 %build
