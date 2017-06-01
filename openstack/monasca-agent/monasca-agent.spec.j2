@@ -31,8 +31,6 @@ Source0:        {{ source|basename }}
 Source1:        %{name}-sudoers
 Source2:        %{name}.service
 Source3:        openstack-monasca-agent.tmpfiles
-# https://review.openstack.org/#/c/462192/
-Patch1:         0001-Partial-support-for-DogStatsd-extensions.patch
 BuildRequires:  openstack-macros
 
 %if 0%{?suse_version}
