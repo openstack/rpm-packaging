@@ -1,0 +1,18 @@
+[Unit]
+Description=OpenStack Neutron Open vSwitch Agent
+After=syslog.target network.target network.service openvswitch.service
+PartOf=network.service
+Requires=openvswitch.service
+
+[Service]
+Type=simple
+User=neutron
+PermissionsStartOnly=true
+ExecStartPre=/usr/bin/neutron-enable-bridge-firewall.sh
+ExecStart=/usr/bin/neutron-openvswitch-agent --config-file /etc/neutron/neutron.conf  --config-file /etc/neutron/plugins/ml2/openvswitch_agent.ini
+PrivateTmp=true
+KillMode=process
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
