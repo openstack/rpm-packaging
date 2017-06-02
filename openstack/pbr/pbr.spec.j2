@@ -1,0 +1,66 @@
+%global sname pbr
+%if 0%{?rhel} || 0%{?fedora}
+%global rdo 1
+%endif
+Name:           python-%{sname}
+Version:        3.0.0
+Release:        0
+Summary:        Python Build Reasonableness
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            http://pypi.python.org/pypi/pbr
+Source0:        https://pypi.io/packages/source/p/%{sname}/%{sname}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('setuptools') }}
+Requires:       {{ py2pkg('setuptools') }}
+BuildArch:      noarch
+%if 0%{?rdo}
+Provides:       python2-%{sname} = %{version}-%{release}
+Obsoletes:      python2-%{sname} < %{version}-%{release}
+%endif
+
+%description
+PBR is a library that injects some useful and sensible default behaviors into
+your setuptools run. It started off life as the chunks of code that were copied
+between all of the OpenStack projects. Around the time that OpenStack hit 18
+different projects each with at least 3 active branches, it seems like a good
+time to make that code into a proper re-usable library.
+
+%package doc
+Summary:        Documentation for the PBR
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+
+%description doc
+Documentation for the PBR, a library that injects some useful and sensible default
+behaviors into your setuptools run.
+
+%prep
+%autosetup -n %{sname}-%{version}
+%py_req_cleanup
+
+%build
+export SKIP_PIP_INSTALL=1
+%py2_build
+
+# generate html docs
+%{__python2} setup.py build_sphinx
+# remove the sphinx-build leftovers
+rm -rf doc/build/html/.{doctrees,buildinfo}
+
+%install
+%py2_install
+
+%files
+%{_bindir}/pbr
+%doc README.rst
+%license LICENSE
+%{python2_sitelib}/%{sname}
+%{python2_sitelib}/%{sname}-*-py?.?.egg-info
+
+%files doc
+%license LICENSE
+%doc doc/build/html
+
+%changelog
