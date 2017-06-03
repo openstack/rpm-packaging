@@ -1,0 +1,256 @@
+{% set pypi_name = 'masakari-monitors' %}
+{% set source = fetch_source('http://tarballs.openstack.org/masakari-monitors/masakari-monitors-master.tar.gz') %}
+{% set upstream_version = upstream_version() %}
+{% set rpm_release = '1' %}
+
+%global sname {{ pypi_name }}
+%global python_pkg python-%{sname}
+Name:           {{ py2name('masakari-monitors') }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
+Summary:        Monitors for Virtual Machine High Availability (VMHA) service in OpenStack
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Libraries
+Url:            https://launchpad.net/masakari-monitors
+# basename filter prevents OBS from downloading the source itself which would
+# fetch from a stale cache hashed by non-changing URL.
+Source0:        {{ source|basename }}
+Source1:        masakari-hostmonitor.service
+Source2:        masakari-instancemonitor.service
+Source3:        masakari-processmonitor.service
+Source4:        masakari-monitors.tmpfiles
+BuildRequires:  {{ py2pkg('libvirt-python') }}
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('ddt') }}
+BuildRequires:  {{ py2pkg('eventlet') }}
+BuildRequires:  {{ py2pkg('keystoneauth1') }}
+BuildRequires:  {{ py2pkg('keystonemiddleware') }}
+BuildRequires:  {{ py2pkg('python-masakariclient') }}
+BuildRequires:  {{ py2pkg('microversion_parse') }}
+BuildRequires:  {{ py2pkg('python-novaclient') }}
+BuildRequires:  {{ py2pkg('python-openstackclient') }}
+BuildRequires:  {{ py2pkg('openstacksdk') }}
+BuildRequires:  {{ py2pkg('oslo.concurrency') }}
+BuildRequires:  {{ py2pkg('oslo.config') }}
+BuildRequires:  {{ py2pkg('oslo.db') }}
+BuildRequires:  {{ py2pkg('oslo.i18n') }}
+BuildRequires:  {{ py2pkg('oslo.log') }}
+BuildRequires:  {{ py2pkg('oslo.middleware') }}
+BuildRequires:  {{ py2pkg('oslo.policy') }}
+BuildRequires:  {{ py2pkg('oslo.privsep') }}
+BuildRequires:  {{ py2pkg('oslo.service') }}
+BuildRequires:  {{ py2pkg('oslo.versionedobjects') }}
+BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('python-subunit') }}
+BuildRequires:  {{ py2pkg('reno') }}
+BuildRequires:  {{ py2pkg('requests-mock') }}
+BuildRequires:  {{ py2pkg('taskflow') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testresources') }}
+BuildRequires:  {{ py2pkg('testscenarios') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+Requires:       python-masakari-monitors = %{version}-%{release}
+BuildArch:      noarch
+%if 0%{?suse_version}
+BuildRequires:  systemd-rpm-macros
+%else
+BuildRequires:  systemd
+%endif
+
+%description
+Monitors for the Masakari service for Virtual Machine
+High Availability (VMHA) service in OpenStack.
+
+System package - %{name}
+Python package - %{python_pkg}
+
+%package        doc
+Summary:        Documentation for OpenStack Masakari Service
+BuildRequires:  git
+BuildRequires:  {{ py2pkg('Tempest') }}
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('WSME') }}
+BuildRequires:  {{ py2pkg('jsonschema') }}
+BuildRequires:  {{ py2pkg('networkx') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('paramiko') }}
+BuildRequires:  {{ py2pkg('pecan') }}
+BuildRequires:  {{ py2pkg('pep8') }}
+BuildRequires:  {{ py2pkg('sphinxcontrib-httpdomain') }}
+BuildRequires:  {{ py2pkg('sphinxcontrib-pecanwsme') }}
+BuildRequires:  {{ py2pkg('yaql') }}
+
+%description    doc
+Monitors for the Masakari service for Virtual Machine
+High Availability (VMHA) service in OpenStack.
+
+This package contains the documentation.
+
+%package -n     %{python_pkg}
+Summary:        masakari-monitors Python libraries
+Requires:       {{ py2pkg('Babel') }}
+Requires:       {{ py2pkg('iso8601') }}
+Requires:       {{ py2pkg('jsonschema') }}
+Requires:       {{ py2pkg('keystoneauth1') }}
+Requires:       {{ py2pkg('keystonemiddleware') }}
+Requires:       {{ py2pkg('python-masakariclient') }}
+Requires:       {{ py2pkg('microversion_parse') }}
+Requires:       {{ py2pkg('python-novaclient') }}
+Requires:       {{ py2pkg('openstacksdk') }}
+Requires:       {{ py2pkg('oslo.config') }}
+Requires:       {{ py2pkg('oslo.db') }}
+Requires:       {{ py2pkg('oslo.i18n') }}
+Requires:       {{ py2pkg('oslo.log') }}
+Requires:       {{ py2pkg('oslo.messaging') }}
+Requires:       {{ py2pkg('oslo.middleware') }}
+Requires:       {{ py2pkg('oslo.policy') }}
+Requires:       {{ py2pkg('oslo.privsep') }}
+Requires:       {{ py2pkg('oslo.service') }}
+Requires:       {{ py2pkg('oslo.utils') }}
+Requires:       {{ py2pkg('oslo.versionedobjects') }}
+Requires:       {{ py2pkg('pbr') }}
+Requires:       {{ py2pkg('setuptools') }}
+Requires:       {{ py2pkg('six') }}
+Requires:       {{ py2pkg('stevedore') }}
+Requires:       {{ py2pkg('taskflow') }}
+
+%description -n python-%{sname}
+Masakari is a service providing high availability for VMs in OpenStack.
+
+This package contains the Python libraries for the monitoring components.
+
+%package -n openstack-masakari-hostmonitor
+Summary:        Host monitoring component of OpenStack Masakari service
+Requires:       %{name} = %{version}
+
+%description -n openstack-masakari-hostmonitor
+This component of the Masakari service for VM HA in OpenStack is
+responsible for monitoring the health of nova-compute hypervisors.
+
+%package -n openstack-masakari-instancemonitor
+Summary:        Instance monitoring component of OpenStack Masakari service
+Requires:       %{name} = %{version}
+
+%description -n openstack-masakari-instancemonitor
+This component of the Masakari service for VM HA in OpenStack is
+responsible for monitoring the health of individual VM instances.
+
+%package -n openstack-masakari-processmonitor
+Summary:        Process monitoring component of OpenStack Masakari service
+Requires:       %{name} = %{version}
+
+%description -n openstack-masakari-processmonitor
+This component of the Masakari service for VM HA in OpenStack is
+responsible for monitoring the health of processes which need to stay
+running in order for the compute plane to be functional and highly
+available.
+
+%prep
+%autosetup -n %{sname}-{{upstream_version}}
+%py_req_cleanup
+
+%build
+%{py2_build}
+export PYTHONPATH="."
+# from tox.ini's testenv:genconfig
+oslo-config-generator --config-file etc/masakarimonitors/masakarimonitors-config-generator.conf
+
+%{__python2} setup.py build_sphinx
+# remove the sphinx-build leftovers
+rm -rf doc/build/html/.{doctrees,buildinfo}
+
+%install
+%{py2_install}
+
+mkdir -p %{buildroot}%{_sysconfdir}/masakarimonitors/
+mkdir -p %{buildroot}%{_localstatedir}/log/masakari-monitors
+
+# These are broken (hard-coded references to /usr/local/lib/python2.7)
+# and provide nothing which can't be handled better by systemd,
+# so we'll use systemd services instead.
+rm %{buildroot}%{_bindir}/masakari-{host,process}monitor.sh*
+
+#systemd unitfiles
+install -p -D -m 644 %SOURCE1 %{buildroot}%{_unitdir}/openstack-masakari-hostmonitor.service
+install -p -D -m 644 %SOURCE2 %{buildroot}%{_unitdir}/openstack-masakari-instancemonitor.service
+install -p -D -m 644 %SOURCE3 %{buildroot}%{_unitdir}/openstack-masakari-processmonitor.service
+
+install -p -D -m 644 %SOURCE4 %{buildroot}/%{_tmpfilesdir}/masakari-monitors.conf
+
+install -p -D -m 640 etc/masakarimonitors/masakarimonitors.conf.sample %{buildroot}%{_sysconfdir}/masakarimonitors/masakarimonitors.conf
+install -p -D -m 640 etc/masakarimonitors/hostmonitor.conf.sample %{buildroot}%{_sysconfdir}/masakarimonitors/hostmonitor.conf
+install -p -D -m 640 etc/masakarimonitors/processmonitor.conf.sample %{buildroot}%{_sysconfdir}/masakarimonitors/processmonitor.conf
+install -p -D -m 640 etc/masakarimonitors/process_list.yaml.sample %{buildroot}%{_sysconfdir}/masakarimonitors/process_list.yaml
+install -p -D -m 640 etc/masakarimonitors/proc.list.sample %{buildroot}%{_sysconfdir}/masakarimonitors/proc.list
+chmod +x %{buildroot}%{_bindir}/masakari-*
+
+%pre
+%openstack_pre_user_group_create masakari masakari
+
+%post
+%tmpfiles_create %{_tmpfilesdir}/masakari-monitors.conf
+
+%check
+testr init
+testr list-tests > list
+testr run --load-list=list
+
+%post -n openstack-masakari-hostmonitor
+%systemd_post openstack-masakari-hostmonitor.service
+
+%preun -n openstack-masakari-hostmonitor
+%systemd_preun openstack-masakari-hostmonitor.service
+
+%postun -n openstack-masakari-hostmonitor
+%systemd_postun_with_restart openstack-masakari-hostmonitor.service
+
+%post -n openstack-masakari-instancemonitor
+%systemd_post openstack-masakari-instancemonitor.service
+
+%preun -n openstack-masakari-instancemonitor
+%systemd_preun openstack-masakari-instancemonitor.service
+
+%postun -n openstack-masakari-instancemonitor
+%systemd_postun_with_restart openstack-masakari-instancemonitor.service
+
+%post -n openstack-masakari-processmonitor
+%systemd_post openstack-masakari-processmonitor.service
+
+%preun -n openstack-masakari-processmonitor
+%systemd_preun openstack-masakari-processmonitor.service
+
+%postun -n openstack-masakari-processmonitor
+%systemd_postun_with_restart openstack-masakari-processmonitor.service
+
+%files
+%license LICENSE
+%dir %{_sysconfdir}/masakarimonitors
+%config(noreplace) %attr(-, masakari, masakari) %{_sysconfdir}/masakarimonitors/masakarimonitors.conf
+%dir %attr(755, masakari, masakari) %{_localstatedir}/log/masakari-monitors
+%_tmpfilesdir/masakari-monitors.conf
+
+%files -n openstack-masakari-hostmonitor
+%config(noreplace) %attr(-, masakari, masakari) %{_sysconfdir}/masakarimonitors/hostmonitor.conf
+%{_bindir}/masakari-hostmonitor
+%{_unitdir}/openstack-masakari-hostmonitor.service
+
+%files -n openstack-masakari-instancemonitor
+%{_bindir}/masakari-instancemonitor
+%{_unitdir}/openstack-masakari-instancemonitor.service
+
+%files -n openstack-masakari-processmonitor
+%{_bindir}/masakari-processmonitor
+%{_unitdir}/openstack-masakari-processmonitor.service
+%config(noreplace) %attr(-, masakari, masakari) %{_sysconfdir}/masakarimonitors/processmonitor.conf
+%config(noreplace) %attr(-, masakari, masakari) %{_sysconfdir}/masakarimonitors/process_list.yaml
+%config(noreplace) %attr(-, masakari, masakari) %{_sysconfdir}/masakarimonitors/proc.list
+
+%files doc
+%license LICENSE
+%doc doc/build/html
+
+%files -n %{python_pkg}
+%license LICENSE
+%{python2_sitelib}/masakari*
+
+%changelog
