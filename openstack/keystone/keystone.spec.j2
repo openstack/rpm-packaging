@@ -22,6 +22,7 @@ Source5:        openstack-keystone.README.config
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('Tempest') }}
 BuildRequires:  {{ py2pkg('WebTest') }}
+BuildRequires:  {{ py2pkg('bcrypt') }}
 BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('fixtures') }}
 BuildRequires:  {{ py2pkg('freezegun') }}
@@ -42,6 +43,10 @@ BuildRequires:  {{ py2pkg('testresources') }}
 BuildRequires:  {{ py2pkg('testtools') }}
 Requires:       python-{{ pypi_name }} = %{epoch}:%{version}-%{release}
 BuildArch:      noarch
+# NOTE(dmllr): Currently not available for RDO, remove condition when fixed
+%if ! 0%{?rdo}
+BuildRequires:  {{ py2pkg('scrypt') }}
+%endif
 %if 0%{?suse_version}
 BuildRequires:  libxmlsec1-openssl1
 Requires(pre):  pwdutils
@@ -67,6 +72,7 @@ Requires:       {{ py2pkg('PyMySQL') }}
 Requires:       {{ py2pkg('Routes') }}
 Requires:       {{ py2pkg('SQLAlchemy') }}
 Requires:       {{ py2pkg('WebOb') }}
+Requires:       {{ py2pkg('bcrypt') }}
 Requires:       {{ py2pkg('cryptography') }}
 Requires:       {{ py2pkg('dogpile.cache') }}
 Requires:       {{ py2pkg('jsonschema') }}
