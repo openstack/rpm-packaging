@@ -1,16 +1,12 @@
 %global sname keystonemiddleware
 Name:           {{ py2name('keystonemiddleware') }}
-Version:        4.15.0
+Version:        4.16.0
 Release:        0
 Summary:        Middleware for OpenStack Identity
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            https://launchpad.net/%{sname}
 Source0:        https://pypi.io/packages/source/k/%{sname}/%{sname}-%{version}.tar.gz
-# https://review.openstack.org/#/c/467836/
-Patch1:         0001-Fix-oslo.messaging-deprecation-of-get_transport.patch
-# https://review.openstack.org/#/c/464732/
-Patch2:         0001-Update-driver-config-parameter-from-string-to-list.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('WebOb') }}
 BuildRequires:  {{ py2pkg('WebTest') }}
