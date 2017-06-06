@@ -1,7 +1,7 @@
 %global sname tripleo-common
-%global sversion 7.0.0
+%global sversion 7.1.0
 Name:           {{ py2name('tripleo-common') }}
-Version:        7.0.0
+Version:        7.1.0
 Release:        0
 Summary:        Python library for code used by TripleO projects
 License:        {{ license('Apache-2.0') }}
@@ -93,6 +93,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %{_bindir}/upload-puppet-modules
 %{_bindir}/upload-swift-artifacts
 %{_bindir}/tripleo-build-images
+%{_bindir}/bootstrap_host_exec
 %{_datadir}/%{sname}
 
 %files doc
