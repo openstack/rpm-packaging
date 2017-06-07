@@ -1,6 +1,6 @@
 %global pypi_name stevedore
 Name:           {{ py2name('stevedore') }}
-Version:        1.21.0
+Version:        1.22.0
 Release:        0
 Summary:        Manage dynamic plugins for Python applications
 License:        {{ license('Apache-2.0') }}
@@ -10,9 +10,10 @@ Source0:        https://pypi.io/packages/source/s/%{pypi_name}/%{pypi_name}-%{ve
 BuildRequires:  openstack-macros
 BuildRequires:  python-devel
 BuildRequires:  {{ py2pkg('mock') }}
-BuildRequires:  {{ py2pkg('oslotest') }}
 BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('reno') }}
 BuildRequires:  {{ py2pkg('setuptools') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
 Requires:       {{ py2pkg('pbr') }}
 Requires:       {{ py2pkg('six') }}
 BuildArch:      noarch
@@ -60,7 +61,7 @@ This package contains documentation in HTML format.
 rm -rf html/.{doctrees,buildinfo}
 
 %check
-%{__python2} setup.py testr
+%{__python2} setup.py test
 
 %install
 %py2_install
