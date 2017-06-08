@@ -1,0 +1,49 @@
+Name:           {{ py2name('mistral-lib') }}
+Version:        0.2.0
+Release:        0
+Summary:        Mistral shared routings and utilities
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            http://www.openstack.org/
+Source0:        https://pypi.io/packages/source/m/mistral-lib/mistral-lib-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('oslo.serialization') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testscenarios') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+Requires:       {{ py2pkg('oslo.serialization') }}
+Requires:       {{ py2pkg('pbr') }}
+BuildArch:       noarch
+
+%description
+This library contains data types, exceptions, functions and
+utilities common to Mistral, python-mistralclient and mistral-extra
+repositories.
+
+This library also contains the public interfaces for 3rd party integration
+(e.g. Actions API, YAQL functions API, etc.)
+
+%prep
+%autosetup -n mistral-lib-%{version}
+%py_req_cleanup
+
+%build
+%{__python2} setup.py build
+
+%install
+%{__python2} setup.py install --skip-build --prefix=%{_prefix} --root=%{buildroot}
+
+%check
+%{__python2} setup.py testr
+
+%files
+%defattr(-,root,root,-)
+%license LICENSE
+%doc README.rst ChangeLog
+%{python2_sitelib}/mistral_lib
+%{python2_sitelib}/*.egg-info
+
+%changelog
