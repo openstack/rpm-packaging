@@ -11,7 +11,7 @@
 #  under the License.
 
 {% set pypi_name = 'monasca-agent' %}
-{% set upstream_version = upstream_version('1.9.0') %}
+{% set upstream_version = upstream_version('2.1.0') %}
 {% set rpm_release = '1' %}
 
 %global sname {{ pypi_name }}
@@ -31,19 +31,21 @@ Source3:        openstack-monasca-agent.tmpfiles
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('PyYAML') }}
 BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('futures') }}
 BuildRequires:  {{ py2pkg('gevent') }}
 BuildRequires:  {{ py2pkg('httplib2') }}
 BuildRequires:  {{ py2pkg('mock') }}
 BuildRequires:  {{ py2pkg('python-monascaclient') }}
 BuildRequires:  {{ py2pkg('netaddr') }}
-BuildRequires:  {{ py2pkg('nose') }}
 BuildRequires:  {{ py2pkg('ntplib') }}
+BuildRequires:  {{ py2pkg('os-testr') }}
 BuildRequires:  {{ py2pkg('oslo.concurrency') }}
 BuildRequires:  {{ py2pkg('oslo.config') }}
 BuildRequires:  {{ py2pkg('oslo.i18n') }}
 BuildRequires:  {{ py2pkg('oslo.middleware') }}
 BuildRequires:  {{ py2pkg('oslo.utils') }}
 BuildRequires:  {{ py2pkg('oslo.vmware') }}
+BuildRequires:  {{ py2pkg('oslotest') }}
 BuildRequires:  {{ py2pkg('psutil') }}
 BuildRequires:  {{ py2pkg('pymongo') }}
 BuildRequires:  {{ py2pkg('python-memcached') }}
@@ -150,7 +152,7 @@ install -D -m 644 %{SOURCE3} %{buildroot}/%{_tmpfilesdir}/openstack-monasca-agen
 
 %check
 find . -type f -name *.pyc -delete
-PYTHONPATH=. NOSE_EXCLUDE=test_override_values nosetests tests -v
+ostestr --regex '^((?!test_override_values).)*$'
 
 %files
 %dir %{_sysconfdir}/monasca
