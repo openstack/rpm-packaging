@@ -38,15 +38,12 @@ BuildRequires:  {{ py2pkg('pbr') }}
 BuildRequires:  {{ py2pkg('python-subunit') }}
 BuildRequires:  {{ py2pkg('reno') }}
 BuildRequires:  {{ py2pkg('requests') }}
+BuildRequires:  {{ py2pkg('scrypt') }}
 BuildRequires:  {{ py2pkg('testrepository') }}
 BuildRequires:  {{ py2pkg('testresources') }}
 BuildRequires:  {{ py2pkg('testtools') }}
 Requires:       python-{{ pypi_name }} = %{epoch}:%{version}-%{release}
 BuildArch:      noarch
-# NOTE(dmllr): Currently not available for RDO, remove condition when fixed
-%if ! 0%{?rdo}
-BuildRequires:  {{ py2pkg('scrypt') }}
-%endif
 %if 0%{?suse_version}
 BuildRequires:  libxmlsec1-openssl1
 Requires(pre):  pwdutils
