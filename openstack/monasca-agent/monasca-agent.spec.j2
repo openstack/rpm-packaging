@@ -30,7 +30,8 @@ Url:            https://wiki.openstack.org/wiki/Monasca
 Source0:        {{ source|basename }}
 Source1:        %{name}-sudoers
 Source2:        %{name}.service
-Source3:        openstack-monasca-agent.tmpfiles
+Source3:        %{name}.tmpfiles
+Source4:        %{name}.polkit
 BuildRequires:  openstack-macros
 
 %if 0%{?suse_version}
@@ -141,7 +142,10 @@ ln -sr %{buildroot}%{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}
 %endif
 
 # systemd tmpfile
-install -D -m 644 %{SOURCE3} %{buildroot}/%{_tmpfilesdir}/openstack-monasca-agent.conf
+install -D -m 644 %{SOURCE3} %{buildroot}%{_tmpfilesdir}/openstack-monasca-agent.conf
+
+# polkit permissions
+install -D -m 644 %{SOURCE4} %{buildroot}%{_sysconfdir}/polkit-1/rules.d/49-monasca-agent.rules
 
 %pre
 # create user and groups
@@ -175,6 +179,9 @@ PYTHONPATH=. NOSE_EXCLUDE=test_override_values nosetests tests -v
 %if 0%{?suse_version}
 %{_sbindir}/rc%{name}
 %endif
+%{_sysconfdir}/polkit-1/
+%{_sysconfdir}/polkit-1/rules.d/
+%{_sysconfdir}/polkit-1/rules.d/49-monasca-agent.rules
 
 %files -n python-%{sname}
 %doc README.md
