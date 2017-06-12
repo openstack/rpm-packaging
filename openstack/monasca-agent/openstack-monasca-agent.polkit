@@ -1,0 +1,6 @@
+/* This rule let's monasca-agent's libvirt check monitor libvirt */
+polkit.addRule(function(action, subject) {
+    if ((action.id == "org.libvirt.unix.monitor") && (subject.user == "monasca-agent")) {
+        return polkit.Result.YES;
+    }
+});
