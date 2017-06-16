@@ -1,6 +1,6 @@
 %global sname openstacksdk
 Name:           {{ py2name('openstacksdk') }}
-Version:        0.9.16
+Version:        0.9.17
 Release:        0
 Summary:        An SDK for building applications to work with OpenStack
 License:        {{ license('Apache-2.0') }}
@@ -13,6 +13,7 @@ BuildRequires:  {{ py2pkg('beautifulsoup4') }}
 BuildRequires:  {{ py2pkg('deprecation') }}
 BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('fixtures') }}
+BuildRequires:  {{ py2pkg('jsonpatch') }}
 BuildRequires:  {{ py2pkg('mock') }}
 BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 BuildRequires:  {{ py2pkg('os-testr') }}
@@ -26,6 +27,7 @@ BuildRequires:  {{ py2pkg('testrepository') }}
 BuildRequires:  {{ py2pkg('testscenarios') }}
 BuildRequires:  {{ py2pkg('testtools') }}
 Requires:       {{ py2pkg('deprecation') }}
+Requires:       {{ py2pkg('jsonpatch') }}
 Requires:       {{ py2pkg('keystoneauth1') }}
 Requires:       {{ py2pkg('os-client-config') }}
 Requires:       {{ py2pkg('six') }}
@@ -57,7 +59,10 @@ This package contains documentation files for %{name}.
 
 %prep
 %autosetup -p1 -n %{sname}-%{version}
+sed -i -e "s,'sphinx.ext.intersphinx'\,,," doc/source/conf.py
 %py_req_cleanup
+# build fails with warnings
+sed -i 's/^warning-is-error.*/warning-is-error=0/g' setup.cfg
 
 %build
 %py2_build
