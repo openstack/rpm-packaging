@@ -1,7 +1,7 @@
 %global sname oslo.context
 %bcond_without test
 Name:           {{ py2name('oslo.context') }}
-Version:        2.14.0
+Version:        2.16.0
 Release:        0
 Summary:        OpenStack Oslo context library
 License:        {{ license('Apache-2.0') }}
@@ -29,7 +29,7 @@ used by various modules such as logging.
 Summary:        Documentation for OpenStack common context library
 Group:          Documentation
 BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 
 %description doc
 Documentation for the oslo-context library.
@@ -37,6 +37,8 @@ Documentation for the oslo-context library.
 %prep
 %autosetup -n %{sname}-%{version}
 %py_req_cleanup
+# without git, openstackdocstheme has warnings which let the doc build fail
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
 %{py2_build}
