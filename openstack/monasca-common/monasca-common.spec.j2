@@ -1,5 +1,5 @@
 {% set pypi_name = 'monasca-common' %}
-{% set upstream_version = upstream_version('2.1.0') %}
+{% set upstream_version = upstream_version('2.2.0') %}
 {% set rpm_release = '1' %}
 
 %global sname {{ pypi_name }}
@@ -20,16 +20,18 @@ BuildRequires:  {{ py2pkg('nose') }}
 BuildRequires:  {{ py2pkg('oslo.config') }}
 BuildRequires:  {{ py2pkg('oslotest') }}
 BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('pyparsing') }}
 BuildRequires:  {{ py2pkg('setuptools') }}
 BuildRequires:  {{ py2pkg('six') }}
 BuildRequires:  {{ py2pkg('ujson') }}
 Requires:       {{ py2pkg('PyMySQL') }}
 Requires:       {{ py2pkg('kazoo') }}
 Requires:       {{ py2pkg('oslo.config') }}
+Requires:       {{ py2pkg('pyparsing') }}
 Requires:       {{ py2pkg('six') }}
 Requires:       {{ py2pkg('ujson') }}
 BuildArch:      noarch
-%if "%{version}" != "2.1.0"
+%if "%{version}" != "2.2.0"
 # Currently monasca vendored kafka and will only eventually
 # switch to pykafka. atm it is not used
 BuildRequires:  {{ py2pkg('pykafka') }}
