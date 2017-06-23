@@ -1,0 +1,175 @@
+{% set pypi_name = 'monasca-transform' %}
+{% set pypi_tar_name = 'monasca_transform' %}
+{% set upstream_version = upstream_version('0.10.0') %}
+{% set rpm_release = '1' %}
+{% set spark_req_version = '1.6.3' %}
+
+%global sname {{ pypi_name }}
+%define username            monasca-transform
+%define groupname           monasca
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
+Summary:        A transformation and aggregation engine for Monasca
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            https://wiki.openstack.org/wiki/Monasca/Transform
+# Note: Unfortunately the pypi tar is named with an underscore.
+Source0:        https://pypi.io/packages/source/m/{{ pypi_tar_name }}/{{ pypi_tar_name }}-%{version}.tar.gz
+Source1:        openstack-monasca-transform.service
+BuildRequires:  crudini
+BuildRequires:  fdupes
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('PyMySQL') }}
+BuildRequires:  {{ py2pkg('SQLAlchemy') }}
+BuildRequires:  {{ py2pkg('kazoo') }}
+BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('monasca-common') }}
+BuildRequires:  {{ py2pkg('nose') }}
+BuildRequires:  {{ py2pkg('os-testr') }}
+BuildRequires:  {{ py2pkg('oslo.config') }}
+BuildRequires:  {{ py2pkg('oslo.log') }}
+BuildRequires:  {{ py2pkg('oslo.service') }}
+BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('setuptools') }}
+BuildRequires:  {{ py2pkg('six') }}
+BuildRequires:  {{ py2pkg('stevedore') }}
+BuildRequires:  {{ py2pkg('tooz') }}
+BuildRequires:  zip
+#BuildRequires:  spark == 1.6.3
+Requires:       python-%{sname} = %{version}-%{release}
+BuildArch:      noarch
+%if 0%{?suse_version}
+BuildRequires:  systemd-rpm-macros
+Requires(pre):  pwdutils
+%{?systemd_requires}
+%else
+BuildRequires:  systemd
+Requires(post): systemd
+Requires(postun):   systemd
+Requires(preun):    systemd
+%endif
+
+%description
+A transformation and aggregation engine for Monasca.  Collects, groups and
+aggregates existing individual Monasca metrics according to business
+requirements and publishes new transformed (derived) metrics to the Monasca
+Kafka queue.
+Requires an installation of Apache Spark {{ spark_req_version }}, either on
+this server or another, and configured in %{_sysconfdir}/monasca-transform.conf
+as spark_master_list.
+
+%package -n python-%{sname}
+Summary:        Python core module for monasca-transform
+Group:          Development/Languages/Python
+Requires:       {{ py2pkg('PyMySQL') }}
+Requires:       {{ py2pkg('SQLAlchemy') }}
+Requires:       {{ py2pkg('kazoo') }}
+Requires:       {{ py2pkg('monasca-common') }}
+Requires:       {{ py2pkg('oslo.config') }}
+Requires:       {{ py2pkg('oslo.log') }}
+Requires:       {{ py2pkg('six') }}
+Requires:       {{ py2pkg('stevedore') }}
+Requires:       {{ py2pkg('tooz') }}
+#Requires:       spark == 1.6.3
+
+%description -n python-%{sname}
+A transformation and aggregation engine for Monasca.  Collects, groups and
+aggregates existing individual Monasca metrics according to business
+requirements and publishes new transformed (derived) metrics to the Monasca
+Kafka queue.
+Requires an installation of Apache Spark {{ spark_req_version }}, either on this server or
+another, and configured in %{_sysconfdir}/monasca-transform.conf as spark_master_list.
+
+%prep
+# Unfortunately again, .tgz has _ in directory name so can't use sname
+%autosetup -n {{ pypi_tar_name }}-{{ upstream_version }}
+%py_req_cleanup
+# Add entry point for service startup by appending console_scripts after [entry_points].
+sed -i '/\[entry_points\]/aconsole_scripts =\n    monasca-transform = monasca_transform.service.transform_service:main_service\n' setup.cfg
+
+%build
+%{py2_build}
+
+# copy, compile and create a zip file to be fed to spark
+python -m compileall monasca_transform
+zip -r %{sname}.zip monasca_transform -i '*.pyc'
+
+%install
+%{py2_install}
+
+install -d -m 755 %{buildroot}%{_sysconfdir}/monasca
+install -d -m 750 %{buildroot}%{_sysconfdir}/monasca_transform
+install -d -m 750 %{buildroot}%{_sysconfdir}/monasca_transform/monasca_transform.conf.d
+install -D -m 640 etc/monasca-transform.conf %{buildroot}%{_sysconfdir}/monasca-transform.conf
+
+install -d -m 750 %{buildroot}%{_var}/log/monasca
+install -d -m 750 %{buildroot}%{_var}/log/monasca/transform
+
+# systemd unit file
+install -p -D -m 644 %{SOURCE1} %{buildroot}%{_unitdir}/%{name}.service
+%if 0%{?suse_version}
+mkdir -p %{buildroot}%{_sbindir}
+ln -sr %{buildroot}%{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}
+%endif
+
+install -d -m 750 %{buildroot}%{_datadir}/%{sname}
+install -D -m 644 %{sname}.zip %{buildroot}%{_datadir}/%{sname}/%{sname}.zip
+
+# reconfigure for rpm install
+%define mon_trans_conf %{buildroot}%{_sysconfdir}/monasca-transform.conf
+crudini --set %{mon_trans_conf} service service_log_path %{_var}/log/monasca/transform/
+crudini --del %{mon_trans_conf} service setup_file
+crudini --set %{mon_trans_conf} service spark_driver %{python2_sitelib}/monasca_transform/driver/mon_metrics_kafka.py
+# disable spark event logging - mon-trans only keeps 10 jobs so history not needed
+crudini --set %{mon_trans_conf} service spark_event_logging_enabled false
+# NOTE: Special handling for spark_jars_list will need to be done after install
+crudini --set %{mon_trans_conf} service spark_home $"$spark_home"
+crudini --set %{mon_trans_conf} service work_dir %{_rundir}/monasca/monasca-transform
+crudini --set %{mon_trans_conf} service spark_master_list spark://localhost:7078
+# for the .zip file created above
+crudini --set %{mon_trans_conf} service spark_python_files %{_datadir}/%{sname}/%{sname}.zip
+
+%fdupes %{buildroot}%{python2_sitelib}
+
+%check
+# automated tests need to be restricted, as functional tests require running Spark
+find . -type f -name *.pyc -delete
+ostestr
+
+%pre
+# create user and groups
+%openstack_pre_user_group_create %{username} %{groupname} /sbin/nologin
+
+%post
+%systemd_post %{name}.service
+
+%preun
+%systemd_preun %{name}.service
+
+%postun
+%systemd_postun %{name}.service
+
+%files
+%license LICENSE
+%doc README.md ChangeLog
+%dir %attr(-, root, %{groupname}) %{_sysconfdir}/monasca
+%config(noreplace) %attr(0640, root, %{groupname}) %{_sysconfdir}/monasca-transform.conf
+%{_unitdir}/%{name}.service
+%if 0%{?suse_version}
+%{_sbindir}/rc%{name}
+%endif
+%{_bindir}/monasca-transform
+%dir %attr(0750, root, %{groupname}) %{_var}/log/monasca
+%dir %attr(0750, %{username}, %{groupname}) %{_var}/log/monasca/transform
+
+%files -n python-{{ pypi_name }}
+%defattr(-, root, root,-)
+%license LICENSE
+%{python2_sitelib}/monasca_transform
+%{python2_sitelib}/*.egg-info
+%dir %attr(0750, %{username}, %{groupname}) %{_datadir}/%{sname}
+%{_datadir}/%{sname}/%{sname}.zip
+
+%changelog
