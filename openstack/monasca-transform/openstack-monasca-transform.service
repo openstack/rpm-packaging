@@ -1,0 +1,10 @@
+[Unit]
+Description=Monasca Transform Daemon
+After=zookeeper.service spark-master.service spark-worker.service
+
+[Service]
+Type=simple
+LimitNOFILE=32768
+ExecStart=/usr/bin/monasca-transform
+[Install]
+WantedBy=multi-user.target
