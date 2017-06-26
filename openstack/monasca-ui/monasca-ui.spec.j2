@@ -51,7 +51,9 @@ The Monasca UI Horizon plugin adds Monitoring panel to the OpenStack dashboard.
 %py2_install
 
 install -m 0755 -d %{buildroot}%{http_dashboard_dir}/openstack_dashboard/enabled/
+install -m 0755 -d %{buildroot}%{http_dashboard_dir}/openstack_dashboard/conf/
 cp -a monitoring/enabled/_50_admin_add_monitoring_panel.py %{buildroot}%{http_dashboard_dir}/openstack_dashboard/enabled/
+cp -a monitoring/conf/monitoring_policy.json %{buildroot}%{http_dashboard_dir}/openstack_dashboard/conf/
 %fdupes %{buildroot}%{python2_sitelib}
 %fdupes %{buildroot}%{http_dashboard_dir}
 
@@ -63,6 +65,7 @@ su %{apache_user} -s /bin/sh -c "python %{http_dashboard_dir}/manage.py collects
 
 %files
 %{http_dashboard_dir}/openstack_dashboard/enabled/_50_admin_add_monitoring_panel.py
+%{http_dashboard_dir}/openstack_dashboard/conf/monitoring_policy.json
 %doc ChangeLog README.md LICENSE
 
 %files -n {{ py2pkg('horizon-plugin-monasca-ui') }}
