@@ -1,0 +1,52 @@
+From b0a2a39508fe23d39be59663bb0aea6f6cb4e66f Mon Sep 17 00:00:00 2001
+From: Akihiro Motoki <amotoki@gmail.com>
+Date: Mon, 5 Jun 2017 09:38:29 +0000
+Subject: [PATCH] Fix doc build
+
+Starting in Django 1.7, standalone scripts, such as a sphinx build
+require that django.setup() be called first. See:
+https://docs.djangoproject.com/en/1.8/releases/1.7/#standalone-scripts
+
+This should be added to the horizon/docs/source/conf.py
+
+setenv DJANGO_SETTINGS_MODULE for docs env in tox.ini
+is no longer needed as it is configured in doc/source/conf.py.
+
+Change-Id: I910dae37770ab9767689918a0c61b78d9c56115a
+---
+ doc/source/conf.py | 4 ++++
+ tox.ini            | 1 -
+ 2 files changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/doc/source/conf.py b/doc/source/conf.py
+index 661d794..39d27e1 100644
+--- a/doc/source/conf.py
++++ b/doc/source/conf.py
+@@ -13,8 +13,12 @@
+ 
+ import os
+ 
++import django
++
+ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'openstack_auth.tests.settings')
+ 
++django.setup()
++
+ # If extensions (or modules to document with autodoc) are in another directory,
+ # add these directories to sys.path here. If the directory is relative to the
+ # documentation root, use os.path.abspath to make it absolute, like shown here.
+diff --git a/tox.ini b/tox.ini
+index b48b771..0f284bc 100644
+--- a/tox.ini
++++ b/tox.ini
+@@ -53,7 +53,6 @@ commands = {posargs}
+ 
+ [testenv:docs]
+ setenv = {[env-common]setenv}
+-         DJANGO_SETTINGS_MODULE=openstack_auth.tests.settings
+ commands = python setup.py build_sphinx
+ 
+ [flake8]
+-- 
+2.13.1
+
