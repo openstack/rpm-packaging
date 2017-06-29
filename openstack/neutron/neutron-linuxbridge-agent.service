@@ -1,0 +1,15 @@
+[Unit]
+Description=OpenStack Neutron Linux Bridge Agent
+After=syslog.target network.target
+
+[Service]
+Type=simple
+User=neutron
+PermissionsStartOnly=true
+ExecStartPre=/usr/bin/neutron-enable-bridge-firewall.sh
+ExecStart=/usr/bin/neutron-linuxbridge-agent --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugins/ml2/linuxbridge_agent.ini
+KillMode=process
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
