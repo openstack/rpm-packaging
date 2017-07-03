@@ -1,5 +1,5 @@
 {% set pypi_name = 'monasca-log-api' %}
-{% set upstream_version = upstream_version('1.4.1') %}
+{% set upstream_version = upstream_version('2.2.1') %}
 {% set rpm_release = '1' %}
 
 %define sname           {{ pypi_name }}
@@ -11,8 +11,7 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            https://wiki.openstack.org/wiki/Monasca
 Source0:        https://pypi.io/packages/source/m/%{sname}/%{sname}-%{version}.tar.gz
-Source1:        %{name}.conf
-Source3:        %{name}-wsgi.conf
+Source1:        %{name}-wsgi.conf
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('falcon') }}
 BuildRequires:  {{ py2pkg('fixtures') }}
@@ -71,6 +70,9 @@ log agents.
 
 %build
 %py2_build
+oslo-config-generator \
+  --config-file config-generator/monasca-log-api.conf \
+  --output-file etc/monasca/log-api.conf
 
 %install
 %py2_install
@@ -88,15 +90,12 @@ rm -rf %{buildroot}%{_prefix}%{_sysconfdir}/monasca
 # configuration bits
 # NOTEtrebskit) file names are hardcoded in monasca-log-api
 # should be refactored when Bug#1670277 is resolved
-install -D -m 640 %{SOURCE1} %{buildroot}%{_sysconfdir}/monasca/log-api-config.conf
-install -D -m 640 etc/monasca/log-api-config.ini %{buildroot}%{_sysconfdir}/monasca/log-api-config.ini
+install -D -m 640 etc/monasca/log-api.conf %{buildroot}%{_sysconfdir}/monasca/log-api.conf
+install -D -m 640 etc/monasca/log-api-paste.ini %{buildroot}%{_sysconfdir}/monasca/log-api-paste.ini
 install -D -m 640 etc/monasca/log-api-logging.conf %{buildroot}%{_sysconfdir}/monasca/log-api-logging.conf
 
-# WSGI application
-install -D -m 755 monasca_log_api/wsgi/monasca_log_api.py %{buildroot}%{_bindir}/monasca-log-api.wsgi
-
 ## install apache configuration
-install -p -D -m 640 %{SOURCE3} %{buildroot}%{apache_site_dir}/%{sname}.conf.sample
+install -p -D -m 640 %{SOURCE1} %{buildroot}%{apache_site_dir}/%{sname}.conf.sample
 sed -e "
     s|__APACHE_NAME__|%{apache_name}|g;
 " -i %{buildroot}%{apache_site_dir}/%{sname}.conf.sample
@@ -122,17 +121,17 @@ if [ $1 -eq 0 ] ; then
 fi
 
 %files
-%doc README.md ChangeLog
+%doc README.rst ChangeLog
 %{_bindir}/monasca-log-api
-%{_bindir}/monasca-log-api.wsgi
+%{_bindir}/monasca-log-api-wsgi
 
 %dir %attr(0750, root, monasca) %{_sysconfdir}/monasca
 %dir %attr(0750, root, monasca) %{_var}/log/monasca
 %dir %attr(0750, monasca-log-api, monasca) %{_var}/lib/monasca-log-api
 
-%config(noreplace) %attr(0640, root, monasca) %{_sysconfdir}/monasca/log-api-config.conf
+%config(noreplace) %attr(0640, root, monasca) %{_sysconfdir}/monasca/log-api.conf
 %config(noreplace) %attr(0640, root, monasca) %{_sysconfdir}/monasca/log-api-logging.conf
-%config(noreplace) %attr(0640, root, monasca) %{_sysconfdir}/monasca/log-api-config.ini
+%config(noreplace) %attr(0640, root, monasca) %{_sysconfdir}/monasca/log-api-paste.ini
 %config(noreplace) %attr(0640, root, monasca) %{apache_site_dir}/%{sname}.conf.sample
 
 %files -n python-%{sname}
