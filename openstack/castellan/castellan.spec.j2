@@ -1,6 +1,6 @@
 %global sname castellan
 Name:           {{ py2name('castellan') }}
-Version:        0.10.0
+Version:        0.11.0
 Release:        0
 Summary:        Generic Key Manager interface for OpenStack
 License:        {{ license('Apache-2.0') }}
@@ -35,7 +35,7 @@ Generic Key Manager interface for OpenStack.
 Summary:        Documentation for castellan
 Group:          Documentation
 BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 
 %description doc
 Castellan is a generic Key Manager interface for OpenStack.
