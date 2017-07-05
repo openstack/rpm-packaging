@@ -9,22 +9,25 @@ Group:          Development/Languages/Python
 Url:            https://launchpad.net/%{sname}
 Source0:        https://pypi.io/packages/source/t/%{sname}/%{sname}-%{sversion}.tar.gz
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('mistral') }}
 BuildRequires:  {{ py2pkg('GitPython') }}
 BuildRequires:  {{ py2pkg('PyYAML') }}
 BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('docker-py') }}
 BuildRequires:  {{ py2pkg('gitdb') }}
 BuildRequires:  {{ py2pkg('python-heatclient') }}
+BuildRequires:  {{ py2pkg('python-ironic-inspector-client') }}
 BuildRequires:  {{ py2pkg('python-ironicclient') }}
+BuildRequires:  {{ py2pkg('mistral-lib') }}
+BuildRequires:  {{ py2pkg('python-mistralclient') }}
+BuildRequires:  {{ py2pkg('oslo.concurrency') }}
 BuildRequires:  {{ py2pkg('oslo.log') }}
 BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('paramiko') }}
 BuildRequires:  {{ py2pkg('passlib') }}
 BuildRequires:  {{ py2pkg('python-subunit') }}
 BuildRequires:  {{ py2pkg('testrepository') }}
 BuildRequires:  {{ py2pkg('testscenarios') }}
 BuildRequires:  {{ py2pkg('testtools') }}
-Requires:       {{ py2pkg('mistral') }}
 Requires:       {{ py2pkg('Babel') }}
 Requires:       {{ py2pkg('GitPython') }}
 Requires:       {{ py2pkg('Jinja2') }}
@@ -34,10 +37,15 @@ Requires:       {{ py2pkg('python-glanceclient') }}
 Requires:       {{ py2pkg('python-heatclient') }}
 Requires:       {{ py2pkg('python-ironic-inspector-client') }}
 Requires:       {{ py2pkg('python-ironicclient') }}
+Requires:       {{ py2pkg('mistral-lib') }}
+Requires:       {{ py2pkg('python-mistralclient') }}
+Requires:       {{ py2pkg('netifaces') }}
 Requires:       {{ py2pkg('python-novaclient') }}
+Requires:       {{ py2pkg('oslo.concurrency') }}
 Requires:       {{ py2pkg('oslo.config') }}
 Requires:       {{ py2pkg('oslo.log') }}
 Requires:       {{ py2pkg('oslo.utils') }}
+Requires:       {{ py2pkg('paramiko') }}
 Requires:       {{ py2pkg('passlib') }}
 Requires:       {{ py2pkg('six') }}
 BuildArch:      noarch
