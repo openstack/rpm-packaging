@@ -1,7 +1,7 @@
 %global sname os-win
 Name:           {{ py2name('os-win') }}
 Epoch:          {{ epoch('os-win') }}
-Version:        2.0.1
+Version:        2.1.0
 Release:        0
 Summary:        Hyper-V library for OpenStack projects
 License:        {{ license('Apache-2.0') }}
@@ -51,6 +51,9 @@ Documentation for the Hyper-V library.
 %prep
 %autosetup -n %{sname}-%{version}
 %py_req_cleanup
+# we dont want to run the hacking tests again (and dont want the needed deps)
+rm -f os_win/tests/unit/test_hacking.py
+
 
 %build
 %{py2_build}
