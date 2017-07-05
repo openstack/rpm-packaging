@@ -87,7 +87,7 @@ BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('WSME') }}
 BuildRequires:  {{ py2pkg('jsonschema') }}
 BuildRequires:  {{ py2pkg('networkx') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 BuildRequires:  {{ py2pkg('paramiko') }}
 BuildRequires:  {{ py2pkg('pecan') }}
 BuildRequires:  {{ py2pkg('pep8') }}
@@ -207,7 +207,7 @@ export PYTHONPATH="."
 oslo-config-generator --config-file tools/config/config-generator.mistral.conf \
 --output-file etc/mistral.conf.sample
 
-%{__python2} setup.py build_sphinx
+%{__python2} setup.py build_sphinx -b html
 # remove the sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
