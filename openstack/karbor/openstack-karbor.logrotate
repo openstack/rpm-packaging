@@ -1,0 +1,11 @@
+/var/log/karbor/*.log {
+    weekly
+    dateext
+    rotate 10
+    size 1M
+    missingok
+    compress
+    notifempty
+    su karbor karbor
+    minsize 100k
+}

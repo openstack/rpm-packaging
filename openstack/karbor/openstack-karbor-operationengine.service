@@ -1,0 +1,13 @@
+[Unit]
+Description=OpenStack Data Protection Operationengine service
+After=syslog.target network.target
+
+[Service]
+Type=simple
+User=karbor
+ExecStart=/usr/bin/karbor-operationengine --logfile /var/log/karbor/operationengine.log
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+
