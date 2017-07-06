@@ -1,6 +1,6 @@
 %global sname gnocchiclient
 Name:           {{ py2name('gnocchiclient') }}
-Version:        3.1.1
+Version:        3.3.1
 Release:        0
 Summary:        Python API and CLI for OpenStack Gnocchi
 License:        {{ license('Apache-2.0') }}
@@ -12,13 +12,9 @@ BuildRequires:  {{ py2pkg('cliff') }}
 BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('futurist') }}
 BuildRequires:  {{ py2pkg('keystoneauth1') }}
-BuildRequires:  {{ py2pkg('openstack-doc-tools') }}
 BuildRequires:  {{ py2pkg('osc-lib') }}
-BuildRequires:  {{ py2pkg('oslo.serialization') }}
-BuildRequires:  {{ py2pkg('oslo.utils') }}
 BuildRequires:  {{ py2pkg('oslotest') }}
 BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('pyparsing') }}
 BuildRequires:  {{ py2pkg('python-subunit') }}
 BuildRequires:  {{ py2pkg('requests') }}
 BuildRequires:  {{ py2pkg('setuptools') }}
@@ -26,15 +22,15 @@ BuildRequires:  {{ py2pkg('six') }}
 BuildRequires:  {{ py2pkg('testrepository') }}
 BuildRequires:  {{ py2pkg('testtools') }}
 Requires:       {{ py2pkg('cliff') }}
+Requires:       {{ py2pkg('debtcollector') }}
 Requires:       {{ py2pkg('futurist') }}
+Requires:       {{ py2pkg('iso8601') }}
 Requires:       {{ py2pkg('keystoneauth1') }}
-Requires:       {{ py2pkg('openstack-doc-tools') }}
+Requires:       {{ py2pkg('monotonic') }}
 Requires:       {{ py2pkg('osc-lib') }}
-Requires:       {{ py2pkg('oslo.serialization') }}
-Requires:       {{ py2pkg('oslo.utils') }}
 Requires:       {{ py2pkg('pbr') }}
-Requires:       {{ py2pkg('pyparsing') }}
 Requires:       {{ py2pkg('six') }}
+Requires:       {{ py2pkg('ujson') }}
 BuildArch:      noarch
 
 %description
@@ -45,6 +41,7 @@ provides a Python API (the gnocchiclient module) and a command-line tool.
 Summary:        Documentation for OpenStack Gnocchi API Client
 Group:          Documentation
 BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('openstack-doc-tools') }}
 BuildRequires:  {{ py2pkg('oslosphinx') }}
 
 %description      doc
