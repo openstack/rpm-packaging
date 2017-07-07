@@ -1,0 +1,66 @@
+{% set pypi_name = 'pyghmi' %}
+{% set upstream_version = upstream_version('1.0.20') %}
+{% set rpm_release = '1' %}
+
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
+Summary:        General Hardware Management Initiative (IPMI and others)
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            https://launchpad.net/{{ pypi_name }}
+Source0:        https://pypi.io/packages/source/p/{{ pypi_name }}/{{ pypi_name }}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('pycrypto') }}
+Requires:       {{ py2pkg('pycrypto') }}
+BuildArch:      noarch
+
+%description
+This is a pure python implementation of IPMI protocol.
+
+pyghmicons and pyghmiutil are example scripts to show how one may incorporate
+this library into python code
+
+%package doc
+Summary:        General Hardware Management Initiative (IPMI and others) -- Documentation
+Group:          Documentation
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+
+%description doc
+This is a pure python implementation of IPMI protocol.
+
+pyghmicons and pyghmiutil are example scripts to show how one may incorporate
+this library into python code
+
+%prep
+%autosetup -p1 -n {{ pypi_name }}-%{version}
+%py_req_cleanup
+
+%build
+%{py2_build}
+%{__python2} setup.py build_sphinx --builder=html
+rm -rf html/.{doctrees,buildinfo}
+
+%install
+%{py2_install}
+
+%check
+%{__python2} setup.py test
+
+%files
+%doc README.md ChangeLog
+%license LICENSE
+%{_bindir}/pyghmicons
+%{_bindir}/pyghmiutil
+%{_bindir}/virshbmc
+%{python2_sitelib}/pyghmi*
+%{python2_sitelib}/*.egg-info
+
+%files doc
+%doc doc/build/html
+%license LICENSE
+
+%changelog
