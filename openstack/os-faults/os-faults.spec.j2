@@ -1,0 +1,119 @@
+{% set pypi_name = 'os-faults' %}
+{% set upstream_version = upstream_version('0.1.17') %}
+{% set rpm_release = '1' %}
+
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
+Summary:        OpenStack fault-injection library
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+URL:            https://os-faults.readthedocs.io
+Source0:        https://files.pythonhosted.org/packages/source/o/os_faults/os_faults-%{version}.tar.gz
+BuildRequires:  {{ ('ansible') }}
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('PyYAML') }}
+BuildRequires:  {{ py2pkg('appdirs') }}
+BuildRequires:  {{ py2pkg('click') }}
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('iso8601') }}
+BuildRequires:  {{ py2pkg('jsonschema') }}
+BuildRequires:  {{ py2pkg('oslo.i18n') }}
+BuildRequires:  {{ py2pkg('oslo.serialization') }}
+BuildRequires:  {{ py2pkg('oslo.utils') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('pyghmi') }}
+BuildRequires:  {{ py2pkg('setuptools') }}
+BuildRequires:  {{ py2pkg('six') }}
+# tests requirements
+# disabled until all are available in ci
+# BuildRequires:  {{ py2pkg('coverage') }}
+#BuildRequires:  {{ py2pkg('ddt') }}
+# BuildRequires:  {{ py2pkg('hacking') }}
+#BuildRequires:  {{ py2pkg('mock') }}
+#BuildRequires:  {{ py2pkg('oslotest') }}
+#BuildRequires:  {{ py2pkg('pytest') }}
+# BuildRequires:  {{ py2pkg('pytest-cov') }}
+# BuildRequires:  {{ py2pkg('pytest-html') }}
+# BuildRequires:  {{ py2pkg('pytest-logging') }}
+#BuildRequires:  {{ py2pkg('python-subunit') }}
+#BuildRequires:  {{ py2pkg('testrepository') }}
+#BuildRequires:  {{ py2pkg('testscenarios') }}
+#BuildRequires:  {{ py2pkg('testtools') }}
+Requires:       {{ ('ansible') }}
+Requires:       {{ py2pkg('PyYAML') }}
+Requires:       {{ py2pkg('appdirs') }}
+Requires:       {{ py2pkg('click') }}
+Requires:       {{ py2pkg('iso8601') }}
+Requires:       {{ py2pkg('jsonschema') }}
+Requires:       {{ py2pkg('oslo.i18n') }}
+Requires:       {{ py2pkg('oslo.serialization') }}
+Requires:       {{ py2pkg('oslo.utils') }}
+Requires:       {{ py2pkg('pbr') }}
+Requires:       {{ py2pkg('pyghmi') }}
+Requires:       {{ py2pkg('six') }}
+BuildArch:      noarch
+%if ! 0%{?rhel}
+Recommends:     {{ py2pkg('libvirt-python') }}
+%endif
+
+%description
+The library does destructive actions inside an OpenStack cloud. It provides
+an abstraction layer over different types of cloud deployments. The actions
+are implemented as drivers (e.g. DevStack driver, Fuel driver, Libvirt driver,
+IPMI driver).
+
+%package doc
+Summary:        Documentation for OpenStack faults Library
+Group:          Documentation
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
+BuildRequires:  {{ py2pkg('reno') }}
+# missing on rdo ci, so disable building docs on it for now
+%if ! 0%{?rdo}
+BuildRequires:  {{ py2pkg('sphinx_rtd_theme') }}
+BuildRequires:  {{ py2pkg('sphinxcontrib-programoutput') }}
+%endif
+
+%description doc
+The library does destructive actions inside an OpenStack cloud. It provides
+an abstraction layer over different types of cloud deployments. The actions
+are implemented as drivers (e.g. DevStack driver, Fuel driver, Libvirt driver,
+IPMI driver).
+
+This package contains the documentation.
+
+%prep
+%autosetup -p1 -n os_faults-%{version}
+%py_req_cleanup
+
+%build
+%{py2_build}
+%if ! 0%{?rdo}
+%{__python2} setup.py build_sphinx --builder=html
+rm -rf doc/build/html/.{doctrees,buildinfo}
+%endif
+
+%install
+%{py2_install}
+
+%check
+# disabled until rest of requirements are available
+#%{__python2} setup.py test
+
+%files
+%defattr(-,root,root,-)
+%doc README.rst ChangeLog
+%license LICENSE
+%{_bindir}/os-inject-fault
+%{_bindir}/os-faults
+%{python2_sitelib}/os_faults*
+
+%files doc
+%defattr(-,root,root,-)
+%if ! 0%{?rdo}
+%doc doc/build/html
+%endif
+%license LICENSE
+
+%changelog
