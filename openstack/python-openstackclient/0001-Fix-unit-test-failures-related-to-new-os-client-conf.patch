@@ -1,0 +1,108 @@
+From 3cba09e767c6af3f715828966f0d0fa21edc00a8 Mon Sep 17 00:00:00 2001
+From: Akihiro Motoki <amotoki@gmail.com>
+Date: Wed, 12 Jul 2017 09:42:28 +0000
+Subject: [PATCH] Fix unit test failures related to new os-client-config and
+ osc-lib
+
+[breakage related to os-client-config 1.28.0]
+os-client-config 1.28.0 add a check if filebased and envvars are
+both used. This check causes OSC unit test failure.
+
+OSC now instantiates OpenStackConfig twice as a workaround.
+The unit test mocks _load_config_file() and it returns a config dict,
+but os-client-config OpenStackConfig.__init__ updates the dict returned.
+As a result, when OpenStackConfig is instantiated second time,
+the mock of _load_config_file returns a modified version of the config
+dict. This hits the new check in os-client-config 1.28.0.
+
+This commit changes the mock to use side_effect rather than return_value
+to ensure the original dict is used.
+
+[breakage related to osc-lib 1.7.0]
+The change in osc-lib 1.7.0 added "if" logic to avoid calling get() twice.
+In tests.unit.volume.test_find_resource, kwargs is empty dict in find_resource(),
+so the second call to get() is NOT called now.
+Removing the second elements of side_effect addresses the unit failure.
+
+Co-Authored-By: Rui Chen <chenrui.momo@gmail.com>
+Change-Id: Ib9d14661b2755bbd6619e15c0d9023fbc9d27d70
+Closes-Bug: #1703782
+Closes-Bug: #1703783
+---
+ openstackclient/tests/unit/integ/cli/test_shell.py | 32 +++++++++++-----------
+ .../tests/unit/volume/test_find_resource.py        |  2 --
+ 2 files changed, 16 insertions(+), 18 deletions(-)
+
+diff --git a/openstackclient/tests/unit/integ/cli/test_shell.py b/openstackclient/tests/unit/integ/cli/test_shell.py
+index 9d819ed2..4e91f637 100644
+--- a/openstackclient/tests/unit/integ/cli/test_shell.py
++++ b/openstackclient/tests/unit/integ/cli/test_shell.py
+@@ -397,14 +397,14 @@ class TestIntegShellCliPrecedenceOCC(test_base.TestInteg):
+         Run 1 has --os-password on CLI
+         """
+ 
+-        config_mock.return_value = (
+-            'file.yaml',
+-            copy.deepcopy(test_shell.CLOUD_2),
+-        )
+-        vendor_mock.return_value = (
+-            'file.yaml',
+-            copy.deepcopy(test_shell.PUBLIC_1),
+-        )
++        def config_mock_return():
++            return ('file.yaml', copy.deepcopy(test_shell.CLOUD_2))
++        config_mock.side_effect = config_mock_return
++
++        def vendor_mock_return():
++            return ('file.yaml', copy.deepcopy(test_shell.PUBLIC_1))
++        vendor_mock.side_effect = vendor_mock_return
++
+         _shell = shell.OpenStackShell()
+         _shell.run(
+             "--os-password qaz configuration show".split(),
+@@ -466,14 +466,14 @@ class TestIntegShellCliPrecedenceOCC(test_base.TestInteg):
+         Run 2 has --os-username, --os-password, --os-project-domain-id on CLI
+         """
+ 
+-        config_mock.return_value = (
+-            'file.yaml',
+-            copy.deepcopy(test_shell.CLOUD_2),
+-        )
+-        vendor_mock.return_value = (
+-            'file.yaml',
+-            copy.deepcopy(test_shell.PUBLIC_1),
+-        )
++        def config_mock_return():
++            return ('file.yaml', copy.deepcopy(test_shell.CLOUD_2))
++        config_mock.side_effect = config_mock_return
++
++        def vendor_mock_return():
++            return ('file.yaml', copy.deepcopy(test_shell.PUBLIC_1))
++        vendor_mock.side_effect = vendor_mock_return
++
+         _shell = shell.OpenStackShell()
+         _shell.run(
+             "--os-username zarquon --os-password qaz "
+diff --git a/openstackclient/tests/unit/volume/test_find_resource.py b/openstackclient/tests/unit/volume/test_find_resource.py
+index d2509315..dbf9592f 100644
+--- a/openstackclient/tests/unit/volume/test_find_resource.py
++++ b/openstackclient/tests/unit/volume/test_find_resource.py
+@@ -45,7 +45,6 @@ class TestFindResourceVolumes(test_utils.TestCase):
+         resp = mock.Mock()
+         body = {"volumes": [{"id": ID, 'display_name': NAME}]}
+         api.client.get.side_effect = [Exception("Not found"),
+-                                      Exception("Not found"),
+                                       (resp, body)]
+         self.manager = volumes.VolumeManager(api)
+ 
+@@ -69,7 +68,6 @@ class TestFindResourceVolumeSnapshots(test_utils.TestCase):
+         resp = mock.Mock()
+         body = {"snapshots": [{"id": ID, 'display_name': NAME}]}
+         api.client.get.side_effect = [Exception("Not found"),
+-                                      Exception("Not found"),
+                                       (resp, body)]
+         self.manager = volume_snapshots.SnapshotManager(api)
+ 
+-- 
+2.13.3
+

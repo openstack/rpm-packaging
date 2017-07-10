@@ -8,6 +8,8 @@ Group:          Development/Languages/Python
 Url:            https://launchpad.net/%{sname}
 Source0:        https://pypi.io/packages/source/p/%{sname}/%{sname}-%{version}.tar.gz
 Patch1:         0001-Stop-using-os-cloud-config.patch
+# https://review.openstack.org/#/c/449071/
+Patch2:         0001-Remove-log-translations.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('cliff') }}
 BuildRequires:  {{ py2pkg('devel') }}

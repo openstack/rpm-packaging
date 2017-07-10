@@ -1,0 +1,61 @@
+From 020e512973ccfeaffe123de96fe15202bc53fcf1 Mon Sep 17 00:00:00 2001
+From: liyi <liyi8611@gmail.com>
+Date: Thu, 23 Mar 2017 19:09:43 +0800
+Subject: [PATCH] Remove log translations
+
+Log messages are no longer being translated. This removes all use of
+the _LE, _LI, and _LW translation markers to simplify logging and to
+avoid confusion with new contributions.
+
+See:
+http://lists.openstack.org/pipermail/openstack-i18n/2016-November/002574.html
+http://lists.openstack.org/pipermail/openstack-dev/2017-March/113365.html
+
+Change-Id: I255732018b79ac7a0c8e1d81ab634af49fdc0245
+---
+ tripleoclient/utils.py | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
+
+diff --git a/tripleoclient/utils.py b/tripleoclient/utils.py
+index 26eda43..5ada210 100644
+--- a/tripleoclient/utils.py
++++ b/tripleoclient/utils.py
+@@ -30,7 +30,6 @@ import yaml
+ from heatclient.common import event_utils
+ from heatclient.exc import HTTPNotFound
+ from osc_lib.i18n import _
+-from osc_lib.i18n import _LI
+ from six.moves import configparser
+ 
+ from tripleoclient import exceptions
+@@ -716,22 +715,22 @@ def prompt_user_for_confirmation(message, logger, positive_response='y'):
+     """
+     try:
+         if not sys.stdin.isatty():
+-            logger.error(_LI('User interaction required, cannot confirm.'))
++            logger.error(_('User interaction required, cannot confirm.'))
+             return False
+         else:
+             sys.stdout.write(message)
+             prompt_response = sys.stdin.readline().lower()
+             if not prompt_response.startswith(positive_response):
+-                logger.info(_LI(
++                logger.info(_(
+                     'User did not confirm action so taking no action.'))
+                 return False
+-            logger.info(_LI('User confirmed action.'))
++            logger.info(_('User confirmed action.'))
+             return True
+     except KeyboardInterrupt:  # ctrl-c
+-        logger.info(_LI(
++        logger.info(_(
+             'User did not confirm action (ctrl-c) so taking no action.'))
+     except EOFError:  # ctrl-d
+-        logger.info(_LI(
++        logger.info(_(
+             'User did not confirm action (ctrl-d) so taking no action.'))
+     return False
+ 
+-- 
+2.13.3
+
