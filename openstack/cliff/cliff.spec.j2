@@ -1,6 +1,6 @@
 %global sname cliff
 Name:           {{ py2name('cliff') }}
-Version:        2.7.0
+Version:        2.8.0
 Release:        0
 Summary:        Command Line Interface Formulation Framework
 License:        {{ license('Apache-2.0') }}
@@ -11,7 +11,6 @@ BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('PrettyTable') }}
 BuildRequires:  {{ py2pkg('PyYAML') }}
 BuildRequires:  {{ py2pkg('cmd2') }}
-BuildRequires:  {{ py2pkg('coverage') }}
 BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('mock') }}
 BuildRequires:  {{ py2pkg('pbr') }}
@@ -40,7 +39,7 @@ other extensions.
 Summary:        %{summary} - Documentation
 Group:          Documentation/HTML
 BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 Requires:       %{name} = %{version}
 
 %description doc
@@ -52,6 +51,7 @@ This package contains documentation files for %{name}.
 
 %prep
 %autosetup -n %{sname}-%{version}
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 %py_req_cleanup
 
 %build
