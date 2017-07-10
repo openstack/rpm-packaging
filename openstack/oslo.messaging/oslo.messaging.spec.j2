@@ -1,6 +1,6 @@
 %global sname oslo.messaging
 Name:           {{ py2name('oslo.messaging') }}
-Version:        5.28.0
+Version:        5.29.0
 Release:        0
 Summary:        OpenStack oslo.messaging library
 License:        {{ license('Apache-2.0') }}
@@ -76,7 +76,7 @@ of different messaging transports.
 %package doc
 Summary:        Documentation for OpenStack messaging library
 BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 
 %description doc
 The Oslo messaging API supports RPC and notifications over a number
@@ -86,6 +86,7 @@ This package contains the documentation.
 %prep
 %autosetup -p1 -n %{sname}-%{version}
 %py_req_cleanup
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 # FIXME(jpena): since version 5.23.0, four tests in the amqp driver are
 # failing. Let's remove the tests for now, so we can build a package and
 # figure out whatis wrong.
