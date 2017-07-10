@@ -1,6 +1,6 @@
 %global sname oslo.utils
 Name:           {{ py2name('oslo.utils') }}
-Version:        3.26.0
+Version:        3.27.0
 Release:        0
 Summary:        OpenStack Utils Library
 License:        {{ license('Apache-2.0') }}
@@ -25,7 +25,6 @@ BuildRequires:  {{ py2pkg('testrepository') }}
 BuildRequires:  {{ py2pkg('testscenarios') }}
 BuildRequires:  {{ py2pkg('testtools') }}
 Requires:       {{ py2pkg('debtcollector') }}
-Requires:       {{ py2pkg('funcsigs') }}
 Requires:       {{ py2pkg('iso8601') }}
 Requires:       {{ py2pkg('monotonic') }}
 Requires:       {{ py2pkg('netaddr') }}
@@ -43,13 +42,14 @@ such as encoding, exception handling, string manipulation, and time handling.
 %package doc
 Summary:        Documentation for OpenStack utils library
 BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 
 %description doc
 Documentation for OpenStack utils library.
 
 %prep
 %autosetup -n %{sname}-%{version}
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 %py_req_cleanup
 
 %build
