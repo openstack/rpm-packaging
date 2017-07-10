@@ -1,6 +1,6 @@
 %global sname castellan
 Name:           {{ py2name('castellan') }}
-Version:        0.11.0
+Version:        0.11.1
 Release:        0
 Summary:        Generic Key Manager interface for OpenStack
 License:        {{ license('Apache-2.0') }}
@@ -44,6 +44,7 @@ This package contains the documentation
 %prep
 %autosetup -n %{sname}-%{version}
 %py_req_cleanup
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
 %py2_build
