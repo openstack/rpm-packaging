@@ -1,6 +1,6 @@
 %global sname python-ironicclient
 Name:           {{ py2name('python-ironicclient') }}
-Version:        1.13.0
+Version:        1.14.0
 Release:        0
 Summary:        Python API and CLI for OpenStack Ironic
 License:        {{ license('Apache-2.0')}}
@@ -53,7 +53,7 @@ ironicclient module) and a command-line interface (ironic).
 Summary:        Documentation for OpenStack Ironic API Client
 Group:          Documentation
 BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 BuildRequires:  {{ py2pkg('reno') }}
 
 %description doc
@@ -65,6 +65,7 @@ This package contains auto-generated documentation.
 %prep
 %autosetup -n %{sname}-%{version}
 %py_req_cleanup
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
 %{py2_build}
