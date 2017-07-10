@@ -1,6 +1,6 @@
 %global pypi_name debtcollector
 Name:           {{ py2name('debtcollector') }}
-Version:        1.15.0
+Version:        1.16.0
 Release:        0
 Summary:        A collection of Python deprecation patterns and strategies
 License:        {{ license('Apache-2.0') }}
@@ -37,7 +37,7 @@ future deprecations.
 Summary:        Documentation for %{name}
 Group:          Documentation
 BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 
 %description doc
 A collection of Python deprecation patterns and strategies that help
@@ -55,6 +55,7 @@ This package contains documentation in HTML format.
 %prep
 %autosetup -n %{pypi_name}-%{version}
 %py_req_cleanup
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
 %py2_build
