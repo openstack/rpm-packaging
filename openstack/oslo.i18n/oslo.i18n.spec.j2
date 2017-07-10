@@ -1,6 +1,6 @@
 %global sname oslo.i18n
 Name:           {{ py2name('oslo.i18n') }}
-Version:        3.15.3
+Version:        3.16.0
 Release:        0
 Summary:        OpenStack i18n library
 License:        {{ license('Apache-2.0') }}
@@ -25,7 +25,7 @@ or library.
 %package doc
 Summary:        Documentation for OpenStack i18n library
 BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 
 %description doc
 Documentation for the oslo.i18n library.
@@ -33,6 +33,7 @@ Documentation for the oslo.i18n library.
 %prep
 %autosetup -n %{sname}-%{version}
 %py_req_cleanup
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
 %{py2_build}
