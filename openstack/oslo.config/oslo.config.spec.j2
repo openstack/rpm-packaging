@@ -1,6 +1,6 @@
 %global sname oslo.config
 Name:           {{ py2name('oslo.config') }}
-Version:        4.7.0
+Version:        4.8.0
 Epoch:          {{ epoch('oslo.config') }}
 Release:        0
 Summary:        OpenStack common configuration library
@@ -46,7 +46,7 @@ parsing library from the Oslo project.
 %package doc
 Summary:       Documentation for OpenStack common configuration library
 BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 
 %description doc
 Documentation for the oslo-config library.
@@ -54,6 +54,7 @@ Documentation for the oslo-config library.
 %prep
 %autosetup -n %{sname}-%{version}
 %py_req_cleanup
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
 %{py2_build}
