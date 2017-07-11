@@ -1,6 +1,6 @@
 %global sname oslo.reports
 Name:           {{ py2name('oslo.reports') }}
-Version:        1.21.0
+Version:        1.21.1
 Release:        0
 Summary:        OpenStack oslo.reports library
 License:        {{ license('Apache-2.0') }}
@@ -35,7 +35,7 @@ framework, known as the "guru meditation report".
 %package doc
 Summary:        Documentation for OpenStack reports library
 BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 
 %description doc
 The project oslo.reports hosts a general purpose error report generation
@@ -45,6 +45,7 @@ This package contains the documentation.
 %prep
 %autosetup -n %{sname}-%{version}
 %py_req_cleanup
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
 %{py2_build}
