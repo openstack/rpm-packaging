@@ -1,6 +1,6 @@
 %global sname oslo.log
 Name:           {{ py2name('oslo.log') }}
-Version:        3.28.1
+Version:        3.29.0
 Release:        0
 Summary:        OpenStack log library
 License:        {{ license('Apache-2.0') }}
@@ -45,7 +45,7 @@ support for context specific logging (like resource id's etc).
 %package doc
 Summary:        Documentation for OpenStack log library
 BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 
 %description doc
 Documentation for the oslo.log library.
@@ -53,6 +53,7 @@ Documentation for the oslo.log library.
 %prep
 %autosetup -n %{sname}-%{version} -p1
 %py_req_cleanup
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
 %{py2_build}
