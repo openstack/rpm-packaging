@@ -200,6 +200,7 @@ which the API servers will use.
 %autosetup -n {{ pypi_name }}-{{upstream_version}}
 %endif
 %py_req_cleanup
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
 %{py2_build}

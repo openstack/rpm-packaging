@@ -2,7 +2,6 @@
 {% set source = fetch_source('http://tarballs.openstack.org/keystone/keystone-master.tar.gz') %}
 {% set upstream_version = upstream_version() %}
 {% set rpm_release = '1' %}
-%global with_doc 1
 %if 0%{?rhel} || 0%{?fedora}
 %global rdo 1
 %endif
@@ -111,7 +110,6 @@ Keystone is a Python implementation of the OpenStack
 (http://docs.openstack.org/developer/keystone/) identity service API.
 This package contains the Keystone Python library.
 
-%if 0%{?with_doc}
 %package doc
 Summary:        Documentation for OpenStack Identity Service
 Group:          Documentation
@@ -141,7 +139,6 @@ BuildRequires:  {{ py2pkg('python-memcached') }}
 OpenStack Keystone documentaion.
 .
 This package contains the documentation
-%endif
 
 %prep
 %autosetup -p1 -n {{ pypi_name }}-{{upstream_version}}
@@ -153,19 +150,14 @@ find keystone -name \*.py -exec sed -i '/\/usr\/bin\/env python/d' {} \;
 sed -i 's#/local/bin#/bin#' httpd/wsgi-keystone.conf
 sed -i 's#apache2#httpd#' httpd/wsgi-keystone.conf
 %endif
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
 %{py2_build}
-export PYTHONPATH="."
-%if 0%{?with_doc}
-# docs generation requires everything to be installed first
-pushd doc
-make html
-make man
-popd
-# remove the sphinx-build leftovers
+
+%{__python2} setup.py build_sphinx --builder=html,man
+# remove the Sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
-%endif
 # config file generation
 oslo-config-generator --config-file config-generator/keystone.conf \
 --output-file etc/keystone.conf.sample
@@ -205,9 +197,6 @@ install -p -D -m 644 httpd/wsgi-keystone.conf  %{buildroot}%{_datadir}/keystone/
 exit 0
 
 %check
-# TODO (IgorYozhikov) on a high amount of vCpu unit tests are not passing
-# Since that we are launching tests in 1 by 1 mode by pack of 4
-export TEST_RUN_CONCURRENCY=4
 # don't want to depend on hacking for package building
 rm keystone/tests/unit/test_hacking_checks.py
 %{__python2} setup.py testr
@@ -251,10 +240,8 @@ rm keystone/tests/unit/test_hacking_checks.py
 %{python2_sitelib}/keystone*
 %{python2_sitelib}/keystone-*.egg-info
 
-%if 0%{?with_doc}
 %files doc
 %license LICENSE
 %doc doc/build/html
-%endif
 
 %changelog
