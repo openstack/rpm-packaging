@@ -1,6 +1,6 @@
 %global sname oslo.policy
 Name:           {{ py2name('oslo.policy') }}
-Version:        1.24.0
+Version:        1.24.1
 Release:        0
 Summary:        OpenStack Oslo Policy library
 License:        {{ license('Apache-2.0') }}
@@ -33,7 +33,7 @@ RBAC policy enforcement library for OpenStack.
 Summary:        Documentation for the Oslo Policy library
 Group:          Documentation
 BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 
 %description doc
 Documentation for the Oslo Policy library.
@@ -41,6 +41,7 @@ Documentation for the Oslo Policy library.
 %prep
 %autosetup -n %{sname}-%{version}
 %py_req_cleanup
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
 %{py2_build}
