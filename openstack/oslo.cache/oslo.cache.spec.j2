@@ -1,6 +1,6 @@
 %global sname oslo.cache
 Name:           {{ py2name('oslo.cache') }}
-Version:        1.23.0
+Version:        1.24.0
 Release:        0
 Summary:        Cache storage for Openstack projects
 License:        {{ license('Apache-2.0') }}
@@ -38,7 +38,7 @@ backends such as Memcached.
 %package doc
 Summary:        Documentation for the OpenStack Oslo Cache library
 BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 
 %description doc
 Documentation for the OpenStack Oslo cache library.
@@ -46,6 +46,7 @@ Documentation for the OpenStack Oslo cache library.
 %prep
 %autosetup -n %{sname}-%{version}
 %py_req_cleanup
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
 %{py2_build}
