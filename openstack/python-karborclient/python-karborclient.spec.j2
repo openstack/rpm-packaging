@@ -1,6 +1,6 @@
 %global sname python-karborclient
 Name:           {{ py2name('python-karborclient') }}
-Version:        0.3.0
+Version:        0.6.0
 Release:        0
 Summary:        Python API and CLI for OpenStack Karbor
 License:        {{ license('Apache-2.0')}}
@@ -15,6 +15,7 @@ BuildRequires:  {{ py2pkg('fixtures') }}
 BuildRequires:  {{ py2pkg('python-keystoneclient') }}
 BuildRequires:  {{ py2pkg('mock') }}
 BuildRequires:  {{ py2pkg('os-testr') }}
+BuildRequires:  {{ py2pkg('osc-lib') }}
 BuildRequires:  {{ py2pkg('oslo.i18n') }}
 BuildRequires:  {{ py2pkg('oslo.log') }}
 BuildRequires:  {{ py2pkg('oslo.utils') }}
@@ -28,6 +29,7 @@ BuildRequires:  {{ py2pkg('testtools') }}
 Requires:       {{ py2pkg('Babel') }}
 Requires:       {{ py2pkg('PrettyTable') }}
 Requires:       {{ py2pkg('python-keystoneclient') }}
+Requires:       {{ py2pkg('osc-lib') }}
 Requires:       {{ py2pkg('oslo.i18n') }}
 Requires:       {{ py2pkg('oslo.log') }}
 Requires:       {{ py2pkg('oslo.utils') }}
@@ -47,7 +49,7 @@ karborclient module) and a command-line interface (Karbor).
 Summary:        Documentation for OpenStack Karbor API Client
 Group:          Documentation
 BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 BuildRequires:  {{ py2pkg('reno') }}
 
 %description doc
@@ -58,6 +60,7 @@ This package contains auto-generated documentation.
 %prep
 %autosetup -n %{sname}-%{version}
 %py_req_cleanup
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
 %{py2_build}
