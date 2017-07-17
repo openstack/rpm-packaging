@@ -54,10 +54,12 @@ enum34;python_version=='2.7' or python_version=='2.6' or python_version=='3.3'  
 # as they have earned a reputation of frequently breaking things.
 # NOTE(sdague): before allowing in >= 0.21 please be sure
 # https://github.com/eventlet/eventlet/issues/401 is resolved
-eventlet!=0.18.3,>=0.18.2,<0.21.0  # MIT
+eventlet!=0.18.3,>=0.18.2,!=0.20.1,<0.21.0  # MIT
+exabgp>=4.0.1  # BSD
 extras  # MIT
 falcon>=1.0.0 # Apache-2.0
 Flask>=0.10,!=0.11,<1.0  # BSD
+flask-keystone>0.1  # Apache-2.0
 flask-oslolog    # Apache-2.0
 Flask-RESTful>=0.3.5     # BSD
 Flask-SQLAlchemy>=2.0    # BSD
@@ -77,6 +79,7 @@ heat-translator>=0.4.0 # Apache-2.0
 httplib2>=0.7.5  # MIT
 icalendar>=3.10 # BSD
 influxdb>=2.9.2  # MIT
+instack-undercloud>=7.0.0  # Apache-2.0
 ironic-lib>=2.5.0  # Apache-2.0
 ipaddress>=1.0.7;python_version<'3.3'  # PSF
 iso8601>=0.1.11  # MIT
@@ -88,7 +91,7 @@ jsonpath-rw>=1.2.0,<2.0  # Apache-2.0
 jsonpath-rw-ext>=0.1.9  # Apache-2.0
 jsonschema>=2.0.0,<3.0.0,!=2.5.0  # MIT
 kazoo>=2.2  # Apache-2.0
-keystoneauth1>=2.20.0  # Apache-2.0
+keystoneauth1>=2.21.0  # Apache-2.0
 keystonemiddleware>=4.12.0  # Apache-2.0
 krest>=1.3.1  # Apache-2.0
 kubernetes>=1.0.0b1  # Apache-2.0
@@ -107,7 +110,6 @@ lxml>=2.3,!=3.7.0  # BSD
 Mako>=0.4.0  # MIT
 marathon>=0.8.6  # MIT
 microversion-parse>=0.1.2  # Apache-2.0
-mistral!=2015.1.0,>=3.0.0  # Apache-2.0
 mistral-lib>=0.2.0  # Apache-2.0
 mitmproxy>=1.0.2;python_version>'3.0'  # MIT
 monasca-common>=1.4.0  # Apache-2.0
@@ -122,24 +124,23 @@ netaddr>=0.7.13,!=0.7.16  # BSD
 netifaces>=0.10.4  # MIT
 netmiko>=1.2.5 # MIT
 networkx>=1.10  # BSD
-neutron-lib>=1.6.0  # Apache-2.0
+neutron-lib>=1.7.0  # Apache-2.0
 notifier>=1.0.3  # Apache-2.0
 oauth2client>=1.5.0,!=4.0.0  # Apache-2.0
 oauthlib>=0.6  # BSD
-openstackdocstheme>=1.5.0  # Apache-2.0
+openstackdocstheme>=1.11.0  # Apache-2.0
 ordereddict  # MIT
 osc-lib>=1.5.1  # Apache-2.0
 oslo.cache>=1.5.0  # Apache-2.0
-oslo.config>=3.22.0  # Apache-2.0
+oslo.config>=4.0.0,!=4.3.0,!=4.4.0  # Apache-2.0
 oslo.concurrency>=3.8.0         # Apache-2.0
-oslo.context>=2.12.0  # Apache-2.0
-oslo.db>=4.21.1  # Apache-2.0
+oslo.context>=2.14.0  # Apache-2.0
+oslo.db>=4.23.0  # Apache-2.0
 oslo.i18n>=2.1.0,!=3.15.2  # Apache-2.0
 oslo.log>=3.22.0  # Apache-2.0
-# NOTE(mriedem): oslo.messaging 3.1.0 breaks Ironic
-oslo.messaging>=5.19.0 # Apache-2.0
-oslo.middleware>=3.10.0                  # Apache-2.0
-oslo.policy>=1.17.0  # Apache-2.0
+oslo.messaging>=5.24.2,!=5.25.0 # Apache-2.0
+oslo.middleware>=3.27.0                  # Apache-2.0
+oslo.policy>=1.23.0  # Apache-2.0
 oslo.privsep>=1.9.0,!=1.17.0  # Apache-2.0
 oslo.reports>=0.6.0  # Apache-2.0
 oslo.rootwrap>=5.0.0  # Apache-2.0
@@ -150,17 +151,17 @@ oslo.vmware>=2.17.0                     # Apache-2.0
 oslo.versionedobjects>=1.17.0            # Apache-2.0
 osprofiler>=1.4.0                       # Apache-2.0
 os-apply-config  # Apache-2.0
-os-brick>=1.13.0  # Apache-2.0
+os-brick>=1.13.1,!=1.14.0  # Apache-2.0
 os-client-config>=1.27.0  # Apache-2.0
 os-collect-config  # Apache-2.0
 os-dpm>=1.0.0  # Apache-2.0
 os-refresh-config  # Apache-2.0
 os-testr>=0.8.0  # Apache-2.0
-os-traits>=0.3.0  # Apache-2.0
+os-traits>=0.3.1  # Apache-2.0
 os-vif>=1.4.0                           # Apache-2.0
 ovs>=2.7.0                              # Apache-2.0
 os-win>=2.0.0                           # Apache-2.0
-os-xenapi>=0.1.1  # Apache-2.0
+os-xenapi>=0.2.0  # Apache-2.0
 paramiko>=2.0 # LGPLv2.1+
 Parsley  # MIT
 pathlib2>=2.1.0  # MIT
@@ -179,7 +180,7 @@ Pint>=0.5  # BSD
 pip>=7.1.0  # MIT
 PrettyTable>=0.7.1,<0.8  # BSD
 psutil>=3.2.2  # BSD
-pyasn1  # BSD
+pyasn1!=0.2.3  # BSD
 pyasn1-modules  # BSD
 pycadf>=1.1.0,!=2.0.0  # Apache-2.0
 pycrypto>=2.6  # Public Domain
@@ -200,6 +201,7 @@ etcd3>=0.5.2 # Apache-2.0
 etcd3gw>=0.1.0 # Apache-2.0
 typing>=3.5.2.2  # PSF
 voluptuous>=0.8.9  # BSD License
+pydot3>=1.0.8  # MIT License
 pydotplus>=2.0.2   # MIT License
 crc16>=0.1.1  # LGPLv3+
 pyzabbix>=0.7.4  # LGPL
@@ -212,8 +214,8 @@ pyngus>=2.0.2  # Apache-2.0
 
 pyOpenSSL>=0.14  # Apache-2.0
 pyparsing>=2.1.0  # MIT
-pyroute2>=0.4.12  # Apache-2.0 (+ dual licensed GPL2)
-pysnmp>=4.2.3,<5.0.0  # BSD
+pyroute2>=0.4.15  # Apache-2.0 (+ dual licensed GPL2)
+pysnmp>=4.2.3,!=4.3.4,!=4.3.5,!=4.3.6,!=4.3.7  # BSD
 pystache  # MIT
 
 # NOTE(dims): pysaml 4.0.3 uses pycryptodome instead of pycrypto, for mitaka
@@ -230,13 +232,13 @@ gnocchiclient>=2.7.0  # Apache-2.0
 tricircleclient>=0.1.1 # Apache-2.0
 python-barbicanclient>=4.0.0  # Apache-2.0
 python-ceilometerclient>=2.5.0  # Apache-2.0
-python-cinderclient>=2.0.1  # Apache-2.0
+python-cinderclient>=2.1.0  # Apache-2.0
 python-congressclient>=1.3.0,<2000  # Apache-2.0
 python-designateclient>=1.5.0  # Apache-2.0
 python-freezerclient>=1.3.0 # Apache-2.0
 python-heatclient>=1.6.1  # Apache-2.0
 python-hnvclient>=0.1.0  # Apache-2.0
-python-glanceclient>=2.5.0  # Apache-2.0
+python-glanceclient>=2.7.0  # Apache-2.0
 python-glareclient>=0.3.0  # Apache-2.0
 python-ironic-inspector-client>=1.5.0  # Apache-2.0
 python-ironicclient>=1.11.0  # Apache-2.0
@@ -248,8 +250,9 @@ python-manilaclient>=1.12.0  # Apache-2.0
 python-mistralclient>=3.1.0  # Apache-2.0
 python-muranoclient>=0.8.2  # Apache-2.0
 python-monascaclient>=1.1.0 # Apache-2.0
-python-neutronclient>=5.1.0  # Apache-2.0
-python-novaclient>=7.1.0  # Apache-2.0
+python-neutronclient>=6.3.0  # Apache-2.0
+python-novaclient>=9.0.0  # Apache-2.0
+python-octaviaclient>=1.0.0  # Apache-2.0
 python-openstackclient>=3.3.0,!=3.10.0  # Apache-2.0
 python-saharaclient>=1.1.0  # Apache-2.0
 python-searchlightclient>=1.0.0 #Apache-2.0
@@ -262,7 +265,7 @@ python-troveclient>=2.2.0  # Apache-2.0
 python-vitrageclient>=1.1.0  # Apache-2.0
 python-watcherclient>=0.23.0  # Apache-2.0
 python-zaqarclient>=1.0.0  # Apache-2.0
-python-zunclient>=0.1.0  # Apache-2.0
+python-zunclient>=0.2.0  # Apache-2.0
 
 python-memcached>=1.56  # PSF
 python-dateutil>=2.4.2  # BSD
@@ -272,15 +275,15 @@ pytz>=2013.6  # MIT
 pyudev  # LGPLv2.1+
 PyYAML>=3.10.0  # MIT
 qpid-python;python_version=='2.7'  # Apache-2.0
-reno>=1.8.0  # Apache-2.0
-requests>=2.10.0,!=2.12.2,!=2.13.0  # Apache-2.0
+reno>=1.8.0,!=2.3.1  # Apache-2.0
+requests>=2.14.2  # Apache-2.0
 requests-aws>=0.1.4    # BSD License (3 clause)
 requests-kerberos>=0.6  # ISC
 requestsexceptions>=1.2.0  # Apache-2.0
 rfc3986>=0.3.1  # Apache-2.0
 Routes>=2.3.1  # MIT
 rtslib-fb>=2.1.43,!=2.1.60,!=2.1.61  # Apache-2.0
-ryu>=4.11 # Apache-2.0
+ryu>=4.14 # Apache-2.0
 semantic_version>=2.3.1  # BSD
 fasteners>=0.7  # Apache-2.0
 scrypt>=0.8.0  # BSD
@@ -306,8 +309,8 @@ tempest>=14.0.0  # Apache-2.0
 tempest-lib>=0.14.0  # Apache-2.0
 tooz>=1.47.0 # Apache-2.0
 tosca-parser>=0.8.1  # Apache-2.0
-tripleo-common>=5.7.0  # Apache-2.0
-urllib3>=1.15.1  # MIT
+tripleo-common>=7.1.0  # Apache-2.0
+urllib3>=1.21.1  # MIT
 unicodecsv>=0.8.0;python_version<'3.0' # BSD
 warlock>=1.0.1,!=1.3.0,<2  # Apache-2.0
 WebOb>=1.7.1  # MIT
@@ -383,7 +386,7 @@ nosehtmloutput>=0.0.3  # Apache-2.0
 nosexcover  # BSD
 openstack-doc-tools>=1.4.0  # Apache-2.0
 openstack.nose_plugin>=0.7  # Apache-2.0
-openstacksdk>=0.9.16  # Apache-2.0
+openstacksdk>=0.9.17  # Apache-2.0
 os-api-ref>=1.0.0  # Apache-2.0
 oslosphinx>=4.7.0  # Apache-2.0
 oslotest>=1.10.0  # Apache-2.0
@@ -408,7 +411,7 @@ selenium>=2.50.1  # Apache-2.0
 # situations as progressive releases of projects are done.
 # Blacklist setuptools 34.0.0-34.3.2 due to https://github.com/pypa/setuptools/issues/951
 setuptools>=16.0,!=24.0.0,!=34.0.0,!=34.0.1,!=34.0.2,!=34.0.3,!=34.1.0,!=34.1.1,!=34.2.0,!=34.3.0,!=34.3.1,!=34.3.2  # PSF/ZPL
-sphinx>=1.5.1,!=1.6.1  # BSD
+sphinx>=1.6.2  # BSD
 sphinx-testing # BSD License
 sphinxcontrib-actdiag  # BSD
 sphinxcontrib-blockdiag  # BSD
@@ -435,20 +438,3 @@ xmltodict>=0.10.1  # MIT
 wsgi_intercept>=1.4.1 # MIT License
 xvfbwrapper>=0.1.3 #license: MIT
 zake>=0.1.6 # Apache-2.0
-
-# Pinned requirements
-#
-# Some requirements, like linters need to be pinned, because they have
-# terrible backwards compatibility stories. These requirements *must*
-# only be updated during the first milestone window of a release,
-# because they are way too disruptive beyond that. Ideally nothing
-# beyond this list would ever use a ==
-flake8>=2.5.4,<2.6.0  # MIT
-flake8_docstrings==0.2.1.post1  # MIT
-flake8-import-order==0.11 # LGPLv3
-hacking>=0.12.0,!=0.13.0,<0.14  # Apache-2.0
-mccabe==0.2.1 # MIT License
-pep257==0.7.0 # MIT License
-pep8==1.5.7  # MIT
-pyflakes==0.8.1  # MIT
-pylint==1.4.5  # GPLv2
