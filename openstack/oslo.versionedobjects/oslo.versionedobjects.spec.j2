@@ -1,5 +1,5 @@
 Name:           {{ py2name('oslo.versionedobjects') }}
-Version:        1.25.1
+Version:        1.26.0
 Release:        0
 Summary:        Oslo Versioned Objects library
 License:        {{ license('Apache-2.0') }}
@@ -48,7 +48,7 @@ code across different services and projects.
 Summary:        osloversionedobjects library - Documentation
 Group:          Documentation/HTML
 BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 Requires:       %{name} = %{version}
 
 %description doc
@@ -57,6 +57,7 @@ This package contains documentation files for %{name}.
 %prep
 %autosetup -n oslo.versionedobjects-%{version}
 %py_req_cleanup
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
 %{py2_build}
