@@ -3,7 +3,7 @@
 %global rdo 1
 %endif
 Name:           {{ py2name('taskflow') }}
-Version:        2.13.0
+Version:        2.14.0
 Release:        0
 Summary:        Taskflow structured state management library
 License:        {{ license('Apache-2.0') }}
@@ -72,7 +72,7 @@ different backends to be used with OpenStack projects.
 Summary:        Documentation for Taskflow
 Group:          Documentation
 BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 
 %description doc
 A library to do [jobs, tasks, flows] in a HA manner using
@@ -82,6 +82,7 @@ This package contains the associated documentation.
 %prep
 %autosetup -n %{pypi_name}-%{version}
 %py_req_cleanup
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %if 0%{?rdo}
 # TODO(jpena) remove once python-networking subpackaging is fixed
