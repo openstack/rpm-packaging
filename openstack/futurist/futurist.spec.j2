@@ -1,6 +1,6 @@
 %global sname futurist
 Name:           {{ py2name('futurist') }}
-Version:        1.2.0
+Version:        1.3.0
 Release:        0
 Summary:        Backport of the concurrent.futures package from Python 3.2
 License:        {{ license('Apache-2.0') }}
@@ -15,7 +15,7 @@ BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('eventlet') }}
 BuildRequires:  {{ py2pkg('futures') }}
 BuildRequires:  {{ py2pkg('monotonic') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 BuildRequires:  {{ py2pkg('oslotest') }}
 BuildRequires:  {{ py2pkg('pbr') }}
 BuildRequires:  {{ py2pkg('setuptools') }}
@@ -37,6 +37,7 @@ Useful additions to futures from the future.
 %prep
 %autosetup -n %{sname}-%{version}
 %py_req_cleanup
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
 %py2_build
