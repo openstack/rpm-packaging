@@ -1,6 +1,6 @@
 %global sname osprofiler
 Name:           {{ py2name('osprofiler') }}
-Version:        1.10.1
+Version:        1.11.0
 Release:        0
 Summary:        OpenStack Profiler Library
 License:        {{ license('Apache-2.0') }}
@@ -43,7 +43,7 @@ reasons (for example in isolating cross-project performance issues).
 %package doc
 Summary:        Documentation for OSProfiler
 BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 
 %description doc
 Documentation for OSProfiler.
@@ -51,6 +51,7 @@ Documentation for OSProfiler.
 %prep
 %autosetup -n %{sname}-%{version}
 %py_req_cleanup
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
 %{py2_build}
