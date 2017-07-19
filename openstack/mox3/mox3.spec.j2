@@ -1,6 +1,6 @@
 %global pypi_name mox3
 Name:           {{ py2name('mox3') }}
-Version:        0.22.0
+Version:        0.23.0
 Release:        0
 Summary:        An unofficial port of the Google mox framework to Python 3
 License:        {{ license('Apache-2.0') }}
@@ -29,7 +29,7 @@ enhancements have been made. The library was tested on Python version
 Summary:        Documentation for %{name}
 Group:          Documentation
 BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 
 %description doc
 Mox3 is an unofficial port of the Google mox framework to Python 3. It
@@ -42,6 +42,7 @@ This package contains documentation in HTML format.
 %prep
 %autosetup -n %{pypi_name}-%{version}
 %py_req_cleanup
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
 %py2_build
