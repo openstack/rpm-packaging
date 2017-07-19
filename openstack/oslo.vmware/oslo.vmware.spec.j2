@@ -1,6 +1,6 @@
 %global pypi_name oslo.vmware
 Name:           {{ py2name('oslo.vmware') }}
-Version:        2.22.1
+Version:        2.23.0
 Release:        0
 Summary:        Oslo VMware library for OpenStack projects
 License:        {{ license('Apache-2.0') }}
@@ -53,7 +53,7 @@ server.
 %package        doc
 Summary:        Documentation for OpenStack common VMware library
 BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 Requires:       %{name} = %{version}
 
 %description doc
@@ -62,6 +62,7 @@ Documentation for OpenStack common VMware library.
 %prep
 %autosetup -n %{pypi_name}-%{version}
 %py_req_cleanup
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
 %py2_build
