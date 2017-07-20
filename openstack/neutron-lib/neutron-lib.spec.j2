@@ -1,6 +1,6 @@
 %global sname neutron-lib
 Name:           {{ py2name('neutron-lib') }}
-Version:        1.7.0
+Version:        1.9.0
 Release:        0
 Summary:        OpenStack Neutron library
 License:        {{ license('Apache-2.0') }}
@@ -54,7 +54,7 @@ OpenStack Neutron library shared by all Neutron sub-projects.
 Summary:        OpenStack Neutron library documentation
 Group:          Documentation
 BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 BuildRequires:  {{ py2pkg('reno') }}
 
 %description doc
@@ -62,8 +62,7 @@ OpenStack Neutron library shared by all Neutron sub-projects.
 
 %prep
 %autosetup -n neutron-lib-%{version}
-# FIXME: can be removed when https://review.openstack.org/#/c/390134/ is merged
-sed -i -e 's/^\s\{4\}git_cmd\(.*\)/    "\/usr\/bin\/true"\1/' doc/source/conf.py
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
 %{py2_build}
