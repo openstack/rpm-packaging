@@ -1,5 +1,5 @@
 {% set pypi_name = 'pyghmi' %}
-{% set upstream_version = upstream_version('1.0.20') %}
+{% set upstream_version = upstream_version('1.0.22') %}
 {% set rpm_release = '1' %}
 
 Name:           {{ py2name() }}
@@ -27,7 +27,7 @@ this library into python code
 Summary:        General Hardware Management Initiative (IPMI and others) -- Documentation
 Group:          Documentation
 BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 
 %description doc
 This is a pure python implementation of IPMI protocol.
@@ -38,6 +38,7 @@ this library into python code
 %prep
 %autosetup -p1 -n {{ pypi_name }}-%{version}
 %py_req_cleanup
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
 %{py2_build}
