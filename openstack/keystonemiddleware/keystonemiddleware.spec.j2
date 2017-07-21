@@ -1,6 +1,6 @@
 %global sname keystonemiddleware
 Name:           {{ py2name('keystonemiddleware') }}
-Version:        4.16.0
+Version:        4.17.0
 Release:        0
 Summary:        Middleware for OpenStack Identity
 License:        {{ license('Apache-2.0') }}
@@ -55,7 +55,7 @@ does not expose any CLI or Python API features.
 %package doc
 Summary:        Documentation for Middleware for OpenStack Identity
 BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 
 %description doc
 Documentation for Middleware for OpenStack Identity.
@@ -63,6 +63,7 @@ Documentation for Middleware for OpenStack Identity.
 %prep
 %autosetup -p1 -n %{sname}-%{version}
 %py_req_cleanup
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
 %{py2_build}
