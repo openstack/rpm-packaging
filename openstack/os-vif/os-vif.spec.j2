@@ -1,6 +1,6 @@
 %global sname os_vif
 Name:           {{ py2name('os-vif') }}
-Version:        1.6.0
+Version:        1.7.0
 Release:        0
 Summary:        A library for plugging and unplugging virtual interfaces in OpenStack
 License:        {{ license('Apache-2.0') }}
@@ -45,7 +45,7 @@ Features:
 %package doc
 Summary:        Documentation for a library for plugging and unplugging virtual interfaces in OpenStack
 BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 BuildRequires:  {{ py2pkg('reno') }}
 
 %description doc
@@ -55,6 +55,7 @@ in OpenStack.
 %prep
 %autosetup -n %{sname}-%{version}
 %py_req_cleanup
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
 %{py2_build}
