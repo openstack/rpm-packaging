@@ -1,6 +1,7 @@
 [Unit]
 Description=OpenStack Neutron Linux Bridge Agent
-After=syslog.target network.target
+After=syslog.target network.target network.service
+BindsTo=network.service
 
 [Service]
 Type=simple
