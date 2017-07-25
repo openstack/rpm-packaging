@@ -1,5 +1,5 @@
 Name:           {{ py2name('python-mistralclient') }}
-Version:        3.1.0
+Version:        3.1.1
 Release:        0
 Summary:        Python API and CLI for OpenStack Mistral
 License:        {{ license('Apache-2.0') }}
@@ -41,7 +41,7 @@ Client library for Mistral built on the Mistral API. It provides a Python API
 Summary:        Documentation for OpenStack Mistral API client libary
 Group:          Documentation
 BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 
 %description doc
 Client library for Mistral built on the Mistral API. It provides a Python API
@@ -51,6 +51,7 @@ This package contains the documentation.
 %prep
 %autosetup -p1 -n %{name}-%{version}
 %py_req_cleanup
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
 %py2_build
