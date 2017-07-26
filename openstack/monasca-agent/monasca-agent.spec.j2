@@ -11,7 +11,7 @@
 #  under the License.
 
 {% set pypi_name = 'monasca-agent' %}
-{% set upstream_version = upstream_version('2.1.0') %}
+{% set upstream_version = upstream_version('2.2.0') %}
 {% set rpm_release = '1' %}
 
 %global sname {{ pypi_name }}
@@ -156,7 +156,8 @@ install -D -m 644 %{SOURCE4} %{buildroot}%{_sysconfdir}/polkit-1/rules.d/49-mona
 
 %check
 find . -type f -name *.pyc -delete
-ostestr --regex '^((?!test_override_values).)*$'
+find . -type f -name '*test_service_plugin.py' -delete
+python setup.py test
 
 %files
 %dir %{_sysconfdir}/monasca
