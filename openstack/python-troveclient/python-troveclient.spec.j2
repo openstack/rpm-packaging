@@ -1,5 +1,5 @@
 Name:           {{ py2name('python-troveclient') }}
-Version:        2.10.0
+Version:        2.11.0
 Release:        0
 Summary:        Client library for OpenStack DBaaS API
 License:        {{ license('Apache-2.0') }}
@@ -48,7 +48,7 @@ implements 100% (or less ;) ) of the Trove API.
 Summary:        Documentation for OpenStack DBaaS API.
 Group:          Documentation
 BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 
 %description doc
 Documentation for the client library for interacting with Openstack
@@ -57,6 +57,7 @@ DBaaS API.
 %prep
 %autosetup -n %{name}-%{version}
 %py_req_cleanup
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
 %py2_build
