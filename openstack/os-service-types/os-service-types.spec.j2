@@ -1,0 +1,73 @@
+{% set pypi_name = 'os-service-types' %}
+{% set upstream_version = upstream_version('1.0.0') %}
+{% set rpm_release = '1' %}
+
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
+Summary:        Python library for consuming OpenStack sevice-types-authority data
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            http://docs.openstack.org/developer/os-service-types
+Source0:        https://pypi.io/packages/source/o/{{ pypi_name }}/{{ pypi_name }}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('keystoneauth1') }}
+BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('python-subunit') }}
+BuildRequires:  {{ py2pkg('requests-mock') }}
+BuildRequires:  {{ py2pkg('testscenarios') }}
+Requires:       {{ py2pkg('pbr') }}
+BuildArch:      noarch
+
+%description
+The OpenStack Service Types Authority contains information about official
+OpenStack services and their historical service-type aliases.
+The data is in JSON and the latest data should always be used. This simple
+library exists to allow for easy consumption of the data, along with a built-in
+version of the data to use in case network access is for some reason not
+possible and local caching of the fetched data.
+
+%package doc
+Summary:        Documentation for OpenStack os-service-types library
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
+
+%description doc
+The OpenStack Service Types Authority contains information about official
+OpenStack services and their historical service-type aliases.
+The data is in JSON and the latest data should always be used. This simple
+library exists to allow for easy consumption of the data, along with a built-in
+version of the data to use in case network access is for some reason not
+possible and local caching of the fetched data.
+This package contains the documentation.
+
+%prep
+%autosetup -n {{ pypi_name }}-%{version}
+%py_req_cleanup
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
+
+%build
+%{py2_build}
+
+# generate html docs
+%{__python2} setup.py build_sphinx
+# remove the sphinx-build leftovers
+rm -rf doc/build/html/.{doctrees,buildinfo}
+
+%install
+%{py2_install}
+
+%check
+%{__python2} setup.py test
+
+%files
+%license LICENSE
+%doc README.rst ChangeLog
+%{python2_sitelib}/os_service_types
+%{python2_sitelib}/*.egg-info
+
+%files doc
+%license LICENSE
+%doc doc/build/html
+
+%changelog
