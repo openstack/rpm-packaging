@@ -1,12 +1,14 @@
 %global sname python-cinderclient
 Name:           {{ py2name('python-cinderclient') }}
-Version:        3.0.0
+Version:        3.1.0
 Release:        0
 Summary:        Python API and CLI for OpenStack Cinder
 License:        {{ license('Apache-2.0')}}
 Group:          Development/Languages/Python
 Url:            https://launchpad.net/%{sname}
 Source0:        https://pypi.io/packages/source/p/%{sname}/%{sname}-%{version}.tar.gz
+# https://review.openstack.org/#/c/488924/
+Patch1:         0001-Fix-man-page-build.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('PrettyTable') }}
 BuildRequires:  {{ py2pkg('ddt') }}
