@@ -1,5 +1,5 @@
 Name:           {{ py2name('python-distilclient') }}
-Version:        0.1.1
+Version:        0.3.0
 Release:        0
 Summary:        Python API and CLI for OpenStack Distil
 License:        {{ license('Apache-2.0') }}
@@ -8,6 +8,7 @@ Url:            http://launchpad.net/%{name}
 Source0:        https://pypi.io/packages/source/p/%{name}/%{name}-%{version}.tar.gz
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('Tempest') }}
+BuildRequires:  {{ py2pkg('ddt') }}
 BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('fixtures') }}
 BuildRequires:  {{ py2pkg('keyring') }}
