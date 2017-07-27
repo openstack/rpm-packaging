@@ -1,5 +1,5 @@
 Name:           {{ py2name('python-watcherclient') }}
-Version:        1.2.0
+Version:        1.3.0
 Release:        0
 Summary:        Python API and CLI for OpenStack Watcher
 License:        {{ license('Apache-2.0') }}
@@ -45,7 +45,7 @@ Client library for Watcher built on the Watcher API. It provides a Python API
 Summary:        Documentation for OpenStack Watcher API client libary
 Group:          Documentation
 BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 
 %description doc
 Client library for Watcher built on the Watcher API. It provides a Python API
@@ -55,6 +55,7 @@ This package contains the documentation.
 %prep
 %autosetup -n %{name}-%{version}
 %py_req_cleanup
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
 %py2_build
