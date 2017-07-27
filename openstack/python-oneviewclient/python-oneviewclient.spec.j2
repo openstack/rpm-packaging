@@ -1,5 +1,5 @@
 Name:           {{ py2name('python-oneviewclient') }}
-Version:        2.5.2
+Version:        2.6.4
 Release:        0
 Summary:        Python API and CLI for OpenStack Oneview
 License:        {{ license('Apache-2.0') }}
@@ -8,6 +8,7 @@ Url:            http://launchpad.net/%{name}
 Source0:        https://pypi.io/packages/source/p/%{name}/%{name}-%{version}.tar.gz
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('oslo.serialization') }}
 BuildRequires:  {{ py2pkg('pbr') }}
 BuildRequires:  {{ py2pkg('python-subunit') }}
 BuildRequires:  {{ py2pkg('retrying') }}
