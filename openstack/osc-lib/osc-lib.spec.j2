@@ -1,6 +1,6 @@
 %global sname osc-lib
 Name:           {{ py2name('osc-lib') }}
-Version:        1.6.0
+Version:        1.7.0
 Release:        0
 Summary:        OpenStackClient Library
 License:        {{ license('Apache-2.0') }}
@@ -47,7 +47,7 @@ is a package of common support modules for writing OSC plugins.
 %package doc
 Summary:        Documentation for the OpenStack client library
 BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 
 %description doc
 Documentation for the OpenStack client library.
@@ -55,6 +55,7 @@ Documentation for the OpenStack client library.
 %prep
 %autosetup -n %{sname}-%{version}
 %py_req_cleanup
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
 %{__python2} setup.py build
