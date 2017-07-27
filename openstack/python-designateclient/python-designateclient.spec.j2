@@ -1,6 +1,6 @@
 %global sname python-designateclient
 Name:           {{ py2name('python-designateclient') }}
-Version:        2.6.0
+Version:        2.7.0
 Release:        0
 Summary:        OpenStack DNS as a Service - Client
 License:        {{ license('Apache-2.0') }}
@@ -37,7 +37,7 @@ OpenStack DNS as a Service - Client
 Summary:        Documentation for the OpenStack DNS as a Service - Client
 Group:          Documentation
 BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 
 %description doc
 Documentation for the OpenStack DNS as a Service - Client.
@@ -45,6 +45,7 @@ Documentation for the OpenStack DNS as a Service - Client.
 %prep
 %autosetup -n %{sname}-%{version}
 %py_req_cleanup
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
 %py2_build
