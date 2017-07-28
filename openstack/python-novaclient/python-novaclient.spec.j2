@@ -1,6 +1,6 @@
 Name:           python-novaclient
 Epoch:          {{ epoch('python-novaclient') }}
-Version:        9.0.1
+Version:        9.1.0
 Release:        0
 Summary:        Python API and CLI for OpenStack Nova
 License:        {{ license('Apache-2.0') }}
@@ -47,7 +47,7 @@ the OpenStack Nova API.
 Summary:        Documentation for OpenStack Nova API Client
 Group:          Documentation
 BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 BuildRequires:  {{ py2pkg('reno') }}
 
 %description      doc
@@ -82,6 +82,7 @@ This package contains the testsuite.
 %prep
 %autosetup -p1 -n %{name}-%{version}
 %py_req_cleanup
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
 %py2_build
