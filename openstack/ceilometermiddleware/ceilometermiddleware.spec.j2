@@ -1,6 +1,6 @@
 %global pypi_name ceilometermiddleware
 Name:           {{ py2name('ceilometermiddleware') }}
-Version:        1.0.2
+Version:        1.0.3
 Release:        0
 Summary:        A library for metric and event data generation for Ceilometer
 License:        {{ license('Apache-2.0') }}
@@ -9,6 +9,8 @@ Url:            http://docs.openstack.org/developer/ceilometermiddleware
 Source0:        https://tarballs.openstack.org/%{pypi_name}/%{pypi_name}-%{version}.tar.gz
 BuildRequires:  openstack-macros
 BuildRequires:  python-devel
+BuildRequires:  {{ py2pkg('betamax') }}
+BuildRequires:  {{ py2pkg('keystoneauth1') }}
 BuildRequires:  {{ py2pkg('mock') }}
 BuildRequires:  {{ py2pkg('oslo.config') }}
 BuildRequires:  {{ py2pkg('oslo.messaging') }}
@@ -16,14 +18,17 @@ BuildRequires:  {{ py2pkg('oslo.utils') }}
 BuildRequires:  {{ py2pkg('oslotest') }}
 BuildRequires:  {{ py2pkg('pbr') }}
 BuildRequires:  {{ py2pkg('pycadf') }}
+BuildRequires:  {{ py2pkg('python-keystoneclient') }}
 BuildRequires:  {{ py2pkg('python-subunit') }}
 BuildRequires:  {{ py2pkg('setuptools') }}
 BuildRequires:  {{ py2pkg('testrepository') }}
+Requires:       {{ py2pkg('keystoneauth1') }}
 Requires:       {{ py2pkg('oslo.config') }}
 Requires:       {{ py2pkg('oslo.messaging') }}
 Requires:       {{ py2pkg('oslo.utils') }}
 Requires:       {{ py2pkg('pbr') }}
 Requires:       {{ py2pkg('pycadf') }}
+Requires:       {{ py2pkg('python-keystoneclient') }}
 Requires:       {{ py2pkg('six') }}
 BuildArch:      noarch
 
