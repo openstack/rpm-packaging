@@ -1,6 +1,6 @@
 [Unit]
 Description=OpenStack Nova Compute Server
-After=syslog.target network.target
+After=syslog.target network.target libvirtd.service libvirt-guests.service
 
 [Service]
 Environment=LIBGUESTFS_ATTACH_METHOD=appliance
