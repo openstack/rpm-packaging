@@ -1,6 +1,6 @@
 %global sname python-manilaclient
 Name:           {{ py2name('python-manilaclient') }}
-Version:        1.16.0
+Version:        1.17.0
 Release:        0
 Summary:        Client Library for OpenStack Share API
 License:        {{ license('Apache-2.0') }}
@@ -37,7 +37,7 @@ Share API.
 Summary:        Documentation for OpenStack Share API Client
 Group:          Documentation
 BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 
 %description      doc
 Client library and command line utility for interacting with Openstack
@@ -65,6 +65,7 @@ This package contains the testsuite.
 %prep
 %autosetup -n %{sname}-%{version}
 %py_req_cleanup
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
 %{py2_build}
