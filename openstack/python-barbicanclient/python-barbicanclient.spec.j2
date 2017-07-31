@@ -1,6 +1,6 @@
 %global sname python-barbicanclient
 Name:           {{ py2name('python-barbicanclient') }}
-Version:        4.5.0
+Version:        4.4.0
 Release:        0
 Summary:        Client for the Barbican Key Management API
 License:        {{ license('Apache-2.0') }}
@@ -43,7 +43,7 @@ This package contains the Python 2.x module.
 Summary:        Documentation for OpenStack Key Management API Client
 Group:          Documentation
 BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('openstackdocstheme') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
 
 %description doc
 Documentation for the client library for interacting with
@@ -52,7 +52,6 @@ Openstack Key Management API
 %prep
 %autosetup -n %{name}-%{version}
 %py_req_cleanup
-sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 # Remove the sphinx-build leftovers
 rm -rf html/.{doctrees,buildinfo}
