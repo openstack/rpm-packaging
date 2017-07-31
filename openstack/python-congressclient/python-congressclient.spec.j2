@@ -1,6 +1,6 @@
 %global sname python-congressclient
 Name:           {{ py2name('python-congressclient') }}
-Version:        1.7.0
+Version:        1.8.0
 Release:        0
 Summary:        Client library for Congress
 License:        {{ license('Apache-2.0') }}
@@ -50,7 +50,7 @@ is designed to work with any policy and any cloud service.
 Summary:        Documentation for OpenStack Congress API client libary
 Group:          Documentation
 BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 BuildRequires:  {{ py2pkg('reno') }}
 
 %description doc
@@ -67,6 +67,7 @@ This package contains the documentation.
 %prep
 %autosetup -n %{name}-%{version}
 %py_req_cleanup
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
 %{py2_build}
