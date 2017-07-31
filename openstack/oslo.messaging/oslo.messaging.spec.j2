@@ -104,7 +104,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %{py2_install}
 
 %check
-%{__python2} setup.py testr
+%{__python2} setup.py testr --slowest
 
 %files
 %license LICENSE
