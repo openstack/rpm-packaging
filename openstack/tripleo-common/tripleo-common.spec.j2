@@ -1,7 +1,7 @@
 %global sname tripleo-common
-%global sversion 7.3.0
+%global sversion 7.4.0
 Name:           {{ py2name('tripleo-common') }}
-Version:        7.3.0
+Version:        7.4.0
 Release:        0
 Summary:        Python library for code used by TripleO projects
 License:        {{ license('Apache-2.0') }}
@@ -57,7 +57,7 @@ Python library for code used by TripleO projects.
 Summary:        Documentation for Python library for code used by TripleO projects
 Group:          Documentation
 BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 
 %description      doc
 Python library for code used by TripleO projects.
@@ -73,6 +73,7 @@ don't fit in a product.
 
 %prep
 %autosetup -n %{sname}-%{sversion}
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
 %{py2_build}
