@@ -17,6 +17,7 @@ Source1:        mistral-api.service
 Source2:        mistral-engine.service
 Source3:        mistral-executor.service
 BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('PyJWT') }}
 BuildRequires:  {{ py2pkg('aodhclient') }}
 BuildRequires:  {{ py2pkg('python-barbicanclient') }}
 BuildRequires:  {{ py2pkg('python-ceilometerclient') }}
@@ -26,6 +27,7 @@ BuildRequires:  {{ py2pkg('python-designateclient') }}
 BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('fixtures') }}
 BuildRequires:  {{ py2pkg('python-glanceclient') }}
+BuildRequires:  {{ py2pkg('python-glareclient') }}
 BuildRequires:  {{ py2pkg('gnocchiclient') }}
 BuildRequires:  {{ py2pkg('python-heatclient') }}
 BuildRequires:  {{ py2pkg('python-ironic-inspector-client') }}
@@ -103,6 +105,7 @@ This package contains the documentation
 %package -n     python-{{ pypi_name }}
 Summary:        Mistral Python libraries
 Requires:       {{ py2pkg('Babel') }}
+Requires:       {{ py2pkg('PyJWT') }}
 Requires:       {{ py2pkg('PyYAML') }}
 Requires:       {{ py2pkg('SQLAlchemy') }}
 Requires:       {{ py2pkg('WSME') }}
@@ -115,6 +118,7 @@ Requires:       {{ py2pkg('croniter') }}
 Requires:       {{ py2pkg('python-designateclient') }}
 Requires:       {{ py2pkg('eventlet') }}
 Requires:       {{ py2pkg('python-glanceclient') }}
+Requires:       {{ py2pkg('python-glareclient') }}
 Requires:       {{ py2pkg('python-heatclient') }}
 Requires:       {{ py2pkg('python-ironic-inspector-client') }}
 Requires:       {{ py2pkg('python-ironicclient') }}
