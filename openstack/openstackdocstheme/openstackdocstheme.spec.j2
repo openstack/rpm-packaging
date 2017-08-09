@@ -7,10 +7,11 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            https://launchpad.net/%{sname}
 Source0:        https://pypi.io/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
+# https://review.openstack.org/491157
+Patch1:         0001-Break-cycle-dependency-with-os-api-ref.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('devel') }}
-BuildRequires:  {{ py2pkg('os-api-ref') }}
 BuildRequires:  {{ py2pkg('pbr') }}
 BuildRequires:  {{ py2pkg('reno') }}
 BuildRequires:  {{ py2pkg('requests') }}
