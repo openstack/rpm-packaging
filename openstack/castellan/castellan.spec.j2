@@ -10,6 +10,7 @@ Source0:        https://pypi.io/packages/source/c/%{sname}/%{sname}-%{version}.t
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('python-barbicanclient') }}
 BuildRequires:  {{ py2pkg('cryptography') }}
+BuildRequires:  {{ py2pkg('keystoneauth1') }}
 BuildRequires:  {{ py2pkg('oslo.config') }}
 BuildRequires:  {{ py2pkg('oslo.log') }}
 BuildRequires:  {{ py2pkg('oslotest') }}
@@ -20,6 +21,7 @@ BuildRequires:  {{ py2pkg('testscenarios') }}
 BuildRequires:  {{ py2pkg('testtools') }}
 Requires:       {{ py2pkg('Babel') }}
 Requires:       {{ py2pkg('cryptography') }}
+Requires:       {{ py2pkg('keystoneauth1') }}
 Requires:       {{ py2pkg('oslo.config') }}
 Requires:       {{ py2pkg('oslo.context') }}
 Requires:       {{ py2pkg('oslo.log') }}
