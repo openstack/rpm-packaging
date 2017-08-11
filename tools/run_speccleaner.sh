@@ -14,7 +14,7 @@ echo "run spec-cleaner over specfiles from $WORKSPACE/logs/"
 count=0
 # TODO(toabctl): also run spec-cleaner with non-SUSE specs
 # but the current problem is that the license check works for SUSE only
-for spec in $WORKSPACE/logs/*.suse ; do
+for spec in $WORKSPACE/logs/suse/*.spec ; do
     # NOTE(toabctl):spec-cleaner can not ignore epochs currently
     sed -i '/^Epoch:.*/d' $spec
     # NOTE(jpena): spec-cleaner wants python2 instead of %{__python2}
