@@ -1,24 +1,22 @@
-%global sname pbr
-%if 0%{?rhel} || 0%{?fedora}
-%global rdo 1
-%endif
-Name:           python-%{sname}
-Version:        3.1.1
-Release:        0
+{% set pypi_name = 'pbr' %}
+{% set upstream_version = upstream_version('3.1.1') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
 Summary:        Python Build Reasonableness
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            http://pypi.python.org/pypi/pbr
-Source0:        https://pypi.io/packages/source/p/%{sname}/%{sname}-%{version}.tar.gz
+Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('devel') }}
-BuildRequires:  {{ py2pkg('setuptools') }}
+BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('setuptools', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('setuptools') }}
 BuildArch:      noarch
-%if 0%{?rdo}
-Provides:       python2-%{sname} = %{version}-%{release}
-Obsoletes:      python2-%{sname} < %{version}-%{release}
-%endif
+%python_subpackages
 
 %description
 PBR is a library that injects some useful and sensible default behaviors into
@@ -27,22 +25,22 @@ between all of the OpenStack projects. Around the time that OpenStack hit 18
 different projects each with at least 3 active branches, it seems like a good
 time to make that code into a proper re-usable library.
 
-%package doc
+%package -n python-pbr-doc
 Summary:        Documentation for the PBR
-BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('Sphinx', py_versions=['py2', 'py3']) }}
+Provides:       %{python_module pbr-doc = %{version}}
 
-%description doc
+%description -n python-pbr-doc
 Documentation for the PBR, a library that injects some useful and sensible default
 behaviors into your setuptools run.
 
 %prep
-%autosetup -n %{sname}-%{version}
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
 
 %build
 export SKIP_PIP_INSTALL=1
-%py2_build
+%python_build
 
 # generate html docs
 %{__python2} setup.py build_sphinx
@@ -50,16 +48,23 @@ export SKIP_PIP_INSTALL=1
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
-%py2_install
+%python_install
+%python_clone -a %{buildroot}%{_bindir}/pbr
 
-%files
-%{_bindir}/pbr
+%post
+%python_install_alternative pbr
+
+%postun
+%python_uninstall_alternative pbr
+
+%files %{python_files}
+%python_alternative %{_bindir}/pbr
 %doc README.rst
 %license LICENSE
-%{python2_sitelib}/%{sname}
-%{python2_sitelib}/%{sname}-*-py?.?.egg-info
+%{python_sitelib}/{{ pypi_name }}
+%{python_sitelib}/{{ pypi_name }}-*-py?.?.egg-info
 
-%files doc
+%files -n python-pbr-doc
 %license LICENSE
 %doc doc/build/html
 
