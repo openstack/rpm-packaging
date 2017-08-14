@@ -1,7 +1,7 @@
 %global sname os-win
 Name:           {{ py2name('os-win') }}
 Epoch:          {{ epoch('os-win') }}
-Version:        2.1.0
+Version:        2.2.0
 Release:        0
 Summary:        Hyper-V library for OpenStack projects
 License:        {{ license('Apache-2.0') }}
@@ -43,7 +43,7 @@ nova, cinder, networking-hyperv.
 Summary:        Documentation for OpenStack Windows/Hyper-V Library
 Group:          Documentation
 BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 
 %description doc
 Documentation for the Hyper-V library.
@@ -53,7 +53,7 @@ Documentation for the Hyper-V library.
 %py_req_cleanup
 # we dont want to run the hacking tests again (and dont want the needed deps)
 rm -f os_win/tests/unit/test_hacking.py
-
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
 %{py2_build}
