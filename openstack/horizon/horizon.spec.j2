@@ -1,8 +1,8 @@
 {% set pypi_name = 'horizon' %}
-{% set upstream_version = '11.0.2' %}
+{% set source = fetch_source('http://tarballs.openstack.org/horizon/horizon-stable-pike.tar.gz') %}
+{% set upstream_version = upstream_version() %}
 {% set rpm_release = '1' %}
 
-%define component {{ pypi_name }}
 %if 0%{?rhel} || 0%{?fedora}
 %global rdo 1
 %global http_dashboard_dir %{_datarootdir}/openstack-dashboard
@@ -17,7 +17,9 @@ Summary:        OpenStack Dashboard (Horizon)
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            http://wiki.openstack.org/OpenStackDashboard
-Source0:        http://tarballs.openstack.org/%{component}/%{component}-{{upstream_version}}.tar.gz
+Source0:        {{ source|basename }}
+# https://review.openstack.org/#/c/495847/
+Patch1:         0001-Make-nosehtmloutput-an-optional-test-requirement.patch
 BuildRequires:  fdupes
 BuildRequires:  gettext
 BuildRequires:  openstack-macros
@@ -76,7 +78,7 @@ BuildRequires:  {{ py2pkg('python-swiftclient') }}
 BuildRequires:  {{ py2pkg('testtools') }}
 BuildRequires:  {{ py2pkg('python-troveclient') }}
 Requires:       python-horizon = %{epoch}:%{version}-%{release}
-Provides:       openstack-%{component} = %{version}-%{release}
+Provides:       openstack-{{ pypi_name }} = %{version}-%{release}
 BuildArch:      noarch
 %if 0%{?suse_version}
 BuildRequires:  apache2
@@ -147,12 +149,12 @@ Requires:       {{ py2pkg('XStatic-roboto-fontface') }}
 Requires:       {{ py2pkg('XStatic-smart-table') }}
 Requires:       {{ py2pkg('XStatic-term.js') }}
 Requires:       {{ py2pkg('XStatic-tv4') }}
-Requires:       {{ py2pkg('python-ceilometerclient') }}
 Requires:       {{ py2pkg('python-cinderclient') }}
 Requires:       {{ py2pkg('django-babel') }}
 Requires:       {{ py2pkg('django-pyscss') }}
 Requires:       {{ py2pkg('django_compressor') }}
 Requires:       {{ py2pkg('django_openstack_auth') }}
+Requires:       {{ py2pkg('futurist') }}
 Requires:       {{ py2pkg('python-glanceclient') }}
 Requires:       {{ py2pkg('python-heatclient') }}
 Requires:       {{ py2pkg('httplib2') }}
@@ -167,9 +169,11 @@ Requires:       {{ py2pkg('oslo.i18n') }}
 Requires:       {{ py2pkg('oslo.policy') }}
 Requires:       {{ py2pkg('oslo.serialization') }}
 Requires:       {{ py2pkg('oslo.utils') }}
+Requires:       {{ py2pkg('osprofiler') }}
 Requires:       {{ py2pkg('pbr') }}
 Requires:       {{ py2pkg('pyScss') }}
 Requires:       {{ py2pkg('pytz') }}
+Requires:       {{ py2pkg('semantic_version') }}
 Requires:       {{ py2pkg('six') }}
 Requires:       {{ py2pkg('python-swiftclient') }}
 
@@ -178,7 +182,7 @@ The Python module horizon is the core component of the OpenStack
 dashboard.
 
 %prep
-%autosetup  -n %{component}-{{upstream_version}}
+%autosetup -p1 -n {{ pypi_name }}-{{upstream_version}}
 %py_req_cleanup
 
 %build
@@ -192,7 +196,7 @@ popd
 %{py2_build}
 
 %check
-python manage.py test horizon --settings=horizon.test.settings --ignore-files="(test_hacking|firefox_binary|webdriver)"
+python manage.py test horizon --settings=horizon.test.settings --ignore-files="(test_hacking|firefox_binary|webdriver|pull_catalog)"
 # TODO
 # python manage.py test openstack_dashboard --settings=openstack_dashboard.test.settings --exclude-dir=openstack_dashboard/test/integration_tests
 
