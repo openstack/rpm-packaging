@@ -1,0 +1,131 @@
+From 54b7ccbb9b3cc53dacb368c9953fc2677690d878 Mon Sep 17 00:00:00 2001
+From: Vincent Untz <vuntz@suse.com>
+Date: Mon, 25 Jul 2016 16:51:42 +0200
+Subject: [PATCH] Disable verification for Keystone session in Swift
+
+The swift backend did not make use of the insecure option in
+the config when creating a Keystone session, enable or disable
+verification based on it.
+
+Co-Authored-By: Steve Kowalik <steven@wedontsleep.org>
+Change-Id: Ic783afde7ae8af522480996fdf91ed54e02e72d2
+Closes-Bug: #1606268
+---
+ glance_store/_drivers/swift/store.py        | 11 ++++++----
+ glance_store/tests/unit/test_swift_store.py | 32 ++++++++++++++++++++---------
+ 2 files changed, 29 insertions(+), 14 deletions(-)
+
+diff --git a/glance_store/_drivers/swift/store.py b/glance_store/_drivers/swift/store.py
+index 572f931..ea5a9e6 100644
+--- a/glance_store/_drivers/swift/store.py
++++ b/glance_store/_drivers/swift/store.py
+@@ -1294,7 +1294,7 @@ class SingleTenantStore(BaseStore):
+             project_domain_id=self.project_domain_id,
+             project_domain_name=self.project_domain_name)
+ 
+-        sess = ks_session.Session(auth=password)
++        sess = ks_session.Session(auth=password, verify=not self.insecure)
+         return ks_client.Client(session=sess)
+ 
+     def get_manager(self, store_location, context=None, allow_reauth=False):
+@@ -1415,7 +1415,8 @@ class MultiTenantStore(BaseStore):
+         trustor_auth = ks_identity.V3Token(auth_url=auth_address,
+                                            token=context.auth_token,
+                                            project_id=context.tenant)
+-        trustor_sess = ks_session.Session(auth=trustor_auth)
++        trustor_sess = ks_session.Session(auth=trustor_auth,
++                                          verify=not self.insecure)
+         trustor_client = ks_client.Client(session=trustor_sess)
+         auth_ref = trustor_client.session.auth.get_auth_ref(trustor_sess)
+         roles = [t['name'] for t in auth_ref['roles']]
+@@ -1431,7 +1432,8 @@ class MultiTenantStore(BaseStore):
+             user_domain_name=user_domain_name,
+             project_domain_id=project_domain_id,
+             project_domain_name=project_domain_name)
+-        trustee_sess = ks_session.Session(auth=password)
++        trustee_sess = ks_session.Session(auth=password,
++                                          verify=not self.insecure)
+         trustee_client = ks_client.Client(session=trustee_sess)
+ 
+         # request glance user id - we will use it as trustee user
+@@ -1457,7 +1459,8 @@ class MultiTenantStore(BaseStore):
+         )
+         # now we can authenticate against KS
+         # as trustee of user who provided token
+-        client_sess = ks_session.Session(auth=client_password)
++        client_sess = ks_session.Session(auth=client_password,
++                                         verify=not self.insecure)
+         return ks_client.Client(session=client_sess)
+ 
+     def get_manager(self, store_location, context=None, allow_reauth=False):
+diff --git a/glance_store/tests/unit/test_swift_store.py b/glance_store/tests/unit/test_swift_store.py
+index da91f00..20054e4 100644
+--- a/glance_store/tests/unit/test_swift_store.py
++++ b/glance_store/tests/unit/test_swift_store.py
+@@ -1186,17 +1186,27 @@ class SwiftTests(object):
+         loc = mock.MagicMock()
+         self.assertRaises(NotImplementedError, store.get_manager, loc)
+ 
++    def test_init_client_multi_tenant(self):
++        """Test that keystone client was initialized correctly"""
++        self._init_client(verify=True, swift_store_multi_tenant=True,
++                          swift_store_config_file=None)
++
++    def test_init_client_multi_tenant_insecure(self):
++        """
++        Test that keystone client was initialized correctly with no
++        certificate verification.
++        """
++        self._init_client(verify=False, swift_store_multi_tenant=True,
++                          swift_store_auth_insecure=True,
++                          swift_store_config_file=None)
++
+     @mock.patch("glance_store._drivers.swift.store.ks_identity")
+     @mock.patch("glance_store._drivers.swift.store.ks_session")
+     @mock.patch("glance_store._drivers.swift.store.ks_client")
+-    def test_init_client_multi_tenant(self,
+-                                      mock_client,
+-                                      mock_session,
+-                                      mock_identity):
+-        """Test that keystone client was initialized correctly"""
++    def _init_client(self, mock_client, mock_session, mock_identity, verify,
++                     **kwargs):
+         # initialize store and connection parameters
+-        self.config(swift_store_config_file=None)
+-        self.config(swift_store_multi_tenant=True)
++        self.config(**kwargs)
+         store = Store(self.conf)
+         store.configure()
+         ref_params = sutils.SwiftParams(self.conf).params
+@@ -1228,7 +1238,8 @@ class SwiftTests(object):
+             token=ctxt.auth_token,
+             project_id=ctxt.tenant
+         )
+-        mock_session.Session.assert_any_call(auth=mock_identity.V3Token())
++        mock_session.Session.assert_any_call(auth=mock_identity.V3Token(),
++                                             verify=verify)
+         mock_client.Client.assert_any_call(session=trustor_session)
+         # test trustee usage and trust creation
+         tenant_name, user = default_swift_reference.get('user').split(':')
+@@ -1243,7 +1254,8 @@ class SwiftTests(object):
+             project_domain_name=default_swift_reference.get(
+                 'project_domain_name')
+         )
+-        mock_session.Session.assert_any_call(auth=mock_identity.V3Password())
++        mock_session.Session.assert_any_call(auth=mock_identity.V3Password(),
++                                             verify=verify)
+         mock_client.Client.assert_any_call(session=trustee_session)
+         trustor_client.trusts.create.assert_called_once_with(
+             trustee_user='fake_user', trustor_user=ctxt.user,
+@@ -1353,7 +1365,7 @@ class TestStoreAuthV3(TestStoreAuthV1):
+             project_domain_id='default', project_domain_name=None,
+             user_domain_id='default', user_domain_name=None,)
+         mock_session.Session.assert_called_once_with(
+-            auth=mock_identity.V3Password())
++            auth=mock_identity.V3Password(), verify=True)
+         mock_client.Client.assert_called_once_with(
+             session=mock_session.Session())
+ 
+-- 
+2.13.3
+
