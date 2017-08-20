@@ -8,6 +8,9 @@ WORKSPACE=${WORKSPACE:-$basedir}
 
 echo "run checks over specfiles from $WORKSPACE/logs/"
 
+thome=$(mktemp -d)
+cat openstack/openstack-macros/macros.openstack-singlespec > $thome/.rpmmacros
+
 failed=0
 for spec in $WORKSPACE/logs/suse/*.spec ; do
     egrep -q '^Source:' $spec && {
@@ -20,11 +23,13 @@ for spec in $WORKSPACE/logs/suse/*.spec ; do
     }
 
     pushd $(dirname $spec) >/dev/null
-    rpmspec -q --qf "%{VERSION}\n" $(basename $spec) >/dev/null || {
+    HOME=$thome rpmspec -q --qf "%{VERSION}\n" $(basename $spec) >/dev/null || {
             echo "$spec does not parse properly. Please check your syntax."
             failed=1
         }
     popd > /dev/null
 done
+
+rm -rf $thome
 
 exit $failed
