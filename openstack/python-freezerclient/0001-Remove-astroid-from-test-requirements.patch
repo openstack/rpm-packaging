@@ -1,0 +1,24 @@
+From 6167ca63e36211e7bdb21cf1a5565b104b29c7e8 Mon Sep 17 00:00:00 2001
+From: Thomas Bechtold <tbechtold@suse.com>
+Date: Wed, 23 Aug 2017 07:11:34 +0200
+Subject: [PATCH] Remove astroid from test-requirements
+
+It is not used.
+
+Change-Id: I83fa5bca212f7944dad1bdde613c8eb98ba619f7
+---
+ test-requirements.txt | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/test-requirements.txt b/test-requirements.txt
+index 3b1f717..eeb0cfa 100644
+--- a/test-requirements.txt
++++ b/test-requirements.txt
+@@ -12,4 +12,3 @@ openstackdocstheme>=1.16.0 # Apache-2.0
+ testrepository>=0.0.18 # Apache-2.0/BSD
+ testtools>=1.4.0 # MIT
+ reno!=2.3.1,>=1.8.0 # Apache-2.0
+-astroid<1.4.0 # LGPLv2.1 # breaks pylint 1.4.4
+-- 
+2.14.1
+

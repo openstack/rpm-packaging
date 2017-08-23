@@ -6,8 +6,9 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            http://launchpad.net/%{name}
 Source0:        https://pypi.io/packages/source/p/%{name}/%{name}-%{version}.tar.gz
+# https://review.openstack.org/#/c/496487/
+Patch1:         0001-Remove-astroid-from-test-requirements.patch
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('astroid') }}
 BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('fixtures') }}
 BuildRequires:  {{ py2pkg('python-keystoneclient') }}
@@ -46,7 +47,7 @@ Client library for Freezer built on the Freezer API. It provides a Python API
 This package contains the documentation.
 
 %prep
-%autosetup -n %{name}-%{version}
+%autosetup -p1 -n %{name}-%{version}
 %py_req_cleanup
 sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
