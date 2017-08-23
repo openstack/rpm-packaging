@@ -1,22 +1,26 @@
-%global pypi_name stevedore
-Name:           {{ py2name('stevedore') }}
-Version:        1.27.1
-Release:        0
+{% set pypi_name = 'stevedore' %}
+{% set upstream_version = upstream_version('1.27.1') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
 Summary:        Manage dynamic plugins for Python applications
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            http://docs.openstack.org/developer/stevedore/
-Source0:        https://pypi.io/packages/source/s/%{pypi_name}/%{pypi_name}-%{version}.tar.gz
+Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  python-devel
-BuildRequires:  {{ py2pkg('mock') }}
-BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('reno') }}
-BuildRequires:  {{ py2pkg('setuptools') }}
-BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('setuptools', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('pbr') }}
 Requires:       {{ py2pkg('six') }}
 BuildArch:      noarch
+%python_subpackages
 
 %description
 Python makes loading code dynamically easy, allowing you to configure
@@ -29,12 +33,13 @@ for managing entry points tends to be repetitive, though, so stevedore
 provides manager classes for implementing common patterns for using
 dynamically loaded extensions.
 
-%package doc
+%package -n python-stevedore-doc
 Summary:        Documentation for %{name}
 Group:          Documentation
-BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('Sphinx', py_versions=['py2']) }}
+Provides:       %{python_module stevedore-doc = %{version}}
 
-%description doc
+%description -n python-stevedore-doc
 Python makes loading code dynamically easy, allowing you to configure
 and extend your application by discovering and loading extensions
 (plugins) at runtime. Many applications implement their own
@@ -48,31 +53,33 @@ dynamically loaded extensions.
 This package contains documentation in HTML format.
 
 %prep
-%autosetup -p1 -n %{pypi_name}-%{version}
+%autosetup -p1 -n {{ pypi_name }}-%{version}
 %py_req_cleanup
 sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
-%py2_build
+%python_build
 
 # generate html docs
 %{__python2} setup.py build_sphinx
 # remove the Sphinx-build leftovers
 rm -rf html/.{doctrees,buildinfo}
 
-%check
-%{__python2} setup.py test
-
 %install
-%py2_install
+%python_install
 
-%files
+%check
+%{python_expand rm -rf .testrepository
+$python setup.py test
+}
+
+%files %{python_files}
 %license LICENSE
 %doc README.rst
-%{python2_sitelib}/%{pypi_name}
-%{python2_sitelib}/%{pypi_name}-*.egg-info
+%{python_sitelib}/{{ pypi_name }}
+%{python_sitelib}/{{ pypi_name }}-*.egg-info
 
-%files doc
+%files -n python-stevedore-doc
 %license LICENSE
 %doc doc/build/html
 
