@@ -37,14 +37,15 @@ Requires:       {{ py2pkg('oslo.utils') }}
 BuildArch:      noarch
 
 %description
-OpenStack library for privilege separation
+OpenStack library for privilege separation.
 
 %package doc
 Summary:        oslo.privsep documentation
+Group:          Documentation/HTML
 Requires:       %{name} = %{version}
 
 %description doc
-Documentation for oslo.privsep
+Documentation for oslo.privsep.
 
 %prep
 %autosetup -n %{sname}-%{version}

@@ -82,7 +82,8 @@ System package - %{name}
 Python package - python-{{ pypi_name }}
 
 %package        doc
-Summary:        Documentation for OpenStack Workflow Service
+Summary:        Documentation for the OpenStack Workflow service
+Group:          Documentation/HTML
 BuildRequires:  git
 BuildRequires:  {{ py2pkg('Tempest') }}
 BuildRequires:  {{ py2pkg('Sphinx') }}
@@ -98,9 +99,7 @@ BuildRequires:  {{ py2pkg('sphinxcontrib-pecanwsme') }}
 BuildRequires:  {{ py2pkg('yaql') }}
 
 %description    doc
-OpenStack Mistral documentaion.
-.
-This package contains the documentation
+This package contains the documentation for OpenStack Mistral.
 
 %package -n     python-{{ pypi_name }}
 Summary:        Mistral Python libraries
@@ -166,7 +165,7 @@ Mistral is a workflow service.
 Most business processes consist of multiple distinct interconnected steps that need to be executed in a particular order
 in a distributed environment. One can describe such process as a set of tasks and task relations and upload such description
 to Mistral so that it takes care of state management, correct execution order, parallelism, synchronization and high availability.
-.
+
 This package contains the Python libraries.
 
 %package        api
@@ -174,8 +173,8 @@ Summary:        OpenStack Mistral API service
 Requires:       %{name} = %{version}
 
 %description    api
-OpenStack rest API to the Mistral api.
-.
+OpenStack rest API to the Mistral API.
+
 This package contains the ReST API.
 
 %package        engine
@@ -184,7 +183,7 @@ Requires:       %{name} = %{version}
 
 %description    engine
 OpenStack Mistral Engine service.
-.
+
 This package contains the mistral engine, which is one of core services of mistral.
 
 %package        executor
@@ -193,7 +192,7 @@ Requires:       %{name} = %{version}
 
 %description    executor
 OpenStack Mistral Executor service.
-.
+
 This package contains the mistral executor, which is one of core services of mistral, and
 which the API servers will use.
 

@@ -38,8 +38,8 @@ Client library for Mistral built on the Mistral API. It provides a Python API
 (the mistralclient module) and a command-line tool (mistral).
 
 %package doc
-Summary:        Documentation for OpenStack Mistral API client libary
-Group:          Documentation
+Summary:        Documentation for the OpenStack Mistral API client libary
+Group:          Documentation/HTML
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 
@@ -75,8 +75,5 @@ PYTHONPATH=. nosetests mistralclient/tests/unit
 %{python2_sitelib}/*.egg-info
 %{_bindir}/mistral
 %{_mandir}/man1/mistral_client.1.*
-
-%files doc
-%license LICENSE
 
 %changelog

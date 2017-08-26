@@ -53,12 +53,13 @@ The most prominent module is keystonemiddleware.auth_token. This package
 does not expose any CLI or Python API features.
 
 %package doc
-Summary:        Documentation for Middleware for OpenStack Identity
+Summary:        Documentation for OpenStack Identity middleware
+Group:          Documentation/HTML
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 
 %description doc
-Documentation for Middleware for OpenStack Identity.
+Documentation for OpenStack Identity middleware.
 
 %prep
 %autosetup -p1 -n %{sname}-%{version}

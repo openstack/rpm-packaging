@@ -36,12 +36,12 @@ Requires:       {{ py2pkg('pbr') }}
 BuildArch:      noarch
 
 %description
-Library contains Windows / Hyper-V code commonly used in the OpenStack projects:
-nova, cinder, networking-hyperv.
+Library containing Windows / Hyper-V code commonly used in the
+OpenStack projects nova, cinder and networking-hyperv.
 
 %package doc
-Summary:        Documentation for OpenStack Windows/Hyper-V Library
-Group:          Documentation
+Summary:        Documentation for the OpenStack Windows/Hyper-V library
+Group:          Documentation/HTML
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 

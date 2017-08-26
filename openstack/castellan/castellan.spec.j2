@@ -35,13 +35,13 @@ Generic Key Manager interface for OpenStack.
 
 %package doc
 Summary:        Documentation for castellan
-Group:          Documentation
+Group:          Documentation/HTML
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 
 %description doc
 Castellan is a generic Key Manager interface for OpenStack.
-This package contains the documentation
+This package contains the documentation.
 
 %prep
 %autosetup -n %{sname}-%{version}

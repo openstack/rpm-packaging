@@ -21,13 +21,14 @@ pymod2pkg is a simple python module for translating python module names to
 corresponding package names which is a common problem in the packaging world.
 
 %package doc
-Summary:        Documentation for python module name to package name map library
+Summary:        Documentation for pymod2pkg
+Group:          Documentation/HTML
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('oslosphinx') }}
 Requires:       %{name} = %{version}
 
 %description doc
-Documentation for python module name to package name map library.
+Documentation for OpenStack's package name <-> Python module name mapping library.
 
 %prep
 %autosetup -n %{sname}-%{version}

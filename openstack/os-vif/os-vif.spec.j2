@@ -43,14 +43,14 @@ Features:
 * Versioned objects that represent a virtual interface and its components
 
 %package doc
-Summary:        Documentation for a library for plugging and unplugging virtual interfaces in OpenStack
+Summary:        Documentation for OpenStack's virtual interface plugging library
+Group:          Documentation/HTML
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 BuildRequires:  {{ py2pkg('reno') }}
 
 %description doc
-Documentation for a library for plugging and unplugging virtual interfaces
-in OpenStack.
+Documentation for OpenStack's virtual interface plugging library.
 
 %prep
 %autosetup -n %{sname}-%{version}
