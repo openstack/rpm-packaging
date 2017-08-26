@@ -226,15 +226,13 @@ SR-IOV network cards.
 
 %if 0%{?with_doc}
 %package doc
-Summary:        Documentation for OpenStack Networking Service
-Group:          Documentation
+Summary:        Documentation for the OpenStack Networking service
+Group:          Documentation/HTML
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('oslosphinx') }}
 
 %description doc
-OpenStack Neutron documentaion.
-
-This package contains the documentation
+This package contains the documentation for OpenStack Neutron.
 %endif
 
 %prep

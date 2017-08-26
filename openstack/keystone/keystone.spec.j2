@@ -55,7 +55,7 @@ Requires(pre):  shadow-utils
 %description
 Keystone is a Python implementation of the OpenStack
 (http://www.openstack.org) identity service API.
-.
+
 This package contains the keystone python libraries.
 
 %package -n     python-{{ pypi_name }}
@@ -111,8 +111,8 @@ Keystone is a Python implementation of the OpenStack
 This package contains the Keystone Python library.
 
 %package doc
-Summary:        Documentation for OpenStack Identity Service
-Group:          Documentation
+Summary:        Documentation for the OpenStack Identity service
+Group:          Documentation/HTML
 BuildRequires:  {{ py2pkg('PasteDeploy') }}
 BuildRequires:  {{ py2pkg('Routes') }}
 BuildRequires:  {{ py2pkg('Sphinx') }}
@@ -136,9 +136,9 @@ BuildRequires:  {{ py2pkg('pysaml2') }}
 BuildRequires:  {{ py2pkg('python-memcached') }}
 
 %description doc
-OpenStack Keystone documentaion.
-.
-This package contains the documentation
+Keystone is a Python implementation of the OpenStack identity service API.
+
+This package contains the documentation.
 
 %prep
 %autosetup -p1 -n {{ pypi_name }}-{{upstream_version}}

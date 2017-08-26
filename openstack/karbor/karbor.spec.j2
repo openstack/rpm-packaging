@@ -78,7 +78,7 @@ BuildRequires:  systemd
 %description
 Karbor is a Python implementation of the OpenStack
 (http://www.openstack.org) Application Data Protection API.
-.
+
 This package contains the karbor python libraries.
 
 %package -n     python-{{ pypi_name }}
@@ -130,15 +130,14 @@ This package contains the Karbor Python library.
 
 %if 0%{?with_doc}
 %package doc
-Summary:        Documentation for OpenStack Application Data Protection Service
-Group:          Documentation
+Summary:        Documentation for the OpenStack Application Data Protection Service
+Group:          Documentation/HTML
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('oslosphinx') }}
 
 %description doc
-OpenStack Karbor documentaion.
-.
-This package contains the documentation
+Karbor is a Python implementation of the OpenStack Application Data Protection API.
+This package contains the Karbor Python library.
 %endif
 
 %package api

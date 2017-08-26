@@ -30,10 +30,11 @@ BuildRequires:  {{ py2pkg('testtools') }}
 %endif
 
 %description
-os-apply-config is a apply configuration from cloud metadata
+os-apply-config applies configuration from cloud metadata.
 
 %package doc
-Summary:        Documentation for OpenStack Os-apply-config configuration library
+Summary:        Documentation for the OpenStack Os-apply-config configuration library
+Group:          Documentation/HTML
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('oslosphinx') }}
 BuildRequires:  {{ py2pkg('reno') }}

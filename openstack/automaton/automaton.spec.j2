@@ -2,7 +2,7 @@
 Name:           {{ py2name('automaton') }}
 Version:        1.12.0
 Release:        0
-Summary:        Friendly state machines for python
+Summary:        State machines for Python
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            https://launchpad.net/%{sname}
@@ -24,10 +24,11 @@ Requires:       {{ py2pkg('six') }}
 BuildArch:      noarch
 
 %description
-Friendly state machines for python.
+State machines for Python.
 
 %package doc
-Summary:        Documentation for the Automaton Library
+Summary:        Documentation for the Automaton library
+Group:          Documentation/HTML
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 

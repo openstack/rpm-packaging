@@ -54,7 +54,8 @@ System package - %{name}
 Python package - python-%{sname}
 
 %package        doc
-Summary:        Documentation for OpenStack Masakari Service
+Summary:        Documentation for the OpenStack Masakari service
+Group:          Documentation/HTML
 BuildRequires:  {{ py2pkg('Tempest') }}
 BuildRequires:  {{ py2pkg('WSME') }}
 BuildRequires:  {{ py2pkg('jsonschema') }}
