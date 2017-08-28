@@ -95,7 +95,7 @@ The Monasca API provides a RESTful JSON interface for interacting with
 and managing monitoring related resources.
 
 %prep
-%autosetup -n %{component}-%{version}
+%autosetup -n %{component}-{{ upstream_version }}
 %py_req_cleanup
 
 %build

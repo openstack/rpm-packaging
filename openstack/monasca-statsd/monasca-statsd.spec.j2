@@ -23,7 +23,7 @@ BuildArch:      noarch
 Python Statsd library for sending statsd messages via the Monasca Agent
 
 %prep
-%autosetup -n %{sname}-%{version}
+%autosetup -n %{sname}-{{ upstream_version }}
 %py_req_cleanup
 
 %build

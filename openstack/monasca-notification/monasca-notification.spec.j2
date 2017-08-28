@@ -66,7 +66,7 @@ whenever a new process joins or leaves the working set.
 This package contains the core Python module of Monasca-notification
 
 %prep
-%autosetup -n %{sname}-%{version}
+%autosetup -n %{sname}-{{ upstream_version }}
 %py_req_cleanup
 
 %build

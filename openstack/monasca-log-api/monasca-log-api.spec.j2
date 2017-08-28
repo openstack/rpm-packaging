@@ -65,7 +65,7 @@ monasca-log-api is a RESTful API server receiving logs from the deployed
 log agents.
 
 %prep
-%autosetup -n %{sname}-%{version}
+%autosetup -n %{sname}-{{ upstream_version }}
 %py_req_cleanup
 
 %build

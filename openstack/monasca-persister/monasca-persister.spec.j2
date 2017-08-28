@@ -55,7 +55,7 @@ Consumes metrics and alarm state transitions from message queue and stores them 
 Data is read from Kafka queue and saved either in InfluxDB or Cassandra
 
 %prep
-%autosetup -n %{sname}-%{version}
+%autosetup -n %{sname}-{{ upstream_version }}
 %py_req_cleanup
 
 %build

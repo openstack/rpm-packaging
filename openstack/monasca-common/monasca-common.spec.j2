@@ -43,7 +43,7 @@ Collection of sub-projects containing reusable application and
 platform code for building monitoring related services.
 
 %prep
-%autosetup -n %{sname}-%{version}
+%autosetup -n %{sname}-{{ upstream_version }}
 %py_req_cleanup
 
 %build

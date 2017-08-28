@@ -38,7 +38,7 @@ Requires:      {{ py2pkg('pbr') }}
 The Monasca UI Horizon plugin adds Monitoring panel to the OpenStack dashboard.
 
 %prep
-%autosetup -n %{sname}-%{version}
+%autosetup -n %{sname}-{{ upstream_version }}
 %py_req_cleanup
 
 %build
