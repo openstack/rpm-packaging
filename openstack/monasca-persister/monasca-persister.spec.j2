@@ -1,5 +1,6 @@
 {% set pypi_name = 'monasca-persister' %}
-{% set upstream_version = upstream_version('1.5.0') %}
+{% set source = fetch_source('http://tarballs.openstack.org/monasca-persister/monasca-persister-stable-pike.tar.gz') %}
+{% set upstream_version = upstream_version() %}
 {% set rpm_release = '1' %}
 
 %global sname {{ pypi_name }}
@@ -10,7 +11,7 @@ Summary:        Consumes metrics and alarm state transitions from message queue 
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            https://wiki.openstack.org/wiki/Monasca
-Source0:        https://pypi.io/packages/source/m/%{sname}/%{sname}-%{version}.tar.gz
+Source0:        {{ source|basename }}
 Source1:        openstack-monasca-persister.service
 Source2:        openstack-monasca-persister.logrotate
 BuildRequires:  openstack-macros
@@ -55,7 +56,7 @@ Consumes metrics and alarm state transitions from message queue and stores them 
 Data is read from Kafka queue and saved either in InfluxDB or Cassandra
 
 %prep
-%autosetup -n %{sname}-%{version}
+%autosetup -n %{sname}-{{ upstream_version }}
 %py_req_cleanup
 
 %build
@@ -69,8 +70,11 @@ install -d -m 755 %{buildroot}%{_sysconfdir}/monasca
 install -d -m 755 %{buildroot}%{_var}/lib/{{ pypi_name }}
 install -d -m 755 %{buildroot}%{_var}/log/{{ pypi_name }}
 
+# create config
+oslo-config-generator --config-file config-generator/persister.conf
+
 # install config
-install -D -m 640 etc/monasca/persister.conf %{buildroot}%{_sysconfdir}/monasca/persister.conf
+install -D -m 640 etc/monasca/persister.conf.sample %{buildroot}%{_sysconfdir}/monasca/persister.conf
 install -D -m 640 etc/monasca/persister-logging.conf %{buildroot}%{_sysconfdir}/monasca/persister-logging.conf
 
 # install systemd service

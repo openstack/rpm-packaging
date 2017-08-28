@@ -1,5 +1,6 @@
 {% set pypi_name = 'monasca-api' %}
-{% set upstream_version = upstream_version('2.0.0') %}
+{% set source = fetch_source('http://tarballs.openstack.org/monasca-api/monasca-api-stable-pike.tar.gz') %}
+{% set upstream_version = upstream_version() %}
 {% set rpm_release = '1' %}
 
 %define component           {{ pypi_name }}
@@ -10,7 +11,7 @@ Summary:        Monasca REST API
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            https://wiki.openstack.org/wiki/Monasca
-Source0:        https://pypi.io/packages/source/m/%{component}/%{component}-%{version}.tar.gz
+Source0:        {{ source|basename }}
 Source1:        api-config.conf
 Source2:        api-logging.conf
 Source3:        api-config.ini
@@ -95,7 +96,7 @@ The Monasca API provides a RESTful JSON interface for interacting with
 and managing monitoring related resources.
 
 %prep
-%autosetup -n %{component}-%{version}
+%autosetup -n %{component}-{{ upstream_version }}
 %py_req_cleanup
 
 %build
