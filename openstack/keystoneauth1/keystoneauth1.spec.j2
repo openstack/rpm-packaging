@@ -1,6 +1,6 @@
 %global sname keystoneauth1
 Name:           {{ py2name('keystoneauth1') }}
-Version:        3.1.0
+Version:        3.2.0
 Release:        0
 Summary:        OpenStack authenticating tools
 License:        {{ license('Apache-2.0') }}
@@ -19,7 +19,6 @@ BuildRequires:  {{ py2pkg('oslo.config') }}
 BuildRequires:  {{ py2pkg('oslo.utils') }}
 BuildRequires:  {{ py2pkg('oslotest') }}
 BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('pep8') }}
 BuildRequires:  {{ py2pkg('positional') }}
 BuildRequires:  {{ py2pkg('pycrypto') }}
 BuildRequires:  {{ py2pkg('reno') }}
@@ -74,6 +73,7 @@ echo "intersphinx_mapping = {}" >> doc/source/conf.py
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %check
+rm -v keystoneauth1/tests/unit/test_hacking_checks.py
 %{__python2} setup.py testr
 
 %files

@@ -7,6 +7,7 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://launchpad.net/%{sname}
 Source0:        https://pypi.io/packages/source/k/%{sname}/%{sname}-%{version}.tar.gz
+Patch1:         0001-Fix-gate-error-caused-by-mocked-URLs.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('WebOb') }}
 BuildRequires:  {{ py2pkg('WebTest') }}
