@@ -1,0 +1,116 @@
+{% set pypi_name = 'neutron-fwaas-dashboard' %}
+{% set source = fetch_source('http://tarballs.openstack.org/neutron-fwaas-dashboard/neutron-fwaas-dashboard-stable-pike.tar.gz') %}
+{% set upstream_version = upstream_version() %}
+{% set rpm_release = '1' %}
+
+%if 0%{?rhel} || 0%{?fedora}
+%global http_dashboard_dir %{_datarootdir}/openstack-dashboard
+%else
+%global http_dashboard_dir /srv/www/openstack-dashboard
+%endif
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
+Summary:        Neutron FWaaS management plugin for Horizon
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            https://launchpad.net/neutron-fwaas-dashboard
+Source0:        {{ source|basename }}
+BuildRequires:  fdupes
+BuildRequires:  gettext
+BuildRequires:  {{ py2pkg('horizon') }}
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('ddt') }}
+BuildRequires:  {{ py2pkg('django-nose') }}
+BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('mox3') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('python-subunit') }}
+BuildRequires:  {{ py2pkg('reno') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testscenarios') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+Requires:       {{ py2pkg('horizon-plugin-neutron-fwaas-ui') }} = %{version}
+BuildArch:      noarch
+
+%description
+OpenStack Neutron FWaaS management plugin for Horizon.
+
+%package -n    {{ py2pkg('horizon-plugin-neutron-fwaas-ui') }}
+Summary:       Neutron FWaaS Management Plugin for Horizon - Python module
+Requires:      {{ py2pkg('Django') }}
+Requires:      {{ py2pkg('python-neutronclient') }}
+Requires:      {{ py2pkg('pbr') }}
+
+%description -n {{ py2pkg('horizon-plugin-neutron-fwaas-ui') }}
+OpenStack Neutron FWaaS management plugin for Horizon.
+
+This package contains the core Python module of the neutron-fwaas-ui.
+
+%package test
+Summary:       Neutron FWaaS Management Plugin for Horizon - Testsuite
+Requires:      {{ py2pkg('ddt') }}
+Requires:      {{ py2pkg('django-nose') }}
+Requires:      {{ py2pkg('mock') }}
+Requires:      {{ py2pkg('mox3') }}
+Requires:      {{ py2pkg('openstackdocstheme') }}
+Requires:      {{ py2pkg('python-subunit') }}
+Requires:      {{ py2pkg('reno') }}
+Requires:      {{ py2pkg('testrepository') }}
+Requires:      {{ py2pkg('testscenarios') }}
+Requires:      {{ py2pkg('testtools') }}
+
+%description test
+OpenStack Neutron FWaaS management plugin for Horizon.
+It is used to verify the functionality of the Neutron FWaaS UI Plugin.
+
+%prep
+%autosetup -n {{ pypi_name }}-{{upstream_version}}
+%py_req_cleanup
+
+%build
+%py2_build
+pushd neutron_fwaas_dashboard
+PYTHONPATH=%{http_dashboard_dir} python ../manage.py compilemessages
+popd
+
+%check
+PYTHONPATH=%{http_dashboard_dir} python manage.py test neutron_fwaas_dashboard --settings=neutron_fwaas_dashboard.test.settings
+
+%install
+%py2_install
+
+install -m 0755 -d %{buildroot}%{http_dashboard_dir}/openstack_dashboard/enabled/
+cp -a neutron_fwaas_dashboard/enabled/*.py %{buildroot}%{http_dashboard_dir}/openstack_dashboard/enabled/
+install -m 0755 -d %{buildroot}%{http_dashboard_dir}/openstack_dashboard/conf/
+cp -a etc/neutron-fwaas-policy.json %{buildroot}%{http_dashboard_dir}/openstack_dashboard/conf/
+
+%fdupes %{buildroot}%{python2_sitelib}
+%fdupes %{buildroot}%{http_dashboard_dir}
+
+%post
+su %{apache_user} -s /bin/sh -c "python %{http_dashboard_dir}/manage.py collectstatic --noinput --clear > /dev/null"
+
+%postun
+su %{apache_user} -s /bin/sh -c "python %{http_dashboard_dir}/manage.py collectstatic --noinput --clear > /dev/null"
+
+%files
+%doc ChangeLog CONTRIBUTING.rst README.rst
+%license LICENSE
+%{http_dashboard_dir}/openstack_dashboard/enabled/*.py
+%{http_dashboard_dir}/openstack_dashboard/conf/neutron-fwaas-policy.json
+
+%files -n {{ py2pkg('horizon-plugin-neutron-fwaas-ui') }}
+%doc README.rst
+%license LICENSE
+%{python2_sitelib}/neutron_fwaas_dashboard/
+%{python2_sitelib}/neutron_fwaas_dashboard-*.egg-info
+%exclude %{http_dashboard_dir}/openstack_dashboard/enabled/*.pyc
+%exclude %{http_dashboard_dir}/openstack_dashboard/enabled/*.pyo
+%exclude %{python_sitelib}/neutron_fwaas_dashboard/test*
+
+%files test
+%{python_sitelib}/neutron_fwaas_dashboard/test*
+
+%changelog
