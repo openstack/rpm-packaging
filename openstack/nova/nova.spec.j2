@@ -1,29 +1,24 @@
-%global with_doc 1
-# fix me IgorYozhikov
-%global with_tests 0
-%global sname nova
-{% set upstream_version = '15.0.5' %}
+{% set pypi_name = 'nova' %}
+{% set source = fetch_source('http://tarballs.openstack.org/nova/nova-master.tar.gz') %}
+{% set upstream_version = upstream_version() %}
 {% set rpm_release = '1' %}
-%if 0%{?rhel} || 0%{?fedora}
-%global rdo 1
-%endif
-Name:           {{ py2name('nova') }}
-Epoch:          {{ epoch('nova') }}
+%global with_doc 1
+%global with_tests 0
+Name:           {{ py2name() }}
 Version:        {{ py2rpmversion() }}
 Release:        {{ py2rpmrelease() }}
+Epoch:          {{ epoch('nova') }}
 Summary:        OpenStack Compute (nova)
 License:        {{ license('Apache-2.0') }}
 Url:            https://launchpad.net/nova
-Source0:        http://tarballs.openstack.org/%{sname}/%{sname}-{{upstream_version}}.tar.gz
+Source0:        {{ source|basename }}
 Source1:        nova-dist.conf
 Source3:        nova.logrotate
 Source4:        nova-polkit.pkla
-Source5:        nova-ifc-template
 Source6:        nova-polkit.rules
 Source7:        nova-sudoers
 Source8:        unittests.blacklist
 Source10:       openstack-nova-api.service
-Source11:       openstack-nova-cert.service
 Source12:       openstack-nova-compute.service
 Source13:       openstack-nova-network.service
 Source14:       openstack-nova-scheduler.service
@@ -45,6 +40,7 @@ BuildRequires:  polkit
 BuildRequires:  {{ py2pkg('PyMySQL') }}
 BuildRequires:  {{ py2pkg('python-barbicanclient') }}
 BuildRequires:  {{ py2pkg('python-cinderclient') }}
+BuildRequires:  {{ py2pkg('cursive') }}
 BuildRequires:  {{ py2pkg('ddt') }}
 BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('fixtures') }}
@@ -84,6 +80,7 @@ BuildRequires:  {{ py2pkg('osprofiler') }}
 BuildRequires:  {{ py2pkg('psycopg2') }}
 BuildRequires:  {{ py2pkg('python-subunit') }}
 BuildRequires:  {{ py2pkg('requests-mock') }}
+BuildRequires:  {{ py2pkg('sphinxcontrib-actdiag') }}
 BuildRequires:  {{ py2pkg('tempest-lib') }}
 BuildRequires:  {{ py2pkg('testrepository') }}
 BuildRequires:  {{ py2pkg('testresources') }}
@@ -91,7 +88,7 @@ BuildRequires:  {{ py2pkg('testscenarios') }}
 BuildRequires:  {{ py2pkg('testtools') }}
 BuildRequires:  sudo
 Requires:       logrotate
-Requires:       python-%{sname} = %{epoch}:%{version}-%{release}
+Requires:       python-{{ pypi_name }} = %{epoch}:%{version}-%{release}
 BuildArch:      noarch
 %if 0%{?suse_version}
 BuildRequires:  systemd-rpm-macros
@@ -115,7 +112,7 @@ through users and projects. OpenStack Compute strives to be both
 hardware and hypervisor agnostic, currently supporting a variety of
 standard hardware configurations and seven major hypervisors.
 
-%package -n     python-%{sname}
+%package -n     python-{{ pypi_name }}
 Summary:        Nova Python library
 Group:          Applications/System
 # Require openssh for ssh-keygen
@@ -132,6 +129,7 @@ Requires:       {{ py2pkg('WebOb') }}
 Requires:       {{ py2pkg('castellan') }}
 Requires:       {{ py2pkg('python-cinderclient') }}
 Requires:       {{ py2pkg('cryptography') }}
+Requires:       {{ py2pkg('cursive') }}
 Requires:       {{ py2pkg('decorator') }}
 Requires:       {{ py2pkg('eventlet') }}
 Requires:       {{ py2pkg('python-glanceclient') }}
@@ -177,7 +175,7 @@ Requires:       {{ py2pkg('stevedore') }}
 Requires:       {{ py2pkg('websockify') }}
 Requires:       sudo
 
-%description -n python-%{sname}
+%description -n python-{{ pypi_name }}
 OpenStack Compute (codename Nova) is open source software designed to
 provision and manage large networks of virtual machines, creating a
 redundant and scalable cloud computing platform.
@@ -464,10 +462,11 @@ This package contains documentation files for nova.
 %endif
 
 %prep
-%autosetup -n %{sname}-{{upstream_version}}
+%autosetup -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
 find . \( -name .gitignore -o -name .placeholder \) -delete
 find nova -name \*.py -exec sed -i '/\/usr\/bin\/env python/{d;q}' {} +
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
 %{py2_build}
@@ -496,14 +495,6 @@ install -d -m 755 %{buildroot}%{_localstatedir}/lib/nova/networks
 install -d -m 755 %{buildroot}%{_localstatedir}/lib/nova/tmp
 install -d -m 750 %{buildroot}%{_localstatedir}/log/nova
 
-# Setup ghost CA cert
-install -d -m 755 %{buildroot}%{_localstatedir}/lib/nova/CA
-install -p -m 755 nova/CA/*.sh %{buildroot}%{_localstatedir}/lib/nova/CA
-install -p -m 644 nova/CA/openssl.cnf.tmpl %{buildroot}%{_localstatedir}/lib/nova/CA
-install -d -m 755 %{buildroot}%{_localstatedir}/lib/nova/CA/{certs,crl,newcerts,projects,reqs}
-touch %{buildroot}%{_localstatedir}/lib/nova/CA/{cacert.pem,crl.pem,index.txt,openssl.cnf,serial}
-install -d -m 750 %{buildroot}%{_localstatedir}/lib/nova/CA/private
-touch %{buildroot}%{_localstatedir}/lib/nova/CA/private/cakey.pem
 # WSGI apache config for nova-placement-api
 %if 0%{?rdo}
 # adjust paths to WSGI scripts
@@ -547,7 +538,6 @@ install -p -D -m 644 %{SOURCE6} %{buildroot}%{_sysconfdir}/polkit-1/rules.d/50-n
 install -p -D -m 440 %{SOURCE7} %{buildroot}%{_sysconfdir}/sudoers.d/%{name}
 # Install initscripts for Nova services
 install -p -D -m 755 %{SOURCE10} %{buildroot}%{_unitdir}/openstack-nova-api.service
-install -p -D -m 755 %{SOURCE11} %{buildroot}%{_unitdir}/openstack-nova-cert.service
 install -p -D -m 755 %{SOURCE12} %{buildroot}%{_unitdir}/openstack-nova-compute.service
 install -p -D -m 755 %{SOURCE13} %{buildroot}%{_unitdir}/openstack-nova-network.service
 install -p -D -m 755 %{SOURCE14} %{buildroot}%{_unitdir}/openstack-nova-scheduler.service
@@ -562,12 +552,6 @@ install -p -D -m 755 %{SOURCE22} %{buildroot}%{_unitdir}/openstack-nova-novncpro
 install -p -D -m 755 %{SOURCE23} %{buildroot}%{_unitdir}/openstack-nova-serialproxy.service
 install -p -D -m 755 %{SOURCE24} %{buildroot}%{_unitdir}/openstack-nova-os-compute-api.service
 
-# Install template files
-install -p -D -m 644 nova/cloudpipe/client.ovpn.template %{buildroot}%{_datarootdir}/nova/client.ovpn.template
-install -p -D -m 644 nova/cloudpipe/bootscript.template %{buildroot}%{_datarootdir}/nova/bootscript.template
-install -p -D -m 644 nova/console/xvp.conf.template %{buildroot}%{_datarootdir}/nova/xvp.conf.template
-install -p -D -m 644 nova/virt/interfaces.template %{buildroot}%{_datarootdir}/nova/interfaces_deb.template
-install -p -D -m 644 %{SOURCE5} %{buildroot}%{_datarootdir}/nova/interfaces.template
 # Install rootwrap files in /usr/share/nova/rootwrap
 mkdir -p %{buildroot}%{_datarootdir}/nova/rootwrap/
 install -p -D -m 644 etc/nova/rootwrap.d/* %{buildroot}%{_datarootdir}/nova/rootwrap/
@@ -721,11 +705,6 @@ usermod -a -G qemu nova
 %dir %{_localstatedir}/lib/nova/tmp
 %dir %attr(0750, nova, root) %{_localstatedir}/log/nova
 %dir %attr(0755, nova, root) %{_localstatedir}/run/nova
-%{_datarootdir}/nova/bootscript.template
-%{_datarootdir}/nova/client.ovpn.template
-%{_datarootdir}/nova/interfaces.template
-%{_datarootdir}/nova/interfaces_deb.template
-%{_datarootdir}/nova/xvp.conf.template
 %{_sysconfdir}/bash_completion.d/openstack-nova-manage.sh
 %{_sysconfdir}/nova/release
 %config(noreplace) %{_sysconfdir}/logrotate.d/%{name}
@@ -752,6 +731,7 @@ usermod -a -G qemu nova
 %license LICENSE
 %config %{_sysconfdir}/nova/rootwrap.d/api-metadata.filters
 %{_bindir}/nova-api*
+%{_bindir}/nova-metadata-wsgi
 %{_unitdir}/%{name}-*api.service
 %{_datarootdir}/nova/rootwrap/api-metadata.filters
 
@@ -766,27 +746,6 @@ usermod -a -G qemu nova
 %config(noreplace) %attr(-, root, nova) %{_sysconfdir}/nova/cells.json
 %{_bindir}/nova-cells
 %{_unitdir}/%{name}-cells.service
-
-%files cert
-%license LICENSE
-%{_bindir}/nova-cert
-%{_unitdir}/openstack-nova-cert.service
-%defattr(-, nova, nova, -)
-%dir %{_localstatedir}/lib/nova/CA/
-%dir %{_localstatedir}/lib/nova/CA/certs
-%dir %{_localstatedir}/lib/nova/CA/crl
-%dir %{_localstatedir}/lib/nova/CA/newcerts
-%dir %{_localstatedir}/lib/nova/CA/projects
-%dir %{_localstatedir}/lib/nova/CA/reqs
-%{_localstatedir}/lib/nova/CA/*.sh
-%{_localstatedir}/lib/nova/CA/openssl.cnf.tmpl
-%ghost %config(missingok,noreplace) %verify(not md5 size mtime) %{_localstatedir}/lib/nova/CA/cacert.pem
-%ghost %config(missingok,noreplace) %verify(not md5 size mtime) %{_localstatedir}/lib/nova/CA/crl.pem
-%ghost %config(missingok,noreplace) %verify(not md5 size mtime) %{_localstatedir}/lib/nova/CA/index.txt
-%ghost %config(missingok,noreplace) %verify(not md5 size mtime) %{_localstatedir}/lib/nova/CA/openssl.cnf
-%ghost %config(missingok,noreplace) %verify(not md5 size mtime) %{_localstatedir}/lib/nova/CA/serial
-%dir %attr(0750, -, -) %{_localstatedir}/lib/nova/CA/private
-%ghost %config(missingok,noreplace) %verify(not md5 size mtime) %{_localstatedir}/lib/nova/CA/private/cakey.pem
 
 %files compute
 %license LICENSE
