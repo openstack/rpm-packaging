@@ -1,0 +1,8 @@
+- project:
+    name: openstack/rpm-packaging
+    check:
+      jobs:
+        - openstack-tox-linters
+    gate:
+      jobs:
+        - openstack-tox-linters
