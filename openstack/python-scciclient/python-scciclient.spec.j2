@@ -1,5 +1,5 @@
 Name:           {{ py2name('python-scciclient') }}
-Version:        0.4.0
+Version:        0.5.0
 Release:        0
 Summary:        Python API and CLI for OpenStack Scci
 License:        {{ license('Apache-2.0') }}
@@ -9,6 +9,8 @@ Source0:        https://pypi.io/packages/source/p/%{name}/%{name}-%{version}.tar
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('fixtures') }}
 BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('oslo.serialization') }}
+BuildRequires:  {{ py2pkg('oslo.utils') }}
 BuildRequires:  {{ py2pkg('oslotest') }}
 BuildRequires:  {{ py2pkg('pbr') }}
 BuildRequires:  {{ py2pkg('python-subunit') }}
@@ -18,6 +20,8 @@ BuildRequires:  {{ py2pkg('testrepository') }}
 BuildRequires:  {{ py2pkg('testscenarios') }}
 BuildRequires:  {{ py2pkg('testtools') }}
 Requires:       {{ py2pkg('Babel') }}
+Requires:       {{ py2pkg('oslo.serialization') }}
+Requires:       {{ py2pkg('oslo.utils') }}
 Requires:       {{ py2pkg('pbr') }}
 Requires:       {{ py2pkg('requests') }}
 Requires:       {{ py2pkg('six') }}
