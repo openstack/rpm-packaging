@@ -1,7 +1,7 @@
 %global sname python-glareclient
 Name:           {{ py2name('python-glareclient') }}
 Epoch:          {{ epoch('python-glareclient') }}
-Version:        0.4.1
+Version:        0.4.2
 Release:        0
 Summary:        Python API and CLI for OpenStack Glare
 License:        {{ license('Apache-2.0') }}
@@ -9,6 +9,7 @@ Group:          Development/Languages/Python
 Url:            https://launchpad.net/%{sname}
 Source0:        https://pypi.io/packages/source/p/%{sname}/%{sname}-%{version}.tar.gz
 BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('PyYAML') }}
 BuildRequires:  {{ py2pkg('coverage') }}
 BuildRequires:  python-devel
 BuildRequires:  {{ py2pkg('fixtures') }}
