@@ -19,12 +19,12 @@ Source1:        masakari-hostmonitor.service
 Source2:        masakari-instancemonitor.service
 Source3:        masakari-processmonitor.service
 Source4:        masakari-monitors.tmpfiles
-BuildRequires:  {{ py2pkg('libvirt-python') }}
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('ddt') }}
 BuildRequires:  {{ py2pkg('eventlet') }}
 BuildRequires:  {{ py2pkg('keystoneauth1') }}
 BuildRequires:  {{ py2pkg('keystonemiddleware') }}
+BuildRequires:  {{ py2pkg('libvirt-python') }}
 BuildRequires:  {{ py2pkg('python-masakariclient') }}
 BuildRequires:  {{ py2pkg('microversion_parse') }}
 BuildRequires:  {{ py2pkg('python-novaclient') }}
