@@ -1,7 +1,7 @@
 %global sname tempest
 Name:           {{ py2name('Tempest') }}
 Epoch:          {{ epoch('Tempest') }}
-Version:        15.0.0
+Version:        16.1.0
 Release:        0
 Summary:        The OpenStack Integration Test Suite
 License:        {{ license('Apache-2.0') }}
@@ -18,6 +18,7 @@ BuildRequires:  {{ py2pkg('fixtures') }}
 BuildRequires:  {{ py2pkg('jsonschema') }}
 BuildRequires:  {{ py2pkg('mock') }}
 BuildRequires:  {{ py2pkg('netaddr') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 BuildRequires:  {{ py2pkg('os-testr') }}
 BuildRequires:  {{ py2pkg('oslo.concurrency') }}
 BuildRequires:  {{ py2pkg('oslo.config') }}
@@ -74,6 +75,7 @@ Documentation for the OpenStack Integration Test Suite.
 %prep
 %autosetup -n %{sname}-%{version}
 %py_req_cleanup
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
 %{py2_build}
