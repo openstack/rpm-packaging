@@ -7,7 +7,7 @@
 %define username    monasca-notification
 %define groupname   monasca
 %define notification_conf_dir %{_sysconfdir}/%{sname}
-%define notification_log_dir %{_localstatedir}/%{sname}
+%define notification_log_dir %{_localstatedir}/log/%{sname}
 Name:           {{ py2name() }}
 Version:        {{ py2rpmversion() }}
 Release:        {{ py2rpmrelease() }}
