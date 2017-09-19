@@ -1,23 +1,21 @@
 %global sname openstackdocstheme
 Name:           {{ py2name('openstackdocstheme') }}
-Version:        1.16.1
+Version:        1.17.0
 Release:        0
 Summary:        OpenStack Docs Theme
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            https://launchpad.net/%{sname}
 Source0:        https://pypi.io/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
-# https://review.openstack.org/491157
-Patch1:         0001-Break-cycle-dependency-with-os-api-ref.patch
-# 0001-Break-cycle-dependency-with-reno.patch
-Patch2:         0001-Break-cycle-dependency-with-reno.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('dulwich') }}
 BuildRequires:  {{ py2pkg('pbr') }}
 BuildRequires:  {{ py2pkg('requests') }}
 BuildRequires:  {{ py2pkg('setuptools') }}
 Requires:       {{ py2pkg('Sphinx') }}
+Requires:       {{ py2pkg('dulwich') }}
 BuildArch:      noarch
 
 %description
