@@ -1,6 +1,6 @@
 %global sname python-masakariclient
 Name:           {{ py2name('python-masakariclient') }}
-Version:        3.0.1
+Version:        4.0.0
 Release:        0
 Summary:        Python API and CLI for OpenStack Masakari
 License:        {{ license('Apache-2.0') }}
@@ -9,6 +9,7 @@ Url:            http://launchpad.net/%{name}
 Source0:        https://pypi.io/packages/source/p/%{sname}/%{sname}-%{version}.tar.gz
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('PrettyTable') }}
+BuildRequires:  {{ py2pkg('ddt') }}
 BuildRequires:  {{ py2pkg('nose') }}
 BuildRequires:  {{ py2pkg('openstacksdk') }}
 BuildRequires:  {{ py2pkg('osc-lib') }}
@@ -18,6 +19,7 @@ BuildRequires:  {{ py2pkg('oslosphinx') }}
 BuildRequires:  {{ py2pkg('oslotest') }}
 BuildRequires:  {{ py2pkg('python-subunit') }}
 BuildRequires:  {{ py2pkg('reno') }}
+BuildRequires:  {{ py2pkg('requests-mock') }}
 BuildRequires:  {{ py2pkg('sphinx') }}
 BuildRequires:  {{ py2pkg('testrepository') }}
 BuildRequires:  {{ py2pkg('testscenarios') }}
