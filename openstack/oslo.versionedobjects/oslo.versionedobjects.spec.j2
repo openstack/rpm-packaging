@@ -1,11 +1,16 @@
-Name:           {{ py2name('oslo.versionedobjects') }}
-Version:        1.26.0
-Release:        0
+{% set pypi_name = 'oslo.versionedobjects' %}
+{% set upstream_version = upstream_version('1.26.0') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
 Summary:        Oslo Versioned Objects library
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
-Url:            http://launchpad.net/%{sname}
-Source0:        https://pypi.io/packages/source/o/oslo.versionedobjects/oslo.versionedobjects-%{version}.tar.gz
+Url:            https://launchpad.net/{{ pypi_name }}
+Source0:        {{ source }}
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('iso8601') }}
@@ -55,7 +60,7 @@ Requires:       %{name} = %{version}
 This package contains documentation files for %{name}.
 
 %prep
-%autosetup -n oslo.versionedobjects-%{version}
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
 sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
