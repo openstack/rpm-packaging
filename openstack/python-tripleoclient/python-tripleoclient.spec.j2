@@ -1,15 +1,12 @@
 %global sname python-tripleoclient
 Name:           {{ py2name('python-tripleoclient') }}
-Version:        6.1.0
+Version:        7.3.0
 Release:        0
 Summary:        OpenstackClient plugin for tripleoclient
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            https://launchpad.net/%{sname}
 Source0:        https://pypi.io/packages/source/p/%{sname}/%{sname}-%{version}.tar.gz
-Patch1:         0001-Stop-using-os-cloud-config.patch
-# https://review.openstack.org/#/c/449071/
-Patch2:         0001-Remove-log-translations.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('cliff') }}
 BuildRequires:  {{ py2pkg('devel') }}
