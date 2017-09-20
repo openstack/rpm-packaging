@@ -1,12 +1,16 @@
-%global pypi_name oslo.vmware
-Name:           {{ py2name('oslo.vmware') }}
-Version:        2.23.0
-Release:        0
+{% set pypi_name = 'oslo.vmware' %}
+{% set upstream_version = upstream_version('2.23.0') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
 Summary:        Oslo VMware library for OpenStack projects
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
-Url:            http://launchpad.net/oslo.vmware
-Source0:        https://pypi.io/packages/source/o/%{pypi_name}/%{pypi_name}-%{version}.tar.gz
+Url:            https://launchpad.net/{{ pypi_name }}
+Source0:        {{ source }}
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('Babel') }}
 BuildRequires:  {{ py2pkg('ddt') }}
@@ -60,7 +64,7 @@ Requires:       %{name} = %{version}
 Documentation for OpenStack common VMware library.
 
 %prep
-%autosetup -n %{pypi_name}-%{version}
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
 sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
