@@ -1,12 +1,16 @@
-%global sname oslo.utils
-Name:           {{ py2name('oslo.utils') }}
-Version:        3.29.0
-Release:        0
+{% set pypi_name = 'oslo.utils' %}
+{% set upstream_version = upstream_version('3.29.0') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
 Summary:        OpenStack Utils Library
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
-Url:            https://launchpad.net/%{sname}
-Source0:        https://pypi.io/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
+Url:            https://launchpad.net/{{ pypi_name }}
+Source0:        {{ source }}
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('Babel') }}
 BuildRequires:  {{ py2pkg('debtcollector') }}
@@ -48,7 +52,7 @@ BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 Documentation for OpenStack utils library.
 
 %prep
-%autosetup -n %{sname}-%{version}
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 %py_req_cleanup
 
