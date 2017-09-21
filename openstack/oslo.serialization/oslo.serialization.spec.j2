@@ -1,12 +1,16 @@
-%global sname oslo.serialization
-Name:           {{ py2name('oslo.serialization') }}
-Version:        2.20.0
-Release:        0
+{% set pypi_name = 'oslo.serialization' %}
+{% set upstream_version = upstream_version('2.20.0') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
 Summary:        OpenStack serialization library
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
-Url:            https://launchpad.net/%{sname}
-Source0:        https://pypi.io/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
+Url:            https://launchpad.net/{{ pypi_name }}
+Source0:        {{ source }}
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('ipaddress') }}
@@ -38,7 +42,7 @@ in transmittable and storable formats, such as Base64, JSON and MessagePack.
 This package contains the documentation.
 
 %prep
-%autosetup -n %{sname}-%{version}
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
 sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
