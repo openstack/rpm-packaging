@@ -1,12 +1,16 @@
-%global sname oslo.privsep
-Name:           {{ py2name('oslo.privsep') }}
-Version:        1.23.0
-Release:        0
+{% set pypi_name = 'oslo.privsep' %}
+{% set upstream_version = upstream_version('1.23.0') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
 Summary:        OpenStack library for privilege separation
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
-Url:            http://launchpad.net/oslo.privsep
-Source0:        https://pypi.io/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
+Url:            https://launchpad.net/{{ pypi_name }}
+Source0:        {{ source }}
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('Babel') }}
 BuildRequires:  {{ py2pkg('Sphinx') }}
@@ -47,7 +51,7 @@ Requires:       %{name} = %{version}
 Documentation for oslo.privsep
 
 %prep
-%autosetup -n %{sname}-%{version}
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
 sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
@@ -74,7 +78,7 @@ PYTHONPATH=. %{__python2} setup.py testr --testr-args "--load-list tests"
 %license LICENSE
 %{_bindir}/privsep-helper
 %{python2_sitelib}/oslo_privsep
-%{python2_sitelib}/%{sname}-*-py?.?.egg-info
+%{python2_sitelib}/{{ pypi_name }}-*-py?.?.egg-info
 
 %files doc
 %doc doc/build/html
