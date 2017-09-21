@@ -12,7 +12,6 @@ BuildRequires:  {{ py2pkg('cliff') }}
 BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('futurist') }}
 BuildRequires:  {{ py2pkg('keystoneauth1') }}
-BuildRequires:  {{ py2pkg('openstack-doc-tools') }}
 BuildRequires:  {{ py2pkg('osc-lib') }}
 BuildRequires:  {{ py2pkg('oslo.serialization') }}
 BuildRequires:  {{ py2pkg('oslo.utils') }}
@@ -28,7 +27,6 @@ BuildRequires:  {{ py2pkg('testtools') }}
 Requires:       {{ py2pkg('cliff') }}
 Requires:       {{ py2pkg('futurist') }}
 Requires:       {{ py2pkg('keystoneauth1') }}
-Requires:       {{ py2pkg('openstack-doc-tools') }}
 Requires:       {{ py2pkg('osc-lib') }}
 Requires:       {{ py2pkg('oslo.serialization') }}
 Requires:       {{ py2pkg('oslo.utils') }}
@@ -45,6 +43,7 @@ provides a Python API (the gnocchiclient module) and a command-line tool.
 Summary:        Documentation for OpenStack Gnocchi API Client
 Group:          Documentation
 BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('openstack-doc-tools') }}
 BuildRequires:  {{ py2pkg('oslosphinx') }}
 
 %description      doc
