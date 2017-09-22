@@ -1,5 +1,5 @@
 Name:           {{ py2name('python-magnumclient') }}
-Version:        2.6.0
+Version:        2.7.0
 Release:        0
 Summary:        Python API and CLI for OpenStack Magnum
 License:        {{ license('Apache-2.0') }}
@@ -14,7 +14,9 @@ BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('fixtures') }}
 BuildRequires:  {{ py2pkg('keystoneauth1') }}
 BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('python-openstackclient') }}
 BuildRequires:  {{ py2pkg('os-client-config') }}
+BuildRequires:  {{ py2pkg('osc-lib') }}
 BuildRequires:  {{ py2pkg('oslo.i18n') }}
 BuildRequires:  {{ py2pkg('oslo.serialization') }}
 BuildRequires:  {{ py2pkg('oslo.utils') }}
@@ -32,6 +34,7 @@ Requires:       {{ py2pkg('cryptography') }}
 Requires:       {{ py2pkg('decorator') }}
 Requires:       {{ py2pkg('keystoneauth1') }}
 Requires:       {{ py2pkg('os-client-config') }}
+Requires:       {{ py2pkg('osc-lib') }}
 Requires:       {{ py2pkg('oslo.i18n') }}
 Requires:       {{ py2pkg('oslo.serialization') }}
 Requires:       {{ py2pkg('oslo.utils') }}
@@ -49,7 +52,7 @@ Client library for Magnum built on the Magnum API. It provides a Python API
 Summary:        Documentation for OpenStack Magnum API client libary
 Group:          Documentation
 BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 
 %description doc
 Client library for Magnum built on the Magnum API. It provides a Python API
