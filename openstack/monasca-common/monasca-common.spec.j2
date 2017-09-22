@@ -32,12 +32,6 @@ Requires:       {{ py2pkg('pyparsing') }}
 Requires:       {{ py2pkg('six') }}
 Requires:       {{ py2pkg('ujson') }}
 BuildArch:      noarch
-%if "%{version}" != "2.2.0"
-# Currently monasca vendored kafka and will only eventually
-# switch to pykafka. atm it is not used
-BuildRequires:  {{ py2pkg('pykafka') }}
-Requires:       {{ py2pkg('pykafka') }}
-%endif
 
 %description
 Collection of sub-projects containing reusable application and
