@@ -1,6 +1,6 @@
 %global sname os-testr
 Name:           {{ py2name('os-testr') }}
-Version:        0.8.2
+Version:        1.0.0
 Release:        0
 Summary:        A testr wrapper to provide functionality for OpenStack projects
 License:        {{ license('Apache-2.0') }}
@@ -12,12 +12,13 @@ BuildRequires:  {{ py2pkg('ddt') }}
 BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('oslotest') }}
 BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('six') }}
+BuildRequires:  {{ py2pkg('stestr') }}
 BuildRequires:  {{ py2pkg('testrepository') }}
 BuildRequires:  {{ py2pkg('testscenarios') }}
-Requires:       {{ py2pkg('Babel') }}
 Requires:       {{ py2pkg('pbr') }}
 Requires:       {{ py2pkg('python-subunit') }}
-Requires:       {{ py2pkg('testrepository') }}
+Requires:       {{ py2pkg('stestr') }}
 Requires:       {{ py2pkg('testtools') }}
 BuildArch:      noarch
 
@@ -31,7 +32,7 @@ A testr wrapper to provide functionality for OpenStack projects
 Summary:        Documentation for the testr
 Group:          Documentation
 BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 
 %description doc
 Documentation for the testr wrapper.
@@ -39,6 +40,7 @@ Documentation for the testr wrapper.
 %prep
 %autosetup -n %{sname}-%{version}
 %py_req_cleanup
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
 %{py2_build}
@@ -53,9 +55,11 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 
 
 %check
+export OS_STDOUT_CAPTURE=1
+export OS_STDERR_CAPTURE=1
 export PATH="$PATH:%{buildroot}/%{_bindir}"
 export PYTHONPATH="%{python2_sitearch}:%{python2_sitelib}:%{buildroot}%{python2_sitelib}"
-%{__python2} setup.py testr
+ostestr
 
 %files
 %defattr(-,root,root,-)
