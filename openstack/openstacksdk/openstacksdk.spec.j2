@@ -99,8 +99,6 @@ applications to work with OpenStack clouds.
 %py_req_cleanup
 sed -i -e 's,coverage.*,,' test-requirements.txt || true
 sed -i -e "s,'sphinx.ext.intersphinx'\,,," doc/source/conf.py
-# build fails with warnings
-sed -i 's/^warning-is-error.*/warning-is-error=0/g' setup.cfg
 
 %build
 %python_build

@@ -56,7 +56,6 @@ Documentation for OpenStack authenticating tools.
 %prep
 %autosetup -p1 -n %{sname}-%{version}
 %py_req_cleanup
-sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 # cleanup intersphinx (we have no network during build)
 echo "intersphinx_mapping = {}" >> doc/source/conf.py

@@ -85,7 +85,7 @@ OpenStack Neutron library shared by all Neutron sub-projects.
 
 %prep
 %autosetup -n neutron-lib-%{version}
-sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
+%py_req_cleanup
 
 %build
 %{python_build}

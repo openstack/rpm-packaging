@@ -78,8 +78,7 @@ Configuration files for the OpenStack Cinder brick library.
 
 %prep
 %autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
-rm -rf *requirements.txt
-sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
+%py_req_cleanup
 
 %build
 %{python_build}
