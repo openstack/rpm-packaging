@@ -35,6 +35,7 @@
 egg_path=%{buildroot}%{python2_sitelib}/%{1}-*.egg-info \
 tempest_egg_path=%{buildroot}%{python2_sitelib}/%{1}_tests.egg-info \
 mkdir $tempest_egg_path \
+echo %{1} >$tempest_egg_path/top_level.txt \
 grep "tempest\\|Tempest" %{1}.egg-info/entry_points.txt >$tempest_egg_path/entry_points.txt \
 sed -i "/tempest\\|Tempest/d" $egg_path/entry_points.txt \
 cp -r $egg_path/PKG-INFO $tempest_egg_path \
