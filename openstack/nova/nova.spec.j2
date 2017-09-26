@@ -81,6 +81,7 @@ BuildRequires:  {{ py2pkg('psycopg2') }}
 BuildRequires:  {{ py2pkg('python-subunit') }}
 BuildRequires:  {{ py2pkg('requests-mock') }}
 BuildRequires:  {{ py2pkg('sphinxcontrib-actdiag') }}
+BuildRequires:  {{ py2pkg('sphinxcontrib-seqdiag') }}
 BuildRequires:  {{ py2pkg('tempest-lib') }}
 BuildRequires:  {{ py2pkg('testrepository') }}
 BuildRequires:  {{ py2pkg('testresources') }}
@@ -516,6 +517,8 @@ install -p -D -m 640 etc/nova/logging_sample.conf %{buildroot}%{_sysconfdir}/nov
 install -p -D -m 640 etc/nova/nova.conf.sample  %{buildroot}%{_sysconfdir}/nova/nova.conf
 install -p -D -m 640 etc/nova/policy.yaml.sample %{buildroot}%{_sysconfdir}/nova/policy.yaml
 install -p -D -m 640 etc/nova/rootwrap.conf %{buildroot}%{_sysconfdir}/nova/rootwrap.conf
+# delete installed conf files in usr/etc
+rm -rf %{buildroot}%{_prefix}%{_sysconfdir}/
 
 # Install version info file
 cat > %{buildroot}%{_sysconfdir}/nova/release <<EOF
