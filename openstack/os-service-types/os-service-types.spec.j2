@@ -8,7 +8,7 @@ Release:        {{ py2rpmrelease() }}
 Summary:        Python library for consuming OpenStack sevice-types-authority data
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
-Url:            http://docs.openstack.org/developer/os-service-types
+URL:            http://docs.openstack.org/developer/os-service-types
 Source0:        https://pypi.io/packages/source/o/{{ pypi_name }}/{{ pypi_name }}-%{version}.tar.gz
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('keystoneauth1') }}
