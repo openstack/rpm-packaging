@@ -199,7 +199,7 @@ exit 0
 %check
 # don't want to depend on hacking for package building
 rm keystone/tests/unit/test_hacking_checks.py
-%{__python2} setup.py testr
+ostestr
 
 %post
 %tmpfiles_create %{_tmpfilesdir}/keystone.conf
