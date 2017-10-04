@@ -1,2 +1,2 @@
-renderspec>=1.2.0
+renderspec>=1.2.0,<1.8.0
 spec_cleaner >= 0.8.9
