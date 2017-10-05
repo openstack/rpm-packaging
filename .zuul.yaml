@@ -1,7 +1,5 @@
 - project:
     name: openstack/rpm-packaging
-    templates:
-      - merge-check
     check:
       jobs:
         - openstack-tox-linters
