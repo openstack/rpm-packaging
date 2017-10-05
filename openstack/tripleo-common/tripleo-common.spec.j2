@@ -32,7 +32,7 @@ Requires:       {{ py2pkg('Babel') }}
 Requires:       {{ py2pkg('GitPython') }}
 Requires:       {{ py2pkg('Jinja2') }}
 # FIXME(jpena): specifying a version below is apparently needed for RDO
-Requires:       {{ py2pkg('docker') }} >= 2.0.0
+Requires:       {{ py2pkg('docker', ('>=', '2.0.0')) }}
 Requires:       {{ py2pkg('gitdb') }}
 Requires:       {{ py2pkg('python-glanceclient') }}
 Requires:       {{ py2pkg('python-heatclient') }}
