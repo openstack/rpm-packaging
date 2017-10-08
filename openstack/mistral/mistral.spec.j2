@@ -16,6 +16,7 @@ Source0:        {{ source|basename }}
 Source1:        mistral-api.service
 Source2:        mistral-engine.service
 Source3:        mistral-executor.service
+Patch1:         0001-Use-mock-for-HTTP-calls-in-unit-tests.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('PyJWT') }}
 BuildRequires:  {{ py2pkg('aodhclient') }}
@@ -199,9 +200,9 @@ which the API servers will use.
 
 %prep
 %if 0%{?rdo}
-%autosetup -n {{ pypi_name }}-%{upstream_version}
+%autosetup -p1 -n {{ pypi_name }}-%{upstream_version}
 %else
-%autosetup -n {{ pypi_name }}-{{upstream_version}}
+%autosetup -p1 -n {{ pypi_name }}-{{upstream_version}}
 %endif
 %py_req_cleanup
 sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
