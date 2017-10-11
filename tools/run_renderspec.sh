@@ -18,11 +18,13 @@ done
 
 count=0
 echo "run renderspec over specfiles from ${specdir}"
-for spec in ${specdir}/**/*.spec.j2; do
-    for specstyle in $specstyles; do
+for specstyle in $specstyles; do
+    for spec in ${specdir}/**/*.spec.j2; do
         echo "run ${spec} for ${specstyle}"
         pkg_name=$(pymod2pkg --dist $specstyle $(basename $spec .spec.j2))
         renderspec --spec-style ${specstyle} ${spec} \
+                   --requirements $basedir/global-requirements.txt \
+                   --skip-pyversion py3 \
                    -o $WORKSPACE/logs/${specstyle}/$pkg_name.spec &
         let count+=1
         [[ count -eq $MAXPROC ]] && wait && count=0
