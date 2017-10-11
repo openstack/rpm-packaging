@@ -1,47 +1,54 @@
-%global sname openstackdocstheme
-Name:           {{ py2name('openstackdocstheme') }}
-Version:        1.17.0
-Release:        0
+{% set pypi_name = 'openstackdocstheme' %}
+{% set upstream_version = upstream_version('1.17.0') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
 Summary:        OpenStack Docs Theme
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://launchpad.net/%{sname}
-Source0:        https://pypi.io/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
+Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('devel') }}
-BuildRequires:  {{ py2pkg('dulwich') }}
-BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('requests') }}
-BuildRequires:  {{ py2pkg('setuptools') }}
+BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('Sphinx', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('dulwich', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('requests', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('setuptools', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('Sphinx') }}
 Requires:       {{ py2pkg('dulwich') }}
 BuildArch:      noarch
+%python_subpackages
 
 %description
 Theme and extension support for Sphinx documentation that is published
 to docs.openstack.org. Intended for use by OpenStack projects.
 
 %prep
-%autosetup -p1 -n %{sname}-%{version}
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 
 # we dont need hacking
 sed -i '/^hacking.*/d' test-requirements.txt
 %py_req_cleanup
 
 %build
-%py2_build
+%python_build
 
 %install
-%py2_install
+%python_install
 
 %check
-%{__python2} setup.py test
+%{python_expand rm -rf .testrepository
+$python setup.py test
+}
 
-%files
+%files %{python_files}
 %license LICENSE
 %doc README.rst
-%{python2_sitelib}/%{sname}
-%{python2_sitelib}/*.egg-info
+%{python_sitelib}/{{ pypi_name }}
+%{python_sitelib}/{{ pypi_name }}-*-py?.?.egg-info
 
 %changelog
