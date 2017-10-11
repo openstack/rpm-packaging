@@ -20,6 +20,9 @@ for spec in $WORKSPACE/logs/suse/*.spec ; do
     # NOTE(jpena): spec-cleaner wants python2 instead of %{__python2}
     # https://github.com/openSUSE/spec-cleaner/issues/173
     sed -i 's/%{__python2}/python2/g' $spec
+    # NOTE(toabctl): Remove the second BuildRequire that start with python3-.
+    # spec-cleaner expects it in an extra line
+    sed -i 's/\(^BuildRequires:\s*python2*-.*\)\s*python3-.*$/\1/' $spec
     spec-cleaner -m -d --no-copyright --diff-prog "diff -uw" \
                  $spec > $tmpdir/`basename ${spec}`.cleaner.diff &
     let count+=1
