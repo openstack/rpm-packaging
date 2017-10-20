@@ -18,6 +18,9 @@
 %global sname {{ pypi_name }}
 %define username            monasca-agent
 %define groupname           monasca
+%if 0%{?rhel} || 0%{?fedora}
+%global rdo 1
+%endif
 Name:           {{ py2name() }}
 Version:        {{ py2rpmversion() }}
 Release:        {{ py2rpmrelease() }}
@@ -95,7 +98,13 @@ Requires:       {{ py2pkg('redis') }}
 Requires:       {{ py2pkg('requests') }}
 Requires:       {{ py2pkg('stevedore') }}
 Requires:       {{ py2pkg('supervisor') }}
+# FIXME(jpena): Remove this conditional once python-toml is available in RDO
+%if 0%{?rdo}
 Requires:       {{ py2pkg('tornado') }}
+%else
+Requires:       {{ py2pkg('toml') }}
+Requires:       {{ py2pkg('tornado') }}
+%endif
 
 %description -n python-%{sname}
 The Monasca Agent is a modern Python monitoring agent for gathering metrics and
