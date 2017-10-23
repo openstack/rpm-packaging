@@ -1,6 +1,6 @@
 %global sname python-monascaclient
 Name:           {{ py2name('python-monascaclient') }}
-Version:        1.7.0
+Version:        1.8.0
 Release:        0
 Summary:        Python API and CLI for OpenStack Monasca
 License:        {{ license('Apache-2.0') }}
@@ -62,9 +62,6 @@ The Monasca Client was written using the OpenStack Heat Python client as a frame
 
 %install
 %py2_install
-# bash completion
-install -p -D -m 644 tools/monasca.bash_completion %{buildroot}%{_sysconfdir}/bash_completion.d/monasca.bash_completion
-rm -f %{buildroot}%{_datarootdir}/monasca.bash_completion
 
 %check
 %{__python2} setup.py testr
@@ -74,7 +71,6 @@ rm -f %{buildroot}%{_datarootdir}/monasca.bash_completion
 %license LICENSE
 %{python2_sitelib}/monascaclient
 %{python2_sitelib}/*.egg-info
-%{_sysconfdir}/bash_completion.d/monasca.bash_completion
 %{_bindir}/monasca
 
 %changelog
