@@ -718,7 +718,6 @@ usermod -a -G qemu nova
 %config(noreplace) %attr(-, root, nova) %{_sysconfdir}/nova/nova.conf
 %config(noreplace) %attr(-, root, nova) %{_sysconfdir}/nova/policy.yaml
 %config(noreplace) %attr(-, root, nova) %{_sysconfdir}/nova/rootwrap.conf
-%{_bindir}/nova-idmapshift
 %{_bindir}/nova-manage
 %{_bindir}/nova-policy
 %{_bindir}/nova-rootwrap
