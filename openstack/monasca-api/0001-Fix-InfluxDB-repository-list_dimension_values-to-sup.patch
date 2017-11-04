@@ -1,0 +1,59 @@
+From 5097b0c466d0e8c03dc96e406a284629acb9ae44 Mon Sep 17 00:00:00 2001
+From: Steve Simpson <stevejims@gmail.com>
+Date: Wed, 5 Apr 2017 15:43:32 +0100
+Subject: [PATCH] Fix InfluxDB repository list_dimension_values to support
+ "name".
+
+Fix issue where InfluxDB repository fails to return dimension values list
+if the dimension name is "name". It appears that certain strings are
+interpreted specially by InfluxDB and therefore require double quotes.
+
+Change-Id: I7629e68e3f5c38567f80cbb93419f40ecb3b6d9f
+Story: 2000968
+Task: 4117
+(cherry picked from commit a7f313713491cff3eeb8e3e5dd27410d2133fa8f)
+---
+ monasca_api/common/repositories/influxdb/metrics_repository.py | 2 +-
+ monasca_api/tests/test_repositories.py                         | 6 ++++++
+ 2 files changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/monasca_api/common/repositories/influxdb/metrics_repository.py b/monasca_api/common/repositories/influxdb/metrics_repository.py
+index 50dfeef3..3c918c76 100644
+--- a/monasca_api/common/repositories/influxdb/metrics_repository.py
++++ b/monasca_api/common/repositories/influxdb/metrics_repository.py
+@@ -135,7 +135,7 @@ class MetricsRepository(metrics_repository.AbstractMetricsRepository):
+             from_with_clause += ' from "{}"'.format(metric_name)
+ 
+         if dimension_name:
+-            from_with_clause += ' with key = {}'.format(dimension_name)
++            from_with_clause += ' with key = "{}"'.format(dimension_name)
+ 
+         where_clause = self._build_where_clause(None, None, tenant_id, region)
+ 
+diff --git a/monasca_api/tests/test_repositories.py b/monasca_api/tests/test_repositories.py
+index 6071111a..99cdae58 100644
+--- a/monasca_api/tests/test_repositories.py
++++ b/monasca_api/tests/test_repositories.py
+@@ -143,6 +143,7 @@ class TestRepoMetricsInfluxDB(unittest.TestCase):
+         }
+ 
+         repo = influxdb_repo.MetricsRepository()
++        mock_client.query.reset_mock()
+ 
+         result = repo.list_dimension_values(
+             "38dc2a2549f94d2e9a4fa1cc45a4970c",
+@@ -152,6 +153,11 @@ class TestRepoMetricsInfluxDB(unittest.TestCase):
+ 
+         self.assertEqual(result, [{u'dimension_value': u'custom_host'}])
+ 
++        mock_client.query.assert_called_once_with(
++            'show tag values from "custom_metric" with key = "hostname"'
++            ' where _tenant_id = \'38dc2a2549f94d2e9a4fa1cc45a4970c\''
++            '  and _region = \'useast\' ')
++
+     @patch("monasca_api.common.repositories.influxdb.metrics_repository.client.InfluxDBClient")
+     def test_list_dimension_names(self, influxdb_client_mock):
+         mock_client = influxdb_client_mock.return_value
+-- 
+2.14.2
+

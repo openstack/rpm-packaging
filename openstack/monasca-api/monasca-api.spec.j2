@@ -27,7 +27,8 @@ Source2:        api-logging.conf
 Source3:        api-config.ini
 Source4:        api-wsgi.conf
 Source5:        api-wsgi.py
-
+# https://review.openstack.org/#/c/517739/
+Patch1:         0001-Fix-InfluxDB-repository-list_dimension_values-to-sup.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('cassandra-driver') }}
 BuildRequires:  {{ py2pkg('coverage') }}
@@ -107,7 +108,7 @@ The Monasca API provides a RESTful JSON interface for interacting with
 and managing monitoring related resources.
 
 %prep
-%autosetup -n %{component}-{{ upstream_version }}
+%autosetup -p1 -n %{component}-{{ upstream_version }}
 %py_req_cleanup
 
 %build
