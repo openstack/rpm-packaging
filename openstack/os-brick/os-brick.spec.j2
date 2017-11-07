@@ -1,6 +1,6 @@
 %global sname os-brick
 Name:           {{ py2name('os-brick') }}
-Version:        1.15.3
+Version:        2.0.0
 Release:        0
 Summary:        OpenStack Cinder brick library for managing local volume attaches
 License:        {{ license('Apache-2.0') }}
@@ -58,7 +58,7 @@ Features:
 %package doc
 Summary:        Documentation for OpenStack os-brick library
 BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 
 %description doc
 OpenStack Cinder brick library for managing local volume attaches.
@@ -87,7 +87,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 mv %{buildroot}%{_prefix}%{_sysconfdir}/* %{buildroot}/%{_sysconfdir}/
 
 %check
-%{__python2} setup.py testr
+stestr run
 
 %files
 %license LICENSE
