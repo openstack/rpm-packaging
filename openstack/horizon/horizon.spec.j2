@@ -56,7 +56,6 @@ BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('django-nose') }}
 BuildRequires:  {{ py2pkg('django-pyscss') }}
 BuildRequires:  {{ py2pkg('django_compressor') }}
-BuildRequires:  {{ py2pkg('django_openstack_auth') }}
 BuildRequires:  {{ py2pkg('python-glanceclient') }}
 BuildRequires:  {{ py2pkg('python-heatclient') }}
 BuildRequires:  {{ py2pkg('python-keystoneclient') }}
@@ -76,6 +75,7 @@ BuildRequires:  {{ py2pkg('python-swiftclient') }}
 BuildRequires:  {{ py2pkg('testtools') }}
 BuildRequires:  {{ py2pkg('python-troveclient') }}
 Requires:       python-horizon = %{epoch}:%{version}-%{release}
+Requires:       python-openstack_auth = %{epoch}:%{version}-%{release}
 Provides:       openstack-{{ pypi_name }} = %{version}-%{release}
 BuildArch:      noarch
 %if 0%{?suse_version}
@@ -151,7 +151,6 @@ Requires:       {{ py2pkg('python-cinderclient') }}
 Requires:       {{ py2pkg('django-babel') }}
 Requires:       {{ py2pkg('django-pyscss') }}
 Requires:       {{ py2pkg('django_compressor') }}
-Requires:       {{ py2pkg('django_openstack_auth') }}
 Requires:       {{ py2pkg('futurist') }}
 Requires:       {{ py2pkg('python-glanceclient') }}
 Requires:       {{ py2pkg('python-heatclient') }}
@@ -178,6 +177,14 @@ Requires:       {{ py2pkg('python-swiftclient') }}
 %description -n python-horizon
 The Python module horizon is the core component of the OpenStack
 dashboard.
+
+%package -n python-openstack_auth
+Summary:        OpenStack Auth (Horizon) - Python Module
+Group:          Development/Languages/Python
+
+%description -n python-openstack_auth
+The Python module OpenStack Auth provides Authentication mechanism
+for the OpenStack Dashboard (Horizon).
 
 %prep
 %autosetup -p1 -n {{ pypi_name }}-{{upstream_version}}
@@ -245,5 +252,9 @@ install -D -m 644 %{SOURCE2} %{buildroot}%{apache_conf_dir}/openstack-dashboard.
 %license LICENSE
 %{python2_sitelib}/horizon
 %{python2_sitelib}/horizon-*.egg-info
+
+%files -n python-openstack_auth
+%license LICENSE
+%{python2_sitelib}/openstack_auth
 
 %changelog
