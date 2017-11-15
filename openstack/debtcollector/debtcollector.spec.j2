@@ -8,19 +8,22 @@ Group:          Development/Languages/Python
 URL:            http://docs.openstack.org/developer/debtcollector/
 Source0:        https://files.pythonhosted.org/packages/source/d/%{pypi_name}/%{pypi_name}-%{version}.tar.gz
 BuildRequires:  openstack-macros
-BuildRequires:  python-devel
-BuildRequires:  {{ py2pkg('fixtures') }}
-BuildRequires:  {{ py2pkg('funcsigs') }}
-BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('python-subunit') }}
-BuildRequires:  {{ py2pkg('setuptools') }}
-BuildRequires:  {{ py2pkg('testrepository') }}
-BuildRequires:  {{ py2pkg('wrapt') }}
-Requires:       {{ py2pkg('funcsigs') }}
+BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('fixtures', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('funcsigs', py_versions=['py2']) }}
+BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('python-subunit', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('setuptools', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('wrapt', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('pbr') }}
 Requires:       {{ py2pkg('six') }}
 Requires:       {{ py2pkg('wrapt') }}
 BuildArch:      noarch
+%ifpython2
+Requires:       {{ py2pkg('funcsigs') }}
+%endif
+%python_subpackages
 
 %description
 A collection of Python deprecation patterns and strategies that help
@@ -33,13 +36,13 @@ DeprecationWarning or PendingDeprecationWarning or similar derivative
 to developers using libraries (or potentially applications) about
 future deprecations.
 
-%package doc
+%package -n python-debtcollector-doc
 Summary:        Documentation for %{name}
 Group:          Documentation
 BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('openstackdocstheme') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme', py_versions=['py2', 'py3']) }}
 
-%description doc
+%description -n python-debtcollector-doc
 A collection of Python deprecation patterns and strategies that help
 you collect your technical debt in a non-destructive manner. The goal
 of this library is to provide well documented developer facing
@@ -58,26 +61,28 @@ This package contains documentation in HTML format.
 sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
-%py2_build
+%python_build
 
-# generate html docs
+# generate html doc
 %{__python2} setup.py build_sphinx
 # remove the Sphinx-build leftovers
 rm -rf html/.{doctrees,buildinfo}
 
 %check
-%{__python2} setup.py testr
+%{python_expand rm -rf .testrepository
+$python setup.py test
+}
 
 %install
-%py2_install
+%python_install
 
-%files
+%files %{python_files}
 %license LICENSE
 %doc README.rst
 %{python2_sitelib}/%{pypi_name}
 %{python2_sitelib}/%{pypi_name}-*.egg-info
 
-%files doc
+%files -n python-debtcollector-doc
 %license LICENSE
 %doc doc/build/html
 
