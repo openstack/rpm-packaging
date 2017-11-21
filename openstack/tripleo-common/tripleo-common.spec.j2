@@ -1,7 +1,7 @@
 %global sname tripleo-common
-%global sversion 7.6.1
+%global sversion 8.1.0
 Name:           {{ py2name('tripleo-common') }}
-Version:        7.6.1
+Version:        8.1.0
 Release:        0
 Summary:        Python library for code used by TripleO projects
 License:        {{ license('Apache-2.0') }}
@@ -104,6 +104,8 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %{_bindir}/upload-swift-artifacts
 %{_bindir}/tripleo-build-images
 %{_bindir}/bootstrap_host_exec
+%{_bindir}/bootstrap_host_only_exec
+%{_bindir}/bootstrap_host_only_eval
 %{_datadir}/%{sname}
 
 %files doc
