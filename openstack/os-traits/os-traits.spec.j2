@@ -1,5 +1,5 @@
 {% set pypi_name = 'os-traits' %}
-{% set upstream_version = upstream_version('0.3.3') %}
+{% set upstream_version = upstream_version('0.4.0') %}
 {% set rpm_release = '1' %}
 
 Name:           {{ py2name() }}
@@ -12,7 +12,6 @@ URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        https://files.pythonhosted.org/packages/source/o/{{ pypi_name }}/{{ pypi_name }}-%{version}.tar.gz
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('devel') }}
-BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 BuildRequires:  {{ py2pkg('oslotest') }}
 BuildRequires:  {{ py2pkg('pbr') }}
 BuildRequires:  {{ py2pkg('python-subunit') }}
@@ -33,7 +32,7 @@ network, or device trait.
 Summary:        Documentation for OpenStack traits Library
 Group:          Documentation
 BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 
 %description doc
 Traits are strings that represent a feature of some resource provider.  This
@@ -46,6 +45,7 @@ This package contains the documentation.
 %prep
 %autosetup -p1 -n {{ pypi_name }}-%{version}
 %py_req_cleanup
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
 %{py2_build}
