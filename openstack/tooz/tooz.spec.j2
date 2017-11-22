@@ -7,16 +7,21 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            http://docs.openstack.org/developer/tooz/
 Source0:        https://files.pythonhosted.org/packages/source/t/%{pypi_name}/%{pypi_name}-%{version}.tar.gz
+BuildRequires:  memcached
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('enum34') }}
 BuildRequires:  {{ py2pkg('fasteners') }}
+BuildRequires:  {{ py2pkg('fixtures') }}
 BuildRequires:  {{ py2pkg('futures') }}
 BuildRequires:  {{ py2pkg('futurist') }}
 BuildRequires:  {{ py2pkg('iso8601') }}
+BuildRequires:  {{ py2pkg('mock') }}
 BuildRequires:  {{ py2pkg('oslo.serialization') }}
 BuildRequires:  {{ py2pkg('oslo.utils') }}
 BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('pifpaf') }}
+BuildRequires:  {{ py2pkg('pymemcache') }}
 BuildRequires:  {{ py2pkg('setuptools') }}
 BuildRequires:  {{ py2pkg('stevedore') }}
 BuildRequires:  {{ py2pkg('tenacity') }}
@@ -48,6 +53,7 @@ Summary:        Documentation for %{name}
 Group:          Documentation
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('openstackdocstheme') }}
+BuildRequires:  {{ py2pkg('redis') }}
 
 %description doc
 The Tooz project aims at centralizing the most common distributed primitives
@@ -70,7 +76,9 @@ sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 rm -rf html/.{doctrees,buildinfo}
 
 %check
-%{__python2} setup.py test
+export TOOZ_TEST_DRIVERS="memcached"
+export PATH=%{_prefix}/sbin:$PATH
+bash run-tests.sh
 
 %install
 %py2_install
