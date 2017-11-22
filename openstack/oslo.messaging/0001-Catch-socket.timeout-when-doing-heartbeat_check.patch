@@ -1,0 +1,34 @@
+From 8bfc3637a25a29583b1e0625c78bf159ac878259 Mon Sep 17 00:00:00 2001
+From: Vincent Untz <vuntz@suse.com>
+Date: Tue, 14 Nov 2017 17:53:32 +0100
+Subject: [PATCH] Catch socket.timeout when doing heartbeat_check
+
+heartbeat_check in kombu.connection is not reraising exceptions as
+exceptions.OperationalError, and the socket timeout during the heartbeat
+check is really an issue seen in the field when a node goes down; the
+heartbeat thread just tries again and again to deal with it, without
+success.
+
+Change-Id: I26dbdb18a7e64946db2cba676764ff2d428c7897
+Closes-Bug: #1657444
+---
+ oslo_messaging/_drivers/impl_rabbit.py | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/oslo_messaging/_drivers/impl_rabbit.py b/oslo_messaging/_drivers/impl_rabbit.py
+index 61e4ab7..72eee80 100644
+--- a/oslo_messaging/_drivers/impl_rabbit.py
++++ b/oslo_messaging/_drivers/impl_rabbit.py
+@@ -983,7 +983,8 @@ class Connection(object):
+                             self.connection.drain_events(timeout=0.001)
+                         except socket.timeout:
+                             pass
+-                    except kombu.exceptions.OperationalError as exc:
++                    except (socket.timeout,
++                            kombu.exceptions.OperationalError) as exc:
+                         LOG.info(_LI("A recoverable connection/channel error "
+                                      "occurred, trying to reconnect: %s"), exc)
+                         self.ensure_connection()
+-- 
+2.15.0
+
