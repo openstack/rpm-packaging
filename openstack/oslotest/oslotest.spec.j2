@@ -7,16 +7,16 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/oslotest
 Source0:        https://files.pythonhosted.org/packages/source/o/oslotest/oslotest-%{version}.tar.gz
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('debtcollector') }}
-BuildRequires:  {{ py2pkg('devel') }}
-BuildRequires:  {{ py2pkg('fixtures') }}
-BuildRequires:  {{ py2pkg('mock') }}
-BuildRequires:  {{ py2pkg('mox3') }}
-BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('python-subunit') }}
-BuildRequires:  {{ py2pkg('six') }}
-BuildRequires:  {{ py2pkg('testrepository') }}
-BuildRequires:  {{ py2pkg('testtools') }}
+BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('debtcollector', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('fixtures', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('mox3', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('python-subunit', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('six', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('debtcollector') }}
 Requires:       {{ py2pkg('fixtures') }}
 Requires:       {{ py2pkg('mock') }}
@@ -28,6 +28,15 @@ Requires:       {{ py2pkg('six') }}
 Requires:       {{ py2pkg('testrepository') }}
 Requires:       {{ py2pkg('testtools') }}
 BuildArch:      noarch
+%if 0%{?suse_version}
+Requires(post): update-alternatives
+Requires(postun): update-alternatives
+%else
+# on RDO, update-alternatives is in chkconfig
+Requires(post): chkconfig
+Requires(postun): chkconfig
+%endif
+%python_subpackages
 
 %description
 The Oslo Test framework provides common fixtures, support for debugging, and
@@ -38,21 +47,36 @@ better support for mocking results.
 %py_req_cleanup
 
 %build
-%{py2_build}
+%python_build
 
 %install
-%{py2_install}
+%python_install
+%python_clone -a %{buildroot}%{_bindir}/oslo_debug_helper
+%python_clone -a %{buildroot}%{_bindir}/oslo_run_cross_tests
+%python_clone -a %{buildroot}%{_bindir}/oslo_run_pre_release_tests
+
+%post
+%python_install_alternative oslo_debug_helper
+%python_install_alternative oslo_run_cross_tests
+%python_install_alternative oslo_run_pre_release_tests
+
+%postun
+%python_uninstall_alternative oslo_debug_helper
+%python_uninstall_alternative oslo_run_cross_tests
+%python_uninstall_alternative oslo_run_pre_release_tests
 
 %check
-%{__python2} setup.py test
+%{python_expand rm -rf .testrepository
+$python setup.py testr
+}
 
-%files
+%files %{python_files}
 %license LICENSE
 %doc ChangeLog README.rst
-%{_bindir}/oslo_debug_helper
-%{_bindir}/oslo_run_cross_tests
-%{_bindir}/oslo_run_pre_release_tests
-%{python2_sitelib}/oslotest
-%{python2_sitelib}/oslotest*egg-info
+%python_alternative %{_bindir}/oslo_debug_helper
+%python_alternative %{_bindir}/oslo_run_cross_tests
+%python_alternative %{_bindir}/oslo_run_pre_release_tests
+%{python_sitelib}/oslotest
+%{python_sitelib}/oslotest*egg-info
 
 %changelog
