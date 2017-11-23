@@ -71,6 +71,12 @@ BuildRequires:  {{ py2pkg('supervisor') }}
 BuildRequires:  {{ py2pkg('tornado') }}
 Requires:       python-%{sname} = %{version}-%{release}
 BuildArch:      noarch
+# These patches cannot be merged into monasca-agent's stable/ocata upstream
+# branch: only bug and security fixes are accepted into stable/ocata at this
+# stage, so adding them here:
+Patch1:         ceph-plugin.patch
+Patch2:         ceph-use-sudo.patch
+Patch3:         libvirt-aggregate-status.patch
 
 %description
 The Monasca Agent is a modern Python monitoring agent for gathering metrics and
@@ -164,6 +170,8 @@ install -D -m 644 %{SOURCE4} %{buildroot}%{_sysconfdir}/polkit-1/rules.d/49-mona
 
 %check
 find . -type f -name *.pyc -delete
+rm -f tests/checks_d/test_ceph.py # Ceph tests depend on test environment from Pike and later
+
 PYTHONPATH=. NOSE_EXCLUDE=test_override_values nosetests tests -v
 
 %files

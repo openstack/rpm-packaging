@@ -1,0 +1,100 @@
+commit e8573951a405cfbe9d54d8fae0a5b51a77720959
+Author: Johannes Grassler <johannes.grassler@suse.com>
+Date:   Thu Oct 12 14:49:08 2017 +0200
+Upstream: available in master and stable branches from stable/pike onwards
+
+    Ceph monitoring plugin: allow using sudo
+    
+    Ceph commands the Ceph check runs to query cluster status need to access
+    /etc/ceph/ceph.client.admin.keyring. To that end one can either add
+    monasca-agent to the ceph group or run monasca-agent as root. This
+    commit adds the use_sudo configuration option that runs ceph commands
+    using sudo. This is useful if your agent has sudo rights anyway due to
+    other plugins that require it (e.g. postfix).
+    
+    Change-Id: I24075359f7090f02577cd22a1b3badcbe7041302
+    (cherry picked from commit 41a0e497573b254ba5c8b07656c9ec1e468d9078)
+
+diff --git a/docs/Plugins.md b/docs/Plugins.md
+index f03f19b99684..a4ae043db4a0 100644
+--- a/docs/Plugins.md
++++ b/docs/Plugins.md
+@@ -665,9 +665,13 @@ Requirements:
+ 
+ ```
+   usermod -a -G ceph monasca-agent
+-  chmod 0604 /etc/ceph/ceph.client.admin.keyring
++  chmod 0640 /etc/ceph/ceph.client.admin.keyring
+ ```
+ 
++Alternatively, you can configure monasca-agent to use sudo using the `use_sudo`
++option. The example configuration below assumes you added the `monasca-agent`
++user to the `ceph` group which does not require using sudo.
++
+ Sample config:
+ 
+ ```
+@@ -675,6 +679,7 @@ init_config:
+ 
+ instances:
+   - cluster_name: ceph
++    use_sudo: False
+     collect_usage_metrics: True
+     collect_stats_metrics: True
+     collect_mon_metrics: True
+diff --git a/monasca_agent/collector/checks_d/ceph.py b/monasca_agent/collector/checks_d/ceph.py
+index 8ffbcf32302e..86ccc1b406d3 100644
+--- a/monasca_agent/collector/checks_d/ceph.py
++++ b/monasca_agent/collector/checks_d/ceph.py
+@@ -129,6 +129,9 @@ class Ceph(checks.AgentCheck):
+     def _ceph_cmd(self, args, format='plain'):
+         cmd = 'ceph --cluster {0} -f {1} {2}'.format(self.CLUSTER, format,
+                                                      args)
++        if self.instance.get('use_sudo', False):
++            cmd = "sudo " + cmd
++
+         try:
+             output = subprocess.check_output(cmd, shell=True,
+                                              stderr=subprocess.STDOUT)
+diff --git a/tests/checks_d/test_ceph.py b/tests/checks_d/test_ceph.py
+index f8bc1acb7e4b..cd794fddd955 100644
+--- a/tests/checks_d/test_ceph.py
++++ b/tests/checks_d/test_ceph.py
+@@ -62,6 +62,15 @@ class MockCephCheck(ceph.Ceph):
+             agent_config={}
+         )
+ 
++    def _ceph_cmd(self, *args):
++        if hasattr(self, 'instance'):
++            return super(MockCephCheck, self)._ceph_cmd(*args)
++        else:
++            self.instance = { 'use_sudo': False }
++            ret = super(MockCephCheck, self)._ceph_cmd(*args)
++            del self.instance
++            return ret
++
+ 
+ class CephCheckTest(unittest.TestCase):
+     maxDiff = None
+@@ -100,6 +109,21 @@ class CephCheckTest(unittest.TestCase):
+             self.assertEqual("Unable to execute ceph command 'ceph --cluster"
+                              "ceph -f json foo': Invalid command", e.output)
+ 
++    def test_ceph_cmd_sudo(self):
++        self.ceph_check.check({
++            'use_sudo': True,
++        })
++
++        expect_cmd = 'sudo ceph --cluster ceph -f json df detail'
++
++        with mock.patch('subprocess.check_output') as ceph_cmd_call:
++            try:
++                self.ceph_check._ceph_cmd('df detail', 'json')
++            except Exception as e:
++                pass
++            ceph_cmd_call.assert_called_with(expect_cmd, shell=True,
++                                             stderr=subprocess.STDOUT)
++
+     def test_parse_ceph_status(self):
+         self.assertEqual(0, self.ceph_check._parse_ceph_status('HEALTH_OK'))
+         self.assertEqual(1, self.ceph_check._parse_ceph_status('HEALTH_WARN'))

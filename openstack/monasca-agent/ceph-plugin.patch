@@ -1,0 +1,2327 @@
+commit 612492c774822e21e01ec7abf430e53991108561
+Author: Flávio Ramalho <flaviosr@lsd.ufcg.edu.br>
+Date:   Mon Jun 5 11:41:22 2017 -0300
+Upstream: available in master and stable branches from stable/pike onwards
+
+    Ceph cluster plugin
+    
+    This change adds a ceph plugin to collect metrics regarding
+    ceph clusters. Includes documentation, detection and tests.
+    
+    Change-Id: Ia4b61e751f0f8087fc9ab3adff889734b8afc2d6
+
+Index: monasca-agent-1.9.2.dev3/conf.d/ceph.yaml.example
+===================================================================
+--- /dev/null
++++ monasca-agent-1.9.2.dev3/conf.d/ceph.yaml.example
+@@ -0,0 +1,21 @@
++# Licensed under the Apache License, Version 2.0 (the "License");
++# you may not use this file except in compliance with the License.
++# You may obtain a copy of the License at
++#
++#     http://www.apache.org/licenses/LICENSE-2.0
++#
++# Unless required by applicable law or agreed to in writing, software
++# distributed under the License is distributed on an "AS IS" BASIS,
++# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++# See the License for the specific language governing permissions and
++# limitations under the License.
++
++init_config:
++
++instances:
++  - cluster_name: ceph
++    collect_usage_metrics: True # Collect cluster usage metrics
++    collect_stats_metrics: True # Collect cluster stats metrics
++    collect_mon_metrics: True # Collect metrics regarding monitors
++    collect_osd_metrics: True # Collect metrics regarding OSDs
++    collect_pool_metrics: True # Collect metrics regarding Pools
+Index: monasca-agent-1.9.2.dev3/docs/Plugins.md
+===================================================================
+--- monasca-agent-1.9.2.dev3.orig/docs/Plugins.md
++++ monasca-agent-1.9.2.dev3/docs/Plugins.md
+@@ -26,6 +26,7 @@
+   - [Apache](#apache)
+   - [Cacti](#cacti)
+   - [Check_MK_Local](#check_mk_local)
++  - [Ceph](#ceph)
+   - [Certificate Expiration (HTTPS)](#certificate-expiration-https)
+   - [Couch](#couch)
+   - [Couchbase](#couchbase)
+@@ -534,6 +535,126 @@ The `custom` section of `init_config` is
+ 
+ Because `check_mk_agent` can only return all local metrics at once, the `check_mk_local` plugin requires no instances to be defined in the configuration.  It runs `check_mk_agent` once and processes all the results.  This way, new `check_mk` local scripts can be added without having to modify the plugin configuration.
+ 
++## Ceph
++This section describes the Ceph check that can be performed by the Agent. The Ceph check gathers metrics from multiple ceph clusters. The Ceph check requires a configuration file called `ceph.yaml` to be available in the agent conf.d configuration directory. The config file must contain the cluster name that you are interested in monitoring (defaults to `ceph`). Also, it is possible to configure the agent to collect only specific metrics about the cluster (usage, stats, monitors, osds or pools).
++
++Requirements:
++  * ceph-common
++  * The user running monasca-agent must be able to execute ceph commands. This can be done by adding the monasca-agent user to the ceph group, and giving group read permission on the `ceph.client.admin.keyring` file.
++
++```
++  usermod -a -G ceph monasca-agent
++  chmod 0604 /etc/ceph/ceph.client.admin.keyring
++```
++
++Sample config:
++
++```
++init_config:
++
++instances:
++  - cluster_name: ceph
++    collect_usage_metrics: True
++    collect_stats_metrics: True
++    collect_mon_metrics: True
++    collect_osd_metrics: True
++    collect_pool_metrics: True
++```
++
++The Ceph checks return the following metrics:
++
++| Metric Name | Dimensions | Semantics |
++| ----------- | ---------- | --------- |
++| ceph.cluster.total_bytes | hostname, ceph_cluster, service=ceph | Total capacity of the cluster in bytes |
++| ceph.cluster.total_used_bytes | hostname, ceph_cluster, service=ceph | Capacity of the cluster currently in use in bytes |
++| ceph.cluster.total_avail_bytes | hostname, ceph_cluster, service=ceph | Available space within the cluster in bytes |
++| ceph.cluster.objects.total_count | hostname, ceph_cluster, service=ceph | No. of rados objects within the cluster |
++| ceph.cluster.utilization_perc | hostname, ceph_cluster, service=ceph | Percentage of available storage on the cluster |
++| ceph.cluster.health_status | hostname, ceph_cluster, service=ceph | Health status of cluster, can vary between 3 states (err:2, warn:1, ok:0) |
++| ceph.cluster.osds.down_count | hostname, ceph_cluster, service=ceph | Number of OSDs that are in DOWN state |
++| ceph.cluster.osds.out_count | hostname, ceph_cluster, service=ceph | Number of OSDs that are in OUT state |
++| ceph.cluster.osds.up_count | hostname, ceph_cluster, service=ceph | Number of OSDs that are in UP state |
++| ceph.cluster.osds.in_count | hostname, ceph_cluster, service=ceph | Number of OSDs that are in IN state |
++| ceph.cluster.osds.total_count | hostname, ceph_cluster, service=ceph | Total number of OSDs in the cluster |
++| ceph.cluster.objects.degraded_count | hostname, ceph_cluster, service=ceph | Number of degraded objects across all PGs, includes replicas |
++| ceph.cluster.objects.misplaced_count | hostname, ceph_cluster, service=ceph | Number of misplaced objects across all PGs, includes replicas |
++| ceph.cluster.pgs.avg_per_osd | hostname, ceph_cluster, service=ceph | Average number of PGs per OSD in the cluster |
++| ceph.cluster.pgs.total_count | hostname, ceph_cluster, service=ceph | Total no. of PGs in the cluster |
++| ceph.cluster.pgs.scrubbing_count | hostname, ceph_cluster, service=ceph | Number of scrubbing PGs in the cluster |
++| ceph.cluster.pgs.deep_scrubbing_count | hostname, ceph_cluster, service=ceph | Number of deep scrubbing PGs in the cluster |
++| ceph.cluster.pgs.degraded_count | hostname, ceph_cluster, service=ceph | Number of PGs in a degraded state |
++| ceph.cluster.pgs.stuck_degraded_count | hostname, ceph_cluster, service=ceph | No. of PGs stuck in a degraded state |
++| ceph.cluster.pgs.unclean_count | hostname, ceph_cluster, service=ceph | Number of PGs in an unclean state |
++| ceph.cluster.pgs.stuck_unclean_count | hostname, ceph_cluster, service=ceph | Number of PGs stuck in an unclean state |
++| ceph.cluster.pgs.undersized_count | hostname, ceph_cluster, service=ceph | Number of undersized PGs in the cluster |
++| ceph.cluster.pgs.stuck_undersized_count | hostname, ceph_cluster, service=ceph | Number of stuck undersized PGs in the cluster |
++| ceph.cluster.pgs.stale_count | hostname, ceph_cluster, service=ceph | Number of stale PGs in the cluster |
++| ceph.cluster.pgs.stuck_stale_count | hostname, ceph_cluster, service=ceph | Number of stuck stale PGs in the cluster |
++| ceph.cluster.pgs.remapped_count | hostname, ceph_cluster, service=ceph | Number of PGs that are remapped and incurring cluster-wide movement |
++| ceph.cluster.recovery.bytes_per_sec | hostname, ceph_cluster, service=ceph | Rate of bytes being recovered in cluster per second |
++| ceph.cluster.recovery.keys_per_sec | hostname, ceph_cluster, service=ceph | Rate of keys being recovered in cluster per second |
++| ceph.cluster.recovery.objects_per_sec | hostname, ceph_cluster, service=ceph | Rate of objects being recovered in cluster per second |
++| ceph.cluster.client.read_bytes_per_sec | hostname, ceph_cluster, service=ceph | Rate of bytes being read by all clients per second |
++| ceph.cluster.client.write_bytes_per_sec | hostname, ceph_cluster, service=ceph | Rate of bytes being written by all clients per second |
++| ceph.cluster.client.read_ops | hostname, ceph_cluster, service=ceph | Total client read I/O ops on the cluster measured per second |
++| ceph.cluster.client.write_ops | hostname, ceph_cluster, service=ceph | Total client write I/O ops on the cluster measured per second |
++| ceph.cluster.cache.flush_bytes_per_sec | hostname, ceph_cluster, service=ceph | Rate of bytes being flushed from the cache pool per second |
++| ceph.cluster.cache.evict_bytes_per_sec | hostname, ceph_cluster, service=ceph | Rate of bytes being evicted from the cache pool per second |
++| ceph.cluster.cache.promote_ops | hostname, ceph_cluster, service=ceph | Total cache promote operations measured per second |
++| ceph.cluster.slow_requests_count | hostname, ceph_cluster, service=ceph | Number of slow requests |
++| ceph.cluster.quorum_size | hostname, ceph_cluster, service=ceph | Number of monitors in quorum |
++| ceph.monitor.total_bytes | hostname, ceph_cluster, monitor, service=ceph | Total storage capacity of the monitor node |
++| ceph.monitor.used_bytes | hostname, ceph_cluster, monitor, service=ceph | Storage of the monitor node that is currently allocated for use |
++| ceph.monitor.avail_bytes | hostname, ceph_cluster, monitor, service=ceph | Total unused storage capacity that the monitor node has left |
++| ceph.monitor.avail_perc | hostname, ceph_cluster, monitor, service=ceph | Percentage of total unused storage capacity that the monitor node has left |
++| ceph.monitor.store.total_bytes | hostname, ceph_cluster, monitor, service=ceph | Total capacity of the FileStore backing the monitor daemon |
++| ceph.monitor.store.sst_bytes | hostname, ceph_cluster, monitor, service=ceph | Capacity of the FileStore used only for raw SSTs |
++| ceph.monitor.store.log_bytes | hostname, ceph_cluster, monitor, service=ceph | Capacity of the FileStore used only for logging |
++| ceph.monitor.store.misc_bytes | hostname, ceph_cluster, monitor, service=ceph | Capacity of the FileStore used only for storing miscellaneous information |
++| ceph.monitor.skew | hostname, ceph_cluster, monitor, service=ceph | Monitor clock skew |
++| ceph.monitor.latency | hostname, ceph_cluster, monitor, service=ceph | Monitor's latency |
++| ceph.osd.crush_weight | hostname, ceph_cluster, osd, service=ceph | OSD crush weight |
++| ceph.osd.depth | hostname, ceph_cluster, osd, service=ceph | OSD depth |
++| ceph.osd.reweight | hostname, ceph_cluster, osd, service=ceph | OSD reweight |
++| ceph.osd.total_bytes | hostname, ceph_cluster, osd, service=ceph | OSD total bytes |
++| ceph.osd.used_bytes | hostname, ceph_cluster, osd, service=ceph | OSD used storage in bytes |
++| ceph.osd.avail_bytes | hostname, ceph_cluster, osd, service=ceph | OSD available storage in bytes |
++| ceph.osd.utilization_perc | hostname, ceph_cluster, osd, service=ceph | OSD utilization |
++| ceph.osd.variance | hostname, ceph_cluster, osd, service=ceph | OSD variance |
++| ceph.osd.pgs_count | hostname, ceph_cluster, osd, service=ceph | OSD placement group count |
++| ceph.osd.perf.commit_latency_seconds | hostname, ceph_cluster, osd, service=ceph | OSD commit latency in seconds |
++| ceph.osd.perf.apply_latency_seconds | hostname, ceph_cluster, osd, service=ceph | OSD apply latency in seconds |
++| ceph.osd.up | hostname, ceph_cluster, osd, service=ceph | OSD up status (up: 1, down: 0) |
++| ceph.osd.in | hostname, ceph_cluster, osd, service=ceph | OSD in status (in: 1, out: 0) |
++| ceph.osds.total_bytes | hostname, ceph_cluster, service=ceph | OSDs total storage in bytes |
++| ceph.osds.total_used_bytes | hostname, ceph_cluster, service=ceph | OSDs total used storage in bytes |
++| ceph.osds.total_avail_bytes | hostname, ceph_cluster, service=ceph | OSDs total available storage in bytes |
++| ceph.osds.avg_utilization_perc | hostname, ceph_cluster, osd, service=ceph | OSDs average utilization in percent |
++| ceph.pool.used_bytes | hostname, ceph_cluster, pool, service=ceph | Capacity of the pool that is currently under use |
++| ceph.pool.used_raw_bytes | hostname, ceph_cluster, pool, service=ceph | Raw capacity of the pool that is currently under use, this factors in the size |
++| ceph.pool.max_avail_bytes | hostname, ceph_cluster, pool, service=ceph | Free space for this ceph pool |
++| ceph.pool.objects_count | hostname, ceph_cluster, pool, service=ceph | Total no. of objects allocated within the pool |
++| ceph.pool.dirty_objects_count | hostname, ceph_cluster, pool, service=ceph | Total no. of dirty objects in a cache-tier pool |
++| ceph.pool.read_io | hostname, ceph_cluster, pool, service=ceph | Total read i/o calls for the pool |
++| ceph.pool.read_bytes | hostname, ceph_cluster, pool, service=ceph | Total read throughput for the pool |
++| ceph.pool.write_io | hostname, ceph_cluster, pool, service=ceph | Total write i/o calls for the pool |
++| ceph.pool.write | hostname, ceph_cluster, pool, service=ceph | Total write throughput for the pool |
++| ceph.pool.quota_max_bytes | hostname, ceph_cluster, pool, service=ceph | Quota maximum bytes for the pool |
++| ceph.pool.quota_max_objects | hostname, ceph_cluster, pool, service=ceph | Quota maximum objects for the pool |
++| ceph.pool.total_bytes | hostname, ceph_cluster, pool, service=ceph | Total capacity of the pool in bytes |
++| ceph.pool.utilization_perc | hostname, ceph_cluster, pool, service=ceph | Percentage of used storage for the pool |
++| ceph.pool.client.read_bytes_sec | hostname, ceph_cluster, pool, service=ceph | Read bytes per second on the pool |
++| ceph.pool.client.write_bytes_sec | hostname, ceph_cluster, pool, service=ceph | Write bytes per second on the pool |
++| ceph.pool.client.read_ops | hostname, ceph_cluster, pool, service=ceph | Read operations per second on the pool |
++| ceph.pool.client.write_ops | hostname, ceph_cluster, pool, service=ceph | Write operations per second on the pool |
++| ceph.pool.recovery.objects_per_sec | hostname, ceph_cluster, pool, service=ceph | Objects recovered per second on the pool |
++| ceph.pool.recovery.bytes_per_sec | hostname, ceph_cluster, pool, service=ceph | Bytes recovered per second on the pool |
++| ceph.pool.recovery.keys_per_sec | hostname, ceph_cluster, pool, service=ceph | Keys recovered per second on the pool |
++| ceph.pool.recovery.objects | hostname, ceph_cluster, pool, service=ceph | Objects recovered on the pool |
++| ceph.pool.recovery.bytes | hostname, ceph_cluster, pool, service=ceph | Bytes recovered on the pool |
++| ceph.pool.recovery.keys | hostname, ceph_cluster, pool, service=ceph | Keys recovered on the pool |
++| ceph.pools.count | hostname, ceph_cluster, service=ceph | Number of pools on the cluster |
++
+ ## Certificate Expiration (HTTPS)
+ An extension to the Agent provides the ability to determine the expiration date of the certificate for the URL. The metric is days until the certificate expires
+ 
+Index: monasca-agent-1.9.2.dev3/monasca_agent/collector/checks_d/ceph.py
+===================================================================
+--- /dev/null
++++ monasca-agent-1.9.2.dev3/monasca_agent/collector/checks_d/ceph.py
+@@ -0,0 +1,540 @@
++# Licensed under the Apache License, Version 2.0 (the "License");
++# you may not use this file except in compliance with the License.
++# You may obtain a copy of the License at
++#
++#     http://www.apache.org/licenses/LICENSE-2.0
++#
++# Unless required by applicable law or agreed to in writing, software
++# distributed under the License is distributed on an "AS IS" BASIS,
++# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++# See the License for the specific language governing permissions and
++# limitations under the License.
++
++import json
++import re
++import subprocess
++
++from monasca_agent.collector import checks
++
++_CACHE_FLUSH_RATE_REGEX = re.compile(r'(\d+) ([kKmMgG][bB])/s flush')
++_CACHE_EVICT_RATE_REGEX = re.compile(r'(\d+) ([kKmMgG][bB])/s evict')
++_CACHE_PROMOTE_OPS_REGEX = re.compile(r'(\d+) op/s promote')
++
++_CLIENT_IO_READ_REGEX = re.compile(r'(\d+) ([kKmMgG][bB])/s rd')
++_CLIENT_IO_WRITE_REGEX = re.compile(r'(\d+) ([kKmMgG][bB])/s wr')
++_CLIENT_IO_READ_OPS_REGEX = re.compile(r'(\d+) op/s rd')
++_CLIENT_IO_WRITE_OPS_REGEX = re.compile(r'(\d+) op/s wr')
++
++_RECOVERY_IO_RATE_REGEX = re.compile(r'(\d+) ([kKmMgG][bB])/s')
++_RECOVERY_IO_KEY_REGEX = re.compile(r'(\d+) keys/s')
++_RECOVERY_IO_OBJECT_REGEX = re.compile(r'(\d+) objects/s')
++
++_DEGRADED_REGEX = re.compile(r'([\d]+) pgs degraded')
++_STUCK_DEGRADED_REGEX = re.compile(r'([\d]+) pgs stuck degraded')
++_UNCLEAN_REGEX = re.compile(r'([\d]+) pgs unclean')
++_STUCK_UNCLEAN_REGEX = re.compile(r'([\d]+) pgs stuck unclean')
++_UNDERSIZED_REGEX = re.compile(r'([\d]+) pgs undersized')
++_STUCK_UNDERSIZED_REGEX = re.compile(r'([\d]+) pgs stuck undersized')
++_STALE_REGEX = re.compile(r'([\d]+) pgs stale')
++_STUCK_STALE_REGEX = re.compile(r'([\d]+) pgs stuck stale')
++_SLOW_REQUEST_REGEX = re.compile(r'([\d]+) requests are blocked')
++_DEGRADED_OBJECTS_REGEX = re.compile(
++    r'recovery ([\d]+)/([\d]+) objects degraded')
++_MISPLACED_OBJECTS_REGEX = re.compile(
++    r'recovery ([\d]+)/([\d]+) objects misplaced')
++
++
++class Ceph(checks.AgentCheck):
++
++    def check(self, instance):
++        self.instance = instance
++        self.CLUSTER = instance.get('cluster_name', 'ceph')
++        self.dimensions = self._set_dimensions({'ceph_cluster': self.CLUSTER,
++                                                'service': 'ceph'}, instance)
++
++        self._collect_usage_metrics()
++        self._collect_stats_metrics()
++        self._collect_mon_metrics()
++        self._collect_osd_metrics()
++        self._collect_pool_metrics()
++
++    def _collect_usage_metrics(self):
++        if not self.instance.get('collect_usage_metrics', True):
++            return
++        ceph_df = self._ceph_cmd('df detail', 'json')
++        metrics = self._get_usage_metrics(ceph_df)
++        for metric, value in metrics.iteritems():
++            self.gauge(metric, value, dimensions=self.dimensions)
++
++    def _collect_stats_metrics(self):
++        if not self.instance.get('collect_stats_metrics', True):
++            return
++        ceph_status = self._ceph_cmd('status', 'json')
++        ceph_status_plain = self._ceph_cmd('status')
++        metrics = self._get_stats_metrics(ceph_status, ceph_status_plain)
++        for metric, value in metrics.iteritems():
++            self.gauge(metric, value, dimensions=self.dimensions)
++
++    def _collect_mon_metrics(self):
++        if not self.instance.get('collect_mon_metrics', True):
++            return
++        ceph_status = self._ceph_cmd('status', 'json')
++        mon_metrics_dict = self._get_mon_metrics(ceph_status)
++        for monitor, metrics in mon_metrics_dict.iteritems():
++            mon_dimensions = self.dimensions.copy()
++            mon_dimensions['monitor'] = monitor
++            for metric, value in metrics.iteritems():
++                self.gauge(metric, value, dimensions=mon_dimensions)
++
++    def _collect_osd_metrics(self):
++        if not self.instance.get('collect_osd_metrics', True):
++            return
++        ceph_osd_df = self._ceph_cmd('osd df', 'json')
++        ceph_osd_perf = self._ceph_cmd('osd perf', 'json')
++        ceph_osd_dump = self._ceph_cmd('osd dump', 'json')
++        osd_metrics_dict = self._get_osd_metrics(ceph_osd_df,
++                                                 ceph_osd_perf,
++                                                 ceph_osd_dump)
++        for osd, metrics in osd_metrics_dict.iteritems():
++            osd_dimensions = self.dimensions.copy()
++            osd_dimensions['osd'] = osd
++            for metric, value in metrics.iteritems():
++                self.gauge(metric, value, dimensions=osd_dimensions)
++
++        osd_summary_metrics = self._get_osd_summary_metrics(ceph_osd_df)
++        for metric, value in osd_summary_metrics.iteritems():
++            self.gauge(metric, value, dimensions=self.dimensions)
++
++    def _collect_pool_metrics(self):
++        if not self.instance.get('collect_pool_metrics', True):
++            return
++        ceph_df = self._ceph_cmd('df detail', 'json')
++        pool_metrics_dict = self._get_pool_metrics(ceph_df)
++        for pool, metrics in pool_metrics_dict.iteritems():
++            pool_dimensions = self.dimensions.copy()
++            pool_dimensions['pool'] = pool
++            for metric, value in metrics.iteritems():
++                self.gauge(metric, value, dimensions=pool_dimensions)
++        self.gauge('ceph.pools.count', len(pool_metrics_dict.keys()),
++                   dimensions=self.dimensions)
++
++        ceph_osd_pool_stats = self._ceph_cmd('osd pool stats', 'json')
++        pool_stats_dict = self._get_pool_stats_metrics(ceph_osd_pool_stats)
++        for pool, metrics in pool_stats_dict.iteritems():
++            pool_dimensions = self.dimensions.copy()
++            pool_dimensions['pool'] = pool
++            for metric, value in metrics.iteritems():
++                self.gauge(metric, value, dimensions=pool_dimensions)
++
++    def _ceph_cmd(self, args, format='plain'):
++        cmd = 'ceph --cluster {0} -f {1} {2}'.format(self.CLUSTER, format,
++                                                     args)
++        try:
++            output = subprocess.check_output(cmd, shell=True,
++                                             stderr=subprocess.STDOUT)
++        except subprocess.CalledProcessError as e:
++            self.log.error(
++                "Unable to execute ceph command '{}': {}".format(cmd,
++                                                                 e.output))
++            raise
++
++        if format == 'json':
++            return json.loads(output)
++        return output
++
++    def _parse_ceph_status(self, status_str):
++        return {
++            'HEALTH_OK': 0,
++            'HEALTH_WARN': 1,
++            'HEALTH_ERR': 2,
++        }.get(status_str, 2)
++
++    def _get_cache_io(self, cache_str):
++        """Parse a cache string and returns a dictionary with metrics
++        in the format {'metric1': value1, ...}
++        """
++        metrics = {}
++
++        match_flush = re.search(_CACHE_FLUSH_RATE_REGEX, cache_str)
++        if match_flush:
++            rate = int(match_flush.group(1))
++            unit = match_flush.group(2).lower()
++            if unit == 'gb':
++                rate = rate * 1e9
++            elif unit == 'mb':
++                rate = rate * 1e6
++            elif unit == 'kb':
++                rate = rate * 1e3
++            metrics['ceph.cluster.cache.flush_bytes_per_sec'] = rate
++
++        match_evict = re.search(_CACHE_EVICT_RATE_REGEX, cache_str)
++        if match_evict:
++            rate = int(match_evict.group(1))
++            unit = match_evict.group(2).lower()
++            if unit == 'gb':
++                rate = rate * 1e9
++            elif unit == 'mb':
++                rate = rate * 1e6
++            elif unit == 'kb':
++                rate = rate * 1e3
++            metrics['ceph.cluster.cache.evict_bytes_per_sec'] = rate
++
++        match_promote = re.search(_CACHE_PROMOTE_OPS_REGEX, cache_str)
++        if match_promote:
++            metrics['ceph.cluster.cache.promote_ops'] = int(
++                match_promote.group(1))
++
++        return metrics
++
++    def _get_client_io(self, client_str):
++        """Parse a client string and returns a dictionary with metrics
++        in the format {'metric1': value1, ...}
++        """
++        metrics = {}
++
++        match_read = re.search(_CLIENT_IO_READ_REGEX, client_str)
++        if match_read:
++            rate = int(match_read.group(1))
++            unit = match_read.group(2).lower()
++            if unit == 'gb':
++                rate = rate * 1e9
++            elif unit == 'mb':
++                rate = rate * 1e6
++            elif unit == 'kb':
++                rate = rate * 1e3
++            metrics['ceph.cluster.client.read_bytes_per_sec'] = rate
++
++        match_write = re.search(_CLIENT_IO_WRITE_REGEX, client_str)
++        if match_write:
++            rate = int(match_write.group(1))
++            unit = match_write.group(2).lower()
++            if unit == 'gb':
++                rate = rate * 1e9
++            elif unit == 'mb':
++                rate = rate * 1e6
++            elif unit == 'kb':
++                rate = rate * 1e3
++            metrics['ceph.cluster.client.write_bytes_per_sec'] = rate
++
++        match_read_ops = re.search(_CLIENT_IO_READ_OPS_REGEX, client_str)
++        if match_read_ops:
++            metrics['ceph.cluster.client.read_ops'] = int(
++                match_read_ops.group(1))
++
++        match_write_ops = re.search(_CLIENT_IO_WRITE_OPS_REGEX, client_str)
++        if match_write_ops:
++            metrics['ceph.cluster.client.write_ops'] = int(
++                match_write_ops.group(1))
++        return metrics
++
++    def _get_recovery_io(self, recovery_str):
++        """Parse a recovery string and returns a dictionary with metrics
++        in the format {'metric1': value1, ...}
++        """
++        metrics = {}
++
++        match_rate = re.search(_RECOVERY_IO_RATE_REGEX, recovery_str)
++        if match_rate:
++            rate = int(match_rate.group(1))
++            unit = match_rate.group(2).lower()
++            if unit == 'gb':
++                rate = rate * 1e9
++            elif unit == 'mb':
++                rate = rate * 1e6
++            elif unit == 'kb':
++                rate = rate * 1e3
++            metrics['ceph.cluster.recovery.bytes_per_sec'] = rate
++
++        match_key = re.search(_RECOVERY_IO_KEY_REGEX, recovery_str)
++        if match_key:
++            metrics['ceph.cluster.recovery.keys_per_sec'] = int(
++                match_key.group(1))
++
++        match_object = re.search(_RECOVERY_IO_OBJECT_REGEX, recovery_str)
++        if match_object:
++            metrics['ceph.cluster.recovery.objects_per_sec'] = int(
++                match_object.group(1))
++
++        return metrics
++
++    def _get_summary_metrics(self, summary_str):
++        """Parse a summary string and returns a dictionary with metrics
++        in the format {'metric1': value1, ...}
++        """
++        metrics = {}
++
++        match_degraded = re.search(_DEGRADED_REGEX, summary_str)
++        if match_degraded:
++            metrics['ceph.cluster.pgs.degraded_count'] = int(
++                match_degraded.group(1))
++            return metrics
++
++        match_stuck_degraded = re.search(_STUCK_DEGRADED_REGEX, summary_str)
++        if match_stuck_degraded:
++            metrics['ceph.cluster.pgs.stuck_degraded_count'] = int(
++                match_stuck_degraded.group(1))
++            return metrics
++
++        match_unclean = re.search(_UNCLEAN_REGEX, summary_str)
++        if match_unclean:
++            metrics['ceph.cluster.pgs.unclean_count'] = int(
++                match_unclean.group(1))
++            return metrics
++
++        match_stuck_unclean = re.search(_STUCK_UNCLEAN_REGEX, summary_str)
++        if match_stuck_unclean:
++            metrics['ceph.cluster.pgs.stuck_unclean_count'] = int(
++                match_stuck_unclean.group(1))
++            return metrics
++
++        match_undersized = re.search(_UNDERSIZED_REGEX, summary_str)
++        if match_undersized:
++            metrics['ceph.cluster.pgs.undersized_count'] = int(
++                match_undersized.group(1))
++            return metrics
++
++        match_stuck_undersized = re.search(_STUCK_UNDERSIZED_REGEX,
++                                           summary_str)
++        if match_stuck_undersized:
++            metrics['ceph.cluster.pgs.stuck_undersized_count'] = int(
++                match_stuck_undersized.group(1))
++            return metrics
++
++        match_stale = re.search(_STALE_REGEX, summary_str)
++        if match_stale:
++            metrics['ceph.cluster.pgs.stale_count'] = int(match_stale.group(1))
++            return metrics
++
++        match_stuck_stale = re.search(_STUCK_STALE_REGEX, summary_str)
++        if match_stuck_stale:
++            metrics['ceph.cluster.pgs.stuck_stale_count'] = int(
++                match_stuck_stale.group(1))
++            return metrics
++
++        match_slow_request = re.search(_SLOW_REQUEST_REGEX, summary_str)
++        if match_slow_request:
++            metrics['ceph.cluster.slow_requests_count'] = int(
++                match_slow_request.group(1))
++            return metrics
++
++        match_degraded_objects = re.search(_DEGRADED_OBJECTS_REGEX,
++                                           summary_str)
++        if match_degraded_objects:
++            metrics['ceph.cluster.objects.degraded_count'] = int(
++                match_degraded_objects.group(1))
++            return metrics
++
++        match_misplaced_objects = re.search(
++            _MISPLACED_OBJECTS_REGEX, summary_str)
++        if match_misplaced_objects:
++            metrics['ceph.cluster.objects.misplaced_count'] = int(
++                match_misplaced_objects.group(1))
++            return metrics
++
++        return metrics
++
++    def _get_usage_metrics(self, ceph_df):
++        """Parse the 'ceph df' dictionary and returns a dictionary with metrics
++        regarding the usage of the cluster in the format
++        {'metric1': value1, ...}
++        """
++        metrics = {}
++        stats = ceph_df['stats']
++        metrics['ceph.cluster.total_bytes'] = stats['total_bytes']
++        metrics['ceph.cluster.total_used_bytes'] = stats['total_used_bytes']
++        metrics['ceph.cluster.total_avail_bytes'] = stats['total_avail_bytes']
++        metrics['ceph.cluster.objects.total_count'] = stats['total_objects']
++        metrics['ceph.cluster.utilization_perc'] = 1 - (float(metrics[
++            'ceph.cluster.total_avail_bytes']) / metrics[
++                'ceph.cluster.total_bytes'])
++        return metrics
++
++    def _get_stats_metrics(self, ceph_status, ceph_status_plain):
++        """Parse the ceph_status dictionary and returns a dictionary with
++        metrics regarding the status of the cluster in the format
++        {'metric1': value1, ...}
++        """
++        metrics = {}
++        ceph_status_health = ceph_status['health']
++        metrics['ceph.cluster.health_status'] = self._parse_ceph_status(
++            ceph_status_health['overall_status'])
++
++        for s in ceph_status_health['summary']:
++            metrics.update(self._get_summary_metrics(s['summary']))
++
++        osds = ceph_status['osdmap']['osdmap']
++        metrics['ceph.cluster.osds.total_count'] = osds['num_osds']
++        metrics['ceph.cluster.osds.up_count'] = osds['num_up_osds']
++        metrics['ceph.cluster.osds.in_count'] = osds['num_in_osds']
++        metrics['ceph.cluster.pgs.remapped_count'] = osds['num_remapped_pgs']
++
++        metrics['ceph.cluster.osds.down_count'] = metrics[
++            'ceph.cluster.osds.total_count'] - metrics[
++                'ceph.cluster.osds.up_count']
++        metrics['ceph.cluster.osds.out_count'] = metrics[
++            'ceph.cluster.osds.total_count'] - metrics[
++                'ceph.cluster.osds.in_count']
++
++        metrics.update({'ceph.cluster.pgs.scrubbing_count': 0,
++                        'ceph.cluster.pgs.deep_scrubbing_count': 0})
++        for state in ceph_status['pgmap']['pgs_by_state']:
++            metrics['ceph.cluster.pgs.' +
++                    state['state_name'].encode('ascii', 'ignore')] = state[
++                        'count']
++            if 'scrubbing' in state['state_name']:
++                if 'deep' in state['state_name']:
++                    metrics['ceph.cluster.pgs.deep_scrubbing_count'] += state[
++                        'count']
++                else:
++                    metrics['ceph.cluster.pgs.scrubbing_count'] += state[
++                        'count']
++        metrics['ceph.cluster.pgs.total_count'] = ceph_status['pgmap'][
++            'num_pgs']
++        metrics['ceph.cluster.pgs.avg_per_osd'] = metrics[
++            'ceph.cluster.pgs.total_count'] / metrics[
++                'ceph.cluster.osds.total_count']
++
++        ceph_status_plain = ceph_status_plain.split('\n')
++        for l in ceph_status_plain:
++            line = l.strip(' ')
++            if line.startswith('recovery io'):
++                metrics.update(self._get_recovery_io(line))
++            elif line.startswith('client io'):
++                metrics.update(self._get_client_io(line))
++            elif line.startswith('cache io'):
++                metrics.update(self._get_cache_io(line))
++
++        metrics['ceph.cluster.quorum_size'] = len(ceph_status['quorum'])
++        return metrics
++
++    def _get_mon_metrics(self, ceph_status):
++        """Parse the ceph_status dictionary and returns a dictionary
++        with metrics regarding each monitor found, in the format
++        {'monitor1': {metric1': value1, ...}, 'monitor2': {metric1': value1}}
++        """
++        mon_metrics = {}
++        for health_service in ceph_status['health']['health'][
++                'health_services']:
++            for mon in health_service['mons']:
++                store_stats = mon['store_stats']
++                mon_metrics[mon['name'].encode('ascii', 'ignore')] = {
++                    'ceph.monitor.total_bytes': mon['kb_total'] * 1e3,
++                    'ceph.monitor.used_bytes': mon['kb_used'] * 1e3,
++                    'ceph.monitor.avail_bytes': mon['kb_avail'] * 1e3,
++                    'ceph.monitor.avail_perc': mon['avail_percent'],
++                    'ceph.monitor.store.total_bytes': store_stats[
++                        'bytes_total'],
++                    'ceph.monitor.store.sst_bytes': store_stats['bytes_sst'],
++                    'ceph.monitor.store.log_bytes': store_stats['bytes_log'],
++                    'ceph.monitor.store.misc_bytes': store_stats['bytes_misc']
++                }
++        # monitor timechecks are available only when there are at least 2
++        # monitors configured on the cluster
++        if len(mon_metrics) > 1:
++            for mon in ceph_status['health']['timechecks']['mons']:
++                mon_metrics[mon['name'].encode('ascii', 'ignore')].update({
++                    'ceph.monitor.skew': mon['skew'],
++                    'ceph.monitor.latency': mon['latency']
++                })
++        return mon_metrics
++
++    def _get_osd_metrics(self, ceph_osd_df, ceph_osd_perf, ceph_osd_dump):
++        """Parse the ceph_osd_df/ceph_osd_perf/ceph_osd_dump dictionaries
++        and returns a dictionary with metrics regarding each osd found, in the
++        format {'osd.0': {metric1': value1, ...}, 'osd.1': {metric1': value1}}
++        """
++        osd_metrics = {}
++        for node in ceph_osd_df['nodes']:
++            osd_metrics[node['name'].encode('ascii', 'ignore')] = {
++                'ceph.osd.crush_weight': node['crush_weight'],
++                'ceph.osd.depth': node['depth'],
++                'ceph.osd.reweight': node['reweight'],
++                'ceph.osd.total_bytes': node['kb'] * 1e3,
++                'ceph.osd.used_bytes': node['kb_used'] * 1e3,
++                'ceph.osd.avail_bytes': node['kb_avail'] * 1e3,
++                'ceph.osd.utilization_perc': node['utilization'],
++                'ceph.osd.variance': node['var'],
++                'ceph.osd.pgs_count': node['pgs']
++            }
++
++        for perf_info in ceph_osd_perf['osd_perf_infos']:
++            osd_metrics['osd.' + str(perf_info['id'])].update({
++                'ceph.osd.perf.commit_latency_seconds': perf_info[
++                    'perf_stats']['commit_latency_ms'] / 1e3,
++                'ceph.osd.perf.apply_latency_seconds': perf_info['perf_stats'][
++                    'apply_latency_ms'] / 1e3
++            })
++
++        for dump_info in ceph_osd_dump['osds']:
++            osd_metrics['osd.' + str(dump_info['osd'])].update({
++                'ceph.osd.up': dump_info['up'],
++                'ceph.osd.in': dump_info['in']
++            })
++        return osd_metrics
++
++    def _get_osd_summary_metrics(self, ceph_osd_df):
++        """Parse the ceph_osd_df dictionary and returns a dictionary
++        with metrics regarding the osds in the cluster, in the format
++        {metric1': value1, ...}
++        """
++        metrics = {}
++        osd_summary = ceph_osd_df['summary']
++        metrics['ceph.osds.total_bytes'] = osd_summary['total_kb'] * 1e3
++        metrics['ceph.osds.total_used_bytes'] = osd_summary[
++            'total_kb_used'] * 1e3
++        metrics['ceph.osds.total_avail_bytes'] = osd_summary[
++            'total_kb_avail'] * 1e3
++        metrics['ceph.osds.avg_utilization_perc'] = osd_summary[
++            'average_utilization']
++        return metrics
++
++    def _get_pool_metrics(self, ceph_df):
++        """Parse the ceph_df dictionary and returns a dictionary
++        with metrics regarding each pool found, in the format
++        {'pool1': {metric1': value1, ...}, 'pool2': {metric1': value1}}.
++        """
++        pool_metrics = {}
++        for pool in ceph_df['pools']:
++            stats = pool['stats']
++            total_bytes = stats['bytes_used'] + stats['max_avail']
++            utilization_perc = float(stats['bytes_used']) / total_bytes
++            pool_metrics[pool['name'].encode('ascii', 'ignore')] = {
++                'ceph.pool.used_bytes': stats['bytes_used'],
++                'ceph.pool.used_raw_bytes': stats['raw_bytes_used'],
++                'ceph.pool.max_avail_bytes': stats['max_avail'],
++                'ceph.pool.objects_count': stats['objects'],
++                'ceph.pool.dirty_objects_count': stats['dirty'],
++                'ceph.pool.read_io': stats['rd'],
++                'ceph.pool.read_bytes': stats['rd_bytes'],
++                'ceph.pool.write_io': stats['wr'],
++                'ceph.pool.write_bytes': stats['wr_bytes'],
++                'ceph.pool.quota_max_bytes': stats['quota_bytes'],
++                'ceph.pool.quota_max_objects': stats['quota_objects'],
++                'ceph.pool.total_bytes': total_bytes,
++                'ceph.pool.utilization_perc': utilization_perc
++            }
++        return pool_metrics
++
++    def _get_pool_stats_metrics(self, ceph_osd_pool_stats):
++        """Parse the ceph_osd_pool_stats dictionary and returns a dictionary
++        with metrics regarding each pool found, in the format
++        {'pool1': {metric1': value1, ...}, 'pool2': {metric1': value1}}.
++        """
++        pool_metrics = {}
++        for pool in ceph_osd_pool_stats:
++            pool_name = pool['pool_name']
++            for metric, value in pool['client_io_rate'].iteritems():
++                if pool_name in pool_metrics:
++                    pool_metrics[pool_name].update({
++                        'ceph.pool.client.' + metric: value})
++                else:
++                    pool_metrics[pool_name] = {
++                        'ceph.pool.client.' + metric: value}
++            for metric, value in pool['recovery_rate'].iteritems():
++                if pool_name in pool_metrics:
++                    pool_metrics[pool_name].update({
++                        'ceph.pool.recovery.' + metric: value})
++                else:
++                    pool_metrics[pool_name] = {
++                        'ceph.pool.recovery.' + metric: value}
++        return pool_metrics
+Index: monasca-agent-1.9.2.dev3/monasca_setup/detection/plugins/ceph.py
+===================================================================
+--- monasca-agent-1.9.2.dev3.orig/monasca_setup/detection/plugins/ceph.py
++++ monasca-agent-1.9.2.dev3/monasca_setup/detection/plugins/ceph.py
+@@ -53,7 +53,7 @@ class Ceph(Plugin):
+     """
+ 
+     def __init__(self, template_dir, overwrite=True, args=None):
+-        self.service_name = 'ceph-storage'
++        self.service_name = 'ceph'
+         self.process_names = ['ceph-osd', 'ceph-mon', 'ceph-mds', 'radosgw']
+         self.ceph_config_dir = '/etc/ceph/'
+         self.service_constants = dict()
+@@ -106,7 +106,7 @@ class Ceph(Plugin):
+             # Get the list of daemon identifiers for given cluster
+             if os.path.exists(service_dir):
+                 instance_list = [entry for entry in os.listdir(service_dir)
+-                                 if entry.startswith(cluster_name)]
++                                 if entry.split('-', 1)[0] == cluster_name]
+ 
+             for instance in instance_list:
+                 # Daemon identifier is of format <cluster_name>-<id>
+@@ -121,10 +121,20 @@ class Ceph(Plugin):
+                 # 'id' for ceph-mds is alphanumeric and is usually the hostname
+                 # where the service is running.
+                 # E.g., ceph-mds1.dom, ceph-mds2.dom etc.
+-                daemon_id = instance.split(cluster_name + '-', 1)[1]
++                #
++                # 'id' for radosgw is preceded by client.rgw. plus an
++                # alphanumeric that is usually the hostname where the service
++                # is running.
++                # E.g., client.rgw.ceph-radosgw1.dom
+                 process = dict()
+-                process_args = ['--cluster %s' % cluster_name,
+-                                '--id %s' % daemon_id, '-f']
++                if service_type == 'radosgw':
++                    daemon_id = instance.split('.', 1)[-1]
++                    process_args = ['--cluster %s' % cluster_name,
++                                    '--name client.rgw.%s' % daemon_id, '-f']
++                else:
++                    daemon_id = instance.split(cluster_name + '-', 1)[1]
++                    process_args = ['--cluster %s' % cluster_name,
++                                    '--id %s' % daemon_id, '-f']
+                 process['search_string'] = self._build_search_string(
+                     executable, process_args)
+                 process['name'] = '%s-%s.%s' \
+@@ -134,62 +144,6 @@ class Ceph(Plugin):
+ 
+         return expected_processes
+ 
+-    def _radosgw_config(self, clusters):
+-        service_dir = self.service_constants['radosgw']['service_dir']
+-        expected_processes = list()
+-
+-        for cluster in clusters:
+-            cluster_name = cluster['cluster_name']
+-            config_file = cluster['config_file']
+-            instance_list = list()
+-
+-            # Get the list of daemon identifiers for given cluster
+-            if os.path.exists(service_dir):
+-                instance_list = [entry for entry in os.listdir(service_dir)
+-                                 if entry.startswith(cluster_name)]
+-
+-            for instance in instance_list:
+-                # RADOS Gateway processes is of the format:
+-                # /usr/bin/radosgw -c <config_file> -n <rados_username>
+-                # E.g.,
+-                # /usr/bin/radosgw -c ceph.conf -n client.radosgw.gateway
+-                process = dict()
+-
+-                # The rados user will have a designated data directory, of the
+-                # format ceph-radosw.<rados_username> in the service dir.
+-                # E.g., /var/lib/ceph/radosgw/ceph-radosgw.gateway
+-                rados_username = instance.replace('ceph-radosgw.', '')
+-                process['search_string'] = list()
+-                process['name'] = '%s-radosgw.%s' \
+-                                  % (cluster_name, rados_username)
+-                process['type'] = \
+-                    self.service_constants['radosgw']['display_name']
+-                executable = self.service_constants['radosgw']['executable']
+-
+-                process_options = ['-n client.radosgw.%s' % rados_username,
+-                                   '--name=client.radosgw.%s' % rados_username]
+-                for opt in process_options:
+-                    # Adding multiple combinations for all possible use cases,
+-                    # since any of the following combination can be used to
+-                    # start the process
+-
+-                    # Trivial case (This will be the most used scenario)
+-                    # E.g.,
+-                    # /usr/bin/radosgw -n client.radosgw.gateway
+-                    process['search_string'].append(
+-                        '%s %s' % (executable, opt))
+-
+-                    # Service started with specific conf file (For rare cases)
+-                    # E.g.,
+-                    # /usr/bin/radosgw -c custom.conf -n client.radosgw.gateway
+-                    process['search_string'].append(
+-                        '%s -c %s %s' % (executable, config_file, opt))
+-                    process['search_string'].append(
+-                        '%s --conf=%s %s' % (executable, config_file, opt))
+-                expected_processes.append(process)
+-
+-        return expected_processes
+-
+     def build_config(self):
+         """Build the config as a Plugins object and return.
+ 
+@@ -218,9 +172,7 @@ class Ceph(Plugin):
+         expected_processes.extend(self._service_config(clusters, 'mon'))
+         expected_processes.extend(self._service_config(clusters, 'osd'))
+         expected_processes.extend(self._service_config(clusters, 'mds'))
+-        # RADOS Gateway is little different from other ceph-daemons hence
+-        # the process definition is handled differently
+-        expected_processes.extend(self._radosgw_config(clusters))
++        expected_processes.extend(self._service_config(clusters, 'radosgw'))
+ 
+         for process in expected_processes:
+             # Watch the service processes
+@@ -232,4 +184,11 @@ class Ceph(Plugin):
+                                        process_name=process['name'],
+                                        exact_match=False))
+ 
++        # Configure ceph plugin
++        instances = []
++        for cluster in clusters:
++            cluster_name = cluster['cluster_name']
++            log.info("\tMonitoring ceph cluster: '{0}'.".format(cluster_name))
++            instances.append({'cluster_name': cluster_name})
++        config['ceph'] = {'init_config': None, 'instances': instances}
+         return config
+Index: monasca-agent-1.9.2.dev3/tests/checks_d/fixtures/ceph/test_ceph-df.json
+===================================================================
+--- /dev/null
++++ monasca-agent-1.9.2.dev3/tests/checks_d/fixtures/ceph/test_ceph-df.json
+@@ -0,0 +1,46 @@
++{
++    "stats": {
++        "total_bytes": 150000,
++        "total_used_bytes": 90000,
++        "total_avail_bytes": 60000,
++        "total_objects": 50
++    },
++    "pools": [
++        {
++            "name": "images",
++            "id": 0,
++            "stats": {
++                "kb_used": 10,
++                "bytes_used": 10000,
++                "max_avail": 20000,
++                "objects": 20,
++                "quota_objects": 0,
++                "quota_bytes": 50000,
++                "dirty": 20,
++                "rd": 6000,
++                "rd_bytes": 20000,
++                "wr": 2000,
++                "wr_bytes": 20000,
++                "raw_bytes_used": 30000
++            }
++        },
++        {
++            "name": "vms",
++            "id": 1,
++            "stats": {
++                "kb_used": 20,
++                "bytes_used": 20000,
++                "max_avail": 20000,
++                "objects": 30,
++                "quota_objects": 0,
++                "quota_bytes": 0,
++                "dirty": 30,
++                "rd": 4000,
++                "rd_bytes": 80000,
++                "wr": 1000,
++                "wr_bytes": 20000,
++                "raw_bytes_used": 60000
++            }
++        }
++    ]
++}
+Index: monasca-agent-1.9.2.dev3/tests/checks_d/fixtures/ceph/test_ceph-osd-df.json
+===================================================================
+--- /dev/null
++++ monasca-agent-1.9.2.dev3/tests/checks_d/fixtures/ceph/test_ceph-osd-df.json
+@@ -0,0 +1,59 @@
++{
++    "nodes": [
++        {
++            "id": 0,
++            "name": "osd.0",
++            "type": "osd",
++            "type_id": 0,
++            "crush_weight": 0.999390,
++            "depth": 2,
++            "reweight": 1.000000,
++            "kb": 50,
++            "kb_used": 25,
++            "kb_avail": 25,
++            "utilization": 0.5,
++            "var": 1.008811,
++            "pgs": 192
++        },
++        {
++            "id": 1,
++            "name": "osd.1",
++            "type": "osd",
++            "type_id": 0,
++            "crush_weight": 0.999390,
++            "depth": 2,
++            "reweight": 1.000000,
++            "kb": 50,
++            "kb_used": 25,
++            "kb_avail": 25,
++            "utilization": 0.5,
++            "var": 0.998439,
++            "pgs": 192
++        },
++        {
++            "id": 2,
++            "name": "osd.2",
++            "type": "osd",
++            "type_id": 0,
++            "crush_weight": 0.999390,
++            "depth": 2,
++            "reweight": 1.000000,
++            "kb": 50,
++            "kb_used": 25,
++            "kb_avail": 25,
++            "utilization": 0.5,
++            "var": 0.992750,
++            "pgs": 192
++        }
++    ],
++    "stray": [],
++    "summary": {
++        "total_kb": 150,
++        "total_kb_used": 75,
++        "total_kb_avail": 75,
++        "average_utilization": 0.5,
++        "min_var": 0.992750,
++        "max_var": 1.008811,
++        "dev": 0.000022
++    }
++}
+Index: monasca-agent-1.9.2.dev3/tests/checks_d/fixtures/ceph/test_ceph-osd-dump.json
+===================================================================
+--- /dev/null
++++ monasca-agent-1.9.2.dev3/tests/checks_d/fixtures/ceph/test_ceph-osd-dump.json
+@@ -0,0 +1,377 @@
++{
++    "epoch": 18,
++    "fsid": "fa0abca0-2533-46d0-93ca-80f48b598a2f",
++    "created": "2017-06-06 10:00:38.302451",
++    "modified": "2017-06-06 10:02:52.873021",
++    "flags": "sortbitwise,require_jewel_osds",
++    "cluster_snapshot": "",
++    "pool_max": 4,
++    "max_osd": 3,
++    "pools": [
++        {
++            "pool": 0,
++            "pool_name": "rbd",
++            "flags": 1,
++            "flags_names": "hashpspool",
++            "type": 1,
++            "size": 3,
++            "min_size": 2,
++            "crush_ruleset": 0,
++            "object_hash": 2,
++            "pg_num": 64,
++            "pg_placement_num": 64,
++            "crash_replay_interval": 0,
++            "last_change": "1",
++            "last_force_op_resend": "0",
++            "auid": 0,
++            "snap_mode": "selfmanaged",
++            "snap_seq": 0,
++            "snap_epoch": 0,
++            "pool_snaps": [],
++            "removed_snaps": "[]",
++            "quota_max_bytes": 0,
++            "quota_max_objects": 0,
++            "tiers": [],
++            "tier_of": -1,
++            "read_tier": -1,
++            "write_tier": -1,
++            "cache_mode": "none",
++            "target_max_bytes": 0,
++            "target_max_objects": 0,
++            "cache_target_dirty_ratio_micro": 0,
++            "cache_target_dirty_high_ratio_micro": 0,
++            "cache_target_full_ratio_micro": 0,
++            "cache_min_flush_age": 0,
++            "cache_min_evict_age": 0,
++            "erasure_code_profile": "",
++            "hit_set_params": {
++                "type": "none"
++            },
++            "hit_set_period": 0,
++            "hit_set_count": 0,
++            "use_gmt_hitset": true,
++            "min_read_recency_for_promote": 0,
++            "min_write_recency_for_promote": 0,
++            "hit_set_grade_decay_rate": 0,
++            "hit_set_search_last_n": 0,
++            "grade_table": [],
++            "stripe_width": 0,
++            "expected_num_objects": 0,
++            "fast_read": false,
++            "options": {}
++        },
++        {
++            "pool": 1,
++            "pool_name": "images",
++            "flags": 1,
++            "flags_names": "hashpspool",
++            "type": 1,
++            "size": 3,
++            "min_size": 2,
++            "crush_ruleset": 0,
++            "object_hash": 2,
++            "pg_num": 32,
++            "pg_placement_num": 32,
++            "crash_replay_interval": 0,
++            "last_change": "2",
++            "last_force_op_resend": "0",
++            "auid": 0,
++            "snap_mode": "selfmanaged",
++            "snap_seq": 0,
++            "snap_epoch": 0,
++            "pool_snaps": [],
++            "removed_snaps": "[]",
++            "quota_max_bytes": 0,
++            "quota_max_objects": 0,
++            "tiers": [],
++            "tier_of": -1,
++            "read_tier": -1,
++            "write_tier": -1,
++            "cache_mode": "none",
++            "target_max_bytes": 0,
++            "target_max_objects": 0,
++            "cache_target_dirty_ratio_micro": 400000,
++            "cache_target_dirty_high_ratio_micro": 600000,
++            "cache_target_full_ratio_micro": 800000,
++            "cache_min_flush_age": 0,
++            "cache_min_evict_age": 0,
++            "erasure_code_profile": "",
++            "hit_set_params": {
++                "type": "none"
++            },
++            "hit_set_period": 0,
++            "hit_set_count": 0,
++            "use_gmt_hitset": false,
++            "min_read_recency_for_promote": 0,
++            "min_write_recency_for_promote": 0,
++            "hit_set_grade_decay_rate": 0,
++            "hit_set_search_last_n": 0,
++            "grade_table": [],
++            "stripe_width": 0,
++            "expected_num_objects": 0,
++            "fast_read": false,
++            "options": {}
++        },
++        {
++            "pool": 2,
++            "pool_name": "volumes",
++            "flags": 1,
++            "flags_names": "hashpspool",
++            "type": 1,
++            "size": 3,
++            "min_size": 2,
++            "crush_ruleset": 0,
++            "object_hash": 2,
++            "pg_num": 32,
++            "pg_placement_num": 32,
++            "crash_replay_interval": 0,
++            "last_change": "3",
++            "last_force_op_resend": "0",
++            "auid": 0,
++            "snap_mode": "selfmanaged",
++            "snap_seq": 0,
++            "snap_epoch": 0,
++            "pool_snaps": [],
++            "removed_snaps": "[]",
++            "quota_max_bytes": 0,
++            "quota_max_objects": 0,
++            "tiers": [],
++            "tier_of": -1,
++            "read_tier": -1,
++            "write_tier": -1,
++            "cache_mode": "none",
++            "target_max_bytes": 0,
++            "target_max_objects": 0,
++            "cache_target_dirty_ratio_micro": 400000,
++            "cache_target_dirty_high_ratio_micro": 600000,
++            "cache_target_full_ratio_micro": 800000,
++            "cache_min_flush_age": 0,
++            "cache_min_evict_age": 0,
++            "erasure_code_profile": "",
++            "hit_set_params": {
++                "type": "none"
++            },
++            "hit_set_period": 0,
++            "hit_set_count": 0,
++            "use_gmt_hitset": false,
++            "min_read_recency_for_promote": 0,
++            "min_write_recency_for_promote": 0,
++            "hit_set_grade_decay_rate": 0,
++            "hit_set_search_last_n": 0,
++            "grade_table": [],
++            "stripe_width": 0,
++            "expected_num_objects": 0,
++            "fast_read": false,
++            "options": {}
++        },
++        {
++            "pool": 3,
++            "pool_name": "vms",
++            "flags": 1,
++            "flags_names": "hashpspool",
++            "type": 1,
++            "size": 3,
++            "min_size": 2,
++            "crush_ruleset": 0,
++            "object_hash": 2,
++            "pg_num": 32,
++            "pg_placement_num": 32,
++            "crash_replay_interval": 0,
++            "last_change": "4",
++            "last_force_op_resend": "0",
++            "auid": 0,
++            "snap_mode": "selfmanaged",
++            "snap_seq": 0,
++            "snap_epoch": 0,
++            "pool_snaps": [],
++            "removed_snaps": "[]",
++            "quota_max_bytes": 0,
++            "quota_max_objects": 0,
++            "tiers": [],
++            "tier_of": -1,
++            "read_tier": -1,
++            "write_tier": -1,
++            "cache_mode": "none",
++            "target_max_bytes": 0,
++            "target_max_objects": 0,
++            "cache_target_dirty_ratio_micro": 400000,
++            "cache_target_dirty_high_ratio_micro": 600000,
++            "cache_target_full_ratio_micro": 800000,
++            "cache_min_flush_age": 0,
++            "cache_min_evict_age": 0,
++            "erasure_code_profile": "",
++            "hit_set_params": {
++                "type": "none"
++            },
++            "hit_set_period": 0,
++            "hit_set_count": 0,
++            "use_gmt_hitset": false,
++            "min_read_recency_for_promote": 0,
++            "min_write_recency_for_promote": 0,
++            "hit_set_grade_decay_rate": 0,
++            "hit_set_search_last_n": 0,
++            "grade_table": [],
++            "stripe_width": 0,
++            "expected_num_objects": 0,
++            "fast_read": false,
++            "options": {}
++        },
++        {
++            "pool": 4,
++            "pool_name": "backups",
++            "flags": 1,
++            "flags_names": "hashpspool",
++            "type": 1,
++            "size": 3,
++            "min_size": 2,
++            "crush_ruleset": 0,
++            "object_hash": 2,
++            "pg_num": 32,
++            "pg_placement_num": 32,
++            "crash_replay_interval": 0,
++            "last_change": "5",
++            "last_force_op_resend": "0",
++            "auid": 0,
++            "snap_mode": "selfmanaged",
++            "snap_seq": 0,
++            "snap_epoch": 0,
++            "pool_snaps": [],
++            "removed_snaps": "[]",
++            "quota_max_bytes": 0,
++            "quota_max_objects": 0,
++            "tiers": [],
++            "tier_of": -1,
++            "read_tier": -1,
++            "write_tier": -1,
++            "cache_mode": "none",
++            "target_max_bytes": 0,
++            "target_max_objects": 0,
++            "cache_target_dirty_ratio_micro": 400000,
++            "cache_target_dirty_high_ratio_micro": 600000,
++            "cache_target_full_ratio_micro": 800000,
++            "cache_min_flush_age": 0,
++            "cache_min_evict_age": 0,
++            "erasure_code_profile": "",
++            "hit_set_params": {
++                "type": "none"
++            },
++            "hit_set_period": 0,
++            "hit_set_count": 0,
++            "use_gmt_hitset": false,
++            "min_read_recency_for_promote": 0,
++            "min_write_recency_for_promote": 0,
++            "hit_set_grade_decay_rate": 0,
++            "hit_set_search_last_n": 0,
++            "grade_table": [],
++            "stripe_width": 0,
++            "expected_num_objects": 0,
++            "fast_read": false,
++            "options": {}
++        }
++    ],
++    "osds": [
++        {
++            "osd": 0,
++            "uuid": "7cc58975-1d5e-4888-bbb3-ffaf96e6cc15",
++            "up": 1,
++            "in": 1,
++            "weight": 1.000000,
++            "primary_affinity": 1.000000,
++            "last_clean_begin": 0,
++            "last_clean_end": 0,
++            "up_from": 8,
++            "up_thru": 17,
++            "down_at": 0,
++            "lost_at": 0,
++            "public_addr": "172.29.236.100:6800\/38365",
++            "cluster_addr": "172.29.236.100:6801\/38365",
++            "heartbeat_back_addr": "172.29.236.100:6802\/38365",
++            "heartbeat_front_addr": "172.29.236.100:6803\/38365",
++            "state": [
++                "exists",
++                "up"
++            ]
++        },
++        {
++            "osd": 1,
++            "uuid": "91c29357-c9e9-4ac5-a91d-5454e3dc82c9",
++            "up": 1,
++            "in": 1,
++            "weight": 1.000000,
++            "primary_affinity": 1.000000,
++            "last_clean_begin": 0,
++            "last_clean_end": 0,
++            "up_from": 12,
++            "up_thru": 17,
++            "down_at": 0,
++            "lost_at": 0,
++            "public_addr": "172.29.236.100:6804\/38909",
++            "cluster_addr": "172.29.236.100:6805\/38909",
++            "heartbeat_back_addr": "172.29.236.100:6806\/38909",
++            "heartbeat_front_addr": "172.29.236.100:6807\/38909",
++            "state": [
++                "exists",
++                "up"
++            ]
++        },
++        {
++            "osd": 2,
++            "uuid": "d4227e3d-a576-4a50-96c2-c9f1f5cb1e61",
++            "up": 1,
++            "in": 1,
++            "weight": 1.000000,
++            "primary_affinity": 1.000000,
++            "last_clean_begin": 0,
++            "last_clean_end": 0,
++            "up_from": 16,
++            "up_thru": 16,
++            "down_at": 0,
++            "lost_at": 0,
++            "public_addr": "172.29.236.100:6808\/39477",
++            "cluster_addr": "172.29.236.100:6809\/39477",
++            "heartbeat_back_addr": "172.29.236.100:6810\/39477",
++            "heartbeat_front_addr": "172.29.236.100:6811\/39477",
++            "state": [
++                "exists",
++                "up"
++            ]
++        }
++    ],
++    "osd_xinfo": [
++        {
++            "osd": 0,
++            "down_stamp": "0.000000",
++            "laggy_probability": 0.000000,
++            "laggy_interval": 0,
++            "features": 576460752032874495,
++            "old_weight": 0
++        },
++        {
++            "osd": 1,
++            "down_stamp": "0.000000",
++            "laggy_probability": 0.000000,
++            "laggy_interval": 0,
++            "features": 576460752032874495,
++            "old_weight": 0
++        },
++        {
++            "osd": 2,
++            "down_stamp": "0.000000",
++            "laggy_probability": 0.000000,
++            "laggy_interval": 0,
++            "features": 576460752032874495,
++            "old_weight": 0
++        }
++    ],
++    "pg_temp": [],
++    "primary_temp": [],
++    "blacklist": {},
++    "erasure_code_profiles": {
++        "default": {
++            "k": "2",
++            "m": "1",
++            "plugin": "jerasure",
++            "technique": "reed_sol_van"
++        }
++    }
++}
+Index: monasca-agent-1.9.2.dev3/tests/checks_d/fixtures/ceph/test_ceph-osd-perf.json
+===================================================================
+--- /dev/null
++++ monasca-agent-1.9.2.dev3/tests/checks_d/fixtures/ceph/test_ceph-osd-perf.json
+@@ -0,0 +1,25 @@
++{
++    "osd_perf_infos": [
++        {
++            "id": 2,
++            "perf_stats": {
++                "commit_latency_ms": 25,
++                "apply_latency_ms": 1505
++            }
++        },
++        {
++            "id": 1,
++            "perf_stats": {
++                "commit_latency_ms": 25,
++                "apply_latency_ms": 1390
++            }
++        },
++        {
++            "id": 0,
++            "perf_stats": {
++                "commit_latency_ms": 31,
++                "apply_latency_ms": 862
++            }
++        }
++    ]
++}
+Index: monasca-agent-1.9.2.dev3/tests/checks_d/fixtures/ceph/test_ceph-osd-pool-stats.json
+===================================================================
+--- /dev/null
++++ monasca-agent-1.9.2.dev3/tests/checks_d/fixtures/ceph/test_ceph-osd-pool-stats.json
+@@ -0,0 +1,28 @@
++[
++    {
++        "pool_name": "images",
++        "pool_id": 0,
++        "recovery": {},
++        "recovery_rate": {
++            "recovering_objects_per_sec": 3530,
++            "recovering_bytes_per_sec": 14462655,
++            "recovering_keys_per_sec": 0,
++            "num_objects_recovered": 7148,
++            "num_bytes_recovered": 29278208,
++            "num_keys_recovered": 0
++        },
++        "client_io_rate": {}
++    },
++    {
++        "pool_name": "vms",
++        "pool_id": 1,
++        "recovery": {},
++        "recovery_rate": {},
++        "client_io_rate": {
++            "read_bytes_sec": 16869,
++            "write_bytes_sec": 9341127,
++            "read_op_per_sec": 369,
++            "write_op_per_sec": 1364
++        }
++    }
++]
+Index: monasca-agent-1.9.2.dev3/tests/checks_d/fixtures/ceph/test_ceph-status.json
+===================================================================
+--- /dev/null
++++ monasca-agent-1.9.2.dev3/tests/checks_d/fixtures/ceph/test_ceph-status.json
+@@ -0,0 +1,186 @@
++{
++    "health": {
++        "health": {
++            "health_services": [
++                {
++                    "mons": [
++                        {
++                            "name": "mon0",
++                            "kb_total": 100,
++                            "kb_used": 50,
++                            "kb_avail": 50,
++                            "avail_percent": 50,
++                            "last_updated": "2017-06-07 09:08:44.024361",
++                            "store_stats": {
++                                "bytes_total": 100,
++                                "bytes_sst": 0,
++                                "bytes_log": 10,
++                                "bytes_misc": 10,
++                                "last_updated": "0.000000"
++                            },
++                            "health": "HEALTH_OK"
++                        },
++                        {
++                            "name": "mon1",
++                            "kb_total": 100,
++                            "kb_used": 50,
++                            "kb_avail": 50,
++                            "avail_percent": 50,
++                            "last_updated": "2017-06-07 09:08:43.05432",
++                            "store_stats": {
++                                "bytes_total": 100,
++                                "bytes_sst": 0,
++                                "bytes_log": 10,
++                                "bytes_misc": 10,
++                                "last_updated": "0.000000"
++                            },
++                            "health": "HEALTH_OK"
++                        },
++                        {
++                            "name": "mon2",
++                            "kb_total": 100,
++                            "kb_used": 50,
++                            "kb_avail": 50,
++                            "avail_percent": 50,
++                            "last_updated": "2017-06-07 09:08:44.043534",
++                            "store_stats": {
++                                "bytes_total": 100,
++                                "bytes_sst": 0,
++                                "bytes_log": 10,
++                                "bytes_misc": 10,
++                                "last_updated": "0.000000"
++                            },
++                            "health": "HEALTH_OK"
++                        }
++                    ]
++                }
++            ]
++        },
++        "timechecks": {
++            "epoch": 3,
++            "round": 0,
++            "round_status": "finished",
++            "mons": [
++                {
++                    "name": "mon0",
++                    "skew": 0.000000,
++                    "latency": 0.000000,
++                    "health": "HEALTH_OK"
++                },
++                {
++                    "name": "mon1",
++                    "skew": 0.000000,
++                    "latency": 0.002577,
++                    "health": "HEALTH_OK"
++                },
++                {
++                    "name": "mon2",
++                    "skew": 0.000000,
++                    "latency": 0.003353,
++                    "health": "HEALTH_OK"
++                }
++            ]
++        },
++        "summary": [
++            {
++                "severity": "HEALTH_WARN",
++                "summary": "1 pgs degraded"
++            },
++            {
++                "severity": "HEALTH_WARN",
++                "summary": "4 pgs stuck unclean"
++            },
++            {
++                "severity": "HEALTH_WARN",
++                "summary": "5 pgs undersized"
++            },
++            {
++                "severity": "HEALTH_WARN",
++                "summary": "recovery 10\/100 objects degraded (10.000%)"
++            },
++            {
++                "severity": "HEALTH_WARN",
++                "summary": "1\/3 in osds are down"
++            },
++            {
++                "severity": "HEALTH_WARN",
++                "summary": "1 mons down, quorum 0,2 mon0,mon2"
++            }
++
++        ],
++        "overall_status": "HEALTH_OK",
++        "detail": []
++    },
++    "fsid": "fa0abca0-2533-46d0-93ca-80f48b598a2f",
++    "election_epoch": 3,
++    "quorum": [
++        0,
++        1,
++        2
++    ],
++    "quorum_names": [
++        "mon0",
++        "mon1",
++        "mon2"
++    ],
++    "monmap": {
++        "epoch": 1,
++        "fsid": "fa0abca0-2533-46d0-93ca-80f48b598a2f",
++        "modified": "2017-06-06 10:00:37.767646",
++        "created": "2017-06-06 10:00:37.767646",
++        "mons": [
++            {
++                "rank": 0,
++                "name": "mon0",
++                "addr": "172.29.239.35:6789\/0"
++            },
++            {
++                "rank": 1,
++                "name": "mon1",
++                "addr": "172.29.239.42:6789\/0"
++            },
++            {
++                "rank": 2,
++                "name": "mon2",
++                "addr": "172.29.239.29:6789\/0"
++            }
++        ]
++    },
++    "osdmap": {
++        "osdmap": {
++            "epoch": 18,
++            "num_osds": 3,
++            "num_up_osds": 3,
++            "num_in_osds": 3,
++            "full": false,
++            "nearfull": false,
++            "num_remapped_pgs": 0
++        }
++    },
++    "pgmap": {
++        "pgs_by_state": [
++            {
++                "state_name": "active+clean",
++                "count": 192
++            },
++            {
++                "state_name": "active+clean+scrubbing",
++                "count": 1
++            },
++            {
++                "state_name": "active+clean+scrubbing+deep",
++                "count": 1
++            }
++        ],
++        "version": 45,
++        "num_pgs": 192,
++        "data_bytes": 0,
++        "bytes_used": 110174208,
++        "bytes_avail": 3296496476160,
++        "bytes_total": 3296606650368
++    },
++    "fsmap": {
++        "epoch": 1,
++        "by_rank": []
++    }
++}
+Index: monasca-agent-1.9.2.dev3/tests/checks_d/fixtures/ceph/test_ceph-status.plain
+===================================================================
+--- /dev/null
++++ monasca-agent-1.9.2.dev3/tests/checks_d/fixtures/ceph/test_ceph-status.plain
+@@ -0,0 +1,13 @@
++    cluster fa0abca0-2533-46d0-93ca-80f48b598a2f
++     health HEALTH_OK
++     monmap e1: 1 mons at {mon0=172.29.239.35:6789/0,mon1=172.29.239.42:6789/0,mon2=172.29.239.29:6789/0}
++            election epoch 3, quorum 0,1,2 mon0,mon1,mon2
++     osdmap e18: 3 osds: 3 up, 3 in
++            flags sortbitwise,require_jewel_osds
++      pgmap v45: 192 pgs, 2 pools, 0 bytes data, 0 objects
++            105 MB used, 3070 GB / 3070 GB avail
++                 192 active+clean
++                 1 active+clean+scrubbing+deep
++  client io 630 kB/s rd, 272 MB/s wr, 263 op/s rd, 1964 op/s wr
++  cache io 100 MB/s flush, 1000 MB/s evict, 20 op/s promote
++  recovery io 1000 MB/s, 100 keys/s, 50 objects/s
+Index: monasca-agent-1.9.2.dev3/tests/checks_d/test_ceph.py
+===================================================================
+--- /dev/null
++++ monasca-agent-1.9.2.dev3/tests/checks_d/test_ceph.py
+@@ -0,0 +1,489 @@
++# Licensed under the Apache License, Version 2.0 (the "License"); you may
++# not use this file except in compliance with the License. You may obtain
++# a copy of the License at
++#
++#      http://www.apache.org/licenses/LICENSE-2.0
++#
++# Unless required by applicable law or agreed to in writing, software
++# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
++# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
++# License for the specific language governing permissions and limitations
++# under the License.
++
++import json
++import mock
++import os
++import subprocess
++import unittest
++
++from monasca_agent.common import util
++from monasca_agent.collector.checks_d import ceph
++
++
++def mocked_check_output(args, shell=True, stderr=''):
++    output = ''
++    if '-f json df detail' in args:
++        output = file(os.path.dirname(os.path.abspath(__file__)) +
++                      '/fixtures/ceph/test_ceph-df.json')
++    elif '-f json status' in args:
++        output = file(os.path.dirname(os.path.abspath(__file__)) +
++                      '/fixtures/ceph/test_ceph-status.json')
++    elif 'status' in args:
++        output = file(os.path.dirname(os.path.abspath(__file__)) +
++                      '/fixtures/ceph/test_ceph-status.plain')
++    elif '-f json osd df' in args:
++        output = file(os.path.dirname(os.path.abspath(__file__)) +
++                      '/fixtures/ceph/test_ceph-osd-df.json')
++    elif '-f json osd perf' in args:
++        output = file(os.path.dirname(os.path.abspath(__file__)) +
++                      '/fixtures/ceph/test_ceph-osd-perf.json')
++    elif '-f json osd dump' in args:
++        output = file(os.path.dirname(os.path.abspath(__file__)) +
++                      '/fixtures/ceph/test_ceph-osd-dump.json')
++    elif '-f json osd pool stats' in args:
++        output = file(os.path.dirname(os.path.abspath(__file__)) +
++                      '/fixtures/ceph/test_ceph-osd-pool-stats.json')
++    else:
++        raise subprocess.CalledProcessError(1, cmd=args,
++                                            output='Invalid command')
++    return output.read()
++
++
++class MockCephCheck(ceph.Ceph):
++    subprocess.check_output = mock.create_autospec(
++        subprocess.check_output, side_effect=mocked_check_output)
++    CLUSTER = 'ceph'
++
++    def __init__(self):
++        super(MockCephCheck, self).__init__(
++            name='ceph',
++            init_config={},
++            instances=[],
++            agent_config={}
++        )
++
++
++class CephCheckTest(unittest.TestCase):
++    maxDiff = None
++
++    def setUp(self):
++        super(CephCheckTest, self).setUp()
++        self.ceph_check = MockCephCheck()
++        self.ceph_check.gauge = mock.Mock()
++
++    def test_ceph_cmd(self):
++        df = self.ceph_check._ceph_cmd('df detail', 'json')
++        st = self.ceph_check._ceph_cmd('status', 'json')
++        st_plain = self.ceph_check._ceph_cmd('status')
++        osd_df = self.ceph_check._ceph_cmd('osd df', 'json')
++        osd_perf = self.ceph_check._ceph_cmd('osd perf', 'json')
++        osd_dump = self.ceph_check._ceph_cmd('osd dump', 'json')
++        osd_pool = self.ceph_check._ceph_cmd('osd pool stats', 'json')
++
++        self.assertIsInstance(df, dict)
++        self.assertEqual(2, len(df))
++        self.assertIsInstance(st, dict)
++        self.assertEqual(9, len(st))
++        self.assertIsInstance(st_plain, str)
++        self.assertEqual(683, len(st_plain))
++        self.assertIsInstance(osd_df, dict)
++        self.assertEqual(3, len(osd_df))
++        self.assertIsInstance(osd_perf, dict)
++        self.assertEqual(1, len(osd_perf))
++        self.assertIsInstance(osd_dump, dict)
++        self.assertEqual(15, len(osd_dump))
++        self.assertIsInstance(osd_pool, list)
++        self.assertEqual(2, len(osd_pool))
++
++        with self.assertRaises(subprocess.CalledProcessError) as e:
++            self.ceph_check._ceph_cmd('foo', 'json')
++            self.assertEqual("Unable to execute ceph command 'ceph --cluster"
++                             "ceph -f json foo': Invalid command", e.output)
++
++    def test_parse_ceph_status(self):
++        self.assertEqual(0, self.ceph_check._parse_ceph_status('HEALTH_OK'))
++        self.assertEqual(1, self.ceph_check._parse_ceph_status('HEALTH_WARN'))
++        self.assertEqual(2, self.ceph_check._parse_ceph_status('HEALTH_ERR'))
++        self.assertEqual(2, self.ceph_check._parse_ceph_status('foo'))
++
++    def test_get_cache_io(self):
++        cache_kb = 'cache io 1000000 kB/s flush, 1000000 kB/s evict,' \
++                   ' 20 op/s promote'
++        cache_mb = 'cache io 1000 MB/s flush, 1000 MB/s evict, 20 op/s promote'
++        cache_gb = 'cache io 1 GB/s flush, 1 GB/s evict, 20 op/s promote'
++        expected_metrics = {
++            'ceph.cluster.cache.flush_bytes_per_sec': 1e9,
++            'ceph.cluster.cache.evict_bytes_per_sec': 1e9,
++            'ceph.cluster.cache.promote_ops': 20
++        }
++
++        metrics_kb = self.ceph_check._get_cache_io(cache_kb)
++        metrics_mb = self.ceph_check._get_cache_io(cache_mb)
++        metrics_gb = self.ceph_check._get_cache_io(cache_gb)
++        self.assertEqual(expected_metrics, metrics_kb)
++        self.assertEqual(expected_metrics, metrics_mb)
++        self.assertEqual(expected_metrics, metrics_gb)
++
++    def test_get_client_io(self):
++        client_kb = 'client io 1000000 kB/s rd, 1000000 kb/s wr, 10 op/s rd,' \
++                     ' 20 op/s wr'
++        client_mb = 'client io 1000 MB/s rd, 1000 mb/s wr, 10 op/s rd,' \
++                    ' 20 op/s wr'
++        client_gb = 'client io 1 GB/s rd, 1 gb/s wr, 10 op/s rd, 20 op/s wr'
++        expected_metrics = {
++            'ceph.cluster.client.read_bytes_per_sec': 1e9,
++            'ceph.cluster.client.write_bytes_per_sec': 1e9,
++            'ceph.cluster.client.read_ops': 10,
++            'ceph.cluster.client.write_ops': 20
++        }
++
++        metrics_kb = self.ceph_check._get_client_io(client_kb)
++        metrics_mb = self.ceph_check._get_client_io(client_mb)
++        metrics_gb = self.ceph_check._get_client_io(client_gb)
++        self.assertEqual(expected_metrics, metrics_kb)
++        self.assertEqual(expected_metrics, metrics_mb)
++        self.assertEqual(expected_metrics, metrics_gb)
++
++    def test_get_recovery_io(self):
++        recovery_kb = 'recovery io 1000000 kB/s, 100 keys/s, 50 objects/s'
++        recovery_mb = 'recovery io 1000 MB/s, 100 keys/s, 50 objects/s'
++        recovery_gb = 'recovery io 1 GB/s, 100 keys/s, 50 objects/s'
++        expected_metrics = {
++            'ceph.cluster.recovery.bytes_per_sec': 1e9,
++            'ceph.cluster.recovery.keys_per_sec': 100,
++            'ceph.cluster.recovery.objects_per_sec': 50
++        }
++
++        metrics_kb = self.ceph_check._get_recovery_io(recovery_kb)
++        metrics_mb = self.ceph_check._get_recovery_io(recovery_mb)
++        metrics_gb = self.ceph_check._get_recovery_io(recovery_gb)
++        self.assertEqual(expected_metrics, metrics_kb)
++        self.assertEqual(expected_metrics, metrics_mb)
++        self.assertEqual(expected_metrics, metrics_gb)
++
++    def test_get_summary_metrics(self):
++        summary_strs = [
++            '1 pgs degraded', '2 pgs stuck degraded', '3 pgs unclean',
++            '4 pgs stuck unclean', '5 pgs undersized',
++            '6 pgs stuck undersized', '7 pgs stale', '8 pgs stuck stale',
++            '9 requests are blocked', 'recovery 10/100 objects degraded',
++            'recovery 11/100 objects misplaced'
++        ]
++
++        expected_metrics = {
++            'ceph.cluster.pgs.degraded_count': 1,
++            'ceph.cluster.pgs.stuck_degraded_count': 2,
++            'ceph.cluster.pgs.unclean_count': 3,
++            'ceph.cluster.pgs.stuck_unclean_count': 4,
++            'ceph.cluster.pgs.undersized_count': 5,
++            'ceph.cluster.pgs.stuck_undersized_count': 6,
++            'ceph.cluster.pgs.stale_count': 7,
++            'ceph.cluster.pgs.stuck_stale_count': 8,
++            'ceph.cluster.slow_requests_count': 9,
++            'ceph.cluster.objects.degraded_count': 10,
++            'ceph.cluster.objects.misplaced_count': 11
++        }
++
++        metrics = {}
++        self.assertEqual(self.ceph_check._get_summary_metrics(''), {})
++        for s in summary_strs:
++            metrics.update(self.ceph_check._get_summary_metrics(s))
++        self.assertEqual(expected_metrics, metrics)
++
++    def test_get_usage_metrics(self):
++        df = self.ceph_check._ceph_cmd('df detail', 'json')
++        expected_metrics = {
++            'ceph.cluster.total_bytes': 150000,
++            'ceph.cluster.total_used_bytes': 90000,
++            'ceph.cluster.total_avail_bytes': 60000,
++            'ceph.cluster.objects.total_count': 50,
++            'ceph.cluster.utilization_perc': 0.6
++        }
++
++        metrics = self.ceph_check._get_usage_metrics(df)
++        self.assertEqual(expected_metrics, metrics)
++
++    def test_get_stats_metrics(self):
++        status = self.ceph_check._ceph_cmd('status', 'json')
++        status_plain = self.ceph_check._ceph_cmd('status')
++        expected_metrics = {
++            'ceph.cluster.health_status': 0,
++            'ceph.cluster.osds.total_count': 3,
++            'ceph.cluster.osds.up_count': 3,
++            'ceph.cluster.osds.in_count': 3,
++            'ceph.cluster.osds.down_count': 0,
++            'ceph.cluster.osds.out_count': 0,
++            'ceph.cluster.pgs.degraded_count': 1,
++            'ceph.cluster.pgs.stuck_unclean_count': 4,
++            'ceph.cluster.pgs.undersized_count': 5,
++            'ceph.cluster.objects.degraded_count': 10,
++            'ceph.cluster.pgs.active+clean': 192,
++            'ceph.cluster.pgs.active+clean+scrubbing+deep': 1,
++            'ceph.cluster.pgs.active+clean+scrubbing': 1,
++            'ceph.cluster.pgs.scrubbing_count': 1,
++            'ceph.cluster.pgs.deep_scrubbing_count': 1,
++            'ceph.cluster.pgs.remapped_count': 0,
++            'ceph.cluster.pgs.total_count': 192,
++            'ceph.cluster.pgs.avg_per_osd': 64,
++            'ceph.cluster.client.read_bytes_per_sec': 630000.0,
++            'ceph.cluster.client.write_bytes_per_sec': 272000000.0,
++            'ceph.cluster.client.read_ops': 263,
++            'ceph.cluster.client.write_ops': 1964,
++            'ceph.cluster.recovery.bytes_per_sec': 1e9,
++            'ceph.cluster.recovery.keys_per_sec': 100,
++            'ceph.cluster.recovery.objects_per_sec': 50,
++            'ceph.cluster.cache.flush_bytes_per_sec': 1e8,
++            'ceph.cluster.cache.evict_bytes_per_sec': 1e9,
++            'ceph.cluster.cache.promote_ops': 20,
++            'ceph.cluster.quorum_size': 3
++        }
++
++        metrics = self.ceph_check._get_stats_metrics(status, status_plain)
++        self.assertEqual(expected_metrics, metrics)
++
++    def test_get_mon_metrics(self):
++        status = self.ceph_check._ceph_cmd('status', 'json')
++        expected_metrics = {
++            'mon0': {
++                'ceph.monitor.total_bytes': 100000.0,
++                'ceph.monitor.used_bytes': 50000.0,
++                'ceph.monitor.avail_bytes': 50000.0,
++                'ceph.monitor.avail_perc': 50,
++                'ceph.monitor.store.total_bytes': 100,
++                'ceph.monitor.store.sst_bytes': 0,
++                'ceph.monitor.store.log_bytes': 10,
++                'ceph.monitor.store.misc_bytes': 10,
++                'ceph.monitor.skew': 0.000000,
++                'ceph.monitor.latency': 0.000000
++            },
++            'mon1': {
++                'ceph.monitor.total_bytes': 100000.0,
++                'ceph.monitor.used_bytes': 50000.0,
++                'ceph.monitor.avail_bytes': 50000.0,
++                'ceph.monitor.avail_perc': 50,
++                'ceph.monitor.store.total_bytes': 100,
++                'ceph.monitor.store.sst_bytes': 0,
++                'ceph.monitor.store.log_bytes': 10,
++                'ceph.monitor.store.misc_bytes': 10,
++                'ceph.monitor.skew': 0.000000,
++                'ceph.monitor.latency': 0.002577
++            },
++            'mon2': {
++                'ceph.monitor.total_bytes': 100000.0,
++                'ceph.monitor.used_bytes': 50000.0,
++                'ceph.monitor.avail_bytes': 50000.0,
++                'ceph.monitor.avail_perc': 50,
++                'ceph.monitor.store.total_bytes': 100,
++                'ceph.monitor.store.sst_bytes': 0,
++                'ceph.monitor.store.log_bytes': 10,
++                'ceph.monitor.store.misc_bytes': 10,
++                'ceph.monitor.skew': 0.000000,
++                'ceph.monitor.latency': 0.003353
++            }
++        }
++
++        metrics = self.ceph_check._get_mon_metrics(status)
++        self.assertEqual(expected_metrics, metrics)
++
++    def test_get_osd_metrics(self):
++        df = self.ceph_check._ceph_cmd('osd df', 'json')
++        perf = self.ceph_check._ceph_cmd('osd perf', 'json')
++        dump = self.ceph_check._ceph_cmd('osd dump', 'json')
++        expected_metrics = {
++            'osd.0': {
++                'ceph.osd.crush_weight': 0.999390,
++                'ceph.osd.depth': 2,
++                'ceph.osd.reweight': 1.000000,
++                'ceph.osd.total_bytes': 50000.0,
++                'ceph.osd.used_bytes': 25000.0,
++                'ceph.osd.avail_bytes': 25000.0,
++                'ceph.osd.utilization_perc': 0.5,
++                'ceph.osd.variance': 1.008811,
++                'ceph.osd.pgs_count': 192,
++                'ceph.osd.perf.commit_latency_seconds': 0.031,
++                'ceph.osd.perf.apply_latency_seconds': 0.862,
++                'ceph.osd.up': 1,
++                'ceph.osd.in': 1
++            },
++            'osd.1': {
++                'ceph.osd.crush_weight': 0.999390,
++                'ceph.osd.depth': 2,
++                'ceph.osd.reweight': 1.000000,
++                'ceph.osd.total_bytes': 50000.0,
++                'ceph.osd.used_bytes': 25000.0,
++                'ceph.osd.avail_bytes': 25000.0,
++                'ceph.osd.utilization_perc': 0.5,
++                'ceph.osd.variance': 0.998439,
++                'ceph.osd.pgs_count': 192,
++                'ceph.osd.perf.commit_latency_seconds': 0.025,
++                'ceph.osd.perf.apply_latency_seconds': 1.390,
++                'ceph.osd.up': 1,
++                'ceph.osd.in': 1
++            },
++            'osd.2': {
++                'ceph.osd.crush_weight': 0.999390,
++                'ceph.osd.depth': 2,
++                'ceph.osd.reweight': 1.000000,
++                'ceph.osd.total_bytes': 50000.0,
++                'ceph.osd.used_bytes': 25000.0,
++                'ceph.osd.avail_bytes': 25000.0,
++                'ceph.osd.utilization_perc': 0.5,
++                'ceph.osd.variance': 0.992750,
++                'ceph.osd.pgs_count': 192,
++                'ceph.osd.perf.commit_latency_seconds': 0.025,
++                'ceph.osd.perf.apply_latency_seconds': 1.505,
++                'ceph.osd.up': 1,
++                'ceph.osd.in': 1
++            }
++        }
++
++        metrics = self.ceph_check._get_osd_metrics(df, perf, dump)
++        self.assertEqual(expected_metrics, metrics)
++
++    def test_get_osd_summary_metrics(self):
++        df = self.ceph_check._ceph_cmd('osd df', 'json')
++        expected_metrics = {
++            'ceph.osds.total_bytes': 150000.0,
++            'ceph.osds.total_used_bytes': 75000.0,
++            'ceph.osds.total_avail_bytes': 75000.0,
++            'ceph.osds.avg_utilization_perc': 0.5
++        }
++
++        metrics = self.ceph_check._get_osd_summary_metrics(df)
++        self.assertEqual(expected_metrics, metrics)
++
++    def test_get_pool_metrics(self):
++        df = self.ceph_check._ceph_cmd('df detail', 'json')
++        expected_metrics = {
++            'images': {
++                'ceph.pool.used_bytes': 10000,
++                'ceph.pool.used_raw_bytes': 30000,
++                'ceph.pool.max_avail_bytes': 20000,
++                'ceph.pool.objects_count': 20,
++                'ceph.pool.dirty_objects_count': 20,
++                'ceph.pool.read_io': 6000,
++                'ceph.pool.read_bytes': 20000,
++                'ceph.pool.write_io': 2000,
++                'ceph.pool.write_bytes': 20000,
++                'ceph.pool.quota_max_bytes': 50000,
++                'ceph.pool.quota_max_objects': 0,
++                'ceph.pool.total_bytes': 30000,
++                'ceph.pool.utilization_perc': 0.3333333333333333
++            },
++            'vms': {
++                'ceph.pool.used_bytes': 20000,
++                'ceph.pool.used_raw_bytes': 60000,
++                'ceph.pool.max_avail_bytes': 20000,
++                'ceph.pool.objects_count': 30,
++                'ceph.pool.dirty_objects_count': 30,
++                'ceph.pool.read_io': 4000,
++                'ceph.pool.read_bytes': 80000,
++                'ceph.pool.write_io': 1000,
++                'ceph.pool.write_bytes': 20000,
++                'ceph.pool.quota_max_bytes': 0,
++                'ceph.pool.quota_max_objects': 0,
++                'ceph.pool.total_bytes': 40000,
++                'ceph.pool.utilization_perc': 0.5
++            }
++        }
++
++        metrics = self.ceph_check._get_pool_metrics(df)
++        self.assertEqual(expected_metrics, metrics)
++
++    def test_get_pool_stats_metrics(self):
++        pool_stats = self.ceph_check._ceph_cmd('osd pool stats', 'json')
++        expected_metrics = {
++            'images': {
++                'ceph.pool.recovery.recovering_objects_per_sec': 3530,
++                'ceph.pool.recovery.recovering_bytes_per_sec': 14462655,
++                'ceph.pool.recovery.recovering_keys_per_sec': 0,
++                'ceph.pool.recovery.num_objects_recovered': 7148,
++                'ceph.pool.recovery.num_bytes_recovered': 29278208,
++                'ceph.pool.recovery.num_keys_recovered': 0
++            },
++            'vms': {
++                'ceph.pool.client.read_bytes_sec': 16869,
++                'ceph.pool.client.write_bytes_sec': 9341127,
++                'ceph.pool.client.read_op_per_sec': 369,
++                'ceph.pool.client.write_op_per_sec': 1364
++            }
++        }
++
++        metrics = self.ceph_check._get_pool_stats_metrics(pool_stats)
++        self.assertEqual(expected_metrics, metrics)
++
++    def test_check(self):
++        self.ceph_check.check({})
++        self.assertEqual(144, self.ceph_check.gauge.call_count)
++
++    def test_check_disable_all_metrics(self):
++        self.ceph_check._get_usage_metrics = mock.Mock(return_value={})
++        self.ceph_check._get_stats_metrics = mock.Mock(return_value={})
++        self.ceph_check._get_mon_metrics = mock.Mock(return_value={})
++        self.ceph_check._get_osd_metrics = mock.Mock(return_value={})
++        self.ceph_check._get_osd_summary_metrics = mock.Mock(return_value={})
++        self.ceph_check._get_pool_metrics = mock.Mock(return_value={})
++        self.ceph_check._get_pool_stats_metrics = mock.Mock(return_value={})
++
++        self.ceph_check.check({
++            'collect_usage_metrics': False,
++            'collect_stats_metrics': False,
++            'collect_mon_metrics': False,
++            'collect_osd_metrics': False,
++            'collect_pool_metrics': False,
++        })
++
++        self.assertFalse(self.ceph_check._get_usage_metrics.called)
++        self.assertFalse(self.ceph_check._get_stats_metrics.called)
++        self.assertFalse(self.ceph_check._get_mon_metrics.called)
++        self.assertFalse(self.ceph_check._get_osd_metrics.called)
++        self.assertFalse(self.ceph_check._get_osd_summary_metrics.called)
++        self.assertFalse(self.ceph_check._get_pool_metrics.called)
++        self.assertFalse(self.ceph_check._get_pool_stats_metrics.called)
++
++    def test_check_disable_some_metrics(self):
++        self.ceph_check._get_usage_metrics = mock.Mock(return_value={})
++        self.ceph_check._get_stats_metrics = mock.Mock(return_value={})
++        self.ceph_check._get_mon_metrics = mock.Mock(return_value={})
++        self.ceph_check._get_osd_metrics = mock.Mock(return_value={})
++        self.ceph_check._get_osd_summary_metrics = mock.Mock(return_value={})
++        self.ceph_check._get_pool_metrics = mock.Mock(return_value={})
++        self.ceph_check._get_pool_stats_metrics = mock.Mock(return_value={})
++
++        self.ceph_check.check({
++            'collect_usage_metrics': False,
++            'collect_stats_metrics': False
++        })
++
++        self.assertFalse(self.ceph_check._get_usage_metrics.called)
++        self.assertFalse(self.ceph_check._get_stats_metrics.called)
++        self.assertTrue(self.ceph_check._get_mon_metrics.called)
++        self.assertTrue(self.ceph_check._get_osd_metrics.called)
++        self.assertTrue(self.ceph_check._get_osd_summary_metrics.called)
++        self.assertTrue(self.ceph_check._get_pool_metrics.called)
++        self.assertTrue(self.ceph_check._get_pool_stats_metrics.called)
++
++    def test_check_enable_all_metrics(self):
++        self.ceph_check._get_usage_metrics = mock.Mock(return_value={})
++        self.ceph_check._get_stats_metrics = mock.Mock(return_value={})
++        self.ceph_check._get_mon_metrics = mock.Mock(return_value={})
++        self.ceph_check._get_osd_metrics = mock.Mock(return_value={})
++        self.ceph_check._get_osd_summary_metrics = mock.Mock(return_value={})
++        self.ceph_check._get_pool_metrics = mock.Mock(return_value={})
++        self.ceph_check._get_pool_stats_metrics = mock.Mock(return_value={})
++
++        self.ceph_check.check({
++            'collect_usage_metrics': True,
++            'collect_stats_metrics': True,
++            'collect_mon_metrics': True,
++            'collect_osd_metrics': True,
++            'collect_pool_metrics': True,
++        })
++
++        self.assertTrue(self.ceph_check._get_usage_metrics.called)
++        self.assertTrue(self.ceph_check._get_stats_metrics.called)
++        self.assertTrue(self.ceph_check._get_mon_metrics.called)
++        self.assertTrue(self.ceph_check._get_osd_metrics.called)
++        self.assertTrue(self.ceph_check._get_osd_summary_metrics.called)
++        self.assertTrue(self.ceph_check._get_pool_metrics.called)
++        self.assertTrue(self.ceph_check._get_pool_stats_metrics.called)
+Index: monasca-agent-1.9.2.dev3/tests/detection/test_ceph.py
+===================================================================
+--- /dev/null
++++ monasca-agent-1.9.2.dev3/tests/detection/test_ceph.py
+@@ -0,0 +1,205 @@
++# Licensed under the Apache License, Version 2.0 (the "License"); you may
++# not use this file except in compliance with the License. You may obtain
++# a copy of the License at
++#
++#      http://www.apache.org/licenses/LICENSE-2.0
++#
++# Unless required by applicable law or agreed to in writing, software
++# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
++# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
++# License for the specific language governing permissions and limitations
++# under the License.
++
++import mock
++
++from oslotest import base
++import psutil
++
++from monasca_setup.detection.plugins import ceph
++
++
++MON_PROCESSES = [
++    {'name': 'ceph-mon.mon0',
++     'type': 'ceph-mon',
++     'search_string': [
++         '/usr/bin/ceph-mon --cluster ceph --id mon0 -f',
++         '/usr/bin/ceph-mon --cluster ceph -f --id mon0',
++         '/usr/bin/ceph-mon --id mon0 --cluster ceph -f',
++         '/usr/bin/ceph-mon --id mon0 -f --cluster ceph',
++         '/usr/bin/ceph-mon -f --cluster ceph --id mon0',
++         '/usr/bin/ceph-mon -f --id mon0 --cluster ceph'
++     ]},
++    {'name': 'ceph1-mon.mon0',
++     'type': 'ceph-mon',
++     'search_string': [
++         '/usr/bin/ceph-mon --cluster ceph1 --id mon0 -f',
++         '/usr/bin/ceph-mon --cluster ceph1 -f --id mon0',
++         '/usr/bin/ceph-mon --id mon0 --cluster ceph1 -f',
++         '/usr/bin/ceph-mon --id mon0 -f --cluster ceph1',
++         '/usr/bin/ceph-mon -f --cluster ceph1 --id mon0',
++         '/usr/bin/ceph-mon -f --id mon0 --cluster ceph1'
++     ]},
++]
++
++RGW_PROCESSES = [
++    {'name': 'ceph-radosgw.rgw0',
++     'type': 'ceph-radosgw',
++     'search_string': [
++         '/usr/bin/radosgw --cluster ceph --name client.rgw.rgw0 -f',
++         '/usr/bin/radosgw --cluster ceph -f --name client.rgw.rgw0',
++         '/usr/bin/radosgw --name client.rgw.rgw0 --cluster ceph -f',
++         '/usr/bin/radosgw --name client.rgw.rgw0 -f --cluster ceph',
++         '/usr/bin/radosgw -f --cluster ceph --name client.rgw.rgw0',
++         '/usr/bin/radosgw -f --name client.rgw.rgw0 --cluster ceph'
++     ]},
++    {'name': 'ceph1-radosgw.rgw0',
++     'type': 'ceph-radosgw',
++     'search_string': [
++         '/usr/bin/radosgw --cluster ceph1 --name client.rgw.rgw0 -f',
++         '/usr/bin/radosgw --cluster ceph1 -f --name client.rgw.rgw0',
++         '/usr/bin/radosgw --name client.rgw.rgw0 --cluster ceph1 -f',
++         '/usr/bin/radosgw --name client.rgw.rgw0 -f --cluster ceph1',
++         '/usr/bin/radosgw -f --cluster ceph1 --name client.rgw.rgw0',
++         '/usr/bin/radosgw -f --name client.rgw.rgw0 --cluster ceph1'
++     ]},
++]
++
++
++def mocked_service_config(*args, **kwargs):
++    if args[1] == 'mon':
++        return MON_PROCESSES
++    elif args[1] == 'radosgw':
++        return RGW_PROCESSES
++    return []
++
++
++class FakeProcess(object):
++    cmdLine = None
++
++    def as_dict(self, attrs=None):
++        all_attrs = {'name': 'ceph',
++                     'exe': FakeProcess.exe(),
++                     'cmdline': FakeProcess.cmdline()}
++        if attrs:
++            for key in attrs:
++                if key not in all_attrs:
++                    all_attrs.pop(key, None)
++        return all_attrs
++
++    @staticmethod
++    def exe():
++        line = FakeProcess.cmdLine
++        if not line:
++            return None
++        return line[0]
++
++    @staticmethod
++    def cmdline():
++        return FakeProcess.cmdLine
++
++
++class TestCephDetection(base.BaseTestCase):
++    CLUSTERS = [
++        {
++            'cluster_name': 'ceph',
++            'config_file': '/etc/ceph/ceph.conf'
++        },
++        {
++            'cluster_name': 'ceph1',
++            'config_file': '/etc/ceph/ceph1.conf'
++        },
++    ]
++
++    def setUp(self):
++        super(TestCephDetection, self).setUp()
++        with mock.patch.object(ceph.Ceph, '_detect') as mock_detect:
++            self._ceph = ceph.Ceph('ceph')
++            self.assertTrue(mock_detect.called)
++
++    def test_should_not_configure_if_no_process(self):
++        FakeProcess.cmdLine = []
++        self._detect(proc=True)
++        self.assertFalse(self._ceph.available)
++
++    def test_should_be_available_if_everything_matches(self):
++        ceph_cmd = '/usr/bin/ceph-mon -f --cluster ceph --id mon0 --setuser' \
++               ' ceph --setgroup ceph'
++        FakeProcess.cmdLine = [ceph_cmd]
++        self._detect()
++        self.assertTrue(self._ceph.available)
++
++    def test_build_search_string(self):
++        executable = '/usr/bin/ceph-mon'
++        args = ['--cluster ceph', '--id mon0', '-f']
++
++        expected_strings = [
++            '/usr/bin/ceph-mon --cluster ceph --id mon0 -f',
++            '/usr/bin/ceph-mon --cluster ceph -f --id mon0',
++            '/usr/bin/ceph-mon --id mon0 --cluster ceph -f',
++            '/usr/bin/ceph-mon --id mon0 -f --cluster ceph',
++            '/usr/bin/ceph-mon -f --cluster ceph --id mon0',
++            '/usr/bin/ceph-mon -f --id mon0 --cluster ceph'
++        ]
++
++        search_strings = self._ceph._build_search_string(executable, args)
++        self.assertEqual(expected_strings, search_strings)
++
++    @mock.patch('os.path.exists', return_value=True)
++    @mock.patch('os.listdir', return_value=['ceph-mon0', 'ceph1-mon0'])
++    def test_service_config(self, list_dir, path_exists):
++        processes = self._ceph._service_config(self.CLUSTERS, 'mon')
++        self.assertEqual(MON_PROCESSES, processes)
++
++    @mock.patch('os.path.exists', return_value=True)
++    @mock.patch('os.listdir', return_value=['ceph-rgw.rgw0', 'ceph1-rgw.rgw0'])
++    def test_radosgw_service_config(self, list_dir, path_exists):
++        processes = self._ceph._service_config(self.CLUSTERS, 'radosgw')
++        self.assertEqual(RGW_PROCESSES, processes)
++
++    @mock.patch('os.path.exists', return_value=True)
++    @mock.patch('os.listdir', return_value=[])
++    def test_build_config_with_no_ceph_conf(self, list_dir, path_exists):
++        config = self._ceph.build_config()
++        self.assertEqual({}, dict(config))
++
++    @mock.patch('os.path.exists', return_value=True)
++    @mock.patch('os.listdir', return_value=['ceph.conf', 'ceph1.conf'])
++    def test_build_config(self, list_dir, path_exists):
++        self._ceph._service_config = mock.Mock(
++            side_effect=mocked_service_config)
++
++        processes = MON_PROCESSES + RGW_PROCESSES
++        process_instances = list()
++
++        for p in processes:
++            instance = {
++                'exact_match': False,
++                'search_string': p['search_string'],
++                'detailed': True,
++                'name': p['name'],
++                'dimensions':  {'component': p['type'], 'service': 'ceph'}
++            }
++            process_instances.append(instance)
++
++        expected_config = {
++            'process': {
++                'init_config': None,
++                'instances': process_instances,
++            },
++            'ceph': {
++                'init_config': None,
++                'instances': [{'cluster_name': 'ceph'},
++                              {'cluster_name': 'ceph1'}]
++            }
++        }
++        config = self._ceph.build_config()
++        self.assertEqual(expected_config, dict(config))
++
++    def _detect(self, proc=False):
++        self._ceph.available = False
++        processes = [FakeProcess()] if not proc else []
++        process_iter = mock.patch.object(psutil, 'process_iter',
++                                         return_value=processes)
++        with process_iter as mock_process_iter:
++            self._ceph._detect()
++            self.assertTrue(mock_process_iter.called)

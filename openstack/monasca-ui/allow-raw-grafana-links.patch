@@ -1,0 +1,142 @@
+commit 8aa1cccf29fdbba7fabaa3634ef534ac86267c1e
+Author: Johannes Grassler <johannes.grassler@suse.com>
+Date:   Mon Nov 6 16:14:58 2017 +0100
+Upstream: available in master and stable branches from stable/queens onwards
+
+    Allow raw Grafana links
+    
+    This commit introduces two configuration changes:
+    
+    * The 'raw' attribute for links in GRAFANA_LINKS which allows
+      the user to point the dashboard URLs specified through
+      GRAFANA_LINKS at arbitrary paths or URLs without further
+      modification. This is False by default, which means the
+      'fileName' and 'path' attributes are considered to be
+      database or JSON file names to be inserted into a URL.
+    * The SHOW_GRAFANA_HOME setting which controls whether the
+      "Grafana Home" button is displayed or not. By default this
+      is True and the button is shown.
+    
+    Change-Id: I55660f91fd56eb22dd7ad4674af422aeb2ba2ea3
+
+Index: monasca-ui-1.5.1.dev4/monitoring/config/local_settings.py
+===================================================================
+--- monasca-ui-1.5.1.dev4.orig/monitoring/config/local_settings.py
++++ monasca-ui-1.5.1.dev4/monitoring/config/local_settings.py
+@@ -54,18 +54,49 @@ DASHBOARDS = getattr(settings, 'GRAFANA_
+ # For any Grafana version additional links to specific dashboards can be
+ # created in two formats.
+ # Flat:
+-# GRAFANA_LINKS = [ {'title': _('Dashboard'), 'path': 'openstack'} ]
++# GRAFANA_LINKS = [ {'title': _('Dashboard'), 'path': 'openstack', 'raw': False} ]
+ #
+ # Per project: '*' will be applied to all projects not explicitly listed.
+ # GRAFANA_LINKS = [
+ #    {'admin': [
+-#        {'title': _('Dashboard'), 'path': 'openstack'}]},
++#        {'title': _('Dashboard'), 'path': 'openstack', 'raw': False}]},
+ #    {'*': [
+-#        {'title': _('OpenStack Dashboard'), 'path': 'project'}]}
++#        {'title': _('OpenStack Dashboard'), 'path': 'project', 'raw': False}]}
+ # ]
++#
++# If GRAFANA_URL is specified, the dashboard file name/raw URL must be
++# specified through the 'path' attribute as shown above.
++#
++# Flat:
++# GRAFANA_LINKS = [ {'title': _('Dashboard'), 'fileName': 'openstack.json', 'raw': False} ]
++#
++# GRAFANA_LINKS = [
++#    {'admin': [
++#        {'fileName': _('Dashboard'), 'fileName': 'openstack.json', 'raw': False}]},
++#    {'*': [
++#        {'title': _('OpenStack Dashboard'), 'fileName': 'project.json': False}]}
++# ]
++#
++# If GRAFANA_URL is unspecified the dashboard file name must be specified
++# through the fileName attribute.
++#
++# Both with and without GRAFANA_URL, the links have an optional 'raw' attribute
++# which defaults to False if unspecified. If it is False, the value of 'path'
++# (or 'fileName', respectively) is interpreted as a dashboard name and a link
++# to the dashboard based on the dashboard's name will be generated. If it is
++# True, the value of 'path' or 'fileName' will be treated as a URL to be used
++# verbatim.
++
++
+ 
+ GRAFANA_URL = getattr(settings, 'GRAFANA_URL', None)
+ 
++# If GRAFANA_URL is specified, an additional link will be shown that points to
++# Grafana's list of dashboards. If you do not wish this, set SHOW_GRAFANA_HOME
++# to False (by default this setting is True and the link will thus be shown).
++
++SHOW_GRAFANA_HOME = getattr(settings, 'SHOW_GRAFANA_HOME', True)
++
+ ENABLE_KIBANA_BUTTON = getattr(settings, 'ENABLE_KIBANA_BUTTON', False)
+ KIBANA_POLICY_RULE = getattr(settings, 'KIBANA_POLICY_RULE',
+                              'monitoring:kibana_access')
+Index: monasca-ui-1.5.1.dev4/monitoring/overview/templates/overview/index.html
+===================================================================
+--- monasca-ui-1.5.1.dev4.orig/monitoring/overview/templates/overview/index.html
++++ monasca-ui-1.5.1.dev4/monitoring/overview/templates/overview/index.html
+@@ -9,19 +9,29 @@
+ {% block main %}
+     <div style="padding: 3px;">
+       {% if grafana_url %}
++      {% if show_grafana_home %}
+       <a target="Grafana Home" href="{{grafana_url}}" class="btn btn-primary">
+           <span class="fa fa-bar-chart"></span>
+           Grafana Home
+       </a>
++      {% endif %}
+       {% for dashboard in dashboards %}
++      {% if dashboard.raw %}
++      <a target={{ dashboard.title }} href="{{ dashboard.path }}" class="btn btn-default">
++      {% else %}
+       <a target={{ dashboard.title }} href="{{grafana_url}}/dashboard/db/{{ dashboard.path }}" class="btn btn-default">
++      {% endif %}
+               <span class="fa fa-bar-chart"></span>
+               {% trans dashboard.title %}
+           </a>
+       {% endfor %}
+       {% else %}
+       {% for dashboard in dashboards %}
++      {% if dashboard.raw %}
++      <a target={{ dashboard.title }} href="{{ dashboard.fileName }}" class="btn btn-default">
++      {% else %}
+       <a target={{ dashboard.title }} href="/grafana/index.html#/dashboard/file/{{ dashboard.fileName }}?api={{api}}" class="btn btn-default">
++      {% endif %}
+           <span class="fa fa-bar-chart"></span>
+               {% trans dashboard.title %}
+       </a>
+Index: monasca-ui-1.5.1.dev4/monitoring/overview/views.py
+===================================================================
+--- monasca-ui-1.5.1.dev4.orig/monitoring/overview/views.py
++++ monasca-ui-1.5.1.dev4/monitoring/overview/views.py
+@@ -240,10 +240,14 @@ class IndexView(TemplateView):
+             api_root = self.request.build_absolute_uri(proxy_url_path)
+             context["api"] = api_root
+         context["dashboards"] = get_dashboard_links(self.request)
++        # Ensure all links have a 'raw' attribute
++        for link in context["dashboards"]:
++            link['raw'] = link.get('raw', False)
+         context['can_access_logs'] = policy.check(
+             ((getattr(settings, 'KIBANA_POLICY_SCOPE'), getattr(settings, 'KIBANA_POLICY_RULE')), ), self.request
+         )
+         context['enable_kibana_button'] = settings.ENABLE_KIBANA_BUTTON
++        context['show_grafana_home'] = settings.SHOW_GRAFANA_HOME
+         return context
+ 
+ 
+@@ -261,7 +265,9 @@ class MonascaProxyView(TemplateView):
+             dimensions_str = req_kwargs['dimensions'][0]
+             dimensions_str_array = dimensions_str.split(',')
+             for dimension in dimensions_str_array:
+-                dimension_name_value = dimension.split(':')
++                # limit splitting since value may contain a ':' such as in
++                # the `url` dimension of the service_status check.
++                dimension_name_value = dimension.split(':', 1)
+                 if len(dimension_name_value) == 2:
+                     name = dimension_name_value[0].encode('utf8')
+                     value = dimension_name_value[1].encode('utf8')
