@@ -12,26 +12,27 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('Babel') }}
-BuildRequires:  {{ py2pkg('mock') }}
-BuildRequires:  {{ py2pkg('oslotest') }}
-BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('testscenarios') }}
+BuildRequires:  {{ py2pkg('Babel', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('Babel') }}
 Requires:       {{ py2pkg('six') }}
 BuildArch:      noarch
+%python_subpackages
 
 %description
 The oslo.i18n library contain utilities for working with internationalization
 (i18n) features, especially translation for text strings in an application
 or library.
 
-%package doc
+%package -n python-oslo.i18n-doc
 Summary:        Documentation for OpenStack i18n library
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 
-%description doc
+%description -n python-oslo.i18n-doc
 Documentation for the oslo.i18n library.
 
 %prep
@@ -40,10 +41,10 @@ Documentation for the oslo.i18n library.
 sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
-%{py2_build}
+%{python_build}
 
 %install
-%{py2_install}
+%{python_install}
 
 # generate html docs
 %{__python2} setup.py build_sphinx
@@ -51,16 +52,17 @@ sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %check
-%{__python2} setup.py test
+%{python_expand rm -rf .testrepository
+$python setup.py test
+}
 
-%files
-%doc ChangeLog CONTRIBUTING.rst README.rst
+%files %{python_files}
 %license LICENSE
-%{python2_sitelib}/oslo_i18n
-%{python2_sitelib}/*.egg-info
+%{python_sitelib}/oslo_i18n
+%{python_sitelib}/*egg-info
 
-%files doc
-%doc doc/build/html
+%files -n python-oslo.i18n-doc
+%doc doc/build/html ChangeLog CONTRIBUTING.rst README.rst
 %license LICENSE
 
 %changelog
