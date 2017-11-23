@@ -8,16 +8,16 @@ Group:          Development/Languages/Python
 URL:            http://bugs.launchpad.net/python-mox3
 Source0:        https://files.pythonhosted.org/packages/source/m/%{pypi_name}/%{pypi_name}-%{version}.tar.gz
 BuildRequires:  openstack-macros
-BuildRequires:  python-devel
-BuildRequires:  {{ py2pkg('fixtures') }}
-BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('python-subunit') }}
-BuildRequires:  {{ py2pkg('setuptools') }}
-BuildRequires:  {{ py2pkg('testrepository') }}
-BuildRequires:  {{ py2pkg('testtools') }}
+BuildRequires:  {{ py2pkg('fixtures', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('python-subunit', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('setuptools', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('fixtures') }}
 Requires:       {{ py2pkg('pbr') }}
 BuildArch:      noarch
+%python_subpackages
 
 %description
 Mox3 is an unofficial port of the Google mox framework to Python 3. It
@@ -25,13 +25,13 @@ was meant to be as compatible with mox as possible, but small
 enhancements have been made. The library was tested on Python version
 3.2, 2.7 and 2.6.
 
-%package doc
+%package -n python-mox3-doc
 Summary:        Documentation for %{name}
 Group:          Documentation
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 
-%description doc
+%description -n python-mox3-doc
 Mox3 is an unofficial port of the Google mox framework to Python 3. It
 was meant to be as compatible with mox as possible, but small
 enhancements have been made. The library was tested on Python version
@@ -45,24 +45,26 @@ This package contains documentation in HTML format.
 sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
-%py2_build
+%python_build
 
 # generate html docs
 %{__python2} setup.py build_sphinx
 
 %check
-%{__python2} setup.py testr
+%{python_expand rm -rf .testrepository
+$python setup.py testr
+}
 
 %install
-%py2_install
+%python_install
 
-%files
+%files %{python_files}
 %license COPYING.txt
 %doc README.rst
 %{python2_sitelib}/%{pypi_name}
 %{python2_sitelib}/%{pypi_name}-*.egg-info
 
-%files doc
+%files -n python-mox3-doc
 %license COPYING.txt
 %doc doc/build/html
 
