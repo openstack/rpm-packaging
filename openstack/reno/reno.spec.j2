@@ -1,23 +1,27 @@
-%global sname reno
-Name:           {{ py2name('reno') }}
-Version:        2.6.0
-Release:        0
+{% set pypi_name = 'reno' %}
+{% set upstream_version = upstream_version('2.6.0') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
 Summary:        RElease NOtes manager
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            http://www.openstack.org/
-Source0:        https://files.pythonhosted.org/packages/source/r/reno/reno-%{version}.tar.gz
+Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('Babel') }}
-BuildRequires:  {{ py2pkg('PyYAML') }}
-BuildRequires:  {{ py2pkg('devel') }}
-BuildRequires:  {{ py2pkg('dulwich') }}
-BuildRequires:  {{ py2pkg('oslotest') }}
-BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('setuptools') }}
-BuildRequires:  {{ py2pkg('testrepository') }}
-BuildRequires:  {{ py2pkg('testscenarios') }}
-BuildRequires:  {{ py2pkg('testtools') }}
+BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('Babel', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('PyYAML', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('dulwich', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('setuptools', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('Babel') }}
 Requires:       {{ py2pkg('PyYAML') }}
 Requires:       {{ py2pkg('dulwich') }}
@@ -25,34 +29,49 @@ BuildArch:      noarch
 %if 0%{?suse_version}
 BuildRequires:  git-core
 BuildRequires:  gpg2
+Requires(post): update-alternatives
+Requires(postun): update-alternatives
 %else
 BuildRequires:  git
 BuildRequires:  gnupg
+# on RDO, update-alternatives is in chkconfig
+Requires(post): chkconfig
+Requires(postun): chkconfig
 %endif
+%python_subpackages
 
 %description
 Reno is a release notes manager for storing release notes in a git
 repository and then building documentation from them.
 
 %prep
-%autosetup -p 1 -n %{sname}-%{version}
+%autosetup -p1 -n {{ pypi_name}}-{{ upstream_version }}
 %py_req_cleanup
 
 %build
-%{py2_build}
+%{python_build}
 
 %install
-%{py2_install}
+%{python_install}
+%python_clone -a %{buildroot}%{_bindir}/reno
+
+%post
+%python_install_alternative reno
+
+%postun
+%python_uninstall_alternative reno
 
 %check
+%{python_expand rm -rf .testrepository
+rm -rf .git
 git init .
-python setup.py test
+$python setup.py test
+}
 
-%files
+%files %{python_files}
 %license LICENSE
-%doc ChangeLog README.rst
-%{_bindir}/reno
-%{python2_sitelib}/reno
-%{python2_sitelib}/*.egg-info
+%python_alternative %{_bindir}/reno
+%{python_sitelib}/reno
+%{python_sitelib}/*.egg-info
 
 %changelog
