@@ -45,7 +45,7 @@ you don't have to know extra info to use OpenStack.
 %package -n python-os-client-config-doc
 Summary:        Documentation for OpenStack client configuration library
 BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 BuildRequires:  {{ py2pkg('reno') }}
 
 %description -n python-os-client-config-doc
@@ -55,6 +55,7 @@ Documentation for the os-client-config library.
 %prep
 %autosetup -n %{sname}-%{version}
 %py_req_cleanup
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
 %python_build
