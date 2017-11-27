@@ -10,23 +10,23 @@ URL:            http://launchpad.net/%{sname}
 Source0:        https://files.pythonhosted.org/packages/source/p/%{sname}/%{sname}-%{version}.tar.gz
 BuildRequires:  openssl
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('debtcollector') }}
-BuildRequires:  python-devel
-BuildRequires:  {{ py2pkg('keystoneauth1') }}
-BuildRequires:  {{ py2pkg('lxml') }}
-BuildRequires:  {{ py2pkg('mock') }}
-BuildRequires:  {{ py2pkg('oslo.config') }}
-BuildRequires:  {{ py2pkg('oslo.i18n') }}
-BuildRequires:  {{ py2pkg('oslo.serialization') }}
-BuildRequires:  {{ py2pkg('oslo.utils') }}
-BuildRequires:  {{ py2pkg('oslotest') }}
-BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('positional') }}
-BuildRequires:  {{ py2pkg('requests-mock') }}
-BuildRequires:  {{ py2pkg('six') }}
-BuildRequires:  {{ py2pkg('testrepository') }}
-BuildRequires:  {{ py2pkg('testresources') }}
-BuildRequires:  {{ py2pkg('testscenarios') }}
+BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('debtcollector', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('keystoneauth1', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('lxml', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.config', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.i18n', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.serialization', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.utils', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('positional', py_versions=['py2']) }}
+BuildRequires:  {{ py2pkg('requests-mock', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('six', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testresources', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('debtcollector') }}
 Requires:       {{ py2pkg('keystoneauth1') }}
 Requires:       {{ py2pkg('oslo.config') }}
@@ -38,17 +38,18 @@ Requires:       {{ py2pkg('requests') }}
 Requires:       {{ py2pkg('six') }}
 Requires:       {{ py2pkg('stevedore') }}
 BuildArch:      noarch
+%python_subpackages
 
 %description
 Client library for interacting with Openstack Identity API.
 
-%package doc
+%package -n python-keystoneclient-doc
 Summary:        Documentation for OpenStack Identity API Client
 Group:          Documentation/HTML
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 
-%description doc
+%description -n python-keystoneclient-doc
 Documentation for the client library for interacting with Openstack
 Identity API.
 
@@ -60,13 +61,13 @@ echo "intersphinx_mapping = {}" >> doc/source/conf.py
 sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
-%{py2_build}
+%{python_build}
 
 # Build HTML docs and man page
 %{__python2} setup.py build_sphinx
 
 %install
-%{py2_install}
+%{python_install}
 
 # Delete tests
 rm -fr %{buildroot}%{python2_sitelib}/tests
@@ -75,15 +76,17 @@ rm -fr %{buildroot}%{python2_sitelib}/tests
 rm -fr html/.doctrees html/.buildinfo
 
 %check
-%{__python2} setup.py testr
+%{python_expand rm -rf .testrepository
+$python setup.py testr
+}
 
-%files
+%files %{python_files}
 %doc README.rst
 %license LICENSE
 %{python2_sitelib}/keystoneclient
 %{python2_sitelib}/*.egg-info
 
-%files doc
+%files -n python-keystoneclient-doc
 %doc doc/build/html
 %license LICENSE
 
