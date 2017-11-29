@@ -1,6 +1,6 @@
 %global sname keystoneauth1
 Name:           {{ py2name('keystoneauth1') }}
-Version:        3.2.0
+Version:        3.3.0
 Release:        0
 Summary:        OpenStack authenticating tools
 License:        {{ license('Apache-2.0') }}
@@ -15,6 +15,7 @@ BuildRequires:  {{ py2pkg('iso8601', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('lxml', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('oauthlib', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('os-testr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('oslo.config', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('oslo.utils', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
@@ -24,7 +25,6 @@ BuildRequires:  {{ py2pkg('pycrypto', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('reno', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('requests-kerberos', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('requests-mock', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testresources', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('PyYAML') }}
@@ -76,7 +76,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %check
 rm -v keystoneauth1/tests/unit/test_hacking_checks.py
 %{python_expand rm -rf .testrepository
-$python setup.py testr
+ostestr
 }
 
 %files %{python_files}
