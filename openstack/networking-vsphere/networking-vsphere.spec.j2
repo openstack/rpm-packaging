@@ -156,12 +156,6 @@ chmod +x %{buildroot}%{python2_sitelib}/networking_vsphere/monitor/ovsvapp-agent
 %dir %{_sysconfdir}/neutron/plugins/ml2
 %config(noreplace) %{_sysconfdir}/neutron/ml2_conf_vmware_dvs.ini
 %config(noreplace) %{_sysconfdir}/neutron/plugins/ml2/ovsvapp_agent.ini
-# Part of the dvs-agent package
-%exclude %{_bindir}/neutron-dvs-agent
-# Part of the ovsvapp-agent package
-%exclude %{_bindir}/neutron-ovsvapp-agent
-%exclude %{_bindir}/neutron-ovsvapp-agent-monitor
-%exclude %{_bindir}/neutron-ovsvapp-db-manage
 # Patch no longer required in nova stable/newton
 %exclude %{_prefix}%{_localstatedir}/tmp/nova.patch
 
