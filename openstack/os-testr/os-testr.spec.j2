@@ -1,25 +1,38 @@
-%global sname os-testr
-Name:           {{ py2name('os-testr') }}
-Version:        1.0.0
-Release:        0
+{% set pypi_name = 'os-testr' %}
+{% set upstream_version = upstream_version('1.0.0') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
 Summary:        A testr wrapper to provide functionality for OpenStack projects
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            http://docs.openstack.org/developer/os-testr
-Source0:        https://files.pythonhosted.org/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
+Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('ddt') }}
-BuildRequires:  {{ py2pkg('devel') }}
-BuildRequires:  {{ py2pkg('oslotest') }}
-BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('six') }}
-BuildRequires:  {{ py2pkg('stestr') }}
-BuildRequires:  {{ py2pkg('testscenarios') }}
+BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('ddt', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('six', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('pbr') }}
 Requires:       {{ py2pkg('python-subunit') }}
 Requires:       {{ py2pkg('stestr') }}
 Requires:       {{ py2pkg('testtools') }}
 BuildArch:      noarch
+%if 0%{?suse_version}
+Requires(post): update-alternatives
+Requires(postun): update-alternatives
+%else
+# on RDO, update-alternatives is in chkconfig
+Requires(post): chkconfig
+Requires(postun): chkconfig
+%endif
+%python_subpackages
 
 %description
 A testr wrapper to provide functionality for OpenStack projects
@@ -27,22 +40,22 @@ A testr wrapper to provide functionality for OpenStack projects
 * Source: http://git.openstack.org/cgit/openstack/os-testr
 * Bugs: http://bugs.launchpad.net/os-testr
 
-%package doc
+%package -n python-os-testr-doc
 Summary:        Documentation for the testr
 Group:          Documentation/HTML
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 
-%description doc
+%description -n python-os-testr-doc
 Documentation for the testr wrapper.
 
 %prep
-%autosetup -n %{sname}-%{version}
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
 sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
-%{py2_build}
+%{python_build}
 
 # generate html docs
 %{__python2} setup.py build_sphinx
@@ -50,29 +63,36 @@ sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
-%{py2_install}
+%{python_install}
+%python_clone -a %{buildroot}%{_bindir}/generate-subunit
+%python_clone -a %{buildroot}%{_bindir}/ostestr
+%python_clone -a %{buildroot}%{_bindir}/subunit-trace
+%python_clone -a %{buildroot}%{_bindir}/subunit2html
 
+%post
+%python_install_alternative generate-subunit
+%python_install_alternative ostestr
+%python_install_alternative subunit-trace
+%python_install_alternative subunit2html
 
-%check
-export OS_STDOUT_CAPTURE=1
-export OS_STDERR_CAPTURE=1
-export PATH="$PATH:%{buildroot}/%{_bindir}"
-export PYTHONPATH="%{python2_sitearch}:%{python2_sitelib}:%{buildroot}%{python2_sitelib}"
-ostestr
+%postun
+%python_uninstall_alternative generate-subunit
+%python_uninstall_alternative ostestr
+%python_uninstall_alternative subunit-trace
+%python_uninstall_alternative subunit2html
 
-%files
+%files %{python_files}
 %defattr(-,root,root,-)
 %license LICENSE
-%doc README.rst ChangeLog
-%{_bindir}/generate-subunit
-%{_bindir}/ostestr
-%{_bindir}/subunit-trace
-%{_bindir}/subunit2html
-%{python2_sitelib}/os_testr
-%{python2_sitelib}/os_testr*egg-info
+%python_alternative %{_bindir}/generate-subunit
+%python_alternative %{_bindir}/ostestr
+%python_alternative %{_bindir}/subunit-trace
+%python_alternative %{_bindir}/subunit2html
+%{python_sitelib}/os_testr
+%{python_sitelib}/os_testr*egg-info
 
-%files doc
+%files -n python-os-testr-doc
 %license LICENSE
-%doc doc/build/html
+%doc doc/build/html README.rst ChangeLog
 
 %changelog
