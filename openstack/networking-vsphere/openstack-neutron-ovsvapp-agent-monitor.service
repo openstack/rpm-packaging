@@ -1,0 +1,15 @@
+[Unit]
+Description=Openstack Neutron VMware OVSvApp Agent Monitor
+After=syslog.target network.target openstack-neutron-vsphere-ovsvapp-agent.service
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/bin/neutron-ovsvapp-agent-monitor --log-file /var/log/neutron/ovsvapp-agent-monitor.log 
+PrivateTmp=false
+KillMode=process
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+

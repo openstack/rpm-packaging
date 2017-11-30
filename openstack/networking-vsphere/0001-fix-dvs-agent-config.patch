@@ -1,0 +1,47 @@
+From dc05248e2f2b0bef998d6c9643da50158f47ef0f Mon Sep 17 00:00:00 2001
+From: Stefan Nica <snica@suse.com>
+Date: Mon, 29 May 2017 12:23:36 +0200
+Subject: [PATCH] Fix neutron-dvs-agent startup errors
+
+The DVS agent complains about missing L2_AGENT_TOPIC
+constant and report_interval configuration option
+during startup. This changeset corrects these problems.
+
+Closes-Bug: 1694239
+Change-Id: I055bb7057e7ee67ea7dd1d30f4e1fc136b196e61
+---
+
+diff --git a/networking_vsphere/agent/dvs_neutron_agent.py b/networking_vsphere/agent/dvs_neutron_agent.py
+index fda76f9..a8c365f 100644
+--- a/networking_vsphere/agent/dvs_neutron_agent.py
++++ b/networking_vsphere/agent/dvs_neutron_agent.py
+@@ -24,6 +24,7 @@
+ import oslo_messaging
+ from oslo_service import loopingcall
+ 
++from neutron_lib import constants as n_const
+ from neutron_lib import context
+ from neutron_lib.utils import helpers
+ 
+@@ -31,7 +32,6 @@
+ from neutron.agent import rpc as agent_rpc
+ from neutron.agent import securitygroups_rpc as sg_rpc
+ from neutron.common import config as common_config
+-from neutron.common import constants as n_const
+ from neutron.common import topics
+ from neutron.common import utils
+ 
+diff --git a/networking_vsphere/common/vmware_conf.py b/networking_vsphere/common/vmware_conf.py
+index e8aaa69..ceb208d 100644
+--- a/networking_vsphere/common/vmware_conf.py
++++ b/networking_vsphere/common/vmware_conf.py
+@@ -28,6 +28,9 @@
+     cfg.IntOpt('polling_interval', default=2,
+                help=_("The number of seconds the agent will wait between "
+                       "polling for local device changes.")),
++    cfg.IntOpt('report_interval',
++               default=30,
++               help='Seconds between agents reporting state to server.'),
+ ]
+ 
+ vmware_opts = [
