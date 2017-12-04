@@ -8,25 +8,25 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/keystoneauth
 Source0:        https://files.pythonhosted.org/packages/source/k/%{sname}/%{sname}-%{version}.tar.gz
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('PyYAML') }}
-BuildRequires:  {{ py2pkg('betamax') }}
-BuildRequires:  {{ py2pkg('fixtures') }}
-BuildRequires:  {{ py2pkg('iso8601') }}
-BuildRequires:  {{ py2pkg('lxml') }}
-BuildRequires:  {{ py2pkg('mock') }}
-BuildRequires:  {{ py2pkg('oauthlib') }}
-BuildRequires:  {{ py2pkg('oslo.config') }}
-BuildRequires:  {{ py2pkg('oslo.utils') }}
-BuildRequires:  {{ py2pkg('oslotest') }}
-BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('positional') }}
-BuildRequires:  {{ py2pkg('pycrypto') }}
-BuildRequires:  {{ py2pkg('reno') }}
-BuildRequires:  {{ py2pkg('requests-kerberos') }}
-BuildRequires:  {{ py2pkg('requests-mock') }}
-BuildRequires:  {{ py2pkg('testrepository') }}
-BuildRequires:  {{ py2pkg('testresources') }}
-BuildRequires:  {{ py2pkg('testtools') }}
+BuildRequires:  {{ py2pkg('PyYAML', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('betamax', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('fixtures', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('iso8601', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('lxml', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oauthlib', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.config', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.utils', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('positional', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pycrypto', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('reno', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('requests-kerberos', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('requests-mock', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testresources', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('PyYAML') }}
 Requires:       {{ py2pkg('iso8601') }}
 Requires:       {{ py2pkg('lxml') }}
@@ -37,6 +37,7 @@ Requires:       {{ py2pkg('requests-kerberos') }}
 Requires:       {{ py2pkg('six') }}
 Requires:       {{ py2pkg('stevedore') }}
 BuildArch:      noarch
+%python_subpackages
 
 %description
 Tools for authenticating to an OpenStack-based cloud. These tools include:
@@ -45,12 +46,12 @@ Tools for authenticating to an OpenStack-based cloud. These tools include:
 * A session that is used to maintain client settings across requests
   (based on the requests Python library)
 
-%package doc
+%package -n python-keystoneauth1-doc
 Summary:        Documentation for OpenStack authenticating tools
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 
-%description doc
+%description -n python-keystoneauth1-doc
 Documentation for OpenStack authenticating tools.
 
 %prep
@@ -62,10 +63,10 @@ sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 echo "intersphinx_mapping = {}" >> doc/source/conf.py
 
 %build
-%{py2_build}
+%{python_build}
 
 %install
-%{py2_install}
+%{python_install}
 
 # generate html docs
 %{__python2} setup.py build_sphinx
@@ -74,15 +75,17 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %check
 rm -v keystoneauth1/tests/unit/test_hacking_checks.py
-%{__python2} setup.py testr
+%{python_expand rm -rf .testrepository
+$python setup.py testr
+}
 
-%files
+%files %{python_files}
 %license LICENSE
 %doc ChangeLog README.rst
-%{python2_sitelib}/%{sname}
-%{python2_sitelib}/*.egg-info
+%{python_sitelib}/%{sname}
+%{python_sitelib}/*.egg-info
 
-%files doc
+%files -n python-keystoneauth1-doc
 %doc doc/build/html
 %license LICENSE
 
