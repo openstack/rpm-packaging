@@ -12,31 +12,32 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('devel') }}
-BuildRequires:  {{ py2pkg('ipaddress') }}
-BuildRequires:  {{ py2pkg('mock') }}
-BuildRequires:  {{ py2pkg('msgpack-python') }}
-BuildRequires:  {{ py2pkg('netaddr') }}
-BuildRequires:  {{ py2pkg('oslo.i18n') }}
-BuildRequires:  {{ py2pkg('oslo.utils') }}
-BuildRequires:  {{ py2pkg('oslotest') }}
-BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('ipaddress', py_versions=['py2']) }}
+BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('msgpack-python', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('netaddr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.i18n', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.utils', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('msgpack-python') }}
 Requires:       {{ py2pkg('oslo.utils') }}
 Requires:       {{ py2pkg('pytz') }}
 Requires:       {{ py2pkg('six') }}
 BuildArch:      noarch
+%python_subpackages
 
 %description
 The oslo.serialization library provides support for representing objects
 in transmittable and storable formats, such as Base64, JSON and MessagePack.
 
-%package doc
+%package -n python-oslo.serialization-doc
 Summary:        Documentation for OpenStack serialization library
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 
-%description doc
+%description -n python-oslo.serialization-doc
 The oslo.serialization library provides support for representing objects
 in transmittable and storable formats, such as Base64, JSON and MessagePack.
 This package contains the documentation.
@@ -47,7 +48,7 @@ This package contains the documentation.
 sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
-%{py2_build}
+%{python_build}
 
 # generate html docs
 %{__python2} setup.py build_sphinx
@@ -55,18 +56,20 @@ sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
-%{py2_install}
+%{python_install}
 
 %check
-%{__python2} setup.py test
+%{python_expand rm -rf .testrepository
+$python setup.py test
+}
 
-%files
+%files %{python_files}
 %license LICENSE
 %doc README.rst ChangeLog
-%{python2_sitelib}/oslo_serialization
-%{python2_sitelib}/*.egg-info
+%{python_sitelib}/oslo_serialization
+%{python_sitelib}/*.egg-info
 
-%files doc
+%files -n python-oslo.serialization-doc
 %license LICENSE
 %doc doc/build/html
 
