@@ -13,15 +13,16 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('positional') }}
+BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('positional', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('debtcollector') }}
 Requires:       {{ py2pkg('positional') }}
 BuildArch:      noarch
 %if %{with test}
-BuildRequires:  {{ py2pkg('debtcollector') }}
-BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('debtcollector', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
 %endif
+%python_subpackages
 
 %description
 The Oslo context library has helpers to maintain useful information
@@ -29,13 +30,13 @@ about a request context.
 The request context is usually populated in the WSGI pipeline and
 used by various modules such as logging.
 
-%package doc
+%package -n python-oslo.context-doc
 Summary:        Documentation for OpenStack common context library
 Group:          Documentation/HTML
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 
-%description doc
+%description -n python-oslo.context-doc
 Documentation for the oslo-context library.
 
 %prep
@@ -45,27 +46,29 @@ Documentation for the oslo-context library.
 sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
-%{py2_build}
+%{python_build}
 # generate html docs
 %{__python2} setup.py build_sphinx
 # remove the sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
-%{py2_install}
+%{python_install}
 
 %if %{with test}
 %check
-%{__python2} setup.py test
+%{python_expand rm -rf .testrepository
+$python setup.py testr
+}
 %endif
 
-%files
+%files %{python_files}
 %license LICENSE
 %doc README.rst
 %{python2_sitelib}/oslo_context
 %{python2_sitelib}/*.egg-info
 
-%files doc
+%files -n python-oslo.context-doc
 %license LICENSE
 %doc doc/build/html
 
