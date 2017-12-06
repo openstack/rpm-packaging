@@ -1,29 +1,33 @@
-%global sname python-ceilometerclient
-Name:           {{ py2name('ceilometerclient') }}
-Version:        2.9.0
-Release:        0
+{% set pypi_name = 'python-ceilometerclient' %}
+{% set upstream_version = upstream_version('2.9.0') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
 Summary:        Python API and CLI for OpenStack Ceilometer
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://github.com/openstack/%{name}
-Source0:        https://files.pythonhosted.org/packages/source/p/%{sname}/%{sname}-%{version}.tar.gz
+Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('PrettyTable') }}
-BuildRequires:  {{ py2pkg('devel') }}
-BuildRequires:  {{ py2pkg('keystoneauth1') }}
-BuildRequires:  {{ py2pkg('mock') }}
-BuildRequires:  {{ py2pkg('oslo.i18n') }}
-BuildRequires:  {{ py2pkg('oslo.serialization') }}
-BuildRequires:  {{ py2pkg('oslo.utils') }}
-BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('requests') }}
-BuildRequires:  {{ py2pkg('requests-mock') }}
-BuildRequires:  {{ py2pkg('setuptools') }}
-BuildRequires:  {{ py2pkg('six') }}
-BuildRequires:  {{ py2pkg('stevedore') }}
-BuildRequires:  {{ py2pkg('testrepository') }}
-BuildRequires:  {{ py2pkg('testscenarios') }}
-BuildRequires:  {{ py2pkg('testtools') }}
+BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('PrettyTable', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('keystoneauth1', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.i18n', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.serialization', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.utils', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('requests', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('requests-mock', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('setuptools', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('six', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('stevedore', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('PrettyTable') }}
 Requires:       {{ py2pkg('iso8601') }}
 Requires:       {{ py2pkg('keystoneauth1') }}
@@ -35,19 +39,28 @@ Requires:       {{ py2pkg('requests') }}
 Requires:       {{ py2pkg('six') }}
 Requires:       {{ py2pkg('stevedore') }}
 BuildArch:      noarch
+%if 0%{?suse_version}
+Requires(post): update-alternatives
+Requires(postun): update-alternatives
+%else
+# on RDO, update-alternatives is in chkconfig
+Requires(post): chkconfig
+Requires(postun): chkconfig
+%endif
+%python_subpackages
 
 %description
 This is a client library for Ceilometer built on the Ceilometer API. It
 provides a Python API (the ceilometerclient module) and a command-line tool
 (ceilometer).
 
-%package doc
+%package -n python-ceilometerclient-doc
 Summary:        Documentation for OpenStack Ceilometer API Client
 Group:          Documentation/HTML
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('oslosphinx') }}
 
-%description      doc
+%description -n python-ceilometerclient-doc
 This is a client library for Ceilometer built on the Ceilometer API. It
 provides a Python API (the ceilometerclient module) and a command-line tool
 (ceilometer).
@@ -55,30 +68,39 @@ provides a Python API (the ceilometerclient module) and a command-line tool
 This package contains auto-generated documentation.
 
 %prep
-%autosetup -n %{name}-%{version}
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
 
 %build
-%{py2_build}
+%{python_build}
 
 sphinx-build -b html doc/source html
 # Fix hidden-file-or-dir warnings
 rm -rf html/.doctrees html/.buildinfo
 
 %install
-%{py2_install}
+%{python_install}
+%python_clone -a %{buildroot}%{_bindir}/ceilometer
+
+%post
+%python_install_alternative ceilometer
+
+%postun
+%python_uninstall_alternative ceilometer
 
 %check
-%{__python2} setup.py testr
+%{python_expand rm -rf .testrepository
+$python setup.py testr
+}
 
-%files
+%files %{python_files}
 %doc README.rst
 %license LICENSE
-%{_bindir}/ceilometer
-%{python2_sitelib}/ceilometerclient
-%{python2_sitelib}/*.egg-info
+%python_alternative %{_bindir}/ceilometer
+%{python_sitelib}/ceilometerclient
+%{python_sitelib}/*.egg-info
 
-%files doc
+%files -n python-ceilometerclient-doc
 %license LICENSE
 %doc html
 
