@@ -13,21 +13,20 @@ URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
 BuildRequires:  python-devel
-BuildRequires:  {{ py2pkg('enum34') }}
-BuildRequires:  {{ py2pkg('eventlet') }}
-BuildRequires:  {{ py2pkg('fasteners') }}
-BuildRequires:  {{ py2pkg('fixtures') }}
-BuildRequires:  {{ py2pkg('futures') }}
-BuildRequires:  {{ py2pkg('mock') }}
-BuildRequires:  {{ py2pkg('oslo.config') }}
-BuildRequires:  {{ py2pkg('oslo.i18n') }}
-BuildRequires:  {{ py2pkg('oslo.utils') }}
-BuildRequires:  {{ py2pkg('oslotest') }}
-BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('testrepository') }}
-BuildRequires:  {{ py2pkg('testscenarios') }}
-BuildRequires:  {{ py2pkg('testtools') }}
-Requires:       {{ py2pkg('enum34') }}
+BuildRequires:  {{ py2pkg('enum34', py_versions=['py2']) }}
+BuildRequires:  {{ py2pkg('eventlet', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('fasteners', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('fixtures', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('futures', py_versions=['py2']) }}
+BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.config', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.i18n', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.utils', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('fasteners') }}
 Requires:       {{ py2pkg('iso8601') }}
 Requires:       {{ py2pkg('oslo.config') }}
@@ -36,18 +35,30 @@ Requires:       {{ py2pkg('oslo.utils') }}
 Requires:       {{ py2pkg('retrying') }}
 Requires:       {{ py2pkg('six') }}
 BuildArch:      noarch
+%ifpython2
+Requires:       {{ py2pkg('enum34') }}
+%endif
+%if 0%{?suse_version}
+Requires(post): update-alternatives
+Requires(postun): update-alternatives
+%else
+# on RDO, update-alternatives is in chkconfig
+Requires(post): chkconfig
+Requires(postun): chkconfig
+%endif
+%python_subpackages
 
 %description
 The oslo.concurrency library has utilities for safely running multi-thread,
 multi-process applications using locking mechanisms and for running
 external processes.
 
-%package doc
+%package -n python-oslo.concurrency-doc
 Summary:        Documentation for OpenStack concurrency library
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 
-%description doc
+%description -n python-oslo.concurrency-doc
 The oslo.concurrency library has utilities for safely running multi-thread,
 multi-process applications using locking mechanisms and for running
 external processes.
@@ -59,7 +70,7 @@ This package contains the documentation.
 sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
-%{py2_build}
+%{python_build}
 
 # generate html docs
 %{__python2} setup.py build_sphinx
@@ -67,23 +78,32 @@ sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
-%{py2_install}
+%{python_install}
+%python_clone -a %{buildroot}%{_bindir}/lockutils-wrapper
+
+%post
+%python_install_alternative lockutils-wrapper
+
+%postun
+%python_uninstall_alternative lockutils-wrapper
 
 %check
+%{python_expand rm -rf .testrepository
 # Test suite fails on 32 bit platforms
 # ifarch/ifnarch can not be used in noarch packages
 if [ "%_lib" = "lib64" ]; then
-%{__python2} setup.py testr
+$python setup.py testr
 fi
+}
 
-%files
+%files %{python_files}
 %license LICENSE
 %doc README.rst ChangeLog
-%_bindir/lockutils-wrapper
-%{python2_sitelib}/oslo_concurrency
-%{python2_sitelib}/*.egg-info
+%python_alternative %{_bindir}/lockutils-wrapper
+%{python_sitelib}/oslo_concurrency
+%{python_sitelib}/*.egg-info
 
-%files doc
+%files -n python-oslo.concurrency-doc
 %license LICENSE
 %doc doc/build/html
 
