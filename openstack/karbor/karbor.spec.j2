@@ -1,5 +1,5 @@
 {% set pypi_name = 'karbor' %}
-{% set upstream_version = '0.5.1' %}
+{% set upstream_version = '0.6.0' %}
 {% set rpm_release = '1' %}
 %global with_doc 0
 %if 0%{?rhel} || 0%{?fedora}
@@ -200,7 +200,7 @@ mkdir -p %{buildroot}%{_sysconfdir}/karbor/
 mkdir -p %{buildroot}%{_sysconfdir}/karbor/providers.d/
 install -p -D -m 640 etc/karbor.conf.sample %{buildroot}%{_sysconfdir}/karbor/karbor.conf
 install -p -D -m 640 etc/api-paste.ini %{buildroot}%{_sysconfdir}/karbor/api-paste.ini
-install -p -D -m 640 etc/policy.json %{buildroot}%{_sysconfdir}/karbor/policy.json
+#install -p -D -m 640 etc/policy.json %{buildroot}%{_sysconfdir}/karbor/policy.json
 install -p -D -m 640 etc/providers.d/*.conf %{buildroot}%{_sysconfdir}/karbor/providers.d/
 
 # Setup log directory
@@ -263,7 +263,7 @@ install -p -D -m 644 %SOURCE3 %{buildroot}%{_unitdir}/openstack-karbor-protectio
 %config(noreplace) %{_sysconfdir}/logrotate.d/openstack-karbor
 %config(noreplace) %attr(0640, root, karbor) %{_sysconfdir}/karbor/karbor.conf
 %config(noreplace) %attr(0640, root, karbor) %{_sysconfdir}/karbor/api-paste.ini
-%config(noreplace) %attr(0640, root, karbor) %{_sysconfdir}/karbor/policy.json
+#%config(noreplace) %attr(0640, root, karbor) %{_sysconfdir}/karbor/policy.json
 %config(noreplace) %attr(0640, root, karbor) %{_sysconfdir}/karbor/providers.d/*.conf
 
 %files -n python-karbor
