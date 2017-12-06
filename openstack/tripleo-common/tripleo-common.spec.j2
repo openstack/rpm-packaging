@@ -1,7 +1,7 @@
 %global sname tripleo-common
-%global sversion 8.1.0
+%global sversion 8.2.0
 Name:           {{ py2name('tripleo-common') }}
-Version:        8.1.0
+Version:        8.2.0
 Release:        0
 Summary:        Python library for code used by TripleO projects
 License:        {{ license('Apache-2.0') }}
@@ -28,6 +28,7 @@ BuildRequires:  {{ py2pkg('python-subunit') }}
 BuildRequires:  {{ py2pkg('testrepository') }}
 BuildRequires:  {{ py2pkg('testscenarios') }}
 BuildRequires:  {{ py2pkg('testtools') }}
+BuildRequires:  {{ py2pkg('python-zaqarclient') }}
 Requires:       {{ py2pkg('Babel') }}
 Requires:       {{ py2pkg('GitPython') }}
 Requires:       {{ py2pkg('Jinja2') }}
@@ -49,6 +50,7 @@ Requires:       {{ py2pkg('oslo.utils') }}
 Requires:       {{ py2pkg('paramiko') }}
 Requires:       {{ py2pkg('passlib') }}
 Requires:       {{ py2pkg('six') }}
+Requires:       {{ py2pkg('python-zaqarclient') }}
 BuildArch:      noarch
 
 %description
@@ -103,6 +105,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %{_bindir}/upload-puppet-modules
 %{_bindir}/upload-swift-artifacts
 %{_bindir}/tripleo-build-images
+%{_bindir}/tripleo-config-download
 %{_bindir}/bootstrap_host_exec
 %{_bindir}/bootstrap_host_only_exec
 %{_bindir}/bootstrap_host_only_eval
