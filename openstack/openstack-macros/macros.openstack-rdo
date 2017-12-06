@@ -98,3 +98,9 @@ sed -i "s/%{2}/%{1}_tests/g" $tempest_egg_path/PKG-INFO \
 %apache_conf_dir %{_sysconfdir}/%{apache_name}/conf.d/
 %apache_user apache
 %apache_group apache
+
+#
+# ext_man is used by the singlespec macro but is not defined on Fedora
+#
+%ext_info .gz
+%ext_man .gz
