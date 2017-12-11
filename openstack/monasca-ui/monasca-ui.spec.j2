@@ -34,9 +34,21 @@ Summary:       Monasca Plugin for Horizon - Python module
 Requires:      {{ py2pkg('Django') }}
 Requires:      {{ py2pkg('python-monascaclient') }}
 Requires:      {{ py2pkg('pbr') }}
+%if 0%{?suse_version}
+%package -n grafana-monasca-ui-drilldown
+Summary:       Scripted Grafana dashboard for alarm drilldown links
+BuildRequires: grafana
+Requires:      grafana
+%endif
 
 %description -n {{ py2pkg('horizon-plugin-monasca-ui') }}
 The Monasca UI Horizon plugin adds Monitoring panel to the OpenStack dashboard.
+
+%if 0%{?suse_version}
+%description -n grafana-monasca-ui-drilldown
+This adds a scripted dashboard to Grafana 2 and higher that the Monitoring
+panel's Alarms tab links to when generating drilldown links for alarms.
+%endif
 
 %prep
 %autosetup -n %{sname}-{{ upstream_version }}
@@ -52,6 +64,10 @@ install -m 0755 -d %{buildroot}%{http_dashboard_dir}/openstack_dashboard/enabled
 install -m 0755 -d %{buildroot}%{http_dashboard_dir}/openstack_dashboard/conf/
 cp -a monitoring/enabled/_50_admin_add_monitoring_panel.py %{buildroot}%{http_dashboard_dir}/openstack_dashboard/enabled/
 cp -a monitoring/conf/monitoring_policy.json %{buildroot}%{http_dashboard_dir}/openstack_dashboard/conf/
+%if 0%{?suse_version}
+install -m 0755 -d %{buildroot}%{_datadir}/grafana/public/dashboards/
+install -m 644 grafana-dashboards/drilldown.js %{buildroot}%{_datadir}/grafana/public/dashboards/
+%endif
 %fdupes %{buildroot}%{python2_sitelib}
 %fdupes %{buildroot}%{http_dashboard_dir}
 
@@ -65,6 +81,12 @@ su %{apache_user} -s /bin/sh -c "python %{http_dashboard_dir}/manage.py collects
 %{http_dashboard_dir}/openstack_dashboard/enabled/_50_admin_add_monitoring_panel.py
 %{http_dashboard_dir}/openstack_dashboard/conf/monitoring_policy.json
 %doc ChangeLog README.md LICENSE
+
+%if 0%{?suse_version}
+%files -n grafana-monasca-ui-drilldown
+%license LICENSE
+%{_datadir}/grafana/public/dashboards/drilldown.js
+%endif
 
 %files -n {{ py2pkg('horizon-plugin-monasca-ui') }}
 %doc README.md
