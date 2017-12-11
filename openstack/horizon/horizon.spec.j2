@@ -201,7 +201,7 @@ popd
 %{py2_build}
 
 %check
-python manage.py test horizon --settings=horizon.test.settings --ignore-files="(test_hacking|firefox_binary|webdriver|pull_catalog)"
+python manage.py test horizon --settings=horizon.test.settings --ignore-files="(test_checks|test_hacking|firefox_binary|webdriver|pull_catalog)"
 # TODO
 # python manage.py test openstack_dashboard --settings=openstack_dashboard.test.settings --exclude-dir=openstack_dashboard/test/integration_tests
 
