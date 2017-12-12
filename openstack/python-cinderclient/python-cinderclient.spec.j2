@@ -1,6 +1,6 @@
 %global sname python-cinderclient
 Name:           {{ py2name('python-cinderclient') }}
-Version:        3.2.0
+Version:        3.3.0
 Release:        0
 Summary:        Python API and CLI for OpenStack Cinder
 License:        {{ license('Apache-2.0')}}
@@ -73,7 +73,7 @@ install -p -D -m 644 tools/cinder.bash_completion %{buildroot}%{_sysconfdir}/bas
 
 %check
 rm cinderclient/tests/unit/test_shell.py
-%{__python2} setup.py testr
+ostestr
 
 %files
 %license LICENSE
