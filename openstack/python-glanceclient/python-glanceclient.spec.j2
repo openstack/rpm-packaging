@@ -9,21 +9,21 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/%{sname}
 Source0:        https://files.pythonhosted.org/packages/source/p/%{sname}/%{sname}-%{version}.tar.gz
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('PrettyTable') }}
-BuildRequires:  python-devel
-BuildRequires:  {{ py2pkg('fixtures') }}
-BuildRequires:  {{ py2pkg('python-keystoneclient') }}
-BuildRequires:  {{ py2pkg('mock') }}
-BuildRequires:  {{ py2pkg('os-client-config') }}
-BuildRequires:  {{ py2pkg('oslo.utils') }}
-BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('pyOpenSSL') }}
-BuildRequires:  {{ py2pkg('reno') }}
-BuildRequires:  {{ py2pkg('requests-mock') }}
-BuildRequires:  {{ py2pkg('testrepository') }}
-BuildRequires:  {{ py2pkg('testscenarios') }}
-BuildRequires:  {{ py2pkg('testtools') }}
-BuildRequires:  {{ py2pkg('warlock') }}
+BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('PrettyTable', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('fixtures', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('python-keystoneclient', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('os-client-config', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.utils', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pyOpenSSL', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('reno', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('requests-mock', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('warlock', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('Babel') }}
 Requires:       {{ py2pkg('PrettyTable') }}
 Requires:       {{ py2pkg('keystoneauth1') }}
@@ -36,19 +36,28 @@ Requires:       {{ py2pkg('six') }}
 Requires:       {{ py2pkg('warlock') }}
 Requires:       {{ py2pkg('wrapt') }}
 BuildArch:      noarch
+%if 0%{?suse_version}
+Requires(post): update-alternatives
+Requires(postun): update-alternatives
+%else
+# on RDO, update-alternatives is in chkconfig
+Requires(post): chkconfig
+Requires(postun): chkconfig
+%endif
+%python_subpackages
 
 %description
 This is a client for the OpenStack Glance API. There's a Python API (the
 glanceclient module), and a command-line script (glance). Each implements
 100% of the OpenStack Glance API.
 
-%package doc
+%package -n python-glanceclient-doc
 Summary:        Documentation for OpenStack Glance API Client
 Group:          Documentation/HTML
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 
-%description      doc
+%description -n python-glanceclient-doc
 This is a client for the OpenStack Glance API. There's a Python API (the
 glanceclient module), and a command-line script (glance). Each implements
 100% of the OpenStack Glance API.
@@ -60,7 +69,7 @@ This package contains auto-generated documentation.
 sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
-%py2_build
+%python_build
 
 # generate html docs
 %{__python2} setup.py build_sphinx --builder=html,man
@@ -68,27 +77,38 @@ sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
-%py2_install
+%python_install
 #man pages
 install -p -D -m 644 doc/build/man/glance.1 %{buildroot}%{_mandir}/man1/glance.1
+%python_clone -a %{buildroot}%{_bindir}/glance
+%python_clone -a %{buildroot}%{_mandir}/man1/glance.1
+
+%post
+%{python_install_alternative glance glance.1}
+
+%postun
+%python_uninstall_alternative glance
+
 
 %check
 %if 0%{?rhel} || 0%{?fedora}
 # disable tests until rdo updated to requests > 2.14
 true
 %else
-%{__python2} setup.py testr
+%{python_expand rm -rf .testrepository
+$python setup.py testr
+}
 %endif
 
-%files
+%files %{python_files}
 %license LICENSE
 %doc README.rst ChangeLog
-%{_bindir}/glance
-%{python2_sitelib}/glanceclient
-%{python2_sitelib}/*.egg-info
-%{_mandir}/man1/glance.1.gz
+%python_alternative %{_bindir}/glance
+%python_alternative %{_mandir}/man1/glance.1
+%{python_sitelib}/glanceclient
+%{python_sitelib}/*.egg-info
 
-%files doc
+%files -n python-glanceclient-doc
 %license LICENSE
 %doc doc/build/html
 
