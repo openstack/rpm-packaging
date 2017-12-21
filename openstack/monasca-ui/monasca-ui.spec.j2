@@ -18,6 +18,8 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            https://wiki.openstack.org/wiki/Monasca
 Source0:        {{ source|basename }}
+Patch1:         allow-raw-grafana-links.patch
+Patch2:         drilldown-dimensions.patch
 BuildRequires:  fdupes
 BuildRequires:  {{ py2pkg('horizon') }}
 BuildRequires:  openstack-macros
@@ -39,7 +41,7 @@ Requires:      {{ py2pkg('pbr') }}
 The Monasca UI Horizon plugin adds Monitoring panel to the OpenStack dashboard.
 
 %prep
-%autosetup -n %{sname}-{{ upstream_version }}
+%autosetup -p 1 -n %{sname}-{{ upstream_version }}
 %py_req_cleanup
 
 %build

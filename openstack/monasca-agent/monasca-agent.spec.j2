@@ -33,6 +33,7 @@ Source1:        %{name}-sudoers
 Source2:        %{name}.service
 Source3:        %{name}.tmpfiles
 Source4:        %{name}.polkit
+Patch1:         libvirt-aggregate-status.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('PyYAML') }}
 BuildRequires:  {{ py2pkg('devel') }}
@@ -113,7 +114,7 @@ sending them to the Monasca API.
 This package contains monasca-agent Python module.
 
 %prep
-%autosetup -n %{sname}-{{upstream_version}}
+%autosetup -p 1 -n %{sname}-{{upstream_version}}
 %py_req_cleanup
 # contains various binary files etc that we don't need
 rm -rf packaging/monasca-agent{,-deb}
