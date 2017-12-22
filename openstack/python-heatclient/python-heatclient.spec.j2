@@ -1,28 +1,31 @@
-%global sname python-heatclient
-Name:           {{ py2name('python-heatclient') }}
-Version:        1.13.0
-Release:        0
+{% set pypi_name = 'python-heatclient' %}
+{% set upstream_version = upstream_version('1.13.0') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
 Summary:        Python API and CLI for OpenStack Heat
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
-URL:            https://launchpad.net/%{sname}
-Source0:        https://files.pythonhosted.org/packages/source/p/%{sname}/%{sname}-%{version}.tar.gz
+URL:            https://launchpad.net/{{ pypi_name }}
+Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('PyYAML') }}
-BuildRequires:  {{ py2pkg('cliff') }}
-BuildRequires:  {{ py2pkg('devel') }}
-BuildRequires:  {{ py2pkg('fixtures') }}
-BuildRequires:  {{ py2pkg('mock') }}
-BuildRequires:  {{ py2pkg('mox3') }}
-BuildRequires:  {{ py2pkg('osc-lib') }}
-BuildRequires:  {{ py2pkg('oslo.serialization') }}
-BuildRequires:  {{ py2pkg('oslotest') }}
-BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('requests-mock') }}
-BuildRequires:  {{ py2pkg('python-swiftclient') }}
-BuildRequires:  {{ py2pkg('testrepository') }}
-BuildRequires:  {{ py2pkg('testscenarios') }}
-BuildRequires:  {{ py2pkg('testtools') }}
+BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('PyYAML', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('cliff', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('fixtures', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('mox3', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('osc-lib', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.serialization', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('requests-mock', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('python-swiftclient', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('Babel') }}
 Requires:       {{ py2pkg('PrettyTable') }}
 Requires:       {{ py2pkg('PyYAML') }}
@@ -37,57 +40,76 @@ Requires:       {{ py2pkg('requests') }}
 Requires:       {{ py2pkg('six') }}
 Requires:       {{ py2pkg('python-swiftclient') }}
 BuildArch:      noarch
+%if 0%{?suse_version}
+Requires(post): update-alternatives
+Requires(postun): update-alternatives
+%else
+# on RDO, update-alternatives is in chkconfig
+Requires(post): chkconfig
+Requires(postun): chkconfig
+%endif
+%python_subpackages
 
 %description
 This is a client for the OpenStack Heat API. There's a Python API (the
 heatclient module), and a command-line script (heat). Each implements 100% of
 the OpenStack Heat API.
 
-%package doc
+%package -n python-heatclient-doc
 Summary:        Documentation for OpenStack Heat API Client
 Group:          Documentation/HTML
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 
-%description      doc
+%description -n python-heatclient-doc
 This is a client for the OpenStack Heat API. There's a Python API (the
 heatclient module), and a command-line script (heat). Each implements 100% of
 the OpenStack Heat API.
 This package contains auto-generated documentation.
 
 %prep
-%autosetup -n %{sname}-%{version}
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
 sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
-%{py2_build}
+%{python_build}
 
 %{__python2} setup.py build_sphinx --builder=html,man
 # remove the sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
-%{py2_install}
+%{python_install}
 # man page
 install -p -D -m 644 doc/build/man/heat.1 %{buildroot}%{_mandir}/man1/heat.1
 # bash completion
-install -p -D -m 644 tools/heat.bash_completion %{buildroot}%{_sysconfdir}/bash_completion.d/%{name}
+install -p -D -m 644 tools/heat.bash_completion %{buildroot}%{_sysconfdir}/bash_completion.d/heat.bash_completion
+%python_clone -a %{buildroot}%{_bindir}/heat
+%python_clone -a %{buildroot}%{_mandir}/man1/heat.1
+%python_clone -a %{buildroot}%{_sysconfdir}/bash_completion.d/heat.bash_completion
+
+%post
+%{python_install_alternative heat heat.1 %{_sysconfdir}/bash_completion.d/heat.bash_completion}
+
+%postun
+%python_uninstall_alternative heat
 
 %check
-%{__python2} setup.py testr
+%{python_expand rm -rf .testrepository
+$python setup.py testr
+}
 
-%files
-%doc README.rst
+%files %{python_files}
 %license LICENSE
-%{python2_sitelib}/heatclient
-%{python2_sitelib}/*.egg-info
-%{_sysconfdir}/bash_completion.d//%{name}
-%{_mandir}/man1/heat.1.gz
-%{_bindir}/heat
+%{python_sitelib}/heatclient
+%{python_sitelib}/*.egg-info
+%python_alternative %{_bindir}/heat
+%python_alternative %{_mandir}/man1/heat.1
+%python_alternative %{_sysconfdir}/bash_completion.d/heat.bash_completion
 
-%files doc
+%files -n python-heatclient-doc
 %license LICENSE
-%doc doc/build/html
+%doc doc/build/html README.rst
 
 %changelog
