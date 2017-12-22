@@ -1,30 +1,45 @@
-%global sname python-swiftclient
-Name:           {{ py2name('python-swiftclient') }}
-Version:        3.4.0
-Release:        0
+{% set pypi_name = 'python-swiftclient' %}
+{% set upstream_version = upstream_version('3.4.0') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
 Summary:        OpenStack Object Storage API Client Library
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
-URL:            https://launchpad.net/%{sname}
-Source0:        https://files.pythonhosted.org/packages/source/p/%{sname}/%{sname}-%{version}.tar.gz
+URL:            https://launchpad.net/{{ pypi_name }}
+Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('devel') }}
-BuildRequires:  {{ py2pkg('python-keystoneclient') }}
-BuildRequires:  {{ py2pkg('mock') }}
-BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('setuptools') }}
-BuildRequires:  {{ py2pkg('testrepository') }}
-BuildRequires:  {{ py2pkg('testscenarios') }}
-Requires:       {{ py2pkg('futures') }}
+BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('python-keystoneclient', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('setuptools', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('requests') }}
 Requires:       {{ py2pkg('six') }}
 BuildArch:      noarch
+%ifpython2
+Requires:       {{ py2pkg('futures') }}
+%endif
+%if 0%{?suse_version}
+Requires(post): update-alternatives
+Requires(postun): update-alternatives
+%else
+# on RDO, update-alternatives is in chkconfig
+Requires(post): chkconfig
+Requires(postun): chkconfig
+%endif
+%python_subpackages
 
 %description
 This is a python client for the Swift API. There's a Python API (the
 swiftclient module), and a command-line script (swift).
 
-%package doc
+%package -n python-swiftclient-doc
 Summary:        %{summary} - Documentation
 Group:          Documentation/HTML
 BuildRequires:  {{ py2pkg('Sphinx') }}
@@ -32,37 +47,47 @@ BuildRequires:  {{ py2pkg('futures') }}
 BuildRequires:  {{ py2pkg('oslosphinx') }}
 Requires:       %{name} = %{version}
 
-%description doc
+%description -n python-swiftclient-doc
 This is a python client for the Swift API. There's a Python API (the
 swiftclient module), and a command-line script (swift).
 
 This package contains documentation files for %{name}.
 
 %prep
-%autosetup -n %{sname}-%{version}
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
 
 %build
-%py2_build
+%{python_build}
 %{__python2} setup.py build_sphinx
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
-%py2_install
+%{python_install}
+%python_clone -a %{buildroot}%{_bindir}/swift
+%python_clone -a %{buildroot}%{_mandir}/man1/swift.1
+
+%post
+%{python_install_alternative swift swift.1}
+
+%postun
+%python_uninstall_alternative swift
 
 %check
-%{__python2} setup.py testr
+%{python_expand rm -rf .testrepository
+$python setup.py testr
+}
 
-%files
+%files %{python_files}
 %license LICENSE
 %doc ChangeLog README.rst
-%{_bindir}/swift
-%{python2_sitelib}/swiftclient
-%{python2_sitelib}/*.egg-info
+%{python_sitelib}/swiftclient
+%{python_sitelib}/*.egg-info
+%python_alternative %{_bindir}/swift
+%python_alternative %{_mandir}/man1/swift.1
 
-%files doc
+%files -n python-swiftclient-doc
 %license LICENSE
 %doc doc/build/html
-%{_mandir}/man1/swift.1*
 
 %changelog
