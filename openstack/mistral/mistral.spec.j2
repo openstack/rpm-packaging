@@ -16,8 +16,6 @@ Source0:        {{ source|basename }}
 Source1:        mistral-api.service
 Source2:        mistral-engine.service
 Source3:        mistral-executor.service
-# https://review.openstack.org/#/c/528826/
-Patch1:         0001-Use-mock-for-HTTP-calls-in-unit-tests.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('PyJWT') }}
 BuildRequires:  {{ py2pkg('aodhclient') }}
