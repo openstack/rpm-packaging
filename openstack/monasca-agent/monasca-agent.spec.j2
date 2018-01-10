@@ -125,6 +125,7 @@ rm -rf packaging/monasca-agent{,-deb}
 %py2_install
 
 # /etc
+install -d -m 755 %{buildroot}%{_sysconfdir}/monasca
 install -d -m 750 %{buildroot}%{_sysconfdir}/monasca/agent/conf.d
 
 # /usr/lib
@@ -170,7 +171,7 @@ find . -type f -name '*test_service_plugin.py' -delete
 python setup.py test
 
 %files
-%dir %{_sysconfdir}/monasca
+%dir %attr(-, root, monasca) %{_sysconfdir}/monasca
 %dir %attr(0750, %{username}, %{groupname}) %{_sysconfdir}/monasca/agent
 %dir %attr(0750, %{username}, %{groupname}) %{_sysconfdir}/monasca/agent/conf.d
 %_tmpfilesdir/openstack-monasca-agent.conf
