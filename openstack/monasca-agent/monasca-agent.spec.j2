@@ -11,7 +11,7 @@
 #  under the License.
 
 {% set pypi_name = 'monasca-agent' %}
-{% set upstream_version = upstream_version('2.3.0') %}
+{% set upstream_version = upstream_version('2.5.0') %}
 {% set rpm_release = '1' %}
 
 %global sname {{ pypi_name }}
@@ -39,6 +39,7 @@ BuildRequires:  {{ py2pkg('futures') }}
 BuildRequires:  {{ py2pkg('gevent') }}
 BuildRequires:  {{ py2pkg('httplib2') }}
 BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('monasca-common') }}
 BuildRequires:  {{ py2pkg('python-monascaclient') }}
 BuildRequires:  {{ py2pkg('netaddr') }}
 BuildRequires:  {{ py2pkg('ntplib') }}
