@@ -79,7 +79,7 @@ oslo-config-generator \
 %py2_install
 
 ## directories
-install -d -m 750 %{buildroot}%{_sysconfdir}/monasca
+install -d -m 755 %{buildroot}%{_sysconfdir}/monasca
 install -d -m 750 %{buildroot}%{_var}/log/monasca
 install -d -m 755 %{buildroot}%{_var}/lib/monasca-log-api
 install -d -m 755 %{buildroot}%{apache_site_dir}
@@ -126,7 +126,7 @@ fi
 %{_bindir}/monasca-log-api
 %{_bindir}/monasca-log-api-wsgi
 
-%dir %attr(0750, root, monasca) %{_sysconfdir}/monasca
+%dir %attr(-, root, monasca) %{_sysconfdir}/monasca
 %dir %attr(0750, root, monasca) %{_var}/log/monasca
 %dir %attr(0750, monasca-log-api, monasca) %{_var}/lib/monasca-log-api
 
