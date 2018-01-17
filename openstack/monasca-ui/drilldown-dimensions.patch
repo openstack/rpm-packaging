@@ -1,0 +1,100 @@
+commit 33a98e4381ab8388685f89ca316fdfb3304261b2
+Author: Georgia-Anna Farmaki <georgia-anna.farmaki@est.fujitsu.com>
+Date:   Thu Jul 20 16:37:25 2017 +0200
+Upstream: available in master and stable branches from stable/queens onwards
+
+    Extended grafana dashboard to display dimensions.
+    
+    Before the dimensions on the Metrics tab were hardcoded,
+    now they are read from the URL and are filtered based on
+    the 'dim_' prefix.
+    Furthermore, modified the URL for the Graph Metrics button
+    to append dim_ prefix for dimensions.
+    
+    Change-Id: I5f71b17ffba48f2cfbad9d299285b6deb9dccd6f
+    Story: 2001179
+    Task: 4914
+
+Index: monasca-ui-1.8.1.dev2/grafana-dashboards/drilldown.js
+===================================================================
+--- monasca-ui-1.8.1.dev2.orig/grafana-dashboards/drilldown.js
++++ monasca-ui-1.8.1.dev2/grafana-dashboards/drilldown.js
+@@ -19,6 +19,22 @@ var dashboard;
+ // All url parameters are available via the ARGS object
+ var ARGS;
+ 
++// Setup the metric dimensions.
++var dimensions = [];
++
++for (var key in ARGS) {
++  var isDimParam = key.startsWith("dim_");
++  if (isDimParam)  {
++     var value = ARGS[key];
++     var dim = {
++       "key":  key.substring(4),
++       "value": value
++     };
++     dimensions.push(dim);
++  }
++}
++
++
+ // Intialize a skeleton with nothing but a rows array and service object
+ dashboard = {
+   rows : [],
+@@ -38,7 +54,6 @@ dashboard.time = {
+ var rows = 1;
+ var metricName = '';
+ var hostname = '';
+-var region = '';
+ 
+ if(!_.isUndefined(ARGS.rows)) {
+   rows = parseInt(ARGS.rows, 10);
+@@ -52,10 +67,6 @@ if(!_.isUndefined(ARGS.hostname)) {
+   hostname = ARGS.hostname;
+ }
+ 
+-if(!_.isUndefined(ARGS.region)) {
+-  region = ARGS.region;
+-}
+-
+ for (var i = 0; i < rows; i++) {
+ 
+   dashboard.rows.push({
+@@ -72,16 +83,7 @@ for (var i = 0; i < rows; i++) {
+           {
+             "aggregator": "avg",
+             "alias": hostname,
+-            "dimensions": [
+-              {
+-                "key": "hostname",
+-                "value": hostname
+-              },
+-              {
+-                "key": "region",
+-                "value": region
+-              }
+-            ],
++            "dimensions": dimensions,
+             "metric": metricName,
+             "period": "300",
+           }
+@@ -94,5 +96,4 @@ for (var i = 0; i < rows; i++) {
+   });
+ }
+ 
+-
+ return dashboard;
+Index: monasca-ui-1.8.1.dev2/monitoring/alarms/tables.py
+===================================================================
+--- monasca-ui-1.8.1.dev2.orig/monitoring/alarms/tables.py
++++ monasca-ui-1.8.1.dev2/monitoring/alarms/tables.py
+@@ -167,7 +167,7 @@ class GraphMetric(tables.LinkAction):
+             dimensions = datum['metrics'][0].get('dimensions', {})
+             query = "?metric=%s" % metric
+             for key, value in dimensions.iteritems():
+-                query += "&%s=%s" % (key, value)
++                query += "&dim_%s=%s" % (key, value)
+         except AttributeError:
+             # Catches case where Grafana 2 is not enabled.
+             name = datum['metrics'][0]['name']

@@ -18,6 +18,8 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            https://wiki.openstack.org/wiki/Monasca
 Source0:        {{ source|basename }}
+Patch1:         allow-raw-grafana-links.patch
+Patch2:         drilldown-dimensions.patch
 BuildRequires:  fdupes
 BuildRequires:  {{ py2pkg('horizon') }}
 BuildRequires:  openstack-macros
@@ -51,7 +53,7 @@ panel's Alarms tab links to when generating drilldown links for alarms.
 %endif
 
 %prep
-%autosetup -n %{sname}-{{ upstream_version }}
+%autosetup -p 1 -n %{sname}-{{ upstream_version }}
 %py_req_cleanup
 
 %build
