@@ -12,27 +12,27 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('PrettyTable') }}
-BuildRequires:  {{ py2pkg('cryptography') }}
-BuildRequires:  {{ py2pkg('decorator') }}
-BuildRequires:  {{ py2pkg('devel') }}
-BuildRequires:  {{ py2pkg('fixtures') }}
-BuildRequires:  {{ py2pkg('keystoneauth1') }}
-BuildRequires:  {{ py2pkg('mock') }}
-BuildRequires:  {{ py2pkg('python-openstackclient') }}
-BuildRequires:  {{ py2pkg('os-client-config') }}
-BuildRequires:  {{ py2pkg('osc-lib') }}
-BuildRequires:  {{ py2pkg('oslo.i18n') }}
-BuildRequires:  {{ py2pkg('oslo.serialization') }}
-BuildRequires:  {{ py2pkg('oslo.utils') }}
-BuildRequires:  {{ py2pkg('oslotest') }}
-BuildRequires:  {{ py2pkg('osprofiler') }}
-BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('python-subunit') }}
-BuildRequires:  {{ py2pkg('setuptools') }}
-BuildRequires:  {{ py2pkg('testrepository') }}
-BuildRequires:  {{ py2pkg('testscenarios') }}
-BuildRequires:  {{ py2pkg('testtools') }}
+BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('PrettyTable', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('cryptography', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('decorator', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('fixtures', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('keystoneauth1', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('python-openstackclient', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('os-client-config', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('osc-lib', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.i18n', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.serialization', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.utils', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('osprofiler', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('python-subunit', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('setuptools', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('Babel') }}
 Requires:       {{ py2pkg('PrettyTable') }}
 Requires:       {{ py2pkg('cryptography') }}
@@ -48,18 +48,27 @@ Requires:       {{ py2pkg('requests') }}
 Requires:       {{ py2pkg('six') }}
 Requires:       {{ py2pkg('stevedore') }}
 BuildArch:      noarch
+%if 0%{?suse_version}
+Requires(post): update-alternatives
+Requires(postun): update-alternatives
+%else
+# on RDO, update-alternatives is in chkconfig
+Requires(post): chkconfig
+Requires(postun): chkconfig
+%endif
+%python_subpackages
 
 %description
 Client library for Magnum built on the Magnum API. It provides a Python API
 (the magnumclient module) and a command-line tool (magnum).
 
-%package doc
+%package -n python-magnumclient-doc
 Summary:        Documentation for OpenStack Magnum API client libary
 Group:          Documentation/HTML
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 
-%description doc
+%description -n python-magnumclient-doc
 Client library for Magnum built on the Magnum API. It provides a Python API
 (the magnumclient module) and a command-line tool (magnum).
 This package contains the documentation.
@@ -70,31 +79,43 @@ This package contains the documentation.
 sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
-%py2_build
+%{python_build}
 
 # Build HTML docs and man page
-%{__python2} setup.py build_sphinx
+%{__python2} setup.py build_sphinx --builder=html,man
 rm -rf html/.{doctrees,buildinfo}
 
 %install
-%py2_install
-
+%{python_install}
+# man page
+install -p -D -m 644 doc/build/man/python-magnumclient.1 %{buildroot}%{_mandir}/man1/magnum.1
 # Install bash completion
-install -p -D -m 644 tools/magnum.bash_completion %{buildroot}%{_sysconfdir}/bash_completion.d/%{name}
+install -p -D -m 644 tools/magnum.bash_completion %{buildroot}%{_sysconfdir}/bash_completion.d/magnum.bash_completion
+%python_clone -a %{buildroot}%{_bindir}/magnum
+%python_clone -a %{buildroot}%{_mandir}/man1/magnum.1
+%python_clone -a %{buildroot}%{_sysconfdir}/bash_completion.d/magnum.bash_completion
+
+%post
+%{python_install_alternative magnum magnum.1 %{_sysconfdir}/bash_completion.d/magnum.bash_completion}
+
+%postun
+%python_uninstall_alternative magnum
 
 %check
-%{__python2} setup.py testr
+%{python_expand rm -rf .testrepository
+$python setup.py testr
+}
 
-%files
-%doc README.rst
+%files %{python_files}
 %license LICENSE
-%{python2_sitelib}/magnumclient
-%{python2_sitelib}/*.egg-info
-%{_sysconfdir}/bash_completion.d/%{name}
-%{_bindir}/magnum
+%{python_sitelib}/magnumclient
+%{python_sitelib}/*.egg-info
+%python_alternative %{_bindir}/magnum
+%python_alternative %{_mandir}/man1/magnum.1
+%python_alternative %{_sysconfdir}/bash_completion.d/magnum.bash_completion
 
-%files doc
-%doc doc/build/html
+%files -n python-magnumclient-doc
+%doc README.rst doc/build/html
 %license LICENSE
 
 %changelog
