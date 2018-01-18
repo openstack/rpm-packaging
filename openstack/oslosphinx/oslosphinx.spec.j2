@@ -1,39 +1,44 @@
-%global sname oslosphinx
-Name:           {{ py2name('oslosphinx') }}
-Version:        4.18.0
-Release:        0
+{% set pypi_name = 'oslosphinx' %}
+{% set upstream_version = upstream_version('4.18.0') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
 Summary:        OpenStack Sphinx
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
-URL:            https://launchpad.net/oslosphinx
-Source0:        https://files.pythonhosted.org/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
+URL:            https://launchpad.net/{{ pypi_name }}
+Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('devel') }}
-BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('setuptools') }}
+BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('setuptools', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('pbr') }}
 Requires:       {{ py2pkg('requests') }}
 Requires:       {{ py2pkg('six') }}
 BuildArch:      noarch
+%python_subpackages
 
 %description
 The Oslo Sphinx library provides an OpenStack common
 layer of Sphinx plugins.
 
 %prep
-%autosetup -n %{sname}-%{version}
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
 
 %build
-%{py2_build}
+%{python_build}
 
 %install
-%{py2_install}
+%{python_install}
 
-%files
+%files %{python_files}
 %doc README.rst
 %license LICENSE
-%{python2_sitelib}/%{sname}
-%{python2_sitelib}/*.egg-info
+%{python_sitelib}/{{ pypi_name }}
+%{python_sitelib}/*.egg-info
 
 %changelog
