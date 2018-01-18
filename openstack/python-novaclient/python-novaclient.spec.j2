@@ -1,28 +1,32 @@
-Name:           python-novaclient
+{% set pypi_name = 'python-novaclient' %}
+{% set upstream_version = upstream_version('9.1.1') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
 Epoch:          {{ epoch('python-novaclient') }}
-Version:        9.1.1
-Release:        0
 Summary:        Python API and CLI for OpenStack Nova
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
-URL:            https://launchpad.net/{name}
-Source0:        https://files.pythonhosted.org/packages/source/p/%{name}/%{name}-%{version}.tar.gz
+Source0:        {{ source }}
 BuildRequires:  openssl
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('python-cinderclient') }}
-BuildRequires:  {{ py2pkg('devel') }}
-BuildRequires:  {{ py2pkg('fixtures') }}
-BuildRequires:  {{ py2pkg('python-glanceclient') }}
-BuildRequires:  {{ py2pkg('python-keystoneclient') }}
-BuildRequires:  {{ py2pkg('mock') }}
-BuildRequires:  {{ py2pkg('os-client-config') }}
-BuildRequires:  {{ py2pkg('osprofiler') }}
-BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('requests-mock') }}
-BuildRequires:  {{ py2pkg('setuptools') }}
-BuildRequires:  {{ py2pkg('testrepository') }}
-BuildRequires:  {{ py2pkg('testscenarios') }}
-BuildRequires:  {{ py2pkg('testtools') }}
+BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('python-cinderclient', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('fixtures', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('python-glanceclient', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('python-keystoneclient', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('os-client-config', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('osprofiler', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('requests-mock', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('setuptools', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
 Requires:       openssl
 Requires:       {{ py2pkg('Babel') }}
 Requires:       {{ py2pkg('PrettyTable') }}
@@ -35,47 +39,34 @@ Requires:       {{ py2pkg('pbr') }}
 Requires:       {{ py2pkg('simplejson') }}
 Requires:       {{ py2pkg('six') }}
 BuildArch:      noarch
+%if 0%{?suse_version}
+Requires(post): update-alternatives
+Requires(postun): update-alternatives
+%else
+# on RDO, update-alternatives is in chkconfig
+Requires(post): chkconfig
+Requires(postun): chkconfig
+%endif
+%python_subpackages
 
 %description
 This is a client for the OpenStack Nova API. There's a Python API (the
 novaclient module), and a command-line script (nova). Each implements 100% of
 the OpenStack Nova API.
 
-%package doc
+%package -n python-novaclient-doc
 Summary:        Documentation for OpenStack Nova API Client
 Group:          Documentation/HTML
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 BuildRequires:  {{ py2pkg('reno') }}
 
-%description      doc
+%description -n python-novaclient-doc
 This is a client for the OpenStack Nova API. There's a Python API (the
 novaclient module), and a command-line script (nova). Each implements 100% of
 the OpenStack Nova API.
 
 This package contains auto-generated documentation.
-
-%package test
-Summary:        Testsuite for OpenStack Nova API Client
-Group:          Development/Languages/Python
-Requires:       %{name} = %{epoch}:%{version}
-Requires:       {{ py2pkg('fixtures') }}
-Requires:       {{ py2pkg('python-glanceclient') }}
-Requires:       {{ py2pkg('python-keystoneclient') }}
-Requires:       {{ py2pkg('mock') }}
-Requires:       {{ py2pkg('os-client-config') }}
-Requires:       {{ py2pkg('osprofiler') }}
-Requires:       {{ py2pkg('requests-mock') }}
-Requires:       {{ py2pkg('testrepository') }}
-Requires:       {{ py2pkg('testscenarios') }}
-Requires:       {{ py2pkg('testtools') }}
-
-%description      test
-This is a client for the OpenStack Nova API. There's a Python API (the
-novaclient module), and a command-line script (nova). Each implements 100% of
-the OpenStack Nova API.
-
-This package contains the testsuite.
 
 %prep
 %autosetup -p1 -n %{name}-%{version}
@@ -83,34 +74,36 @@ This package contains the testsuite.
 sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
-%py2_build
-
-%install
-%py2_install
+%{python_build}
 
 %{__python2} setup.py build_sphinx
 # Fix hidden-file-or-dir warnings
 rm -fr html/.doctrees html/.buildinfo
 
-# handle the test subpackage
-%openstack_test_package_install novaclient
+%install
+%{python_install}
+%python_clone -a %{buildroot}%{_bindir}/nova
+
+%post
+%python_install_alternative nova
+
+%postun
+%python_uninstall_alternative nova
 
 %check
-OS_TEST_PATH=novaclient/tests/unit %{__python2} setup.py testr
+%{python_expand rm -rf .testrepository
+export OS_TEST_PATH=novaclient/tests/unit
+$python setup.py testr
+}
 
-%files
-%doc README.rst
+%files %{python_files}
 %license LICENSE
-%{_bindir}/nova
-%{python2_sitelib}/novaclient
-%{python2_sitelib}/*.egg-info
+%python_alternative %{_bindir}/nova
+%{python_sitelib}/novaclient
+%{python_sitelib}/*.egg-info
 
-%files doc
-%doc doc/build/html
+%files -n python-novaclient-doc
+%doc README.rst doc/build/html
 %license LICENSE
-
-%files test
-%license LICENSE
-%openstack_test_package_dir
 
 %changelog
