@@ -1,33 +1,37 @@
-%global sname python-openstackclient
-Name:           {{ py2name('python-openstackclient') }}
-Version:        3.13.0
-Release:        0
+{% set pypi_name = 'python-openstackclient' %}
+{% set upstream_version = upstream_version('3.13.0') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
 Summary:        OpenStack Command-line Client
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
-URL:            https://launchpad.net/%{sname}
-Source0:        https://files.pythonhosted.org/packages/source/p/%{sname}/%{sname}-%{version}.tar.gz
+URL:            https://launchpad.net/{{ pypi_name }}
+Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('python-cinderclient') }}
-BuildRequires:  {{ py2pkg('cliff') }}
-BuildRequires:  {{ py2pkg('devel') }}
-BuildRequires:  {{ py2pkg('fixtures') }}
-BuildRequires:  {{ py2pkg('python-glanceclient') }}
-BuildRequires:  {{ py2pkg('python-keystoneclient') }}
-BuildRequires:  {{ py2pkg('mock') }}
-BuildRequires:  {{ py2pkg('python-novaclient') }}
-BuildRequires:  {{ py2pkg('openstacksdk') }}
-BuildRequires:  {{ py2pkg('os-client-config') }}
-BuildRequires:  {{ py2pkg('os-testr') }}
-BuildRequires:  {{ py2pkg('osc-lib') }}
-BuildRequires:  {{ py2pkg('oslotest') }}
-BuildRequires:  {{ py2pkg('osprofiler') }}
-BuildRequires:  {{ py2pkg('requests') }}
-BuildRequires:  {{ py2pkg('requests-mock') }}
-BuildRequires:  {{ py2pkg('stevedore') }}
-BuildRequires:  {{ py2pkg('testrepository') }}
-BuildRequires:  {{ py2pkg('testtools') }}
-BuildRequires:  {{ py2pkg('wrapt') }}
+BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('python-cinderclient', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('cliff', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('fixtures', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('python-glanceclient', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('python-keystoneclient', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('python-novaclient', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('openstacksdk', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('os-client-config', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('os-testr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('osc-lib', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('osprofiler', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('requests', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('requests-mock', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('stevedore', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('wrapt', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('Babel') }}
 Requires:       {{ py2pkg('python-cinderclient') }}
 Requires:       {{ py2pkg('cliff') }}
@@ -42,13 +46,22 @@ Requires:       {{ py2pkg('oslo.i18n') }}
 Requires:       {{ py2pkg('oslo.utils') }}
 Requires:       {{ py2pkg('six') }}
 BuildArch:      noarch
+%if 0%{?suse_version}
+Requires(post): update-alternatives
+Requires(postun): update-alternatives
+%else
+# on RDO, update-alternatives is in chkconfig
+Requires(post): chkconfig
+Requires(postun): chkconfig
+%endif
+%python_subpackages
 
 %description
 python-openstackclient is a unified command-line client for the OpenStack APIs.
 It is a thin wrapper to the stock python-*client modules that implement the
 actual REST API client actions.
 
-%package doc
+%package -n python-openstackclient-doc
 Summary:        Documentation for OpenStack Command-line Client
 Group:          Documentation/HTML
 # Some clients are commented out, since they have not been built yet
@@ -68,19 +81,19 @@ BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 #BuildRequires:  {{ py2pkg('python-saharaclient') }}
 #BuildRequires:  {{ py2pkg('python-zaqarclient') }}
 
-%description      doc
+%description -n python-openstackclient-doc
 python-openstackclient is a unified command-line client for the OpenStack APIs.
 It is a thin wrapper to the stock python-*client modules that implement the
 actual REST API client actions.
 This package contains auto-generated documentation.
 
 %prep
-%autosetup -p1 -n %{sname}-%{version}
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
 sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
-%{py2_build}
+%{python_build}
 
 %{__python2} setup.py build_sphinx -b html
 %{__python2} setup.py build_sphinx -b man
@@ -88,23 +101,33 @@ sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
-%{py2_install}
+%{python_install}
 # man page
 install -p -D -m 644 doc/build/man/openstack.1 %{buildroot}%{_mandir}/man1/openstack.1
+%python_clone -a %{buildroot}%{_bindir}/openstack
+%python_clone -a %{buildroot}%{_mandir}/man1/openstack.1
+
+%post
+%{python_install_alternative openstack openstack.1}
+
+%postun
+%python_uninstall_alternative openstack
 
 
 %check
-%{__python2} setup.py testr
+%{python_expand rm -rf .testrepository
+$python setup.py testr
+}
 
-%files
+%files %{python_files}
 %doc README.rst
 %license LICENSE
-%{python2_sitelib}/openstackclient
-%{python2_sitelib}/*.egg-info
-%{_mandir}/man1/openstack.1.gz
-%{_bindir}/openstack
+%{python_sitelib}/openstackclient
+%{python_sitelib}/*.egg-info
+%python_alternative %{_bindir}/openstack
+%python_alternative %{_mandir}/man1/openstack.1
 
-%files doc
+%files -n python-openstackclient-doc
 %license LICENSE
 %doc doc/build/html
 
