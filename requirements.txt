@@ -14,7 +14,7 @@ betamax-matchers>=0.4.0  # Apache-2.0
 boto>=2.32.1  # MIT
 botocore>=1.5.1  # Apache-2.0
 cassandra-driver>=2.1.4,!=3.6.0  # Apache-2.0
-castellan>=0.14.0  # Apache-2.0
+castellan>=0.16.0  # Apache-2.0
 ceilometermiddleware>=1.1.0  # Apache-2.0
 cachetools>=2.0.0  # MIT License
 cffi>=1.7.0  # MIT
@@ -26,7 +26,7 @@ PuLP>=1.4.1  # MIT
 contextlib2>=0.4.0  # PSF License
 croniter>=0.3.4  # MIT License
 cryptography>=1.9,!=2.0  # BSD/Apache-2.0
-cursive>=0.1.2  # Apache-2.0
+cursive>=0.2.1  # Apache-2.0
 ddt>=1.0.1  # MIT
 debtcollector>=1.2.0  # Apache-2.0
 decorator>=3.4.0  # BSD
@@ -38,7 +38,6 @@ django-babel>=0.5.1  # BSD
 django-compressor>=2.0  # MIT
 django-floppyforms>=1.0,<2  # BSD
 django-formtools>=1.0  # BSD
-django-openstack-auth>=3.5.0  # Apache-2.0
 dnspython>=1.14.0;python_version=='2.7'  # http://www.dnspython.org/LICENSE
 dnspython3>=1.12.0,!=1.13.0,!=1.14.0;python_version>='3.0'  # http://www.dnspython.org/LICENSE
 # Note(tonyb): We don't actually directly depend on docutils but we pull it in
@@ -86,19 +85,19 @@ iso8601>=0.1.11  # MIT
 Jinja2>=2.8,!=2.9.0,!=2.9.1,!=2.9.2,!=2.9.3,!=2.9.4  # BSD License (3 clause)
 jmespath>=0.9.0  # MIT
 jsonmodels>=2.1.3  # BSD License (3 clause)
-jsonpatch>=1.16  # BSD
+jsonpatch>=1.16,!=1.20  # BSD
 jsonpath-rw>=1.2.0,<2.0  # Apache-2.0
 jsonpath-rw-ext>=1.1.2  # Apache-2.0
 jsonschema>=2.6.0,<3.0.0  # MIT
 kazoo>=2.2  # Apache-2.0
-keystoneauth1>=3.2.0  # Apache-2.0
+keystoneauth1>=3.3.0  # Apache-2.0
 keystonemiddleware>=4.17.0  # Apache-2.0
 krest>=1.3.1  # Apache-2.0
-kubernetes>=1.0.0  # Apache-2.0
+kubernetes>=4.0.0  # Apache-2.0
 kuryr-lib>=0.5.0  # Apache-2.0
 packaging>=16.5  # Apache-2.0
 pylev>=1.3.0  # BSD
-pypowervm>=1.1.9  # Apache-2.0
+pypowervm>=1.1.10  # Apache-2.0
 pyScss>=1.3.4,!=1.3.5  # MIT License
 django-pyscss>=2.0.2  # BSD License (2 clause)
 kombu>=4.0.0,!=4.0.2  # BSD
@@ -110,10 +109,13 @@ Mako>=0.4.0  # MIT
 marathon>=0.8.6,!=0.9.1  # MIT
 microversion-parse>=0.1.2  # Apache-2.0
 mistral-lib>=0.3.0  # Apache-2.0
+mistral-extra>=5.2.0  # Apache-2.0
 mitmproxy>=1.0.2;python_version>'3.0'  # MIT
 monasca-common>=1.4.0  # Apache-2.0
 monasca-statsd>=1.1.0  # Apache-2.0
 monotonic>=0.6  # Apache-2.0
+msgpack>=0.4.0  # Apache-2.0
+# Deprecated, was renamed to msgpack, please remove ASAP
 msgpack-python>=0.4.0  # Apache-2.0
 munch>=2.1.0  # MIT
 murano-pkg-check>=0.3.0  # Apache-2.0
@@ -125,35 +127,35 @@ netmiko>=1.2.5  # MIT
 # Pinned to 1.0 branch until projects update, see:
 #  https://bugs.launchpad.net/openstack-requirements/+bug/1718576
 networkx>=1.10,<2.0  # BSD
-neutron-lib>=1.11.0  # Apache-2.0
+neutron-lib>=1.12.0  # Apache-2.0
 notifier>=1.0.3  # Apache-2.0
 oauth2client>=1.5.0,!=4.0.0  # Apache-2.0
 oauthlib>=0.6.0  # BSD
 openstackdocstheme>=1.17.0  # Apache-2.0
 ordereddict>=1.1  # MIT
-osc-lib>=1.7.0  # Apache-2.0
+osc-lib>=1.8.0  # Apache-2.0
 oslo.cache>=1.26.0  # Apache-2.0
-oslo.config>=4.6.0  # Apache-2.0
-oslo.concurrency>=3.20.0  # Apache-2.0
+oslo.config>=5.1.0  # Apache-2.0
+oslo.concurrency>=3.25.0  # Apache-2.0
 oslo.context>=2.19.2  # Apache-2.0
 oslo.db>=4.27.0  # Apache-2.0
 oslo.i18n>=3.15.3  # Apache-2.0
-oslo.log>=3.30.0  # Apache-2.0
+oslo.log>=3.36.0  # Apache-2.0
 oslo.messaging>=5.29.0  # Apache-2.0
 oslo.middleware>=3.31.0  # Apache-2.0
-oslo.policy>=1.23.0  # Apache-2.0
+oslo.policy>=1.30.0  # Apache-2.0
 oslo.privsep>=1.23.0  # Apache-2.0
 oslo.reports>=1.18.0  # Apache-2.0
 oslo.rootwrap>=5.8.0  # Apache-2.0
 # NOTE(mriedem): oslo.serialization 2.19.1 is blocked for bug 1593641
 oslo.serialization>=2.18.0,!=2.19.1  # Apache-2.0
-oslo.service>=1.24.0  # Apache-2.0
-oslo.utils>=3.31.0  # Apache-2.0
+oslo.service>=1.24.0,!=1.28.1  # Apache-2.0
+oslo.utils>=3.33.0  # Apache-2.0
 oslo.vmware>=2.17.0  # Apache-2.0
 oslo.versionedobjects>=1.28.0  # Apache-2.0
 osprofiler>=1.4.0  # Apache-2.0
 os-apply-config>=5.0.0  # Apache-2.0
-os-brick>=1.15.2  # Apache-2.0
+os-brick>=2.2.0  # Apache-2.0
 os-client-config>=1.28.0  # Apache-2.0
 os-collect-config>=5.0.0  # Apache-2.0
 os-dpm>=1.0.0  # Apache-2.0
@@ -161,9 +163,9 @@ os-net-config>=7.1.0  # Apache-2.0
 os-refresh-config>=6.0.0  # Apache-2.0
 os-service-types>=1.1.0  # Apache-2.0
 os-testr>=1.0.0  # Apache-2.0
-os-traits>=0.3.2  # Apache-2.0
-os-vif>=1.7.0  # Apache-2.0
-ovs>=2.7.0  # Apache-2.0
+os-traits>=0.4.0  # Apache-2.0
+os-vif>=1.7.0,!=1.8.0  # Apache-2.0
+ovs>=2.8.0  # Apache-2.0
 os-win>=2.0.0  # Apache-2.0
 os-xenapi>=0.3.1  # Apache-2.0
 paramiko>=2.0.0  # LGPLv2.1+
@@ -193,7 +195,7 @@ pyghmi>=1.0.22  # Apache-2.0
 pyinotify>=0.9.6;sys_platform!='win32' and sys_platform!='darwin' and sys_platform!='sunos5'  # MIT
 PyJWT>=1.0.1  # MIT
 pykafka>=2.5.0  # Apache 2.0 License
-pykmip>=0.5.0  # Apache 2.0 License
+pykmip>=0.7.0  # Apache 2.0 License
 pyldap>=2.4.20  # PSF
 pylxd>=2.2.4  # Apache-2.0
 pymemcache>=1.2.9,!=1.3.0  # Apache 2.0 License
@@ -211,6 +213,7 @@ crc16>=0.1.1  # LGPLv3+
 pyzabbix>=0.7.4  # LGPL
 statsd>=3.2.1  # MIT
 weakrefmethod>=1.0.2;python_version=='2.7'  # PSF
+zVMCloudConnector>=0.3.2  # Apache 2.0 License
 
 # NOTE(flaper87): This added 2 packages to `integration.sh`
 # uuid-dev and swig
@@ -236,8 +239,8 @@ gnocchiclient>=3.3.1  # Apache-2.0
 tricircleclient>=0.1.1  # Apache-2.0
 python-barbicanclient>=4.0.0,!=4.5.0,!=4.5.1  # Apache-2.0
 python-ceilometerclient>=2.5.0  # Apache-2.0
-python-cinderclient>=3.2.0  # Apache-2.0
-python-congressclient>=1.3.0,<2000  # Apache-2.0
+python-cinderclient>=3.3.0  # Apache-2.0
+python-congressclient>=1.9.0,<2000  # Apache-2.0
 python-designateclient>=2.7.0  # Apache-2.0
 python-freezerclient>=1.3.0  # Apache-2.0
 python-heatclient>=1.10.0  # Apache-2.0
@@ -257,10 +260,10 @@ python-muranoclient>=0.8.2  # Apache-2.0
 python-monascaclient>=1.7.0  # Apache-2.0
 python-neutronclient>=6.3.0  # Apache-2.0
 python-novaclient>=9.1.0  # Apache-2.0
-python-octaviaclient>=1.0.0  # Apache-2.0
+python-octaviaclient>=1.3.0  # Apache-2.0
 python-openstackclient>=3.12.0  # Apache-2.0
 python-rsdclient>=0.1.0  # Apache-2.0
-python-saharaclient>=1.2.0  # Apache-2.0
+python-saharaclient>=1.4.0  # Apache-2.0
 python-searchlightclient>=1.0.0  #Apache-2.0
 python-senlinclient>=1.1.0  # Apache-2.0
 python-smaugclient>=0.0.5  # Apache-2.0
@@ -271,8 +274,9 @@ python-troveclient>=2.2.0  # Apache-2.0
 python-vitrageclient>=1.3.0  # Apache-2.0
 python-watcherclient>=1.1.0  # Apache-2.0
 python-zaqarclient>=1.0.0  # Apache-2.0
-python-zunclient>=0.2.0  # Apache-2.0
+python-zunclient>=1.0.0  # Apache-2.0
 
+python-magic>=0.4.13  # MIT
 python-memcached>=1.56  # PSF
 python-dateutil>=2.4.2  # BSD
 
@@ -281,6 +285,7 @@ pytz>=2013.6  # MIT
 pyudev>=0.16.1  # LGPLv2.1+
 PyYAML>=3.10  # MIT
 qpid-python>=0.26;python_version=='2.7'  # Apache-2.0
+raven>=6.0.0  # BSD
 reno>=2.5.0  # Apache-2.0
 requests>=2.14.2  # Apache-2.0
 requests-aws>=0.1.4  # BSD License (3 clause)
@@ -288,7 +293,7 @@ requests-kerberos>=0.6  # ISC
 requestsexceptions>=1.2.0  # Apache-2.0
 rfc3986>=0.3.1  # Apache-2.0
 Routes>=2.3.1  # MIT
-rtslib-fb>=2.1.43,!=2.1.60,!=2.1.61  # Apache-2.0
+rtslib-fb>=2.1.43,!=2.1.60,!=2.1.61,!=2.1.64  # Apache-2.0
 ryu>=4.14  # Apache-2.0
 semantic-version>=2.3.1  # BSD
 fasteners>=0.7.0  # Apache-2.0
@@ -310,7 +315,7 @@ systemd-python>=234  # LGPLv2+
 sysv-ipc>=0.6.8  # BSD License
 suds-jurko>=0.6  # LGPLv3+
 sympy>=0.7.6  # BSD
-taskflow>=2.7.0  # Apache-2.0
+taskflow>=2.16.0  # Apache-2.0
 tempest>=17.1.0  # Apache-2.0
 tempest-lib>=1.0.0  # Apache-2.0
 tooz>=1.58.0  # Apache-2.0
@@ -318,9 +323,11 @@ tosca-parser>=0.8.1  # Apache-2.0
 tripleo-common>=7.1.0  # Apache-2.0
 urllib3>=1.21.1  # MIT
 unicodecsv>=0.8.0;python_version<'3.0'  # BSD
-warlock>=1.2.0,!=1.3.0,<2  # Apache-2.0
+warlock>=1.2.0,<2  # Apache-2.0
 WebOb>=1.7.1  # MIT
-websocket-client>=0.33.0  # LGPLv2+
+# upper cap is due to kubernetes, see
+# https://github.com/kubernetes-incubator/client-python/blob/v4.0.0/requirements.txt#L9
+websocket-client>=0.33.0,<=0.40.0  # LGPLv2+
 websockify>=0.8.0  # LGPLv3
 wheel>=0.24.0  # MIT
 PyMI>=1.0.0;sys_platform=='win32'  # Apache 2.0 License
@@ -381,7 +388,6 @@ ldappool>=2.0.0  # MPL
 mock>=2.0.0  # BSD
 mox>=0.5.3  # Apache-2.0
 mox3>=0.20.0  # Apache-2.0
-MySQL-python>=1.2.5;python_version=='2.7'  # GPL with FOSS exception
 nodeenv>=0.9.4  # BSD
 nose>=1.3.7  # LGPL
 nose-exclude>=0.3.0  # LGPL
@@ -392,7 +398,7 @@ openstack.nose-plugin>=0.7  # Apache-2.0
 openstacksdk>=0.9.19  # Apache-2.0
 os-api-ref>=1.4.0  # Apache-2.0
 oslosphinx>=4.7.0  # Apache-2.0
-oslotest>=1.10.0  # Apache-2.0
+oslotest>=3.2.0  # Apache-2.0
 ovsdbapp>=0.8.0  # Apache-2.0
 proboscis>=1.2.5.3  # Apache-2.0
 psycopg2>=2.6.2  # LGPL/ZPL
@@ -415,7 +421,7 @@ selenium>=2.50.1  # Apache-2.0
 # Blacklist setuptools 34.0.0-34.3.2 due to https://github.com/pypa/setuptools/issues/951
 # Blacklist setuptools 36.2.0 due to https://github.com/pypa/setuptools/issues/1086
 setuptools>=16.0,!=24.0.0,!=34.0.0,!=34.0.1,!=34.0.2,!=34.0.3,!=34.1.0,!=34.1.1,!=34.2.0,!=34.3.0,!=34.3.1,!=34.3.2,!=36.2.0  # PSF/ZPL
-sphinx>=1.6.2  # BSD
+sphinx>=1.6.2,!=1.6.6  # BSD
 sphinx-testing>=0.7.2  # BSD License
 sphinxcontrib-actdiag>=0.8.5  # BSD
 sphinxcontrib-blockdiag>=1.5.4  # BSD
@@ -425,6 +431,7 @@ sphinxcontrib-seqdiag>=0.8.4  # BSD
 sphinxcontrib-pecanwsme>=0.8.0  # Apache-2.0
 sphinxcontrib-fulltoc>=1.2.0  # Apache-2.0
 sphinxmark>=0.1.14  # Apache-2.0
+sphinxcontrib.datatemplates>=0.1.0  # BSD License
 stestr>=1.0.0  # Apache-2.0
 sushy>=0.1.0  # Apache-2.0
 testrepository>=0.0.18  # Apache-2.0/BSD
