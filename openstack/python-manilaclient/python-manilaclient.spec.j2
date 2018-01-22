@@ -12,15 +12,14 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('Tempest') }}
-BuildRequires:  {{ py2pkg('ddt') }}
-BuildRequires:  {{ py2pkg('devel') }}
-BuildRequires:  {{ py2pkg('fixtures') }}
-BuildRequires:  {{ py2pkg('mock') }}
-BuildRequires:  {{ py2pkg('python-openstackclient') }}
-BuildRequires:  {{ py2pkg('oslotest') }}
-BuildRequires:  {{ py2pkg('testrepository') }}
-BuildRequires:  {{ py2pkg('testtools') }}
+BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('ddt', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('fixtures', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('python-openstackclient', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('Babel') }}
 Requires:       {{ py2pkg('PrettyTable') }}
 Requires:       {{ py2pkg('debtcollector') }}
@@ -33,39 +32,30 @@ Requires:       {{ py2pkg('requests') }}
 Requires:       {{ py2pkg('simplejson') }}
 Requires:       {{ py2pkg('six') }}
 BuildArch:      noarch
+%if 0%{?suse_version}
+Requires(post): update-alternatives
+Requires(postun): update-alternatives
+%else
+# on RDO, update-alternatives is in chkconfig
+Requires(post): chkconfig
+Requires(postun): chkconfig
+%endif
+%python_subpackages
 
 %description
 Client library and command line utility for interacting with Openstack
 Share API.
 
-%package doc
+%package -n python-manilaclient-doc
 Summary:        Documentation for OpenStack Share API Client
 Group:          Documentation/HTML
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 
-%description      doc
+%description -n python-manilaclient-doc
 Client library and command line utility for interacting with Openstack
 Share API.
 This package contains auto-generated documentation.
-
-%package test
-Summary:        Testsuite for OpenStack Share API Client
-Group:          Development/Languages/Python
-Requires:       %{name} = %{version}
-Requires:       {{ py2pkg('Tempest') }}
-Requires:       {{ py2pkg('ddt') }}
-Requires:       {{ py2pkg('fixtures') }}
-Requires:       {{ py2pkg('mock') }}
-Requires:       {{ py2pkg('python-openstackclient') }}
-Requires:       {{ py2pkg('oslotest') }}
-Requires:       {{ py2pkg('testrepository') }}
-Requires:       {{ py2pkg('testtools') }}
-
-%description    test
-Client library and command line utility for interacting with Openstack
-Share API.
-This package contains the testsuite.
 
 %prep
 %autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
@@ -73,7 +63,7 @@ This package contains the testsuite.
 sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
-%{py2_build}
+%{python_build}
 
 %{__python2} setup.py build_sphinx --builder=html,man
 # remove the sphinx-build leftovers
@@ -81,32 +71,42 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 
 
 %install
-%{py2_install}
+%{python_install}
 # man page
-install -p -D -m 644 doc/build/man/python-manilaclient.1 %{buildroot}%{_mandir}/man1/python-manilaclient.1
+install -p -D -m 644 doc/build/man/python-manilaclient.1 %{buildroot}%{_mandir}/man1/manila.1
 # bash completion
-install -p -D -m 644 tools/manila.bash_completion %{buildroot}%{_sysconfdir}/bash_completion.d/%{name}
-# handle the test subpackage
-%openstack_test_package_install manilaclient
+install -p -D -m 644 tools/manila.bash_completion %{buildroot}%{_sysconfdir}/bash_completion.d/manila.bash_completion
+%python_clone -a %{buildroot}%{_bindir}/manila
+%python_clone -a %{buildroot}%{_mandir}/man1/manila.1
+%python_clone -a %{buildroot}%{_sysconfdir}/bash_completion.d/manila.bash_completion
+
+%post
+%{python_install_alternative manila manila.1 %{_sysconfdir}/bash_completion.d/manila.bash_completion}
+
+%postun
+%python_uninstall_alternative manila
 
 %check
-%{__python2} setup.py testr
+%{python_expand rm -rf .testrepository
+export OS_TEST_PATH=./manilaclient/tests/unit/
+# we dont want to depend on Tempest so remove the relevant tests
+rm -f manilaclient/tests/unit/test_shell.py
+rm -f manilaclient/tests/unit/test_functional_utils.py
+rm -rf manilaclient/tests/functional
+$python setup.py testr
+}
 
-%files
+%files %{python_files}
 %doc README.rst
 %license LICENSE
-%{python2_sitelib}/manilaclient
-%{python2_sitelib}/*.egg-info
-%{_sysconfdir}/bash_completion.d/%{name}
-%{_mandir}/man1/python-manilaclient.1.gz
-%{_bindir}/manila
+%{python_sitelib}/manilaclient
+%{python_sitelib}/*.egg-info
+%python_alternative %{_bindir}/manila
+%python_alternative %{_mandir}/man1/manila.1
+%python_alternative %{_sysconfdir}/bash_completion.d/manila.bash_completion
 
-%files doc
+%files -n python-manilaclient-doc
 %license LICENSE
 %doc doc/build/html
-
-%files test
-%license LICENSE
-%openstack_test_package_dir
 
 %changelog
