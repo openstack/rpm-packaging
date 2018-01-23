@@ -1,0 +1,33 @@
+From bf74fb428e895fb97207013f4ab7cab4c694c6b8 Mon Sep 17 00:00:00 2001
+From: Mike Fedosin <mfedosin@redhat.com>
+Date: Wed, 10 Jan 2018 21:20:14 +0100
+Subject: [PATCH] Rename -s option to -S
+
+Now to sort list of artifacts by some field cli accepts
+-s option. Unfortunatelly this option appeared in openstack
+client and we have to remane ours.
+
+By tradition we use capital letters for conflicting options,
+therefore we should rename -s to -S.
+
+Change-Id: Ic1ab7f28112f04e21ed3d6e3a018c5fc5d44e314
+---
+ glareclient/osc/v1/artifacts.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/glareclient/osc/v1/artifacts.py b/glareclient/osc/v1/artifacts.py
+index 9e811bc..1957ab4 100644
+--- a/glareclient/osc/v1/artifacts.py
++++ b/glareclient/osc/v1/artifacts.py
+@@ -75,7 +75,7 @@ class ListArtifacts(command.Lister):
+             help='Filtering artifact list by a user-defined property.',
+         )
+         parser.add_argument(
+-            '--sort', '-s',
++            '--sort', '-S',
+             default='name:asc',
+             metavar='<key>[:<direction>]',
+             help='Comma-separated list of sort keys and directions in the '
+-- 
+2.15.1
+
