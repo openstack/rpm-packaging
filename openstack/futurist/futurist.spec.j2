@@ -1,62 +1,70 @@
-%global sname futurist
-Name:           {{ py2name('futurist') }}
-Version:        1.6.0
-Release:        0
-Summary:        Backport of the concurrent.futures package from Python 3.2
+{% set pypi_name = 'futurist' %}
+{% set upstream_version = upstream_version('1.6.0') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
+Summary:        Useful additions to futures, from the future.
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
-URL:            http://launchpad.net/futurist
-Source0:        https://files.pythonhosted.org/packages/source/f/%{sname}/%{sname}-%{version}.tar.gz
+URL:            https://launchpad.net/{{ pypi_name }}
+Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('PrettyTable') }}
-BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('contextlib2') }}
-BuildRequires:  {{ py2pkg('devel') }}
-BuildRequires:  {{ py2pkg('eventlet') }}
-BuildRequires:  {{ py2pkg('futures') }}
-BuildRequires:  {{ py2pkg('monotonic') }}
-BuildRequires:  {{ py2pkg('openstackdocstheme') }}
-BuildRequires:  {{ py2pkg('oslotest') }}
-BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('setuptools') }}
-BuildRequires:  {{ py2pkg('six') }}
-BuildRequires:  {{ py2pkg('testrepository') }}
-BuildRequires:  {{ py2pkg('testscenarios') }}
-BuildRequires:  {{ py2pkg('testtools') }}
+BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('PrettyTable', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('Sphinx', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('contextlib2', py_versions=['py2']) }}
+BuildRequires:  {{ py2pkg('eventlet', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('futures', py_versions=['py2']) }}
+BuildRequires:  {{ py2pkg('monotonic', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('openstackdocstheme', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('setuptools', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('six', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('PrettyTable') }}
-Requires:       {{ py2pkg('contextlib2') }}
-Requires:       {{ py2pkg('futures') }}
 Requires:       {{ py2pkg('monotonic') }}
 Requires:       {{ py2pkg('six') }}
 BuildArch:      noarch
+%ifpython2
+Requires:       {{ py2pkg('contextlib2') }}
+Requires:       {{ py2pkg('futures') }}
+%endif
+%python_subpackages
 
 %description
-Backport of the concurrent.futures package from Python 3.2.
-Useful additions to futures from the future.
+Useful additions to futures, from the future.
 
 %prep
-%autosetup -n %{sname}-%{version}
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
 sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
-%py2_build
+%{python_build}
+
 # generate html docs
 %{__python2} setup.py build_sphinx
 # remove the sphinx-build leftovers
 rm -rf html/.{doctrees,buildinfo}
 
 %install
-%py2_install
+%{python_install}
 
 %check
-%{__python2} setup.py test
+%{python_expand rm -rf .testrepository
+$python setup.py testr
+}
 
-%files
+%files %{python_files}
 %doc doc/build/html README.rst
 %license LICENSE
-%{python2_sitelib}/%{sname}
-%{python2_sitelib}/%{sname}-*-py?.?.egg-info
+%{python_sitelib}/futurist
+%{python_sitelib}/futurist-*-py?.?.egg-info
 
 %changelog
-
