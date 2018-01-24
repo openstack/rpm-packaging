@@ -226,7 +226,7 @@ testr run --load-list=list
 %license LICENSE
 %dir %{_sysconfdir}/masakarimonitors
 %config(noreplace) %attr(-, masakari, masakari) %{_sysconfdir}/masakarimonitors/masakarimonitors.conf
-%dir %attr(755, masakari, masakari) %{_localstatedir}/log/masakari-monitors
+%dir %attr(750, masakari, masakari) %{_localstatedir}/log/masakari-monitors
 %_tmpfilesdir/masakari-monitors.conf
 
 %files -n openstack-masakari-hostmonitor

@@ -182,7 +182,7 @@ testr run --load-list=list
 %license LICENSE
 %dir %{_sysconfdir}/masakari
 %config(noreplace) %attr(0640, root, masakari) %{_sysconfdir}/masakari/*
-%dir %attr(755, masakari, masakari) %{_localstatedir}/log/masakari
+%dir %attr(750, masakari, masakari) %{_localstatedir}/log/masakari
 %_tmpfilesdir/masakari.conf
 
 %files api

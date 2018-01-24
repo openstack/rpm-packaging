@@ -274,8 +274,8 @@ chmod +x %{buildroot}%{_bindir}/mistral*
 %dir %{_sysconfdir}/mistral
 %config(noreplace) %attr(-, mistral, mistral) %{_sysconfdir}/mistral/*
 %{_bindir}/mistral-*
-%dir %attr(755, mistral, mistral) %{_localstatedir}/run/mistral
-%dir %attr(755, mistral, mistral) %{_localstatedir}/log/mistral
+%dir %attr(750, mistral, mistral) %{_localstatedir}/run/mistral
+%dir %attr(750, mistral, mistral) %{_localstatedir}/log/mistral
 
 %files doc
 %license LICENSE
