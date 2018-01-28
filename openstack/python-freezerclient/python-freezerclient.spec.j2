@@ -1,5 +1,5 @@
 {% set pypi_name = 'python-freezerclient' %}
-{% set upstream_version = upstream_version('1.5.0') %}
+{% set upstream_version = upstream_version('1.6.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -11,8 +11,6 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
-# https://review.openstack.org/#/c/496487/
-Patch1:         0001-Remove-astroid-from-test-requirements.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('fixtures', py_versions=['py2', 'py3']) }}
