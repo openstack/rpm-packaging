@@ -1,14 +1,12 @@
 %global pypi_name stevedore
 Name:           {{ py2name('stevedore') }}
-Version:        1.25.0
+Version:        1.25.1
 Release:        0
 Summary:        Manage dynamic plugins for Python applications
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            http://docs.openstack.org/developer/stevedore/
 Source0:        https://pypi.io/packages/source/s/%{pypi_name}/%{pypi_name}-%{version}.tar.gz
-# https://review.openstack.org/#/c/496507/
-Patch1:         0001-Make-openstackdocstheme-an-optional-doc-dependency.patch
 BuildRequires:  openstack-macros
 BuildRequires:  python-devel
 BuildRequires:  {{ py2pkg('mock') }}
@@ -35,6 +33,7 @@ dynamically loaded extensions.
 Summary:        Documentation for %{name}
 Group:          Documentation
 BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 
 %description doc
 Python makes loading code dynamically easy, allowing you to configure
