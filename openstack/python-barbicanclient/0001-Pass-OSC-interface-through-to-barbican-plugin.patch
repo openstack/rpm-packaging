@@ -1,0 +1,36 @@
+From 9f6dcb0617217241ea4260bd421b19dde35160b5 Mon Sep 17 00:00:00 2001
+From: Colleen Murphy <colleen.murphy@suse.de>
+Date: Tue, 16 Jan 2018 17:13:57 +0100
+Subject: [PATCH] Pass OSC interface through to barbican plugin
+
+python-openstackclient uses OS_INTERFACE or --os-interface to select a
+catalog endpoint to work with. The barbican CLI uses BARBICAN_INTERFACE
+or --interface, which OSC won't pass through. This is a problem because
+the it prevents the user from selecting a non-public endpoint when using
+barbican via openstackclient rather than as a standalone CLI. This patch
+updates the osc plugin to pass through the interface set by OSC to the
+barbican client class.
+
+Change-Id: I1e9890c9e87fb77b272f939bf33914df739aa5be
+(cherry picked from commit 4afb43ab0115f42b4fadcbf19ecac81815d481e3)
+---
+ barbicanclient/osc_plugin.py | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/barbicanclient/osc_plugin.py b/barbicanclient/osc_plugin.py
+index 1d0e0e5..d4fcea7 100644
+--- a/barbicanclient/osc_plugin.py
++++ b/barbicanclient/osc_plugin.py
+@@ -26,7 +26,8 @@ API_VERSIONS = {
+ def make_client(instance):
+     """Returns a Barbican service client."""
+     return client.Client(session=instance.session,
+-                         region_name=instance._region_name)
++                         region_name=instance._region_name,
++                         interface=instance.interface)
+ 
+ 
+ def build_option_parser(parser):
+-- 
+2.16.1
+

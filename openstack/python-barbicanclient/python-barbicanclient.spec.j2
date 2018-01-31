@@ -7,6 +7,8 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            http://launchpad.net/%{sname}
 Source0:        https://pypi.io/packages/source/p/%{sname}/%{sname}-%{version}.tar.gz
+# From https://review.openstack.org/#/c/538186/
+Patch1:         0001-Pass-OSC-interface-through-to-barbican-plugin.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('cliff') }}
 BuildRequires:  {{ py2pkg('devel') }}
@@ -50,7 +52,7 @@ Documentation for the client library for interacting with
 Openstack Key Management API
 
 %prep
-%autosetup -n %{name}-%{version}
+%autosetup -p1 -n %{name}-%{version}
 %py_req_cleanup
 
 # Remove the sphinx-build leftovers
