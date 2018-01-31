@@ -1,11 +1,16 @@
-Name:           {{ py2name('python-magnumclient') }}
-Version:        2.7.0
-Release:        0
+{% set pypi_name = 'python-magnumclient' %}
+{% set upstream_version = upstream_version('2.8.0') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
 Summary:        Python API and CLI for OpenStack Magnum
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
-URL:            http://launchpad.net/%{name}
-Source0:        https://files.pythonhosted.org/packages/source/p/%{name}/%{name}-%{version}.tar.gz
+URL:            https://launchpad.net/{{ pypi_name }}
+Source0:        {{ source }}
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('PrettyTable') }}
 BuildRequires:  {{ py2pkg('cryptography') }}
@@ -33,7 +38,6 @@ Requires:       {{ py2pkg('PrettyTable') }}
 Requires:       {{ py2pkg('cryptography') }}
 Requires:       {{ py2pkg('decorator') }}
 Requires:       {{ py2pkg('keystoneauth1') }}
-Requires:       {{ py2pkg('python-openstackclient') }}
 Requires:       {{ py2pkg('os-client-config') }}
 Requires:       {{ py2pkg('osc-lib') }}
 Requires:       {{ py2pkg('oslo.i18n') }}
@@ -61,7 +65,7 @@ Client library for Magnum built on the Magnum API. It provides a Python API
 This package contains the documentation.
 
 %prep
-%autosetup -n %{name}-%{version} -p1
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
 sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
