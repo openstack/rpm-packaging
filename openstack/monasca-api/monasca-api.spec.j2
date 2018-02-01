@@ -17,6 +17,9 @@ Source2:        api-logging.conf
 Source3:        api-config.ini
 Source4:        api-wsgi.conf
 Source5:        api-wsgi.py
+Patch1:         cassandra-527858.patch
+Patch2:         cassandra-auth-533833.patch
+Patch3:         cassandra-statistics-api-end-time-529788.patch
 BuildRequires:  fdupes
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('PasteDeploy') }}
@@ -97,7 +100,7 @@ The Monasca API provides a RESTful JSON interface for interacting with
 and managing monitoring related resources.
 
 %prep
-%autosetup -n %{component}-{{ upstream_version }}
+%autosetup -p 1 -n %{component}-{{ upstream_version }}
 %py_req_cleanup
 
 %build

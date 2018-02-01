@@ -1,0 +1,119 @@
+commit ee5170da67c5978cf0aca549bfe65f53729e5ea4
+Author: James Gu <jgu@suse.com>
+Date:   Thu Dec 21 12:50:49 2017 -0800
+
+    Statistics api failure when end time is not used
+    
+    Statisics api fails when no end time is present with Casssandra.
+    Fixed the bug and added a test case with no end time.
+    
+    Change-Id: I39fd349ab03877d4a67ec89a7859adf2707233f6
+    story: 2001461
+    task: 6175
+    (cherry picked from commit 88d587a047bf87f3532d2f35c0801cb540d3d056)
+
+Index: monasca-api-2.2.1.dev9/monasca_api/tests/test_repositories.py
+===================================================================
+--- monasca-api-2.2.1.dev9.orig/monasca_api/tests/test_repositories.py
++++ monasca-api-2.2.1.dev9/monasca_api/tests/test_repositories.py
+@@ -1,7 +1,7 @@
+ # Copyright 2015 Cray Inc. All Rights Reserved.
+ # (C) Copyright 2016-2017 Hewlett Packard Enterprise Development LP
+ # Copyright 2017 Fujitsu LIMITED
+-# (C) Copyright 2017 SUSE LLC
++# (C) Copyright 2017-2018 SUSE LLC
+ #
+ # Licensed under the Apache License, Version 2.0 (the "License"); you may
+ # not use this file except in compliance with the License. You may obtain
+@@ -424,7 +424,57 @@ class TestRepoMetricsCassandra(testtools
+             }
+         ], result)
+ 
+-    @patch("monasca_api.common.repositories.cassandra.metrics_repository.Cluster.connect")
++        cassandra_future_mock.result.side_effect = [
++            [
++                Metric(
++                    metric_id=binascii.unhexlify(b"01d39f19798ed27bbf458300bf843edd17654614"),
++                    metric_name='cpu.idle_perc',
++                    dimensions=[
++                        'device\trootfs',
++                        'hostname\thost0',
++                        'hosttype\tnative',
++                        'mount_point\t/']
++                )
++            ],
++            [
++                Measurement(self._convert_time_string("2016-05-19T11:58:24Z"), 95.0, '{}'),
++                Measurement(self._convert_time_string("2016-05-19T11:58:25Z"), 97.0, '{}'),
++                Measurement(self._convert_time_string("2016-05-19T11:58:26Z"), 94.0, '{}'),
++                Measurement(self._convert_time_string("2016-05-19T11:58:27Z"), 96.0, '{}'),
++            ]
++        ]
++
++        result = repo.metrics_statistics(
++            "tenant_id",
++            "region",
++            name="cpu.idle_perc",
++            dimensions=None,
++            start_timestamp=start_timestamp,
++            end_timestamp=None,
++            statistics=['avg', 'min', 'max', 'count', 'sum'],
++            period=300,
++            offset=None,
++            limit=1,
++            merge_metrics_flag=True,
++            group_by=None)
++
++        self.assertEqual([
++            {
++                u'dimensions': {'device': 'rootfs',
++                                'hostname': 'host0',
++                                'hosttype': 'native',
++                                'mount_point': '/'},
++                u'end_time': u'2016-05-19T12:03:23.999Z',
++                u'statistics': [[u'2016-05-19T11:58:24.000Z', 95.5, 94.0, 97.0, 4, 382.0]],
++                u'name': u'cpu.idle_perc',
++                u'columns': [u'timestamp', 'avg', 'min', 'max', 'count', 'sum'],
++                u'id': '01d39f19798ed27bbf458300bf843edd17654614'
++            }
++        ], result)
++
++    @patch("monasca_api.common.repositories.cassandra."
++           "metrics_repository.Cluster.connect")
++
+     def test_alarm_history(self, cassandra_connect_mock):
+         AlarmHistory = namedtuple('AlarmHistory', 'alarm_id, time_stamp, metrics, '
+                                                   'new_state, old_state, reason, '
+Index: monasca-api-2.2.1.dev9/monasca_tempest_tests/tests/api/test_statistics.py
+===================================================================
+--- monasca-api-2.2.1.dev9.orig/monasca_tempest_tests/tests/api/test_statistics.py
++++ monasca-api-2.2.1.dev9/monasca_tempest_tests/tests/api/test_statistics.py
+@@ -1,5 +1,5 @@
+ # (C) Copyright 2015-2016 Hewlett Packard Enterprise Development LP
+-# (C) Copyright 2017 SUSE LLC
++# (C) Copyright 2017-2018 SUSE LLC
+ #
+ # Licensed under the Apache License, Version 2.0 (the "License"); you may
+ # not use this file except in compliance with the License. You may obtain
+@@ -121,11 +121,20 @@ class TestStatistics(base.BaseMonascaTes
+ 
+     @decorators.attr(type="gate")
+     def test_list_statistics(self):
++        self._test_list_statistic(with_end_time=True)
++
++    @decorators.attr(type="gate")
++    def test_list_statistics_with_no_end_time(self):
++        self._test_list_statistic(with_end_time=False)
++
++    def _test_list_statistic(self, with_end_time=True):
+         query_parms = '?name=' + str(self._test_name) + \
+                       '&statistics=' + urlparse.quote('avg,sum,min,max,count') + \
+                       '&start_time=' + str(self._start_time_iso) + \
+-                      '&end_time=' + str(self._end_time_iso) + \
+                       '&merge_metrics=true' + '&period=100000'
++        if with_end_time is True:
++            query_parms += '&end_time=' + str(self._end_time_iso)
++
+         resp, response_body = self.monasca_client.list_statistics(
+             query_parms)
+         self.assertEqual(200, resp.status)

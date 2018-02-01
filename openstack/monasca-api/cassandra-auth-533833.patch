@@ -1,0 +1,203 @@
+From 1066d76b826bd72501b5f0b5a4300a2ddafed2f3 Mon Sep 17 00:00:00 2001
+From: James Gu <jgu@suse.com>
+Date: Mon, 15 Jan 2018 17:10:08 -0800
+Subject: [PATCH] Add password authentification in monasca-api with Cassandra
+URL: https://review.openstack.org/#/c/533833/
+
+Add the support to configure user and password in monasca api and enforce
+the authetification when connecting to cassandra db when the user and
+password is set.
+
+Change-Id: I9e6689e0e8e6e97d5cff3a59aecb53483ec320bd
+story: 2001471
+task: 6191
+(cherry picked from commit 4a6015ad65d664f90cb8e7066ca431f1d6fc58bd)
+---
+ AUTHORS                                            |  4 ++++
+ devstack/files/monasca-persister/persister.yml     |  4 ++--
+ .../repositories/cassandra/metrics_repository.py   | 11 ++++++++++-
+ monasca_api/conf/cassandra.py                      | 10 +++++++++-
+ monasca_api/tests/test_repositories.py             | 23 +++++++++++++++++++++-
+ monasca_api/v2/reference/__init__.py               | 23 ++++++++++++++++++++--
+ 6 files changed, 68 insertions(+), 7 deletions(-)
+
+Index: monasca-api-2.2.1.dev9/AUTHORS
+===================================================================
+--- monasca-api-2.2.1.dev9.orig/AUTHORS
++++ monasca-api-2.2.1.dev9/AUTHORS
+@@ -64,6 +64,8 @@ Roland Hochmuth <roland.hochmuth@hp.com>
+ Ryan Bak <ryan.bak@twcable.com>
+ Ryan Brandt <ryan.brandt@hp.com>
+ SamKirsch10 <sam.kirsch@hp.com>
++Scott Grasley <scott.grasley@suse.com>
++Sean McGinnis <sean.mcginnis@huawei.com>
+ Shinya Kawabata <s-kawabata@wx.jp.nec.com>
+ Srinivas Sakhamuri <srini.openstack@gmail.com>
+ Stefano Canepa <stefano.canepa@hp.com>
+@@ -89,6 +91,7 @@ gecong1973 <ge.cong@zte.com.cn>
+ haali1 <haneef.ali@hp.com>
+ henriquetruta <henrique@lsd.ufcg.edu.br>
+ hochmuth <roland.hochmuth@hp.com>
++inspurericzhang <zhanglf01@inspur.com>
+ ji-xuepeng <ji.xuepeng@zte.com.cn>
+ kaiyan-sheng <kaiyan.sheng@hp.com>
+ liu-sheng <liusheng@huawei.com>
+Index: monasca-api-2.2.1.dev9/devstack/files/monasca-persister/persister.yml
+===================================================================
+--- monasca-api-2.2.1.dev9.orig/devstack/files/monasca-persister/persister.yml
++++ monasca-api-2.2.1.dev9/devstack/files/monasca-persister/persister.yml
+@@ -64,8 +64,8 @@ cassandraDbConfiguration:
+   contactPoints:
+     - %CASSANDRADB_HOST%
+   port: 9042
+-  user: mon_persister
+-  password: password
++  user: cassandra
++  password: cassandra
+   keyspace: monasca
+   localDataCenter: datacenter1
+   maxConnections: 5
+Index: monasca-api-2.2.1.dev9/monasca_api/common/repositories/cassandra/metrics_repository.py
+===================================================================
+--- monasca-api-2.2.1.dev9.orig/monasca_api/common/repositories/cassandra/metrics_repository.py
++++ monasca-api-2.2.1.dev9/monasca_api/common/repositories/cassandra/metrics_repository.py
+@@ -1,5 +1,5 @@
+ # (C) Copyright 2015,2016 Hewlett Packard Enterprise Development Company LP
+-# (C) Copyright 2017 SUSE LLC
++# (C) Copyright 2017-2018 SUSE LLC
+ #
+ # Licensed under the Apache License, Version 2.0 (the "License"); you may
+ # not use this file except in compliance with the License. You may obtain
+@@ -20,6 +20,7 @@ from datetime import timedelta
+ import itertools
+ import urllib
+ 
++from cassandra.auth import PlainTextAuthProvider
+ from cassandra.cluster import Cluster
+ from cassandra.query import FETCH_SIZE_UNSET
+ from cassandra.query import SimpleStatement
+@@ -109,6 +110,14 @@ class MetricsRepository(metrics_reposito
+             self.conf = cfg.CONF
+             LOG.info('conf is: %s' % self.conf)
+             self.cluster = Cluster(self.conf.cassandra.contact_points)
++
++            if self.conf.cassandra.user:
++                auth_provider = PlainTextAuthProvider(username=self.conf.cassandra.user,
++                                                      password=self.conf.cassandra.password)
++            else:
++                auth_provider = None
++
++            self.cluster = Cluster(self.conf.cassandra.contact_points, auth_provider=auth_provider)
+             self.session = self.cluster.connect(self.conf.cassandra.keyspace)
+ 
+             self.dim_val_by_metric_stmt = self.session.prepare(DIMENSION_VALUE_BY_METRIC_CQL)
+Index: monasca-api-2.2.1.dev9/monasca_api/conf/cassandra.py
+===================================================================
+--- monasca-api-2.2.1.dev9.orig/monasca_api/conf/cassandra.py
++++ monasca-api-2.2.1.dev9/monasca_api/conf/cassandra.py
+@@ -1,7 +1,7 @@
+ # Copyright 2014 IBM Corp.
+ # Copyright 2016-2017 FUJITSU LIMITED
+ # (C) Copyright 2016-2017 Hewlett Packard Enterprise Development LP
+-# (C) Copyright 2017 SUSE LLC
++# (C) Copyright 2017-2018 SUSE LLC
+ #
+ # Licensed under the Apache License, Version 2.0 (the "License"); you may
+ # not use this file except in compliance with the License. You may obtain
+@@ -28,6 +28,14 @@ Comma separated list of Cassandra node I
+     cfg.StrOpt('keyspace', default='monasca',
+                help='''
+ keyspace where metric are stored
++'''),
++    cfg.StrOpt('user', default='',
++               help='''
++Cassandra user for monasca-api service
++'''),
++    cfg.StrOpt('password', default='', secret=True,
++               help='''
++Cassandra user password for monasca-api service
+ ''')
+ ]
+ 
+Index: monasca-api-2.2.1.dev9/monasca_api/tests/test_repositories.py
+===================================================================
+--- monasca-api-2.2.1.dev9.orig/monasca_api/tests/test_repositories.py
++++ monasca-api-2.2.1.dev9/monasca_api/tests/test_repositories.py
+@@ -20,6 +20,8 @@ from collections import namedtuple
+ from datetime import datetime
+ import unittest
+ 
++import cassandra
++from cassandra.auth import PlainTextAuthProvider
+ from mock import patch
+ 
+ import monasca_api.common.repositories.cassandra.metrics_repository as cassandra_repo
+@@ -201,7 +203,26 @@ class TestRepoMetricsCassandra(testtools
+         self._fixture_config.config(contact_points='127.0.0.1',
+                                     group='cassandra')
+ 
+-    @patch("monasca_api.common.repositories.cassandra.metrics_repository.Cluster.connect")
++    @patch("monasca_api.common.repositories.cassandra."
++           "metrics_repository.Cluster.connect")
++    def test_init(self, cassandra_connect_mock):
++        repo = cassandra_repo.MetricsRepository()
++        self.assertIsNone(
++            repo.cluster.auth_provider,
++            'cassandra cluster auth provider is expected to None'
++        )
++
++        repo.conf.cassandra.user = 'cassandra'
++        repo.conf.cassandra.password = 'cassandra'
++        repo = cassandra_repo.MetricsRepository()
++        self.assertIsInstance(
++            repo.cluster.auth_provider,
++            PlainTextAuthProvider,
++            'cassandra cluster auth provider is expected to be PlainTextAuthProvider'
++        )
++
++    @patch("monasca_api.common.repositories.cassandra."
++           "metrics_repository.Cluster.connect")
+     def test_list_metrics(self, cassandra_connect_mock):
+         cassandra_session_mock = cassandra_connect_mock.return_value
+         cassandra_future_mock = cassandra_session_mock.execute_async.return_value
+Index: monasca-api-2.2.1.dev9/monasca_api/v2/reference/__init__.py
+===================================================================
+--- monasca-api-2.2.1.dev9.orig/monasca_api/v2/reference/__init__.py
++++ monasca-api-2.2.1.dev9/monasca_api/v2/reference/__init__.py
+@@ -18,7 +18,6 @@ from oslo_config import cfg
+ from oslo_config import types
+ from oslo_db import options
+ 
+-
+ """Configurations for reference implementation
+ 
+ I think that these configuration parameters should have been split into
+@@ -142,7 +141,27 @@ influxdb_group = cfg.OptGroup(name='infl
+ cfg.CONF.register_group(influxdb_group)
+ cfg.CONF.register_opts(influxdb_opts, influxdb_group)
+ 
+-cassandra_opts = [cfg.ListOpt('contact_points'), cfg.StrOpt('keyspace')]
++cassandra_opts = [
++    cfg.ListOpt('contact_points',
++                default=['127.0.0.1'],
++                item_type=types.HostAddress(),
++                help='''
++Comma separated list of Cassandra node IP addresses
++'''),
++    cfg.StrOpt('keyspace',
++               default='monasca',
++               help='''
++keyspace where metric are stored
++'''),
++    cfg.StrOpt('user', default='',
++               help='''
++Cassandra user for monasca-api service
++'''),
++    cfg.StrOpt('password', default='', secret=True,
++               help='''
++Cassandra user password for monasca-api service
++''')
++]
+ 
+ cassandra_group = cfg.OptGroup(name='cassandra', title='cassandra')
+ cfg.CONF.register_group(cassandra_group)
