@@ -14,6 +14,7 @@ Url:            https://wiki.openstack.org/wiki/Monasca
 Source0:        {{ source|basename }}
 Source1:        openstack-monasca-persister.service
 Source2:        openstack-monasca-persister.logrotate
+Patch1:         cassandra-527855.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('mock') }}
 BuildRequires:  {{ py2pkg('monasca-common') }}
@@ -56,7 +57,7 @@ Consumes metrics and alarm state transitions from message queue and stores them 
 Data is read from Kafka queue and saved either in InfluxDB or Cassandra
 
 %prep
-%autosetup -n %{sname}-{{ upstream_version }}
+%autosetup -p 1 -n %{sname}-{{ upstream_version }}
 %py_req_cleanup
 
 %build
