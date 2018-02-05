@@ -1,0 +1,212 @@
+{% set pypi_name = 'freezer' %}
+{% set source = fetch_source('http://tarballs.openstack.org/freezer/freezer-master.tar.gz') %}
+{% set upstream_version = upstream_version() %}
+{% set rpm_release = '1' %}
+%if 0%{?rhel} || 0%{?fedora}
+%global rdo 1
+%endif
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
+Summary:        OpenStack Backup and Restore
+License:        {{ license('Apache-2.0') }}
+URL:            https://launchpad.net/freezer
+Source0:        {{ source|basename }}
+Source1:        openstack-freezer.logrotate
+Source2:        openstack-freezer-scheduler.service
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('Tempest') }}
+BuildRequires:  {{ py2pkg('APScheduler') }}
+BuildRequires:  {{ py2pkg('Babel') }}
+BuildRequires:  {{ py2pkg('PyMySQL') }}
+BuildRequires:  {{ py2pkg('botocore') }}
+BuildRequires:  {{ py2pkg('python-cinderclient') }}
+BuildRequires:  {{ py2pkg('ddt') }}
+BuildRequires:  {{ py2pkg('fixtures') }}
+BuildRequires:  {{ py2pkg('python-freezerclient') }}
+BuildRequires:  {{ py2pkg('python-glanceclient') }}
+BuildRequires:  {{ py2pkg('keystoneauth1') }}
+BuildRequires:  {{ py2pkg('python-keystoneclient') }}
+BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('python-neutronclient') }}
+BuildRequires:  {{ py2pkg('python-novaclient') }}
+BuildRequires:  {{ py2pkg('os-brick') }}
+BuildRequires:  {{ py2pkg('oslo.config') }}
+BuildRequires:  {{ py2pkg('oslo.log') }}
+BuildRequires:  {{ py2pkg('oslo.service') }}
+BuildRequires:  {{ py2pkg('oslo.utils') }}
+BuildRequires:  {{ py2pkg('paramiko') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('psutil') }}
+BuildRequires:  {{ py2pkg('pycrypto') }}
+BuildRequires:  {{ py2pkg('pymongo') }}
+BuildRequires:  {{ py2pkg('setuptools') }}
+BuildRequires:  {{ py2pkg('six') }}
+BuildRequires:  {{ py2pkg('python-swiftclient') }}
+Requires:       python-{{ pypi_name }} = %{version}-%{release}
+BuildArch:      noarch
+%if 0%{?suse_version}
+BuildRequires:  systemd-rpm-macros
+Requires(pre):  pwdutils
+%{?systemd_requires}
+%endif
+%if 0%{?rdo}
+BuildRequires:  systemd
+Requires(post): systemd
+Requires(postun): systemd
+Requires(pre):  shadow-utils
+Requires(preun): systemd
+%endif
+
+%description
+OpenStack Swift incremental backup and restore automation tool for
+file system, MongoDB, MySQL. LVM snapshot and encryption support.
+
+%package -n     python-{{ pypi_name }}
+Summary:        Freezer Python libraries
+Group:          Applications/System
+Requires:       {{ py2pkg('APScheduler') }}
+Requires:       {{ py2pkg('Babel') }}
+Requires:       {{ py2pkg('PyMySQL') }}
+Requires:       {{ py2pkg('botocore') }}
+Requires:       {{ py2pkg('python-cinderclient') }}
+Requires:       {{ py2pkg('python-freezerclient') }}
+Requires:       {{ py2pkg('python-glanceclient') }}
+Requires:       {{ py2pkg('keystoneauth1') }}
+Requires:       {{ py2pkg('python-keystoneclient') }}
+Requires:       {{ py2pkg('python-neutronclient') }}
+Requires:       {{ py2pkg('python-novaclient') }}
+Requires:       {{ py2pkg('os-brick') }}
+Requires:       {{ py2pkg('oslo.config') }}
+Requires:       {{ py2pkg('oslo.log') }}
+Requires:       {{ py2pkg('oslo.service') }}
+Requires:       {{ py2pkg('oslo.utils') }}
+Requires:       {{ py2pkg('paramiko') }}
+Requires:       {{ py2pkg('psutil') }}
+Requires:       {{ py2pkg('pycrypto') }}
+Requires:       {{ py2pkg('pymongo') }}
+Requires:       {{ py2pkg('six') }}
+Requires:       {{ py2pkg('python-swiftclient') }}
+
+%description -n python-{{ pypi_name }}
+OpenStack Swift incremental backup and restore automation tool for
+file system, MongoDB, MySQL. LVM snapshot and encryption support.
+
+This package contains the Freezer python libraries.
+
+%package agent
+Summary:        OpenStack Freezer - Agent service
+Group:          Applications/System
+Requires:       %{name} = %{version}-%{release}
+
+%description agent
+OpenStack Swift incremental backup and restore automation tool for
+file system, MongoDB, MySQL. LVM snapshot and encryption support.
+
+This package contains the Freezer agent code.
+
+%package scheduler
+Summary:        OpenStack Freezer - Scheduler service
+Group:          Applications/System
+Requires:       %{name} = %{version}-%{release}
+
+%description scheduler
+OpenStack Swift incremental backup and restore automation tool for
+file system, MongoDB, MySQL. LVM snapshot and encryption support.
+
+This package contains the Freezer scheduler agent.
+
+%package doc
+Summary:        Documentation for OpenStack Backup Service
+Group:          Documentation/HTML
+BuildRequires:  fdupes
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
+
+%description doc
+OpenStack Freezer documentaion.
+
+This package contains the documentation
+
+%prep
+%autosetup -p1 -n {{ pypi_name }}-{{upstream_version}}
+%py_req_cleanup
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
+
+%build
+%{py2_build}
+
+#NOTE(aplanas): The manual page cannot be generated yet
+%{__python2} setup.py build_sphinx --builder=html
+# remove the Sphinx-build leftovers
+rm -rf doc/build/html/.{doctrees,buildinfo}
+%fdupes doc/build/html/
+# config file generation
+PYTHONPATH=. oslo-config-generator --config-file config-generator/scheduler.conf \
+    --output-file etc/scheduler.conf.sample
+
+%install
+%{py2_install}
+install -d -m 755 %{buildroot}%{_sysconfdir}/freezer
+install -d -m 755 %{buildroot}%{_localstatedir}/{lib,log}/freezer
+install -d -m 755 %{buildroot}%{_sysconfdir}/freezer/freezer.conf.d/
+install -p -D -m 640 etc/scheduler.conf.sample %{buildroot}%{_sysconfdir}/freezer/scheduler.conf
+install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/openstack-freezer
+install -p -D -m 755 %{SOURCE2} %{buildroot}%{_unitdir}/%{name}-scheduler.service
+
+# remove duplicates
+%fdupes %{buildroot}%{python2_sitelib}
+
+# remove Windows script
+rm -fr %{buildroot}%{_prefix}/freezer/scripts/vss.ps1
+
+%pre
+%openstack_pre_user_group_create freezer freezer /sbin/nologin
+
+#POST actions
+%post scheduler
+%systemd_post %{name}-scheduler.service
+
+#PREUN actions
+%preun scheduler
+%systemd_preun %{name}-scheduler.service
+
+#POSTUN actions
+%postun scheduler
+%systemd_postun_with_restart %{name}-scheduler.service
+
+
+%check
+OS_TEST_PATH=./freezer/tests/unit python setup.py testr
+
+%files
+%license LICENSE
+%doc README.rst
+%dir %attr(0750, root, freezer) %{_sysconfdir}/freezer/
+%dir %attr(0750, root, freezer) %{_sysconfdir}/freezer/freezer.conf.d/
+%config(noreplace) %attr(0640, root, freezer) %{_sysconfdir}/freezer/scheduler.conf
+%config(noreplace) %{_sysconfdir}/logrotate.d/openstack-freezer
+%dir %attr(0755, freezer, freezer) %{_localstatedir}/lib/freezer
+%dir %attr(0750, freezer, freezer) %{_localstatedir}/log/freezer
+
+%files -n python-{{ pypi_name }}
+%defattr(-,root,root,-)
+%doc README.rst
+%license LICENSE
+%{python2_sitelib}/freezer*
+%{python2_sitelib}/freezer-*.egg-info
+
+%files agent
+%license LICENSE
+%{_bindir}/freezer-agent
+
+%files scheduler
+%license LICENSE
+%{_bindir}/freezer-scheduler
+%{_unitdir}/%{name}-scheduler.service
+
+%files doc
+%license LICENSE
+%doc doc/build/html
+
+%changelog
