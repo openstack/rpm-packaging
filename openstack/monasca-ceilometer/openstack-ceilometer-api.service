@@ -1,0 +1,16 @@
+[Unit]
+Description=OpenStack ceilometer API service
+After=syslog.target network.target
+After=mysql.service postgresql.service rabbitmq-server.service
+
+[Service]
+Type=simple
+User=ceilometer
+Group=ceilometer
+WorkingDirectory=/var/lib/ceilometer
+PrivateTmp=yes
+ExecStartPre=-/usr/bin/ceilometer-upgrade
+ExecStart=/usr/bin/ceilometer-api --port 8777
+
+[Install]
+WantedBy=multi-user.target

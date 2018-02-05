@@ -1,0 +1,7 @@
+#!/bin/sh
+
+# Remove related objects
+test -e /var/log/ceilometer/ceilometer-expirer.log && {
+    chown ceilometer:ceilometer /var/log/ceilometer/ceilometer-expirer.log
+}
+su ceilometer -s /bin/sh -c "/usr/bin/ceilometer-expirer --config-file /etc/ceilometer/ceilometer.conf --config-dir /etc/ceilometer/conf.d/common/"

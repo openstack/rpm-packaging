@@ -1,0 +1,15 @@
+[Unit]
+Description=OpenStack ceilometer polling service - compute agent
+After=syslog.target network.target
+After=mysql.service postgresql.service rabbitmq-server.service
+
+[Service]
+Type=simple
+User=ceilometer
+Group=ceilometer
+WorkingDirectory=/var/lib/ceilometer
+PrivateTmp=yes
+ExecStart=/usr/bin/ceilometer-polling --polling-namespaces compute --logfile /var/log/ceilometer/ceilometer-polling-compute.log
+
+[Install]
+WantedBy=multi-user.target

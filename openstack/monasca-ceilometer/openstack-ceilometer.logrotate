@@ -1,0 +1,12 @@
+
+/var/log/ceilometer/*.log {
+    compress
+    rotate 15
+    size 1M
+    dateext
+    missingok
+    notifempty
+    su ceilometer ceilometer
+    copytruncate
+    sharedscripts
+}
