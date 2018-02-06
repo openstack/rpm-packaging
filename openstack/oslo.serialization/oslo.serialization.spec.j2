@@ -1,5 +1,5 @@
 {% set pypi_name = 'oslo.serialization' %}
-{% set upstream_version = upstream_version('2.23.0') %}
+{% set upstream_version = upstream_version('2.24.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -15,13 +15,13 @@ BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('ipaddress', py_versions=['py2']) }}
 BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('msgpack-python', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('msgpack', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('netaddr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('oslo.i18n', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('oslo.utils', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
-Requires:       {{ py2pkg('msgpack-python') }}
+Requires:       {{ py2pkg('msgpack') }}
 Requires:       {{ py2pkg('oslo.utils') }}
 Requires:       {{ py2pkg('pytz') }}
 Requires:       {{ py2pkg('six') }}
