@@ -1,5 +1,5 @@
 {% set pypi_name = 'oslo.privsep' %}
-{% set upstream_version = upstream_version('1.26.0') %}
+{% set upstream_version = upstream_version('1.27.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -12,14 +12,14 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('Babel') }}
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('cffi') }}
 BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('enum34') }}
 BuildRequires:  {{ py2pkg('eventlet') }}
 BuildRequires:  {{ py2pkg('greenlet') }}
-BuildRequires:  {{ py2pkg('msgpack-python') }}
+BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('msgpack') }}
 BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 BuildRequires:  {{ py2pkg('oslo.config') }}
 BuildRequires:  {{ py2pkg('oslo.i18n') }}
@@ -28,12 +28,11 @@ BuildRequires:  {{ py2pkg('oslo.utils') }}
 BuildRequires:  {{ py2pkg('oslotest') }}
 BuildRequires:  {{ py2pkg('pbr') }}
 BuildRequires:  {{ py2pkg('setuptools') }}
-Requires:       {{ py2pkg('Babel') }}
 Requires:       {{ py2pkg('cffi') }}
 Requires:       {{ py2pkg('enum34') }}
 Requires:       {{ py2pkg('eventlet') }}
 Requires:       {{ py2pkg('greenlet') }}
-Requires:       {{ py2pkg('msgpack-python') }}
+Requires:       {{ py2pkg('msgpack') }}
 Requires:       {{ py2pkg('oslo.config') }}
 Requires:       {{ py2pkg('oslo.i18n') }}
 Requires:       {{ py2pkg('oslo.log') }}
