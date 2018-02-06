@@ -1,37 +1,76 @@
-%global sname openstacksdk
-Name:           {{ py2name('openstacksdk') }}
-Version:        0.9.19
-Release:        0
+{% set pypi_name = 'openstacksdk' %}
+{% set upstream_version = upstream_version('0.11.3') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
 Summary:        An SDK for building applications to work with OpenStack
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
-URL:            https://launchpad.net/python-openstacksdk
-Source0:        https://files.pythonhosted.org/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
+URL:            https://launchpad.net/{{ pypi_name }}
+Source0:        {{ source }}
+# https://review.openstack.org/#/c/539685/
+Patch1:         0001-Let-enforcer.py-work-under-both-py2-and-py3.patch
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('PyYAML', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('appdirs', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('beautifulsoup4', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('decorator', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('deprecation', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('dogpile.cache', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('extras', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('fixtures', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('futures', py_versions=['py2']) }}
+BuildRequires:  {{ py2pkg('ipaddress', py_versions=['py2']) }}
+BuildRequires:  {{ py2pkg('jmespath', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('jsonpatch', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('jsonschema', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('keystoneauth1', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('os-testr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('munch', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('netifaces', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('os-service-types', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('requests', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('python-subunit', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('requests-mock', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('setuptools', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('requestsexceptions', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('six', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('stevedore', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
+Requires:       {{ py2pkg('PyYAML') }}
+Requires:       {{ py2pkg('appdirs') }}
+Requires:       {{ py2pkg('decorator') }}
 Requires:       {{ py2pkg('deprecation') }}
+Requires:       {{ py2pkg('dogpile.cache') }}
+Requires:       {{ py2pkg('iso8601') }}
+Requires:       {{ py2pkg('jmespath') }}
 Requires:       {{ py2pkg('jsonpatch') }}
 Requires:       {{ py2pkg('keystoneauth1') }}
-Requires:       {{ py2pkg('os-client-config') }}
+Requires:       {{ py2pkg('munch') }}
+Requires:       {{ py2pkg('netifaces') }}
+Requires:       {{ py2pkg('os-service-types') }}
+Requires:       {{ py2pkg('requestsexceptions') }}
 Requires:       {{ py2pkg('six') }}
-Requires:       {{ py2pkg('stevedore') }}
 BuildArch:      noarch
+%ifpython2
+Requires:       {{ py2pkg('futures') }}
+Requires:       {{ py2pkg('ipaddress') }}
+%endif
+%if 0%{?suse_version}
+Requires(post): update-alternatives
+Requires(postun): update-alternatives
+%else
+# on RDO, update-alternatives is in chkconfig
+Requires(post): chkconfig
+Requires(postun): chkconfig
+%endif
 %python_subpackages
 
 %description
@@ -44,9 +83,7 @@ many services, along with complete documentation, examples, and tools.
 Summary:        %{summary} - Documentation
 Group:          Documentation/HTML
 BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('keystoneauth1') }}
 BuildRequires:  {{ py2pkg('openstackdocstheme') }}
-BuildRequires:  {{ py2pkg('os-client-config') }}
 Requires:       %{name} = %{version}
 
 %description -n python-openstacksdk-doc
@@ -58,9 +95,10 @@ many services, along with complete documentation, examples, and tools.
 This package contains documentation files for %{name}.
 
 %prep
-%autosetup -p1 -n %{sname}-%{version}
-sed -i -e "s,'sphinx.ext.intersphinx'\,,," doc/source/conf.py
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
+sed -i -e 's,coverage.*,,' test-requirements.txt || true
+sed -i -e "s,'sphinx.ext.intersphinx'\,,," doc/source/conf.py
 # build fails with warnings
 sed -i 's/^warning-is-error.*/warning-is-error=0/g' setup.cfg
 
@@ -72,17 +110,25 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
 %python_install
+%python_clone -a %{buildroot}%{_bindir}/openstack-inventory
+
+%post
+%python_install_alternative openstack-inventory
+
+%postun
+%python_uninstall_alternative openstack-inventory
 
 %check
 %{python_expand rm -rf .testrepository
-$python setup.py test
+stestr run
 }
 
 %files %{python_files}
 %license LICENSE
 %doc ChangeLog README.rst
-%{python2_sitelib}/openstack
-%{python2_sitelib}/*.egg-info
+%python_alternative %{_bindir}/openstack-inventory
+%{python_sitelib}/openstack
+%{python_sitelib}/*.egg-info
 
 %files -n python-openstacksdk-doc
 %license LICENSE
