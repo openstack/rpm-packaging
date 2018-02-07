@@ -1,0 +1,158 @@
+{% set pypi_name = 'freezer-api' %}
+{% set source = fetch_source('http://tarballs.openstack.org/freezer-api/freezer-api-stable-pike.tar.gz') %}
+{% set upstream_version = upstream_version() %}
+{% set rpm_release = '1' %}
+%if 0%{?rhel} || 0%{?fedora}
+%global rdo 1
+%endif
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
+Summary:        OpenStack Backup and Restore - API service
+License:        {{ license('Apache-2.0') }}
+Url:            https://launchpad.net/freezer
+Source0:        {{ source|basename }}
+Source1:        openstack-freezer-api.logrotate
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('Paste') }}
+BuildRequires:  {{ py2pkg('PasteDeploy') }}
+BuildRequires:  {{ py2pkg('astroid') }}
+BuildRequires:  {{ py2pkg('elasticsearch') }}
+BuildRequires:  {{ py2pkg('falcon') }}
+BuildRequires:  {{ py2pkg('fixtures') }}
+BuildRequires:  {{ py2pkg('jsonschema') }}
+BuildRequires:  {{ py2pkg('keystonemiddleware') }}
+BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('oslo.config') }}
+BuildRequires:  {{ py2pkg('oslo.context') }}
+BuildRequires:  {{ py2pkg('oslo.db') }}
+BuildRequires:  {{ py2pkg('oslo.i18n') }}
+BuildRequires:  {{ py2pkg('oslo.log') }}
+BuildRequires:  {{ py2pkg('oslo.middleware') }}
+BuildRequires:  {{ py2pkg('oslo.policy') }}
+BuildRequires:  {{ py2pkg('reno') }}
+BuildRequires:  {{ py2pkg('six') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+Requires:       python-{{ pypi_name }} = %{version}-%{release}
+BuildArch:      noarch
+%if 0%{?suse_version}
+BuildRequires:  systemd-rpm-macros
+Requires(pre):  pwdutils
+%{?systemd_requires}
+%endif
+%if 0%{?rdo}
+BuildRequires:  systemd
+Requires(post): systemd
+Requires(postun): systemd
+Requires(pre):  shadow-utils
+Requires(preun): systemd
+%endif
+
+%description
+API service for OpenStack Freeze: an OpenStack Swift incremental
+backup and restore automation tool for file system, MongoDB,
+MySQL. LVM snapshot and encryption support.
+
+%package -n     python-{{ pypi_name }}
+Summary:        Freezer API Python library
+Group:          Applications/System
+Requires:       {{ py2pkg('Paste') }}
+Requires:       {{ py2pkg('PasteDeploy') }}
+Requires:       {{ py2pkg('elasticsearch') }}
+Requires:       {{ py2pkg('falcon') }}
+Requires:       {{ py2pkg('jsonschema') }}
+Requires:       {{ py2pkg('keystonemiddleware') }}
+Requires:       {{ py2pkg('oslo.config') }}
+Requires:       {{ py2pkg('oslo.context') }}
+Requires:       {{ py2pkg('oslo.db') }}
+Requires:       {{ py2pkg('oslo.i18n') }}
+Requires:       {{ py2pkg('oslo.log') }}
+Requires:       {{ py2pkg('oslo.middleware') }}
+Requires:       {{ py2pkg('oslo.policy') }}
+Requires:       {{ py2pkg('six') }}
+
+%description -n python-{{ pypi_name }}
+API service for OpenStack Freezer: an OpenStack Swift incremental
+backup and restore automation tool for file system, MongoDB,
+MySQL. LVM snapshot and encryption support.
+
+This package contains the Freezer API python libraries.
+
+%package doc
+Summary:        Documentation for OpenStack Backup Service
+Group:          Documentation/HTML
+BuildRequires:  fdupes
+BuildRequires:  {{ py2pkg('Sphinx') }}
+#BuildRequires:  {{ py2pkg('openstackdocstheme') }}
+BuildRequires:  {{ py2pkg('os-api-ref') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+
+%description doc
+OpenStack Freezer API documentation.
+
+This package contains the documentation
+
+%prep
+%autosetup -p1 -n {{ pypi_name }}-{{upstream_version}}
+%py_req_cleanup
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
+
+%build
+%{py2_build}
+
+%{__python2} setup.py build_sphinx --builder=html,man
+# remove the Sphinx-build leftovers
+rm -rf doc/build/html/.{doctrees,buildinfo}
+%fdupes doc/build/html/
+
+# config file generation
+PYTHONPATH=. oslo-config-generator --config-file config-generator/freezer-api.conf \
+    --output-file etc/freezer/freezer-api.conf.sample
+
+%install
+%{py2_install}
+install -d -m 755 %{buildroot}%{_sysconfdir}/freezer
+install -d -m 755 %{buildroot}%{_sysconfdir}/freezer/freezer-api.conf.d/
+install -d -m 755 %{buildroot}%{_localstatedir}/{lib,log}/freezer
+install -p -D -m 640 etc/freezer/freezer-api.conf.sample %{buildroot}%{_sysconfdir}/freezer/freezer-api.conf
+install -p -D -m 640 etc/freezer/policy.json %{buildroot}%{_sysconfdir}/freezer/policy.json
+install -p -D -m 640 etc/freezer/freezer-paste.ini %{buildroot}%{_sysconfdir}/freezer/freezer-paste.ini
+install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/openstack-freezer-api
+
+# remove duplicates
+%fdupes %{buildroot}%{python2_sitelib}
+
+%pre
+%openstack_pre_user_group_create freezer freezer /sbin/nologin
+
+%check
+OS_PATH_TEST=./freezer_api/tests/unit python setup.py test
+
+%files
+%license LICENSE
+%doc README.rst
+%{_bindir}/freezer-api
+%{_bindir}/freezer-api-wsgi
+%{_bindir}/freezer-manage
+%dir %attr(0750, root, freezer) %{_sysconfdir}/freezer/
+%dir %attr(0750, root, freezer) %{_sysconfdir}/freezer/freezer-api.conf.d/
+%config(noreplace) %attr(0640, root, freezer) %{_sysconfdir}/freezer/freezer-api.conf
+%config(noreplace) %attr(0640, root, freezer) %{_sysconfdir}/freezer/freezer-paste.ini
+%config(noreplace) %attr(0640, root, freezer) %{_sysconfdir}/freezer/policy.json
+%config(noreplace) %{_sysconfdir}/logrotate.d/openstack-freezer-api
+%dir %attr(0755, freezer, freezer) %{_localstatedir}/lib/freezer
+%dir %attr(0750, freezer, freezer) %{_localstatedir}/log/freezer
+
+%files -n python-{{ pypi_name }}
+%defattr(-,root,root,-)
+%doc README.rst
+%license LICENSE
+%{python2_sitelib}/freezer_api/
+%{python2_sitelib}/freezer_api*.egg-info
+
+%files doc
+%license LICENSE
+%doc doc/build/html
+
+%changelog
