@@ -1,0 +1,70 @@
+{% set pypi_name = 'sushy' %}
+{% set upstream_version = upstream_version('1.3.1') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
+Summary:        Sushy is a small Python library to communicate with Redfish based systems
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+URL:            https://docs.openstack.org/{{ pypi_name }}
+Source0:        {{ source }}
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('python-subunit') }}
+BuildRequires:  {{ py2pkg('reno') }}
+BuildRequires:  {{ py2pkg('requests') }}
+BuildRequires:  {{ py2pkg('setuptools') }}
+BuildRequires:  {{ py2pkg('six') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testscenarios') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+Requires:       {{ py2pkg('pbr') }}
+Requires:       {{ py2pkg('requests') }}
+Requires:       {{ py2pkg('six') }}
+BuildArch:      noarch
+
+%description
+Sushy is a Python library to communicate with `Redfish` based systems.
+
+%package doc
+Summary:        Documentation for OpenStack sushy
+Group:          Documentation/HTML
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
+
+%description doc
+Sushy is a Python library to communicate with `Redfish` based systems.
+This package contains the documentation.
+
+%prep
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
+%py_req_cleanup
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
+
+%build
+%{py2_build}
+%{__python2} setup.py build_sphinx --builder=html,man
+rm -rf html/.{doctrees,buildinfo}
+
+%install
+%{py2_install}
+
+%check
+%{__python2} setup.py test
+
+%files
+%license LICENSE
+%doc AUTHORS ChangeLog README.rst
+%{python2_sitelib}/sushy*
+%{python2_sitelib}/*.egg-info
+
+%files doc
+%doc doc/build/html
+%license LICENSE
+
+%changelog
