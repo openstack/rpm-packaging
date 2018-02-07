@@ -1,5 +1,5 @@
 {% set pypi_name = 'monasca-api' %}
-{% set upstream_version = upstream_version('2.4.0') %}
+{% set upstream_version = upstream_version('2.5.0') %}
 {% set rpm_release = '1' %}
 
 %define component           {{ pypi_name }}
@@ -135,7 +135,6 @@ install -D -m 755 %{SOURCE5} %{buildroot}%{_bindir}/monasca-api-wsgi.py
 
 # remove duplicates
 %fdupes %{buildroot}%{python2_sitelib}/monasca_api
-%fdupes %{buildroot}%{python2_sitelib}/monasca_tempest_tests
 
 %check
 find . -type f -name *.pyc -delete
@@ -175,7 +174,6 @@ fi
 %license LICENSE
 %doc README.md ChangeLog
 %{python2_sitelib}/monasca_api
-%{python2_sitelib}/monasca_tempest_tests
 %{python2_sitelib}/*.egg-info
 
 %changelog
