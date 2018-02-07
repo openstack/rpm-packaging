@@ -11,7 +11,7 @@
 #  under the License.
 
 {% set pypi_name = 'monasca-agent' %}
-{% set upstream_version = upstream_version('2.5.0') %}
+{% set upstream_version = upstream_version('2.6.0') %}
 {% set rpm_release = '1' %}
 
 %global sname {{ pypi_name }}
@@ -35,8 +35,8 @@ Source4:        %{name}.polkit
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('PyYAML') }}
 BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('eventlet') }}
 BuildRequires:  {{ py2pkg('futures') }}
-BuildRequires:  {{ py2pkg('gevent') }}
 BuildRequires:  {{ py2pkg('httplib2') }}
 BuildRequires:  {{ py2pkg('mock') }}
 BuildRequires:  {{ py2pkg('monasca-common') }}
@@ -80,16 +80,19 @@ sending them to the Monasca API.
 Summary:        Python module for monasca-agent
 Group:          Development/Languages/Python
 Requires:       {{ py2pkg('PyYAML') }}
+Requires:       {{ py2pkg('eventlet') }}
 Requires:       {{ py2pkg('futures') }}
-Requires:       {{ py2pkg('gevent') }}
 Requires:       {{ py2pkg('httplib2') }}
+Requires:       {{ py2pkg('python-keystoneclient') }}
+Requires:       {{ py2pkg('monasca-common') }}
 Requires:       {{ py2pkg('python-monascaclient') }}
 Requires:       {{ py2pkg('netaddr') }}
+Requires:       {{ py2pkg('python-neutronclient') }}
+Requires:       {{ py2pkg('python-novaclient') }}
 Requires:       {{ py2pkg('ntplib') }}
 Requires:       {{ py2pkg('oslo.concurrency') }}
 Requires:       {{ py2pkg('oslo.config') }}
 Requires:       {{ py2pkg('oslo.i18n') }}
-Requires:       {{ py2pkg('oslo.middleware') }}
 Requires:       {{ py2pkg('oslo.utils') }}
 Requires:       {{ py2pkg('oslo.vmware') }}
 Requires:       {{ py2pkg('psutil') }}
