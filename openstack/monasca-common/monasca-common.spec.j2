@@ -1,5 +1,5 @@
 {% set pypi_name = 'monasca-common' %}
-{% set upstream_version = upstream_version('2.6.0') %}
+{% set upstream_version = upstream_version('2.8.0') %}
 {% set rpm_release = '1' %}
 
 %global sname {{ pypi_name }}
@@ -15,18 +15,22 @@ BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('PyMySQL') }}
 BuildRequires:  {{ py2pkg('kazoo') }}
 BuildRequires:  {{ py2pkg('mock') }}
-BuildRequires:  {{ py2pkg('mox') }}
-BuildRequires:  {{ py2pkg('nose') }}
+BuildRequires:  {{ py2pkg('os-testr') }}
 BuildRequires:  {{ py2pkg('oslo.config') }}
+BuildRequires:  {{ py2pkg('oslo.context') }}
+BuildRequires:  {{ py2pkg('oslo.policy') }}
 BuildRequires:  {{ py2pkg('oslotest') }}
 BuildRequires:  {{ py2pkg('pbr') }}
 BuildRequires:  {{ py2pkg('pyparsing') }}
+BuildRequires:  {{ py2pkg('requests-mock') }}
 BuildRequires:  {{ py2pkg('setuptools') }}
 BuildRequires:  {{ py2pkg('six') }}
 BuildRequires:  {{ py2pkg('ujson') }}
 Requires:       {{ py2pkg('PyMySQL') }}
 Requires:       {{ py2pkg('kazoo') }}
 Requires:       {{ py2pkg('oslo.config') }}
+Requires:       {{ py2pkg('oslo.policy') }}
+Requires:       {{ py2pkg('pykafka') }}
 Requires:       {{ py2pkg('pyparsing') }}
 Requires:       {{ py2pkg('six') }}
 Requires:       {{ py2pkg('ujson') }}
@@ -53,7 +57,7 @@ platform code for building monitoring related services.
 %{py2_install}
 
 %check
-nosetests monasca_common --verbose
+ostestr
 
 %files
 %license LICENSE
