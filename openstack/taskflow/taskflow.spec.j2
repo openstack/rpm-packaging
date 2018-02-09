@@ -10,6 +10,8 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://launchpad.net/taskflow
 Source0:        https://files.pythonhosted.org/packages/source/t/%{pypi_name}/%{pypi_name}-%{version}.tar.gz
+# https://review.openstack.org/#/c/542320/
+Patch0:         0001-Fix-invalid-json-unit-test.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('PyMySQL') }}
 BuildRequires:  {{ py2pkg('SQLAlchemy') }}
@@ -75,7 +77,7 @@ different backends to be used with OpenStack projects.
 This package contains the associated documentation.
 
 %prep
-%autosetup -n %{pypi_name}-%{version}
+%autosetup -p1 -n %{pypi_name}-%{version}
 %py_req_cleanup
 sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
