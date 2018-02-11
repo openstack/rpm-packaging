@@ -1,5 +1,5 @@
 {% set pypi_name = 'oslo.versionedobjects' %}
-{% set upstream_version = upstream_version('1.31.0') %}
+{% set upstream_version = upstream_version('1.31.2') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -28,7 +28,6 @@ BuildRequires:  {{ py2pkg('pbr') }}
 BuildRequires:  {{ py2pkg('testtools') }}
 Requires:       {{ py2pkg('WebOb') }}
 Requires:       {{ py2pkg('iso8601') }}
-Requires:       {{ py2pkg('jsonschema') }}
 Requires:       {{ py2pkg('netaddr') }}
 Requires:       {{ py2pkg('oslo.concurrency') }}
 Requires:       {{ py2pkg('oslo.config') }}
@@ -62,11 +61,10 @@ This package contains documentation files for %{name}.
 %prep
 %autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
-sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
 %{py2_build}
-%{__python2} setup.py build_sphinx && rm doc/build/html/.buildinfo
+PYTHONPATH=. sphinx-build -b html doc/source doc/build/html
 
 %install
 %{py2_install}
