@@ -1,12 +1,16 @@
-%global sname os-brick
-Name:           {{ py2name('os-brick') }}
-Version:        2.2.0
-Release:        0
+{% set pypi_name = 'os-brick' %}
+{% set upstream_version = upstream_version('2.3.0') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
 Summary:        OpenStack Cinder brick library for managing local volume attaches
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
-URL:            https://launchpad.net/%{sname}
-Source0:        https://files.pythonhosted.org/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
+URL:            https://launchpad.net/{{ pypi_name }}
+Source0:        {{ source }}
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('Babel') }}
 BuildRequires:  {{ py2pkg('castellan') }}
@@ -19,7 +23,6 @@ BuildRequires:  {{ py2pkg('oslo.concurrency') }}
 BuildRequires:  {{ py2pkg('oslo.i18n') }}
 BuildRequires:  {{ py2pkg('oslo.log') }}
 BuildRequires:  {{ py2pkg('oslo.privsep') }}
-BuildRequires:  {{ py2pkg('oslo.serialization') }}
 BuildRequires:  {{ py2pkg('oslo.service') }}
 BuildRequires:  {{ py2pkg('oslo.utils') }}
 BuildRequires:  {{ py2pkg('oslo.vmware') }}
@@ -34,14 +37,12 @@ BuildRequires:  {{ py2pkg('testrepository') }}
 BuildRequires:  {{ py2pkg('testscenarios') }}
 BuildRequires:  {{ py2pkg('testtools') }}
 Requires:       {{ py2pkg('Babel') }}
-Requires:       {{ py2pkg('castellan') }}
 Requires:       {{ py2pkg('eventlet') }}
 Requires:       {{ py2pkg('os-win') }}
 Requires:       {{ py2pkg('oslo.concurrency') }}
 Requires:       {{ py2pkg('oslo.i18n') }}
 Requires:       {{ py2pkg('oslo.log') }}
 Requires:       {{ py2pkg('oslo.privsep') }}
-Requires:       {{ py2pkg('oslo.serialization') }}
 Requires:       {{ py2pkg('oslo.service') }}
 Requires:       {{ py2pkg('oslo.utils') }}
 Requires:       {{ py2pkg('requests') }}
@@ -68,7 +69,7 @@ Features:
 This package contains the documentation.
 
 %prep
-%autosetup -n %{sname}-%{version}
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
 sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
