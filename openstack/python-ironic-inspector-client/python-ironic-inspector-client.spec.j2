@@ -1,12 +1,16 @@
-%global sname python-ironic-inspector-client
-Name:           {{ py2name('python-ironic-inspector-client') }}
-Version:        3.0.0
-Release:        0
+{% set pypi_name = 'python-ironic-inspector-client' %}
+{% set upstream_version = upstream_version('3.1.0') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
 Summary:        Python client and CLI tool for Ironic Inspector
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
-URL:            https://launchpad.net/%{sname}
-Source0:        https://files.pythonhosted.org/packages/source/p/%{sname}/%{sname}-%{version}.tar.gz
+URL:            https://launchpad.net/{{ pypi_name }}
+Source0:        {{ source }}
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('devel') }}
@@ -20,7 +24,6 @@ BuildRequires:  {{ py2pkg('reno') }}
 BuildRequires:  {{ py2pkg('requests-mock') }}
 BuildRequires:  {{ py2pkg('testrepository') }}
 Requires:       {{ py2pkg('keystoneauth1') }}
-Requires:       {{ py2pkg('python-openstackclient') }}
 Requires:       {{ py2pkg('osc-lib') }}
 Requires:       {{ py2pkg('oslo.i18n') }}
 Requires:       {{ py2pkg('oslo.utils') }}
@@ -38,7 +41,7 @@ scheduling from a bare metal node, given its power management credentials
 This package contains Python client and command line tool for Ironic Inspector.
 
 %prep
-%autosetup -n %{sname}-%{version}
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 sed -i -e 's,hacking.*,,' test-requirements.txt
 sed -i -e 's,coverage.*,,' test-requirements.txt
 sed -i -e 's,doc8.*,,' test-requirements.txt
