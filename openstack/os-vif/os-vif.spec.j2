@@ -1,12 +1,16 @@
-%global sname os_vif
-Name:           {{ py2name('os-vif') }}
-Version:        1.7.0
-Release:        0
+{% set pypi_name = 'os-vif' %}
+{% set upstream_version = upstream_version('1.9.0') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
 Summary:        A library for plugging and unplugging virtual interfaces in OpenStack
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
-URL:            http://launchpad.net/os-vif
-Source0:        https://files.pythonhosted.org/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
+URL:            https://launchpad.net/{{ pypi_name }}
+Source0:        https://files.pythonhosted.org/packages/source/o/os_vif/os_vif-%{version}.tar.gz
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('netaddr') }}
@@ -18,8 +22,10 @@ BuildRequires:  {{ py2pkg('oslo.privsep') }}
 BuildRequires:  {{ py2pkg('oslo.versionedobjects') }}
 BuildRequires:  {{ py2pkg('oslotest') }}
 BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('pyroute2') }}
 BuildRequires:  {{ py2pkg('python-subunit') }}
 BuildRequires:  {{ py2pkg('six') }}
+BuildRequires:  {{ py2pkg('stestr') }}
 BuildRequires:  {{ py2pkg('stevedore') }}
 BuildRequires:  {{ py2pkg('testrepository') }}
 BuildRequires:  {{ py2pkg('testscenarios') }}
@@ -32,6 +38,7 @@ Requires:       {{ py2pkg('oslo.log') }}
 Requires:       {{ py2pkg('oslo.privsep') }}
 Requires:       {{ py2pkg('oslo.versionedobjects') }}
 Requires:       {{ py2pkg('pbr') }}
+Requires:       {{ py2pkg('pyroute2') }}
 Requires:       {{ py2pkg('six') }}
 Requires:       {{ py2pkg('stevedore') }}
 BuildArch:      noarch
@@ -53,7 +60,7 @@ Documentation for a library for plugging and unplugging virtual interfaces
 in OpenStack.
 
 %prep
-%autosetup -n %{sname}-%{version}
+%autosetup -p1 -n os_vif-{{ upstream_version }}
 %py_req_cleanup
 sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
@@ -69,7 +76,7 @@ sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %check
-%{__python2} setup.py testr
+stestr --test-path="os_vif/tests/unit" run
 
 %files
 %license LICENSE
