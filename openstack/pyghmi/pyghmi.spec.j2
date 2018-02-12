@@ -1,6 +1,7 @@
 {% set pypi_name = 'pyghmi' %}
 {% set upstream_version = upstream_version('1.0.22') %}
 {% set rpm_release = '1' %}
+{% set source = url_pypi() %}
 
 Name:           {{ py2name() }}
 Version:        {{ py2rpmversion() }}
@@ -9,13 +10,22 @@ Summary:        General Hardware Management Initiative (IPMI and others)
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
-Source0:        https://files.pythonhosted.org/packages/source/p/{{ pypi_name }}/{{ pypi_name }}-%{version}.tar.gz
+Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('devel') }}
-BuildRequires:  {{ py2pkg('oslotest') }}
-BuildRequires:  {{ py2pkg('pycrypto') }}
-Requires:       {{ py2pkg('pycrypto') }}
+BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pycrypto', py_versions=['py2', 'py3']) }}
+Requires:       {{ py2pkg('pycrypto')  }}
 BuildArch:      noarch
+%if 0%{?suse_version}
+Requires(post): update-alternatives
+Requires(postun): update-alternatives
+%else
+# on RDO, update-alternatives is in chkconfig
+Requires(post): chkconfig
+Requires(postun): chkconfig
+%endif
+%python_subpackages
 
 %description
 This is a pure python implementation of IPMI protocol.
@@ -23,13 +33,13 @@ This is a pure python implementation of IPMI protocol.
 pyghmicons and pyghmiutil are example scripts to show how one may incorporate
 this library into python code
 
-%package doc
+%package -n python-pyghmi-doc
 Summary:        General Hardware Management Initiative (IPMI and others) -- Documentation
 Group:          Documentation/HTML
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 
-%description doc
+%description -n python-pyghmi-doc
 This is a pure python implementation of IPMI protocol.
 
 pyghmicons and pyghmiutil are example scripts to show how one may incorporate
@@ -41,26 +51,42 @@ this library into python code
 sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
-%{py2_build}
+%{python_build}
+
 %{__python2} setup.py build_sphinx --builder=html
 rm -rf html/.{doctrees,buildinfo}
 
 %install
-%{py2_install}
+%{python_install}
+%python_clone -a %{buildroot}%{_bindir}/pyghmicons
+%python_clone -a %{buildroot}%{_bindir}/pyghmiutil
+%python_clone -a %{buildroot}%{_bindir}/virshbmc
+
+%post
+%python_install_alternative pyghmicons
+%python_install_alternative pyghmiutil
+%python_install_alternative virshbmc
+
+%postun
+%python_uninstall_alternative pyghmicons
+%python_uninstall_alternative pyghmiutil
+%python_uninstall_alternative virshbmc
 
 %check
-%{__python2} setup.py test
+%{python_expand rm -rf .testrepository
+$python setup.py testr
+}
 
-%files
+%files %{python_files}
 %doc README.md ChangeLog
 %license LICENSE
-%{_bindir}/pyghmicons
-%{_bindir}/pyghmiutil
-%{_bindir}/virshbmc
-%{python2_sitelib}/pyghmi*
-%{python2_sitelib}/*.egg-info
+%python_alternative %{_bindir}/pyghmicons
+%python_alternative %{_bindir}/pyghmiutil
+%python_alternative %{_bindir}/virshbmc
+%{python_sitelib}/pyghmi*
+%{python_sitelib}/*.egg-info
 
-%files doc
+%files -n python-pyghmi-doc
 %doc doc/build/html
 %license LICENSE
 
