@@ -11,13 +11,15 @@ Group:          Development/Languages/Python
 URL:            http://docs.openstack.org/developer/os-service-types
 Source0:        https://files.pythonhosted.org/packages/source/o/{{ pypi_name }}/{{ pypi_name }}-%{version}.tar.gz
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('keystoneauth1') }}
-BuildRequires:  {{ py2pkg('oslotest') }}
-BuildRequires:  {{ py2pkg('python-subunit') }}
-BuildRequires:  {{ py2pkg('requests-mock') }}
-BuildRequires:  {{ py2pkg('testscenarios') }}
+BuildRequires:  {{ py2pkg('keystoneauth1', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('python-subunit', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('requests-mock', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('pbr') }}
 BuildArch:      noarch
+%python_subpackages
 
 %description
 The OpenStack Service Types Authority contains information about official
@@ -27,12 +29,12 @@ library exists to allow for easy consumption of the data, along with a built-in
 version of the data to use in case network access is for some reason not
 possible and local caching of the fetched data.
 
-%package doc
+%package -n {{ pypi_name }}-doc
 Summary:        Documentation for OpenStack os-service-types library
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 
-%description doc
+%description -n {{ pypi_name }}-doc
 The OpenStack Service Types Authority contains information about official
 OpenStack services and their historical service-type aliases.
 The data is in JSON and the latest data should always be used. This simple
@@ -42,12 +44,12 @@ possible and local caching of the fetched data.
 This package contains the documentation.
 
 %prep
-%autosetup -n {{ pypi_name }}-%{version}
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
 sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
-%{py2_build}
+%{python_build}
 
 # generate html docs
 %{__python2} setup.py build_sphinx
@@ -55,18 +57,20 @@ sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
-%{py2_install}
+%{python_install}
 
 %check
-%{__python2} setup.py test
+%{python_expand rm -rf .testrepository
+$python setup.py testr
+}
 
-%files
+%files %{python_files}
 %license LICENSE
 %doc README.rst ChangeLog
-%{python2_sitelib}/os_service_types
-%{python2_sitelib}/*.egg-info
+%{python_sitelib}/os_service_types
+%{python_sitelib}/*.egg-info
 
-%files doc
+%files -n {{ pypi_name }}-doc
 %license LICENSE
 %doc doc/build/html
 
