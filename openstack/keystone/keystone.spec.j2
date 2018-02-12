@@ -201,7 +201,7 @@ exit 0
 %check
 # don't want to depend on hacking for package building
 rm keystone/tests/unit/test_hacking_checks.py
-ostestr
+ostestr --black-regex keystone.tests.unit.test_policy.GeneratePolicyFileTestCase.test_policy_generator_from_command_line
 
 %post
 %tmpfiles_create %{_tmpfilesdir}/keystone.conf
