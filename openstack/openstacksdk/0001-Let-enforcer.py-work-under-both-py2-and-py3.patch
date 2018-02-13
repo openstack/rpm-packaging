@@ -1,0 +1,38 @@
+From a523ac7fc25e618e01b86fb0350008cde821e37c Mon Sep 17 00:00:00 2001
+From: Tim Burke <tim.burke@gmail.com>
+Date: Wed, 31 Jan 2018 13:01:21 -0800
+Subject: [PATCH] Let enforcer.py work under both py2 and py3
+
+I guess the gate uses py3, but some of the post jobs still use py2?
+Whatever, it's easy enough to support both.
+
+See http://logs.openstack.org/f9/f9b96861577e26f0540158e00706e2505213f4bf/post/publish-openstack-sphinx-docs/58260e1/ara/result/8a18f0c0-d4b0-4cef-9d31-4cf79f3b4999/
+for an example failure.
+
+Change-Id: I37e507d37d4a41f5c55f2314bc074556f6262b50
+---
+ doc/source/enforcer.py | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/doc/source/enforcer.py b/doc/source/enforcer.py
+index b8dc182b..5dc0c6d0 100644
+--- a/doc/source/enforcer.py
++++ b/doc/source/enforcer.py
+@@ -1,5 +1,4 @@
+ import importlib
+-import itertools
+ import os
+ 
+ from bs4 import BeautifulSoup
+@@ -113,7 +112,7 @@ def build_finished(app, exception):
+ 
+     # TEMPORARY: Ignore the wait_for names when determining what is missing.
+     app.info("ENFORCER: Ignoring wait_for_* names...")
+-    missing = set(itertools.filterfalse(is_ignored, missing))
++    missing = set(x for x in missing if not is_ignored(x))
+ 
+     missing_count = len(missing)
+     app.info("ENFORCER: Found %d missing proxy methods "
+-- 
+2.16.1
+
