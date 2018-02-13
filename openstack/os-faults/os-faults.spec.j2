@@ -10,10 +10,12 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://os-faults.readthedocs.io
 Source0:        https://files.pythonhosted.org/packages/source/o/os_faults/os_faults-%{version}.tar.gz
-BuildRequires:  {{ ('ansible') }}
+BuildRequires:  {{ py2pkg('ansible', ('>=', '2.2')) }}
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('PyYAML') }}
 BuildRequires:  {{ py2pkg('appdirs') }}
+# rdo only has click version 6.3-1.el7
+#BuildRequires:  {{ py2pkg('click', ('>=', '6.7')) }}
 BuildRequires:  {{ py2pkg('click') }}
 BuildRequires:  {{ py2pkg('ddt') }}
 BuildRequires:  {{ py2pkg('devel') }}
@@ -34,9 +36,11 @@ BuildRequires:  {{ py2pkg('six') }}
 BuildRequires:  {{ py2pkg('testrepository') }}
 BuildRequires:  {{ py2pkg('testscenarios') }}
 BuildRequires:  {{ py2pkg('testtools') }}
-Requires:       {{ ('ansible') }}
+Requires:       {{ py2pkg('ansible', ('>=', '2.2')) }}
 Requires:       {{ py2pkg('PyYAML') }}
 Requires:       {{ py2pkg('appdirs') }}
+# rdo only has click version 6.3-1.el7
+#Requires:  {{ py2pkg('click', ('>=', '6.7')) }}
 Requires:       {{ py2pkg('click') }}
 Requires:       {{ py2pkg('iso8601') }}
 Requires:       {{ py2pkg('jsonschema') }}
