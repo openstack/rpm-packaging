@@ -69,9 +69,9 @@ Group:          Documentation
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 BuildRequires:  {{ py2pkg('reno') }}
-# missing on rdo ci, so disable building docs on it for now
-%if ! 0%{?rdo}
 BuildRequires:  {{ py2pkg('sphinx_rtd_theme') }}
+%if ! 0%{?rdo}
+# this package its dependency js-jquery is not available for RDO
 BuildRequires:  {{ py2pkg('sphinxcontrib-programoutput') }}
 %endif
 
@@ -86,13 +86,15 @@ This package contains the documentation.
 %prep
 %autosetup -p1 -n os_faults-%{version}
 %py_req_cleanup
+%if 0%{?rdo}
+sed -i '/sphinxcontrib.programoutput/d' doc/source/conf.py
+sed -i '/sphinx.ext.autosectionlabel/d' doc/source/conf.py
+%endif
 
 %build
 %{py2_build}
-%if ! 0%{?rdo}
 %{__python2} setup.py build_sphinx --builder=html
 rm -rf doc/build/html/.{doctrees,buildinfo}
-%endif
 
 %install
 %{py2_install}
