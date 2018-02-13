@@ -1,14 +1,21 @@
-%global pypi_name ceilometermiddleware
-Name:           {{ py2name('ceilometermiddleware') }}
-Version:        1.1.0
-Release:        0
+{% set pypi_name = 'ceilometermiddleware' %}
+{% set upstream_version = upstream_version('1.2.0') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
 Summary:        A library for metric and event data generation for Ceilometer
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            http://docs.openstack.org/developer/ceilometermiddleware
-Source0:        https://files.pythonhosted.org/packages/source/c/%{pypi_name}/%{pypi_name}-%{version}.tar.gz
+Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  python-devel
+BuildRequires:  {{ py2pkg('betamax') }}
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('keystoneauth1') }}
+BuildRequires:  {{ py2pkg('python-keystoneclient') }}
 BuildRequires:  {{ py2pkg('mock') }}
 BuildRequires:  {{ py2pkg('oslo.config') }}
 BuildRequires:  {{ py2pkg('oslo.messaging') }}
@@ -19,6 +26,8 @@ BuildRequires:  {{ py2pkg('pycadf') }}
 BuildRequires:  {{ py2pkg('python-subunit') }}
 BuildRequires:  {{ py2pkg('setuptools') }}
 BuildRequires:  {{ py2pkg('testrepository') }}
+Requires:       {{ py2pkg('keystoneauth1') }}
+Requires:       {{ py2pkg('python-keystoneclient') }}
 Requires:       {{ py2pkg('oslo.config') }}
 Requires:       {{ py2pkg('oslo.messaging') }}
 Requires:       {{ py2pkg('oslo.utils') }}
@@ -44,7 +53,7 @@ event data generation to be consumed by Ceilometer.
 This package contains documentation in HTML format.
 
 %prep
-%autosetup -n %{pypi_name}-%{version}
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
 
 %build
@@ -64,8 +73,8 @@ rm -rf html/.{doctrees,buildinfo}
 %files
 %license LICENSE
 %doc README.rst
-%{python2_sitelib}/%{pypi_name}
-%{python2_sitelib}/%{pypi_name}-*.egg-info
+%{python2_sitelib}/{{ pypi_name }}
+%{python2_sitelib}/{{ pypi_name }}-*.egg-info
 
 %files doc
 %license LICENSE
