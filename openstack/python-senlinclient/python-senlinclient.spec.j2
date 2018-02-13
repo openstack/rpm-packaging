@@ -1,6 +1,6 @@
 %global sname python-senlinclient
 Name:           {{ py2name('python-senlinclient') }}
-Version:        1.5.0
+Version:        1.7.0
 Release:        0
 Summary:        Python API and CLI for OpenStack Senlin
 License:        {{ license('Apache-2.0')}}
@@ -50,8 +50,8 @@ BuildArch:      noarch
 %description
 OpenStack Clustering service Provisioning API Client Library
 
-This is a client for the OpenStack Senlin API. It provides a Python API (the
-senlinclient module) and a command-line interface (senlin).
+This is a client for the OpenStack Senlin API.
+It provides a Python API (the senlinclient module).
 
 %package doc
 Summary:        Documentation for OpenStack Senlin API Client
@@ -61,8 +61,8 @@ BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 BuildRequires:  {{ py2pkg('reno') }}
 
 %description doc
-This is a client for the OpenStack Senlin API and a command-line script (senlin).
-Each implements 100% of the OpenStack Senlin API. This package contains
+This is a client for the OpenStack Senlin API.
+It implements 100% of the OpenStack Senlin API. This package contains
 auto-generated documentation.
 
 %prep
@@ -79,8 +79,6 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
 %{py2_install}
-# bash completion
-install -p -D -m 644 tools/senlin.bash_completion %{buildroot}%{_sysconfdir}/bash_completion.d/senlin.bash_completion
 
 %check
 %{__python2} setup.py testr
@@ -88,11 +86,8 @@ install -p -D -m 644 tools/senlin.bash_completion %{buildroot}%{_sysconfdir}/bas
 %files
 %license LICENSE
 %doc README.rst
-%{_bindir}/senlin
 %{python2_sitelib}/senlinclient
 %{python2_sitelib}/*.egg-info
-%{_bindir}/senlin
-%{_sysconfdir}/bash_completion.d/senlin.bash_completion
 
 %files doc
 %license LICENSE
