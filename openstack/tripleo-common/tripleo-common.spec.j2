@@ -1,7 +1,7 @@
 %global sname tripleo-common
-%global sversion 7.6.5
+%global sversion 7.6.8
 Name:           {{ py2name('tripleo-common') }}
-Version:        7.6.5
+Version:        7.6.8
 Release:        0
 Summary:        Python library for code used by TripleO projects
 License:        {{ license('Apache-2.0') }}
@@ -28,6 +28,7 @@ BuildRequires:  {{ py2pkg('python-subunit') }}
 BuildRequires:  {{ py2pkg('testrepository') }}
 BuildRequires:  {{ py2pkg('testscenarios') }}
 BuildRequires:  {{ py2pkg('testtools') }}
+BuildRequires:  {{ py2pkg('python-zaqarclient') }}
 Requires:       {{ py2pkg('Babel') }}
 Requires:       {{ py2pkg('GitPython') }}
 Requires:       {{ py2pkg('Jinja2') }}
