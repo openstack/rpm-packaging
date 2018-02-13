@@ -11,6 +11,7 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
+Patch1:         0001-Fix-breaking-unit-tests-due-to-iso8601-changes.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('Babel', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('ddt', py_versions=['py2', 'py3']) }}
@@ -55,6 +56,7 @@ Documentation for OpenStack utils library.
 
 %prep
 %autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
+
 sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 %py_req_cleanup
 
