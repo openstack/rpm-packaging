@@ -1,7 +1,7 @@
 %global sname tripleo-common
-%global sversion 8.2.0
+%global sversion 8.4.0
 Name:           {{ py2name('tripleo-common') }}
-Version:        8.2.0
+Version:        8.4.0
 Release:        0
 Summary:        Python library for code used by TripleO projects
 License:        {{ license('Apache-2.0') }}
@@ -28,6 +28,7 @@ BuildRequires:  {{ py2pkg('testrepository') }}
 BuildRequires:  {{ py2pkg('testscenarios') }}
 BuildRequires:  {{ py2pkg('testtools') }}
 BuildRequires:  {{ py2pkg('python-zaqarclient') }}
+Requires:       ansible
 Requires:       {{ py2pkg('Babel') }}
 Requires:       {{ py2pkg('GitPython') }}
 Requires:       {{ py2pkg('Jinja2') }}
@@ -37,8 +38,11 @@ Requires:       {{ py2pkg('python-glanceclient') }}
 Requires:       {{ py2pkg('python-heatclient') }}
 Requires:       {{ py2pkg('python-ironic-inspector-client') }}
 Requires:       {{ py2pkg('python-ironicclient') }}
+Requires:       {{ py2pkg('keystoneauth1') }}
+Requires:       {{ py2pkg('python-keystoneclient') }}
 Requires:       {{ py2pkg('mistral-lib') }}
 Requires:       {{ py2pkg('python-mistralclient') }}
+Requires:       {{ py2pkg('netaddr') }}
 Requires:       {{ py2pkg('netifaces') }}
 Requires:       {{ py2pkg('python-novaclient') }}
 Requires:       {{ py2pkg('oslo.concurrency') }}
@@ -108,6 +112,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %{_bindir}/bootstrap_host_only_exec
 %{_bindir}/bootstrap_host_only_eval
 %{_datadir}/%{sname}
+%{_datadir}/ansible
 
 %files doc
 %license LICENSE
