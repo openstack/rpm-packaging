@@ -15,31 +15,25 @@ BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('PyYAML') }}
 BuildRequires:  {{ py2pkg('appdirs') }}
 BuildRequires:  {{ py2pkg('click') }}
+BuildRequires:  {{ py2pkg('ddt') }}
 BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('iso8601') }}
 BuildRequires:  {{ py2pkg('jsonschema') }}
+BuildRequires:  {{ py2pkg('libvirt-python') }}
+BuildRequires:  {{ py2pkg('mock') }}
 BuildRequires:  {{ py2pkg('oslo.i18n') }}
 BuildRequires:  {{ py2pkg('oslo.serialization') }}
 BuildRequires:  {{ py2pkg('oslo.utils') }}
+BuildRequires:  {{ py2pkg('oslotest') }}
 BuildRequires:  {{ py2pkg('pbr') }}
 BuildRequires:  {{ py2pkg('pyghmi') }}
+BuildRequires:  {{ py2pkg('pytest') }}
+BuildRequires:  {{ py2pkg('python-subunit') }}
 BuildRequires:  {{ py2pkg('setuptools') }}
 BuildRequires:  {{ py2pkg('six') }}
-# tests requirements
-# disabled until all are available in ci
-# BuildRequires:  {{ py2pkg('coverage') }}
-#BuildRequires:  {{ py2pkg('ddt') }}
-# BuildRequires:  {{ py2pkg('hacking') }}
-#BuildRequires:  {{ py2pkg('mock') }}
-#BuildRequires:  {{ py2pkg('oslotest') }}
-#BuildRequires:  {{ py2pkg('pytest') }}
-# BuildRequires:  {{ py2pkg('pytest-cov') }}
-# BuildRequires:  {{ py2pkg('pytest-html') }}
-# BuildRequires:  {{ py2pkg('pytest-logging') }}
-#BuildRequires:  {{ py2pkg('python-subunit') }}
-#BuildRequires:  {{ py2pkg('testrepository') }}
-#BuildRequires:  {{ py2pkg('testscenarios') }}
-#BuildRequires:  {{ py2pkg('testtools') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testscenarios') }}
+BuildRequires:  {{ py2pkg('testtools') }}
 Requires:       {{ ('ansible') }}
 Requires:       {{ py2pkg('PyYAML') }}
 Requires:       {{ py2pkg('appdirs') }}
@@ -98,8 +92,11 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %{py2_install}
 
 %check
-# disabled until rest of requirements are available
 #%{__python2} setup.py test
+# the below instead of the above is to avoid pulling in requirements for coverage
+export PYTHONPATH=.
+export PATH=$PATH:%{buildroot}%{_bindir}
+py.test -vvvv --durations=10 "os_faults/tests/unit"
 
 %files
 %defattr(-,root,root,-)
