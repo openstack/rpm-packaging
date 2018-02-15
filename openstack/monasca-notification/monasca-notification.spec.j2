@@ -1,5 +1,5 @@
 {% set pypi_name = 'monasca-notification' %}
-{% set upstream_version = upstream_version('1.7.0') %}
+{% set upstream_version = upstream_version('1.13.0') %}
 {% set rpm_release = '1' %}
 
 %global sname   monasca-notification
@@ -18,10 +18,14 @@ Source0:        https://files.pythonhosted.org/packages/source/m/%{sname}/%{snam
 Source1:        openstack-%{sname}.service
 Source2:        %{sname}.yaml
 BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('Jinja2') }}
+BuildRequires:  {{ py2pkg('SQLAlchemy') }}
 BuildRequires:  {{ py2pkg('mock') }}
 BuildRequires:  {{ py2pkg('monasca-common') }}
 BuildRequires:  {{ py2pkg('monasca-statsd') }}
 BuildRequires:  {{ py2pkg('os-testr') }}
+BuildRequires:  {{ py2pkg('oslo.config') }}
+BuildRequires:  {{ py2pkg('oslo.log') }}
 BuildRequires:  {{ py2pkg('oslotest') }}
 BuildRequires:  {{ py2pkg('pbr') }}
 BuildRequires:  {{ py2pkg('requests') }}
@@ -49,9 +53,14 @@ whenever a new process joins or leaves the working set.
 %package -n python-%{sname}
 Summary:        Python core module for monasca-notification
 Group:          Development/Languages/Python
+Requires:       {{ py2pkg('Jinja2') }}
 Requires:       {{ py2pkg('PyYAML') }}
+Requires:       {{ py2pkg('SQLAlchemy') }}
+Requires:       {{ py2pkg('debtcollector') }}
 Requires:       {{ py2pkg('monasca-common') }}
 Requires:       {{ py2pkg('monasca-statsd') }}
+Requires:       {{ py2pkg('oslo.config') }}
+Requires:       {{ py2pkg('oslo.log') }}
 Requires:       {{ py2pkg('requests') }}
 Requires:       {{ py2pkg('six') }}
 
@@ -94,7 +103,11 @@ ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}
 %check
 export OS_TEST_PATH=./tests
 find . -type f -name *.pyc -delete
-PYTHONPATH=. %{__python2} setup.py testr
+# we dont have the jira module currently
+rm tests/test_jira_notification.py
+export PYTHONPATH=.
+# test_overriding needs jira
+ostestr --black-regex '^tests.test_config.TestYamlOverriding.test_overriding'
 
 %pre
 # create monasca group and monasca-notification user
