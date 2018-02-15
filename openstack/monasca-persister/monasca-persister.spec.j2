@@ -1,5 +1,5 @@
 {% set pypi_name = 'monasca-persister' %}
-{% set upstream_version = upstream_version('1.8.0') %}
+{% set upstream_version = upstream_version('1.10.0') %}
 {% set rpm_release = '1' %}
 
 %global sname {{ pypi_name }}
@@ -14,6 +14,7 @@ Source0:        https://files.pythonhosted.org/packages/source/m/%{sname}/%{snam
 Source1:        openstack-monasca-persister.service
 Source2:        openstack-monasca-persister.logrotate
 BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('elasticsearch') }}
 BuildRequires:  {{ py2pkg('mock') }}
 BuildRequires:  {{ py2pkg('monasca-common') }}
 BuildRequires:  {{ py2pkg('nose') }}
@@ -44,6 +45,7 @@ Data is read from Kafka queue and saved either in InfluxDB or Cassandra
 %package -n python-{{ pypi_name }}
 Summary:        Consumes metrics and alarm state transitions from message queue and stores them in database
 Group:          Development/Languages/Python
+Requires:       {{ py2pkg('cassandra-driver') }}
 Requires:       {{ py2pkg('influxdb') }}
 Requires:       {{ py2pkg('monasca-common') }}
 Requires:       {{ py2pkg('oslo.config') }}
