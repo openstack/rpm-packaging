@@ -1,0 +1,23 @@
+diff --git a/requirements.txt b/requirements.txt
+index df52d78..d51031b 100644
+--- a/requirements.txt
++++ b/requirements.txt
+@@ -15,5 +15,4 @@ Babel!=2.4.0,>=2.3.4 # BSD
+ oslo.i18n!=3.15.2,>=2.1.0 # Apache-2.0
+ oslo.log>=3.22.0 # Apache-2.0
+ oslo.utils>=3.20.0 # Apache-2.0
+-oslosphinx>=4.7.0 # Apache-2.0
+ oslo.serialization!=2.19.1,>=1.10.0 # Apache-2.0
+diff --git a/test-requirements.txt b/test-requirements.txt
+index eb093a4..d3101ff 100644
+--- a/test-requirements.txt
++++ b/test-requirements.txt
+@@ -11,6 +11,8 @@ python-subunit>=0.0.18 # Apache-2.0/BSD
+ sphinx>=1.6.2 # BSD
+ testrepository>=0.0.18 # Apache-2.0/BSD
+ testtools>=1.4.0 # MIT
++oslosphinx>=4.7.0 # Apache-2.0
++openstackdocstheme>=1.16.0 # Apache-2.0
+ 
+ # releasenotes
+ reno!=2.3.1,>=1.8.0 # Apache-2.0

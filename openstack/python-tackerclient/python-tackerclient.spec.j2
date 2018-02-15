@@ -7,6 +7,8 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            http://launchpad.net/%{name}
 Source0:        https://pypi.io/packages/source/p/%{sname}/%{sname}-%{version}.tar.gz
+# https://review.openstack.org/#/c/504056/
+Patch1:         0001-Move-oslosphinx-and-openstackdocstheme-to-test-requi.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('cliff-tablib') }}
 BuildRequires:  {{ py2pkg('devel') }}
