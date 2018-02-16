@@ -327,7 +327,7 @@ crudini --set %{setup_cfg} entry_points ceilometer.sample.publisher $"$pub_list"
 # add monasca-ceilometer storage driver to entry points
 driver_list=`crudini --get %{setup_cfg} entry_points ceilometer.metering.storage`
 driver_list="$driver_list"$'\n'"monasca = ceilometer.storage.impl_monasca:Connection"
-crudini --set %{setup_cfg} entry_points ceilometer.sample.publisher $"$driver_list"
+crudini --set %{setup_cfg} entry_points ceilometer.metering.storage $"$driver_list"
 
 %build
 #change to ceilometer directory
