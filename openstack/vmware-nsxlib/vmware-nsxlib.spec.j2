@@ -1,0 +1,87 @@
+{% set pypi_name = 'vmware-nsxlib' %}
+{% set source = fetch_source('http://tarballs.openstack.org/vmware-nsxlib/vmware-nsxlib-stable-pike.tar.gz') %}
+{% set upstream_version = upstream_version() %}
+{% set rpm_release = '1' %}
+
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
+Summary:        VMware NSX python library
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+Url:            http://launchpad.net/vmware-nsxlib
+Source0:        {{ source }}
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('neutron-lib') }}
+BuildRequires:  {{ py2pkg('os-testr') }}
+BuildRequires:  {{ py2pkg('oslo.log') }}
+BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('pyOpenSSL') }}
+BuildRequires:  {{ py2pkg('requests-mock') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testresources') }}
+BuildRequires:  {{ py2pkg('testscenarios') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+Requires:       {{ py2pkg('enum34') }}
+Requires:       {{ py2pkg('eventlet') }}
+Requires:       {{ py2pkg('netaddr') }}
+Requires:       {{ py2pkg('neutron-lib') }}
+Requires:       {{ py2pkg('oslo.i18n') }}
+Requires:       {{ py2pkg('oslo.log') }}
+Requires:       {{ py2pkg('oslo.serialization') }}
+Requires:       {{ py2pkg('oslo.service') }}
+Requires:       {{ py2pkg('oslo.utils') }}
+Requires:       {{ py2pkg('pyOpenSSL') }}
+Requires:       {{ py2pkg('six') }}
+Requires:       {{ py2pkg('tenacity') }}
+BuildArch:      noarch
+
+%description
+vmware-nsxlib is a python library that interfaces with VMWare NSX
+
+%package -n python-vmware-nsxlib-doc
+Summary:        Documentation for vmware-nsxlib
+Group:          Documentation/HTML
+BuildRequires:  fdupes
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+
+%description -n python-vmware-nsxlib-doc
+vmware-nsxlib is a python library that interfaces with VMWare NSX
+This package contains the documentation
+
+%prep
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
+%py_req_cleanup
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
+
+%build
+%{py2_build}
+# generate html docs
+%{__python2} setup.py build_sphinx
+# remove the sphinx-build leftovers
+rm -rf doc/build/html/.{doctrees,buildinfo}
+%fdupes doc/build/html/
+
+%install
+%{py2_install}
+# remove duplicates
+%fdupes %{buildroot}%{python_sitelib}
+
+%check
+ostestr
+
+%files
+%defattr(-,root,root,-)
+%license LICENSE
+%{python_sitelib}/vmware_nsxlib
+%{python_sitelib}/*.egg-info
+
+%files -n python-vmware-nsxlib-doc
+%license LICENSE
+%doc README.rst doc/build/html
+
+%changelog
