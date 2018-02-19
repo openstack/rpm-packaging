@@ -1,6 +1,9 @@
 %global pypi_name tooz
+%if 0%{?rhel} || 0%{?fedora}
+%global rdo 1
+%endif
 Name:           {{ py2name('tooz') }}
-Version:        1.59.0
+Version:        1.60.0
 Release:        0
 Summary:        Coordination library for distributed systems
 License:        {{ license('Apache-2.0') }}
@@ -33,7 +36,7 @@ Requires:       {{ py2pkg('fasteners') }}
 Requires:       {{ py2pkg('futures') }}
 Requires:       {{ py2pkg('futurist') }}
 Requires:       {{ py2pkg('iso8601') }}
-Requires:       {{ py2pkg('msgpack-python') }}
+Requires:       {{ py2pkg('msgpack') }}
 Requires:       {{ py2pkg('oslo.serialization') }}
 Requires:       {{ py2pkg('oslo.utils') }}
 Requires:       {{ py2pkg('six') }}
@@ -76,9 +79,11 @@ sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 rm -rf html/.{doctrees,buildinfo}
 
 %check
+%if ! 0%{?rdo}
 export TOOZ_TEST_DRIVERS="memcached"
 export PATH=%{_prefix}/sbin:$PATH
 bash run-tests.sh
+%endif
 
 %install
 %py2_install
