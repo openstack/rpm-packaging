@@ -1,0 +1,74 @@
+{% set pypi_name = 'designate-tempest-plugin' %}
+{% set rpm_release = '1' %}
+{% set source=fetch_source('http://tarballs.openstack.org/designate-tempest-plugin/designate-tempest-plugin-master.tar.gz') %}
+{% set upstream_version = upstream_version() %}
+
+%global sname designate-tempest-plugin
+%global with_doc 0
+%global common_desc \
+This package contains Tempest tests to cover the designate project. \
+Additionally it provides a plugin to automatically load these tests into Tempest.
+Name:          {{ py2pkg('designate-tempest-plugin') }}
+Version:       {{ py2rpmversion() }}
+Release:       {{ py2rpmrelease() }}
+Summary:       Tempest plugin for the designate project.
+License:       {{ license('Apache-2.0') }}
+URL:           https://git.openstack.org/cgit/openstack/{{ pypi_name }}
+Source0:       {{ source|basename }}
+BuildRequires: openstack-macros
+BuildRequires: {{ py2pkg('devel') }}
+BuildRequires: {{ py2pkg('pbr') }}
+BuildRequires: {{ py2pkg('setuptools') }}
+Requires:      {{ py2pkg('Tempest') }}
+Requires:      {{ py2pkg('ddt') }}
+Requires:      {{ py2pkg('dnspython') }}
+Requires:      {{ py2pkg('testtools') }}
+BuildArch:     noarch
+
+%description
+%{common_desc}
+
+%if 0%{?with_doc}
+%package doc
+Summary:    Documentation for designate tempest plugin
+BuildRequires: {{ py2pkg('Sphinx') }}
+BuildRequires: {{ py2pkg('oslosphinx') }}
+
+%description doc
+It contains the documentation for the designate tempest tests.
+%endif
+
+%prep
+%autosetup -n %{sname}-{{ upstream_version }}
+
+# Let's handle dependencies ourseleves
+%py_req_cleanup
+# Remove bundled egg-info
+rm -rf %{module}.egg-info
+
+%build
+%{py2_build}
+
+# Generate Docs
+%if 0%{?with_doc}
+%{__python2} setup.py build_sphinx
+# remove the sphinx build leftovers
+rm -rf doc/build/html/.{doctrees,buildinfo}
+%endif
+
+%install
+%{py2_install}
+
+%files
+%license LICENSE
+%doc README.rst
+%{python2_sitelib}/designate_tempest_plugin
+%{python2_sitelib}/*.egg-info
+
+%if 0%{?with_doc}
+%files doc
+%doc doc/build/html
+%license LICENSE
+%endif
+
+%changelog
