@@ -11,8 +11,9 @@ Additionally it provides a plugin to automatically load these tests into Tempest
 Name:          {{ py2pkg('designate-tempest-plugin') }}
 Version:       {{ py2rpmversion() }}
 Release:       {{ py2rpmrelease() }}
-Summary:       Tempest plugin for the designate project.
+Summary:       Tempest plugin for the designate project
 License:       {{ license('Apache-2.0') }}
+Group:         Development/Languages/Python
 URL:           https://git.openstack.org/cgit/openstack/{{ pypi_name }}
 Source0:       {{ source|basename }}
 BuildRequires: openstack-macros
