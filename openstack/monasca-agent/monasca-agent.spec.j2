@@ -35,6 +35,7 @@ Source3:        %{name}.tmpfiles
 Source4:        %{name}.polkit
 Patch1:         libvirt-aggregate-status.patch
 Patch2:         monitor-cassandra-538096.patch
+Patch3:         0001-Avoid-overwriting-sys.path-ip-command.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('PyYAML') }}
 BuildRequires:  {{ py2pkg('devel') }}
