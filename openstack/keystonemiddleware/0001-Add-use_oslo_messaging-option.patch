@@ -1,0 +1,97 @@
+From 18d83794dcbf997ef51169c58489c8837beb7b21 Mon Sep 17 00:00:00 2001
+From: Stefan Nica <snica@suse.com>
+Date: Mon, 19 Feb 2018 19:07:42 +0100
+Subject: [PATCH] Add option to disable using oslo_message notifier
+
+Add a configuration option, 'use_oslo_messaging', to indicate whether
+to use oslo_messaging notifier. It is set to true for backwards
+compatibility.
+We can't use audit middleware with services like Swift, which have no
+dependency on Oslo and does not work well with oslo_log. Swift uses rsyslog.
+Currently, audit middleware indiscriminately chooses oslo_messaging if the
+package is installed. This is problematic if Swift proxy is on the same
+controller as any service which consumes oslo_messaging. With this new option,
+Swift can now safely consume audit middleware by electing to use local
+log notifier instead of oslo_messaging.
+
+Change-Id: I87bf857c20e4b78e97d40dcc51a1b4ff0014abb2
+Closes-Bug: #1695038
+(cherry picked from commit e83bd0bc3c7973e45b677c1c7007770e3f4873b4)
+---
+
+diff --git a/keystonemiddleware/audit/__init__.py b/keystonemiddleware/audit/__init__.py
+index ea8f292..331a894 100644
+--- a/keystonemiddleware/audit/__init__.py
++++ b/keystonemiddleware/audit/__init__.py
+@@ -42,6 +42,13 @@
+ AUDIT_MIDDLEWARE_GROUP = 'audit_middleware_notifications'
+ 
+ _AUDIT_OPTS = [
++    cfg.BoolOpt('use_oslo_messaging',
++                default=True,
++                help='Indicate whether to use oslo_messaging as the notifier. '
++                     'If set to False, the local logger will be used as the '
++                     'notifier. If set to True, the oslo_messaging package '
++                     'must also be present. Otherwise, the local will be used '
++                     'instead.'),
+     cfg.StrOpt('driver',
+                help='The Driver to handle sending notifications. Possible '
+                     'values are messaging, messagingv2, routing, log, test, '
+diff --git a/keystonemiddleware/audit/_notifier.py b/keystonemiddleware/audit/_notifier.py
+index 8d77eaa..63234c0 100644
+--- a/keystonemiddleware/audit/_notifier.py
++++ b/keystonemiddleware/audit/_notifier.py
+@@ -41,7 +41,7 @@
+ 
+ 
+ def create_notifier(conf, log):
+-    if oslo_messaging:
++    if oslo_messaging and conf.get('use_oslo_messaging'):
+         transport = oslo_messaging.get_notification_transport(
+             conf.oslo_conf_obj,
+             url=conf.get('transport_url'))
+diff --git a/keystonemiddleware/tests/unit/audit/test_audit_oslo_messaging.py b/keystonemiddleware/tests/unit/audit/test_audit_oslo_messaging.py
+index 570972d..6dcd837 100644
+--- a/keystonemiddleware/tests/unit/audit/test_audit_oslo_messaging.py
++++ b/keystonemiddleware/tests/unit/audit/test_audit_oslo_messaging.py
+@@ -12,6 +12,7 @@
+ 
+ import mock
+ 
++from keystonemiddleware import audit
+ from keystonemiddleware.tests.unit.audit import base
+ 
+ 
+@@ -80,3 +81,13 @@
+         self.assertTrue(m.called)
+         # make sure first call kwarg 'url' is same as provided transport_url
+         self.assertEqual(transport_url, m.call_args_list[0][1]['url'])
++
++    def test_do_not_use_oslo_messaging(self):
++        self.cfg.config(use_oslo_messaging=False,
++                        group='audit_middleware_notifications')
++        audit_middleware = self.create_simple_middleware()
++
++        # make sure it is using a local notifier instead of oslo_messaging
++        self.assertTrue(
++            isinstance(audit_middleware._notifier,
++                       audit._notifier._LogNotifier))
+diff --git a/releasenotes/notes/bug-1695038-2cbedcabf8ecc057.yaml b/releasenotes/notes/bug-1695038-2cbedcabf8ecc057.yaml
+new file mode 100644
+index 0000000..340aa64
+--- /dev/null
++++ b/releasenotes/notes/bug-1695038-2cbedcabf8ecc057.yaml
+@@ -0,0 +1,13 @@
++---
++features:
++  - >
++    [`bug 1695038 <https://bugs.launchpad.net/keystonemiddleware/+bug/1695038>`_]
++    The use_oslo_messaging configuration option is added for services such as
++    Swift, which need the audit middleware to use the local logger instead of
++    the oslo.messaging notifier regardless of whether the oslo.messaging package
++    is present or not.
++    Leave this option set to its default True value to keep the previous behavior
++    unchanged - the audit middleware will use the oslo.messaging notifier if the
++    oslo.messaging package is present, and the local logger otherwise.
++    Services that rely on the local logger for audit notifications must set this
++    option to False.

@@ -7,6 +7,8 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            https://launchpad.net/%{sname}
 Source0:        https://pypi.io/packages/source/k/%{sname}/%{sname}-%{version}.tar.gz
+# https://review.openstack.org/#/c/546264/
+Patch1:         0001-Add-use_oslo_messaging-option.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('WebOb') }}
 BuildRequires:  {{ py2pkg('WebTest') }}
