@@ -151,6 +151,8 @@ PYTHONPATH=. oslo-config-generator --config-file config-generator/scheduler.conf
 install -d -m 755 %{buildroot}%{_sysconfdir}/freezer
 install -d -m 755 %{buildroot}%{_localstatedir}/{lib,log}/freezer
 install -d -m 755 %{buildroot}%{_sysconfdir}/freezer/freezer.conf.d/
+install -d -m 750 %{buildroot}%{_sysconfdir}/freezer/scheduler/
+install -d -m 750 %{buildroot}%{_sysconfdir}/freezer/scheduler/conf.d/
 install -p -D -m 640 etc/scheduler.conf.sample %{buildroot}%{_sysconfdir}/freezer/scheduler.conf
 install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/openstack-freezer
 install -p -D -m 755 %{SOURCE2} %{buildroot}%{_unitdir}/%{name}-scheduler.service
@@ -185,6 +187,8 @@ OS_TEST_PATH=./freezer/tests/unit python setup.py testr
 %doc README.rst
 %dir %attr(0750, root, freezer) %{_sysconfdir}/freezer/
 %dir %attr(0750, root, freezer) %{_sysconfdir}/freezer/freezer.conf.d/
+%dir %attr(0750, root, freezer) %{_sysconfdir}/freezer/scheduler/
+%dir %attr(0750, root, freezer) %{_sysconfdir}/freezer/scheduler/conf.d/
 %config(noreplace) %attr(0640, root, freezer) %{_sysconfdir}/freezer/scheduler.conf
 %config(noreplace) %{_sysconfdir}/logrotate.d/openstack-freezer
 %dir %attr(0755, freezer, freezer) %{_localstatedir}/lib/freezer
