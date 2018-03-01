@@ -18,6 +18,8 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            https://wiki.openstack.org/wiki/Monasca
 Source0:        {{ source|basename }}
+# PATCH-FIX-UPSTREAM 0001-Fixed-the-problem-for-SSL-certificate-access-failure.patch -- https://review.openstack.org/#/c/548103/
+Patch0:         0001-Fixed-the-problem-for-SSL-certificate-access-failure.patch
 Patch1:         allow-raw-grafana-links.patch
 Patch2:         drilldown-dimensions.patch
 BuildRequires:  fdupes
