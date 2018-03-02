@@ -38,7 +38,7 @@ CFLAGS="%{optflags}" %{__python2} %{py_setup} %{?py_setup_args} install -O1 --sk
 install -d -m 755 %{buildroot}/%{openstack_test_package_dir} \
 # Some packages differ here, try to install as much as possible: \
 cp -av \\\
-       README.md README.rst PKG-INFO .testr.conf .*tests bin \\\
+       README.md README.rst PKG-INFO .testr.conf .stestr.conf .*tests bin \\\
        etc examples run_tests.* setup.cfg setup.py \\\
        smoketests static test tests tools tox.ini \\\
    %{buildroot}/%{openstack_test_package_dir} || : \
