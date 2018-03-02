@@ -436,7 +436,8 @@ mkdir -p %{buildroot}%{_localstatedir}/cache/ceilometer
 
 %files
 %defattr(-,root,root)
-%doc LICENSE README.rst
+%license LICENSE
+%doc README.rst
 %{_bindir}/ceilometer-upgrade
 %{_bindir}/ceilometer-send-sample
 %{_bindir}/ceilometer-rootwrap
@@ -461,7 +462,6 @@ mkdir -p %{buildroot}%{_localstatedir}/cache/ceilometer
 
 %files -n python-{{ pypi_name }}
 %defattr(-,root,root,-)
-%doc LICENSE
 %{python_sitelib}/%{ceilometer_name}/
 %{python_sitelib}/%{ceilometer_name}-*.egg-info
 # Part of test subpackage (except the tempest tests)

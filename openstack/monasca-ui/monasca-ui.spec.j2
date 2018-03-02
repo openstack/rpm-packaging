@@ -79,7 +79,8 @@ su %{apache_user} -s /bin/sh -c "python %{http_dashboard_dir}/manage.py collects
 %files
 %{http_dashboard_dir}/openstack_dashboard/enabled/_50_admin_add_monitoring_panel.py
 %{http_dashboard_dir}/openstack_dashboard/conf/monitoring_policy.json
-%doc ChangeLog README.md LICENSE
+%license LICENSE
+%doc ChangeLog README.md
 
 %if 0%{?suse_version}
 %files -n grafana-monasca-ui-drilldown
@@ -88,8 +89,8 @@ su %{apache_user} -s /bin/sh -c "python %{http_dashboard_dir}/manage.py collects
 %endif
 
 %files -n {{ py2pkg('horizon-plugin-monasca-ui') }}
-%doc README.md
 %license LICENSE
+%doc README.md
 %{python2_sitelib}/monitoring
 %{python2_sitelib}/monasca_ui-*.egg-info
 %exclude %{http_dashboard_dir}/openstack_dashboard/enabled/_50_admin_add_monitoring_panel.pyc
