@@ -1,5 +1,5 @@
 {% set pypi_name = 'openstackdocstheme' %}
-{% set upstream_version = upstream_version('1.18.1') %}
+{% set upstream_version = upstream_version('1.19.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -11,8 +11,6 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://launchpad.net/%{sname}
 Source0:        {{ source }}
-# https://review.openstack.org/538006, to fix logger.warn issue
-Patch0001:      0001-Fix-typo-in-logger.warning-call.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('Sphinx', py_versions=['py2', 'py3']) }}
