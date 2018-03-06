@@ -1,0 +1,31 @@
+From c9173c213fa90ae80ac5f78a8eef70cbd4c2358e Mon Sep 17 00:00:00 2001
+From: Dirk Mueller <dirk@dmllr.de>
+Date: Sun, 29 Oct 2017 10:03:17 +0100
+Subject: [PATCH] Always set ignoreskipactivation on snapshot creation
+
+There seem to be different defaults in distros so we
+enforce the flag to be set.
+
+Change-Id: Ia166ee66e9983a54241e8b609202f58569552fab
+(cherry picked from commit 99f67090bc6949ab632de53fb6caa8c0050ce882)
+---
+ os_brick/local_dev/lvm.py | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/os_brick/local_dev/lvm.py b/os_brick/local_dev/lvm.py
+index 9cf81e1..3e8f32b 100644
+--- a/os_brick/local_dev/lvm.py
++++ b/os_brick/local_dev/lvm.py
+@@ -591,7 +591,8 @@ class LVM(executor.Executor):
+             LOG.error("Trying to create snapshot by non-existent LV: %s",
+                       source_lv_name)
+             raise exception.VolumeDeviceNotFound(device=source_lv_name)
+-        cmd = LVM.LVM_CMD_PREFIX + ['lvcreate', '--name', name, '--snapshot',
++        cmd = LVM.LVM_CMD_PREFIX + ['lvcreate', '--name', name,
++                                    '-k', 'y', '--snapshot',
+                                     '%s/%s' % (self.vg_name, source_lv_name)]
+         if lv_type != 'thin':
+             size = source_lvref['size']
+-- 
+2.16.2
+
