@@ -9,6 +9,8 @@ Url:            http://launchpad.net/%{sname}
 Source0:        https://pypi.io/packages/source/p/%{sname}/%{sname}-%{version}.tar.gz
 # From https://review.openstack.org/#/c/538186/
 Patch1:         0001-Pass-OSC-interface-through-to-barbican-plugin.patch
+# backport of https://review.openstack.org/#/c/550621/
+Patch2:         0001-Updating-time-for-functional-tests.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('cliff') }}
 BuildRequires:  {{ py2pkg('devel') }}
