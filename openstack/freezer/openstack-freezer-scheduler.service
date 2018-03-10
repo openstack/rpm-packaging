@@ -4,7 +4,8 @@ After=syslog.target network.target
 
 [Service]
 Type=simple
-User=freezer
+User=root
+Group=root
 ExecStart=/usr/bin/freezer-scheduler start
 Restart=on-failure
 
