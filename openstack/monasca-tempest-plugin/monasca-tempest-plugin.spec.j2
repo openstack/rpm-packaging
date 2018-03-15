@@ -1,0 +1,79 @@
+{% set pypi_name = 'monasca-tempest-plugin' %}
+{% set source=fetch_source('http://tarballs.openstack.org/monasca-tempest-plugin/monasca-tempest-plugin-0.1.0.tar.gz') %}
+{% set upstream_version = upstream_version() %}
+{% set rpm_release = '1' %}
+
+%global sname monasca_tempest_plugin
+%global with_doc 0
+%global common_desc \
+This package contains Tempest tests to cover the monasca project. \
+Additionally it provides a plugin to automatically load these tests into Tempest.
+Name:          {{ py2pkg('monasca-tempest-plugin') }}
+Version:       {{ py2rpmversion() }}
+Release:       {{ py2rpmrelease() }}
+Summary:       Tempest plugin for the monaca project
+License:       {{ license('Apache-2.0') }}
+Group:         Development/Languages/Python
+Url:           https://git.openstack.org/cgit/openstack/{{ pypi_name }}
+Source0:       {{ source|basename }}
+BuildRequires: openstack-macros
+BuildRequires: {{ py2pkg('devel') }}
+BuildRequires: {{ py2pkg('pbr') }}
+BuildRequires: {{ py2pkg('setuptools') }}
+Requires:      {{ py2pkg('Tempest') }}
+Requires:      {{ py2pkg('mock') }}
+Requires:      {{ py2pkg('oslo.config') }}
+Requires:      {{ py2pkg('oslo.serialization') }}
+Requires:      {{ py2pkg('oslo.utils') }}
+Requires:      {{ py2pkg('oslotest') }}
+Requires:      {{ py2pkg('pbr') }}
+Requires:      {{ py2pkg('six') }}
+BuildArch:     noarch
+
+%description
+%{common_desc}
+
+%if 0%{?with_doc}
+%package doc
+Summary:    Documentation for monasca tempest plugin
+BuildRequires: {{ py2pkg('Sphinx') }}
+BuildRequires: {{ py2pkg('oslosphinx') }}
+
+%description doc
+It contains the documentation for the monasca tempest tests.
+%endif
+
+%prep
+%autosetup -n {{ pypi_name }}-{{ upstream_version }}
+
+# Let's handle dependencies ourseleves
+%py_req_cleanup
+# Remove bundled egg-info
+rm -rf %{module}.egg-info
+
+%build
+%{py2_build}
+
+# Generate Docs
+%if 0%{?with_doc}
+%{__python2} setup.py build_sphinx
+# remove the sphinx build leftovers
+rm -rf doc/build/html/.{doctrees,buildinfo}
+%endif
+
+%install
+%{py2_install}
+
+%files
+%license LICENSE
+%doc README.rst
+%{python2_sitelib}/monasca_tempest_tests
+%{python2_sitelib}/*.egg-info
+
+%if 0%{?with_doc}
+%files doc
+%doc doc/build/html
+%license LICENSE
+%endif
+
+%changelog
