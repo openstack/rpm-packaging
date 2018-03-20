@@ -1,6 +1,6 @@
 %global with_doc 1
 %global sname neutron
-{% set upstream_version = '10.0.1' %}
+{% set upstream_version = '12.0.0' %}
 {% set rpm_release = '1' %}
 %if 0%{?rhel} || 0%{?fedora}
 %global rdo 1
@@ -72,6 +72,7 @@ BuildRequires:  {{ py2pkg('keystonemiddleware') }}
 BuildRequires:  {{ py2pkg('neutron-lib') }}
 BuildRequires:  {{ py2pkg('python-neutronclient') }}
 BuildRequires:  {{ py2pkg('python-novaclient') }}
+BuildRequires:  {{ py2pkg('os-xenapi') }}
 BuildRequires:  {{ py2pkg('oslo.cache') }}
 BuildRequires:  {{ py2pkg('oslo.privsep') }}
 BuildRequires:  {{ py2pkg('oslo.reports') }}
@@ -79,8 +80,10 @@ BuildRequires:  {{ py2pkg('oslo.rootwrap') }}
 BuildRequires:  {{ py2pkg('oslo.versionedobjects') }}
 BuildRequires:  {{ py2pkg('osprofiler') }}
 BuildRequires:  {{ py2pkg('ovs') }}
+BuildRequires:  {{ py2pkg('ovsdbapp') }}
 BuildRequires:  {{ py2pkg('pecan') }}
 BuildRequires:  {{ py2pkg('pyroute2') }}
+BuildRequires:  {{ py2pkg('ryu') }}
 BuildRequires:  {{ py2pkg('weakrefmethod') }}
 Requires:       {{ py2pkg('Jinja2') }}
 Requires:       {{ py2pkg('Paste') }}
@@ -100,6 +103,7 @@ Requires:       {{ py2pkg('netifaces') }}
 Requires:       {{ py2pkg('neutron-lib') }}
 Requires:       {{ py2pkg('python-neutronclient') }}
 Requires:       {{ py2pkg('python-novaclient') }}
+Requires:       {{ py2pkg('os-xenapi') }}
 Requires:       {{ py2pkg('oslo.cache') }}
 Requires:       {{ py2pkg('oslo.concurrency') }}
 Requires:       {{ py2pkg('oslo.config') }}
@@ -119,8 +123,10 @@ Requires:       {{ py2pkg('oslo.utils') }}
 Requires:       {{ py2pkg('oslo.versionedobjects') }}
 Requires:       {{ py2pkg('osprofiler') }}
 Requires:       {{ py2pkg('ovs') }}
+Requires:       {{ py2pkg('ovsdbapp') }}
 Requires:       {{ py2pkg('pbr') }}
 Requires:       {{ py2pkg('pecan') }}
+Requires:       {{ py2pkg('psutil') }}
 Requires:       {{ py2pkg('pyroute2') }}
 Requires:       {{ py2pkg('requests') }}
 Requires:       {{ py2pkg('ryu') }}
@@ -229,6 +235,7 @@ SR-IOV network cards.
 Summary:        Documentation for OpenStack Networking Service
 Group:          Documentation/HTML
 BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 BuildRequires:  {{ py2pkg('oslosphinx') }}
 
 %description doc
@@ -239,7 +246,9 @@ This package contains the documentation
 
 %prep
 %autosetup -n %{sname}-{{upstream_version}}
+
 %py_req_cleanup
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
 %py2_build
@@ -424,7 +433,6 @@ OS_TEST_PATH=./neutron/tests/unit ostestr --black-regex '(neutron.tests.unit.obj
 %{_bindir}/neutron-l3-agent
 %{_bindir}/neutron-metadata-agent
 %{_bindir}/neutron-netns-cleanup
-%{_bindir}/neutron-ns-metadata-proxy
 %{_bindir}/neutron-pd-notify
 %{_bindir}/neutron-rootwrap
 %{_bindir}/neutron-rootwrap-daemon
@@ -461,6 +469,7 @@ OS_TEST_PATH=./neutron/tests/unit ostestr --black-regex '(neutron.tests.unit.obj
 
 %files api
 %license LICENSE
+%{_bindir}/neutron-api
 %{_bindir}/neutron-server
 %{_unitdir}/neutron-server.service
 %dir %{_sysconfdir}/%{sname}/server.conf.d
