@@ -474,8 +474,8 @@ sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 %if 0%{?with_doc}
 %{__python2} setup.py build_sphinx --builder=html,man
 # remove the sphinx-build leftovers
-rm -rf doc/build/html/.{doctrees,buildinfo}
-%fdupes doc/build/html/
+rm -rf build/sphinx/html/.{doctrees,buildinfo}
+%fdupes build/sphinx/html/
 %endif
 # config file generation
 PYTHONPATH=. oslo-config-generator --config-file=etc/nova/nova-config-generator.conf
@@ -485,7 +485,7 @@ PYTHONPATH=. oslopolicy-sample-generator --config-file=etc/nova/nova-policy-gene
 %{py2_install}
 # man pages
 mkdir -p %{buildroot}%{_mandir}/man1
-install -p -D -m 644 doc/build/man/*.1 %{buildroot}%{_mandir}/man1/
+install -p -D -m 644 build/sphinx/man/*.1 %{buildroot}%{_mandir}/man1/
 
 # Setup directories
 install -d -m 750 %{buildroot}%{_localstatedir}/lib/nova
@@ -803,7 +803,7 @@ usermod -a -G qemu nova
 %if 0%{?with_doc}
 %files doc
 %license LICENSE
-%doc doc/build/html
+%doc build/sphinx/html
 %endif
 
 %changelog
