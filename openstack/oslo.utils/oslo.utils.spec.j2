@@ -1,5 +1,5 @@
 {% set pypi_name = 'oslo.utils' %}
-{% set upstream_version = upstream_version('3.35.0') %}
+{% set upstream_version = upstream_version('3.36.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -11,7 +11,6 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
-Patch1:         0001-Fix-breaking-unit-tests-due-to-iso8601-changes.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('Babel', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('ddt', py_versions=['py2', 'py3']) }}
