@@ -3,7 +3,7 @@
 %global rdo 1
 %endif
 Name:           {{ py2name('tooz') }}
-Version:        1.60.0
+Version:        1.61.0
 Release:        0
 Summary:        Coordination library for distributed systems
 License:        {{ license('Apache-2.0') }}
@@ -76,7 +76,7 @@ sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 # generate html docs
 %{__python2} setup.py build_sphinx
 # remove the Sphinx-build leftovers
-rm -rf html/.{doctrees,buildinfo}
+rm -rf build/sphinx/html/.{doctrees,buildinfo}
 
 %check
 %if ! 0%{?rdo}
@@ -96,6 +96,6 @@ bash run-tests.sh
 
 %files doc
 %license LICENSE
-%doc doc/build/html
+%doc build/sphinx/html
 
 %changelog
