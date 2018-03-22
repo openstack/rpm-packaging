@@ -1,0 +1,91 @@
+From ff0f33a3fa65e71815f204a9ade3f5532a5ffb7a Mon Sep 17 00:00:00 2001
+From: Rodolfo Alonso Hernandez <rodolfo.alonso.hernandez@intel.com>
+Date: Wed, 06 Dec 2017 14:05:15 +0000
+Subject: [PATCH] Check if interface belongs to a Linux Bridge before removing
+
+Checks if an interface belongs to a Linux Bridge before deleting
+the interface and the bridge.
+
+Change-Id: I03145681e0634ec52663a1ec4f54021e3325a6b1
+Closes-Bug: #1736727
+(cherry picked from commit 72b27d0e8664e3b4055dcf5d2fc191c94b696681)
+---
+
+diff --git a/vif_plug_ovs/linux_net.py b/vif_plug_ovs/linux_net.py
+index 2749d7a..8fb18db 100644
+--- a/vif_plug_ovs/linux_net.py
++++ b/vif_plug_ovs/linux_net.py
+@@ -94,6 +94,12 @@
+     return os.path.exists('/sys/class/net/%s' % device)
+ 
+ 
++def interface_in_bridge(bridge, device):
++    """Check if an ethernet device belongs to a Linux Bridge."""
++    return os.path.exists('/sys/class/net/%(bridge)s/brif/%(device)s' %
++                          {'bridge': bridge, 'device': device})
++
++
+ def _delete_net_dev(dev):
+     """Delete a network device only if it exists."""
+     if device_exists(dev):
+@@ -149,7 +155,8 @@
+ @privsep.vif_plug.entrypoint
+ def delete_bridge(bridge, dev):
+     if device_exists(bridge):
+-        processutils.execute('brctl', 'delif', bridge, dev)
++        if interface_in_bridge(bridge, dev):
++            processutils.execute('brctl', 'delif', bridge, dev)
+         processutils.execute('ip', 'link', 'set', bridge, 'down')
+         processutils.execute('brctl', 'delbr', bridge)
+ 
+diff --git a/vif_plug_ovs/tests/test_linux_net.py b/vif_plug_ovs/tests/test_linux_net.py
+index 5afacfc..d885c21 100644
+--- a/vif_plug_ovs/tests/test_linux_net.py
++++ b/vif_plug_ovs/tests/test_linux_net.py
+@@ -88,17 +88,22 @@
+ 
+     @mock.patch.object(processutils, "execute")
+     @mock.patch.object(linux_net, "device_exists", return_value=False)
+-    def test_delete_bridge_none(self, mock_dev_exists, mock_execute):
++    @mock.patch.object(linux_net, "interface_in_bridge", return_value=False)
++    def test_delete_bridge_none(self, mock_interface_br, mock_dev_exists,
++                                mock_execute):
+         linux_net.delete_bridge("br0", "vnet1")
+ 
+         self.assertEqual(mock_execute.mock_calls, [])
+         self.assertEqual(mock_dev_exists.mock_calls, [
+             mock.call("br0")
+         ])
++        mock_interface_br.assert_not_called()
+ 
+     @mock.patch.object(processutils, "execute")
+     @mock.patch.object(linux_net, "device_exists", return_value=True)
+-    def test_delete_bridge_exists(self, mock_dev_exists, mock_execute):
++    @mock.patch.object(linux_net, "interface_in_bridge", return_value=True)
++    def test_delete_bridge_exists(self, mock_interface_br, mock_dev_exists,
++                                  mock_execute):
+         linux_net.delete_bridge("br0", "vnet1")
+ 
+         self.assertEqual(mock_execute.mock_calls, [
+@@ -109,6 +114,21 @@
+         self.assertEqual(mock_dev_exists.mock_calls, [
+             mock.call("br0")
+         ])
++        mock_interface_br.assert_called_once_with("br0", "vnet1")
++
++    @mock.patch.object(processutils, "execute")
++    @mock.patch.object(linux_net, "device_exists", return_value=True)
++    @mock.patch.object(linux_net, "interface_in_bridge", return_value=False)
++    def test_delete_interface_not_present(self, mock_interface_br,
++                                          mock_dev_exists, mock_execute):
++        linux_net.delete_bridge("br0", "vnet1")
++
++        calls = [
++            mock.call('ip', 'link', 'set', 'br0', 'down'),
++            mock.call('brctl', 'delbr', 'br0')]
++        mock_execute.assert_has_calls(calls)
++        mock_dev_exists.assert_has_calls([mock.call("br0")])
++        mock_interface_br.assert_called_once_with("br0", "vnet1")
+ 
+     @mock.patch.object(processutils, "execute")
+     def test_add_bridge_port(self, mock_execute):

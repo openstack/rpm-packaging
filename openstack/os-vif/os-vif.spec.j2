@@ -7,6 +7,8 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            http://launchpad.net/os-vif
 Source0:        https://pypi.io/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
+# PATCH-FIX-UPSTREAM 0001-Check-if-interface-belongs-to-a-Linux-Bridge-before-removing.patch -- https://review.openstack.org/#/c/554523/
+Patch1:         0001-Check-if-interface-belongs-to-a-Linux-Bridge-before-removing.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('netaddr') }}
@@ -52,6 +54,7 @@ in OpenStack.
 
 %prep
 %setup -q -n %{sname}-%{version}
+%patch1 -p1
 
 %build
 %{py2_build}
