@@ -13,10 +13,6 @@ Source0:        {{ source|basename }}
 Source1:        openstack-neutron-dvs-agent.service
 Source2:        openstack-neutron-ovsvapp-agent.service
 Source3:        openstack-neutron-ovsvapp-agent-monitor.service
-# This patch fixes some trivial errors in the DVS agent. Should be removed
-# after the upstream patch is merged in master.
-# (https://review.openstack.org/468849)
-Patch1:         0001-fix-dvs-agent-config.patch
 BuildRequires:  fdupes
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('devel') }}
