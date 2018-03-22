@@ -7,6 +7,8 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            http://docs.openstack.org/developer/django_openstack_auth/
 Source0:        https://pypi.io/packages/source/d/%{pypi_name}/%{pypi_name}-%{version}.tar.gz
+# https://review.openstack.org/#/c/534409/
+Patch0:         0001-Don-t-add-required-attribute-to-html-form-fields.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('Django') }}
 BuildRequires:  python-devel
