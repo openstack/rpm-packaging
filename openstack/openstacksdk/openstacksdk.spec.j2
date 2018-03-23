@@ -74,10 +74,11 @@ Requires(postun): chkconfig
 %python_subpackages
 
 %description
-The python-openstacksdk is a collection of libraries for building
-applications to work with OpenStack clouds. The project aims to
-provide a consistent and complete set of interactions with OpenStack's
-many services, along with complete documentation, examples, and tools.
+The openstacksdk is a library for building applications to work
+with OpenStack clouds.
+The project aims to provide a consistent and complete set of
+interactions with OpenStack's many services, along with complete
+documentation, examples, and tools.
 
 %package -n python-openstacksdk-doc
 Summary:        %{summary} - Documentation
@@ -87,12 +88,14 @@ BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 Requires:       %{name} = %{version}
 
 %description -n python-openstacksdk-doc
-The python-openstacksdk is a collection of libraries for building
-applications to work with OpenStack clouds. The project aims to
-provide a consistent and complete set of interactions with OpenStack's
-many services, along with complete documentation, examples, and tools.
+The openstacksdk is a library for building applications to work
+with OpenStack clouds.
+The project aims to provide a consistent and complete set of
+interactions with OpenStack's many services, along with complete
+documentation, examples, and tools.
 
-This package contains documentation files for %{name}.
+The openstacksdk is a collection of libraries for building
+applications to work with OpenStack clouds.
 
 %prep
 %autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
