@@ -1,0 +1,6 @@
+[DEFAULT]
+log_dir=/var/log/glance
+lock_path=/run/glance
+
+[paste_deploy]
+flavor=keystone
