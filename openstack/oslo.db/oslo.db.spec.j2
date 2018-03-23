@@ -1,5 +1,5 @@
 {% set pypi_name = 'oslo.db' %}
-{% set upstream_version = upstream_version('4.33.0') %}
+{% set upstream_version = upstream_version('4.35.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -46,6 +46,8 @@ Requires:       {{ py2pkg('psycopg2') }}
 Requires:       {{ py2pkg('six') }}
 Requires:       {{ py2pkg('sqlalchemy-migrate') }}
 Requires:       {{ py2pkg('stevedore') }}
+Requires:       {{ py2pkg('testresources') }}
+Requires:       {{ py2pkg('testscenarios') }}
 BuildArch:      noarch
 
 %description
