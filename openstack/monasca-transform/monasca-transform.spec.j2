@@ -1,6 +1,7 @@
+{% set monasca_transform_source = fetch_source('http://tarballs.openstack.org/monasca-transform/monasca-transform-stable-pike.tar.gz') %}
 {% set pypi_name = 'monasca-transform' %}
 {% set pypi_tar_name = 'monasca_transform' %}
-{% set upstream_version = upstream_version('0.11.0') %}
+{% set upstream_version = upstream_version() %}
 {% set rpm_release = '1' %}
 {% set spark_req_version = '1.6.3' %}
 
@@ -14,8 +15,7 @@ Summary:        A transformation and aggregation engine for Monasca
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            https://wiki.openstack.org/wiki/Monasca/Transform
-# Note: Unfortunately the pypi tar is named with an underscore.
-Source0:        https://pypi.io/packages/source/m/{{ pypi_tar_name }}/{{ pypi_tar_name }}-%{version}.tar.gz
+Source0:        {{ monasca_transform_source|basename }}
 Source1:        openstack-monasca-transform.service
 BuildRequires:  crudini
 BuildRequires:  fdupes
