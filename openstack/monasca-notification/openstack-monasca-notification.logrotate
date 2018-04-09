@@ -1,0 +1,11 @@
+/var/log/monasca-notification/*.log {
+    weekly
+    dateext
+    rotate 10
+    size 1M
+    missingok
+    compress
+    notifempty
+    su monasca-notification monasca
+    minsize 100k
+}

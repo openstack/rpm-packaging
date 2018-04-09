@@ -17,6 +17,7 @@ URL:            https://wiki.openstack.org/wiki/Monasca
 Source0:        https://files.pythonhosted.org/packages/source/m/%{sname}/%{sname}-%{version}.tar.gz
 Source1:        openstack-%{sname}.service
 Source2:        %{sname}.yaml
+Source3:        openstack-monasca-notification.logrotate
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('Jinja2') }}
 BuildRequires:  {{ py2pkg('SQLAlchemy') }}
@@ -30,6 +31,7 @@ BuildRequires:  {{ py2pkg('oslotest') }}
 BuildRequires:  {{ py2pkg('pbr') }}
 BuildRequires:  {{ py2pkg('requests') }}
 BuildRequires:  {{ py2pkg('six') }}
+Requires:       logrotate
 Requires:       python-%{sname} = %{version}-%{release}
 BuildArch:      noarch
 %if 0%{?suse_version}
@@ -90,6 +92,9 @@ install -d -m 755 %{buildroot}%{_sbindir}
 ## log dir
 install -d -m 750 %{buildroot}%{notification_log_dir}
 
+## logrotate
+install -p -D -m 644 %{SOURCE3} %{buildroot}%{_sysconfdir}/logrotate.d/openstack-monasca-notification.logrotate
+
 ## etc
 install -d -m 755 %{buildroot}%{notification_conf_dir}
 install -D -m 644 %{SOURCE2} %{buildroot}%{notification_conf_dir}/%{sname}.yaml.sample
@@ -136,6 +141,7 @@ fi
 %{_unitdir}/%{name}.service
 %dir %{notification_conf_dir}
 %config(noreplace) %attr(640, root, %{groupname}) %{notification_conf_dir}/%{sname}.yaml.sample
+%config(noreplace) %{_sysconfdir}/logrotate.d/openstack-monasca-notification.logrotate
 %dir %attr(750, %{username}, %{groupname}) %notification_log_dir
 %if 0%{?suse_version}
 %{_sbindir}/rc%{name}
