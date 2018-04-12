@@ -149,6 +149,9 @@ install -p -D -m 640 etc/masakari/api-paste.ini %{buildroot}%{_sysconfdir}/masak
 install -p -D -m 640 etc/masakari/policy.json %{buildroot}%{_sysconfdir}/masakari/policy.json
 chmod +x %{buildroot}%{_bindir}/masakari*
 
+# remove usr/etc
+rm -rf %{buildroot}%{_prefix}%{_sysconfdir}/
+
 %pre
 %openstack_pre_user_group_create masakari masakari
 
