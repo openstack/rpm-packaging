@@ -147,6 +147,7 @@ Summary:        Documentation for OpenStack Image Service
 Group:          Documentation
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('openstackdocstheme') }}
+BuildRequires:  {{ py2pkg('sphinxcontrib-apidoc') }}
 
 %description doc
 The Glance project provides a service where users can upload and discover
@@ -207,7 +208,7 @@ sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 %{py2_build}
 # build documentation
 %if 0%{?with_doc}
-%{__python2} setup.py build_sphinx
+PBR_VERSION={{ upstream_version }} sphinx-build -b html doc/source doc/build/html
 rm -rf doc/build/html/.{doctrees,buildinfo}
 %endif
 # regenerate the sample config files
@@ -227,7 +228,6 @@ install -d -m 755 %{buildroot}%{_localstatedir}/lib/{{ pypi_name }}/images
 install -d -m 750 %{buildroot}%{_localstatedir}/log/{{ pypi_name }}
 install -d -m 750 %{buildroot}%{_localstatedir}/cache/{{ pypi_name }}
 install -d -m 700 %{buildroot}%{_rundir}/{{ pypi_name }}
-mkdir -p %{buildroot}%{_mandir}/man1
 # tmpfile generator
 install -D -m 644 %{SOURCE2} %{buildroot}/%{_tmpfilesdir}/glance.conf
 # install sample configs
@@ -244,8 +244,6 @@ install -p -D -m 444 %{SOURCE3} %{buildroot}%{_unitdir}/openstack-glance-api.ser
 install -p -D -m 444 %{SOURCE5} %{buildroot}%{_unitdir}/openstack-glance-registry.service
 # logrotate
 install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/openstack-glance
-# man pages
-install -p -D -m 644 doc/build/man/*.1 %{buildroot}%{_mandir}/man1/
 # move metadefs
 mv %{buildroot}%{_prefix}%{_sysconfdir}/glance/metadefs/* %{buildroot}%{_sysconfdir}/glance/metadefs
 # Remove duplicate files under /usr/etc
@@ -320,7 +318,6 @@ OS_TEST_PATH=./glance/tests/unit PYTHONPATH=. ostestr
 %{_bindir}/glance-manage
 %{_bindir}/glance-replicator
 %{_bindir}/glance-scrubber
-%{_mandir}/man1/glance*.1%{?ext_man}
 
 %files -n python-glance
 %defattr(-,root,root,-)
