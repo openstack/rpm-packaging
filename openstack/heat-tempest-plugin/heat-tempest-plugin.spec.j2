@@ -15,6 +15,8 @@ Summary:       Tempest plugin for the heat project.
 License:       {{ license('Apache-2.0') }}
 Url:           https://git.openstack.org/cgit/openstack/{{ pypi_name }}
 Source0:       {{ source|basename }}
+# https://review.openstack.org/#/c/530460/
+Patch1:        0001-Add-endpoint_type-config-option.patch
 BuildRequires: openstack-macros
 BuildRequires: {{ py2pkg('devel') }}
 BuildRequires: {{ py2pkg('pbr') }}
@@ -55,7 +57,7 @@ It contains the documentation for the heat tempest tests.
 %endif
 
 %prep
-%autosetup -n {{ pypi_name }}-{{ upstream_version }}
+%autosetup -p 1 -n {{ pypi_name }}-{{ upstream_version }}
 
 # Let's handle dependencies ourseleves
 %py_req_cleanup

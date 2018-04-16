@@ -1,0 +1,118 @@
+From d83b8da902381181b2b61c1f80389bc5210534d3 Mon Sep 17 00:00:00 2001
+From: Colleen Murphy <colleen.murphy@suse.com>
+Date: Fri, 29 Dec 2017 12:43:53 +0100
+Subject: [PATCH] Add endpoint_type config option
+
+Prior to their removal from the tempest repository, the heat tests
+supported an endpoint_type option[1] to configure which endpoint
+interface to use in its requests to the Orchestration service and other
+OpenStack services. This patch adds back this support so that users can
+configure the heat tests to run against non-public interfaces.
+
+[1] http://git.openstack.org/cgit/openstack/tempest/tree/tempest/config.py?h=17.2.0#n943
+
+Change-Id: Id86f90e428136198b4244f12da5eb53f673fd788
+
+diff --git a/heat_tempest_plugin/config.py b/heat_tempest_plugin/config.py
+index 761eddc..6f39abb 100644
+--- a/heat_tempest_plugin/config.py
++++ b/heat_tempest_plugin/config.py
+@@ -67,6 +67,10 @@ HeatGroup = [
+                     "is used"),
+     cfg.StrOpt('region',
+                help="The region name to use"),
++    cfg.StrOpt('endpoint_type',
++               default='public',
++               choices=['public', 'admin', 'internal'],
++               help="The endpoint type to use for the orchestration service."),
+     cfg.StrOpt('instance_type',
+                help="Instance type for tests. Needs to be big enough for a "
+                     "full OS plus the test workload"),
+diff --git a/heat_tempest_plugin/services/clients.py b/heat_tempest_plugin/services/clients.py
+index ca79374..4567968 100644
+--- a/heat_tempest_plugin/services/clients.py
++++ b/heat_tempest_plugin/services/clients.py
+@@ -47,10 +47,12 @@ class KeystoneWrapperClient(object):
+     def project_id(self):
+         return self.auth_plugin.get_project_id(self.session)
+ 
+-    def get_endpoint_url(self, service_type, region=None):
++    def get_endpoint_url(self, service_type, region=None,
++                         endpoint_type='public'):
+         kwargs = {
+             'service_type': service_type,
+-            'region_name': region}
++            'region_name': region,
++            'interface': endpoint_type}
+         return self.auth_ref.service_catalog.url_for(**kwargs)
+ 
+ 
+@@ -108,7 +110,8 @@ class ClientManager(object):
+         try:
+             if endpoint is None:
+                 endpoint = self.identity_client.get_endpoint_url(
+-                    'orchestration', self.conf.region)
++                    'orchestration', region=self.conf.region,
++                    endpoint_type=self.conf.endpoint_type)
+         except kc_exceptions.EndpointNotFound:
+             return None
+         else:
+@@ -151,7 +154,7 @@ class ClientManager(object):
+             self.NOVA_API_VERSION,
+             session=self.identity_client.session,
+             service_type='compute',
+-            endpoint_type='publicURL',
++            endpoint_type=self.conf.endpoint_type,
+             region_name=self.conf.region,
+             os_cache=False,
+             http_log_debug=True)
+@@ -162,13 +165,13 @@ class ClientManager(object):
+             session=self.identity_client.session,
+             service_type='network',
+             region_name=self.conf.region,
+-            endpoint_type='publicURL')
++            endpoint_type=self.conf.endpoint_type)
+ 
+     def _get_volume_client(self):
+         return cinder_client.Client(
+             self.CINDERCLIENT_VERSION,
+             session=self.identity_client.session,
+-            endpoint_type='publicURL',
++            endpoint_type=self.conf.endpoint_type,
+             region_name=self.conf.region,
+             http_log_debug=True)
+ 
+@@ -176,7 +179,7 @@ class ClientManager(object):
+         args = {
+             'auth_version': self.auth_version,
+             'session': self.identity_client.session,
+-            'os_options': {'endpoint_type': 'publicURL',
++            'os_options': {'endpoint_type': self.conf.endpoint_type,
+                            'region_name': self.conf.region,
+                            'service_type': 'object-store'},
+         }
+@@ -184,7 +187,7 @@ class ClientManager(object):
+ 
+     def _get_metric_client(self):
+ 
+-        adapter_options = {'interface': 'public',
++        adapter_options = {'interface': self.conf.endpoint_type,
+                            'region_name': self.conf.region}
+         args = {
+             'session': self.identity_client.session,
+diff --git a/heat_tempest_plugin/tests/api/test_heat_api.py b/heat_tempest_plugin/tests/api/test_heat_api.py
+index 3c8bd77..5a373cc 100644
+--- a/heat_tempest_plugin/tests/api/test_heat_api.py
++++ b/heat_tempest_plugin/tests/api/test_heat_api.py
+@@ -35,7 +35,7 @@ def load_tests(loader, tests, pattern):
+         return
+     manager = clients.ClientManager(conf)
+     endpoint = manager.identity_client.get_endpoint_url(
+-        'orchestration', conf.region)
++        'orchestration', region=conf.region, endpoint_type=conf.endpoint_type)
+     host = urlparse.urlparse(endpoint).hostname
+     os.environ['OS_TOKEN'] = manager.identity_client.auth_token
+     os.environ['PREFIX'] = test.rand_name('api')
+-- 
+2.16.3
+
