@@ -134,6 +134,7 @@ BuildRequires:  {{ py2pkg('oslosphinx') }}
 BuildRequires:  {{ py2pkg('passlib') }}
 BuildRequires:  {{ py2pkg('pysaml2') }}
 BuildRequires:  {{ py2pkg('python-memcached') }}
+BuildRequires:  {{ py2pkg('sphinxcontrib-apidoc') }}
 
 %description doc
 OpenStack Keystone documentaion.
@@ -155,7 +156,7 @@ sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 %build
 %{py2_build}
 
-%{__python2} setup.py build_sphinx --builder=html,man
+PBR_VERSION={{ upstream_version }} sphinx-build -b html doc/source doc/build/html
 # remove the Sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 # config file generation
@@ -166,7 +167,6 @@ oslopolicy-sample-generator --config-file config-generator/keystone-policy-gener
 
 %install
 %{py2_install}
-mkdir -p %{buildroot}%{_mandir}/man1
 install -d -m 755 %{buildroot}%{_sysconfdir}/keystone
 install -d -m 755 %{buildroot}%{_sysconfdir}/sysctl.d
 install -d -m 750 %{buildroot}%{_localstatedir}/{lib,log}/keystone
@@ -186,7 +186,6 @@ install -p -D -m 640 etc/sso_callback_template.html %{buildroot}%{_sysconfdir}/k
 install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/openstack-keystone
 install -p -D -m 644 etc/policy.v3cloudsample.json %{buildroot}%{_datadir}/keystone/policy.v3cloudsample.json
 install -p -D -m 644 %{SOURCE2} %{buildroot}%{_sysconfdir}/sysctl.d/openstack-keystone.conf
-install -p -D -m 644 doc/build/man/*.1 %{buildroot}%{_mandir}/man1/
 # remove wrongly installed tree
 rm -rv  %{buildroot}/%{_prefix}%{_sysconfdir}/
 # Install sample data script.
@@ -210,7 +209,6 @@ ostestr --black-regex keystone.tests.unit.test_policy.GeneratePolicyFileTestCase
 %files
 %license LICENSE
 %doc README.rst
-%{_mandir}/man1/keystone*.1.gz
 %{_bindir}/keystone-wsgi-admin
 %{_bindir}/keystone-wsgi-public
 %{_bindir}/keystone-manage
