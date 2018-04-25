@@ -1,6 +1,6 @@
 %global sname aodhclient
 Name:           {{ py2name('aodhclient') }}
-Version:        0.9.0
+Version:        1.0.0
 Release:        0
 Summary:        Python client library for Aodh
 License:        {{ license('Apache-2.0') }}
@@ -41,7 +41,7 @@ provides a Python API (the aodhclient module) and a command-line tool.
 Summary:        Documentation for OpenStack Aodh API Client
 Group:          Documentation/HTML
 BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 
 %description      doc
 This is a client library for Aodh built on the Aodh API. It
