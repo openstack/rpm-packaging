@@ -1,14 +1,12 @@
 %global sname python-tackerclient
 Name:           {{ py2name('python-tackerclient') }}
-Version:        0.10.0
+Version:        0.12.0
 Release:        0
 Summary:        Client API library for Tacker
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            http://launchpad.net/%{name}
 Source0:        https://files.pythonhosted.org/packages/source/p/%{sname}/%{sname}-%{version}.tar.gz
-# https://review.openstack.org/#/c/504056/
-Patch1:         0001-Move-oslosphinx-and-openstackdocstheme-to-test-requi.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('cliff') }}
 BuildRequires:  {{ py2pkg('devel') }}
@@ -44,7 +42,7 @@ OpenStack tacker client
 Summary:        Documentation for OpenStack tacker client
 Group:          Documentation/HTML
 BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 BuildRequires:  {{ py2pkg('reno') }}
 
 %description doc
@@ -55,6 +53,7 @@ This package contains the documentation.
 %prep
 %autosetup -p1 -n %{name}-%{version}
 %py_req_cleanup
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
 %{py2_build}
@@ -65,7 +64,6 @@ rm -rf html/.{doctrees,buildinfo}
 
 %install
 %{py2_install}
-install -p -D -m 644 doc/build/man/python-tackerclient.1 %{buildroot}%{_mandir}/man1/python-tackerclient.1
 
 %check
 %{__python2} setup.py testr
@@ -76,7 +74,6 @@ install -p -D -m 644 doc/build/man/python-tackerclient.1 %{buildroot}%{_mandir}/
 %{python2_sitelib}/tackerclient
 %{python2_sitelib}/*.egg-info
 %{_bindir}/tacker
-%{_mandir}/man1/python-tackerclient.1*
 
 %files doc
 %doc doc/build/html
