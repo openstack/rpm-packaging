@@ -26,7 +26,6 @@ BuildRequires:  {{ py2pkg('fixtures') }}
 BuildRequires:  {{ py2pkg('freezegun') }}
 BuildRequires:  {{ py2pkg('lxml') }}
 BuildRequires:  {{ py2pkg('mock') }}
-BuildRequires:  {{ py2pkg('os-testr') }}
 BuildRequires:  {{ py2pkg('oslo.cache') }}
 BuildRequires:  {{ py2pkg('oslo.config') }}
 BuildRequires:  {{ py2pkg('oslotest') }}
@@ -34,7 +33,7 @@ BuildRequires:  {{ py2pkg('osprofiler') }}
 BuildRequires:  {{ py2pkg('pbr') }}
 BuildRequires:  {{ py2pkg('requests') }}
 BuildRequires:  {{ py2pkg('scrypt') }}
-BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('stestr') }}
 BuildRequires:  {{ py2pkg('testresources') }}
 BuildRequires:  {{ py2pkg('testtools') }}
 BuildRequires:  which
@@ -197,7 +196,7 @@ exit 0
 %check
 # don't want to depend on hacking for package building
 rm keystone/tests/unit/test_hacking_checks.py
-ostestr --black-regex keystone.tests.unit.test_policy.GeneratePolicyFileTestCase.test_policy_generator_from_command_line
+stestr run --black-regex keystone.tests.unit.test_policy.GeneratePolicyFileTestCase.test_policy_generator_from_command_line
 
 %post
 %tmpfiles_create %{_tmpfilesdir}/keystone.conf
