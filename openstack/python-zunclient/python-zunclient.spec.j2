@@ -1,0 +1,115 @@
+{% set pypi_name = 'python-zunclient' %}
+{% set upstream_version = upstream_version('1.3.0') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
+Summary:        Client Library for OpenStack Containers service
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+URL:            https://launchpad.net/{{ pypi_name }}
+Source0:        {{ source }}
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('ddt', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('docker', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('fixtures', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('python-openstackclient', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('osc-lib', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.log', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.utils', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('python-subunit', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testresources', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('websocket-client', py_versions=['py2', 'py3']) }}
+Requires:       {{ py2pkg('PrettyTable') }}
+Requires:       {{ py2pkg('PyYAML') }}
+Requires:       {{ py2pkg('docker') }}
+Requires:       {{ py2pkg('keystoneauth1') }}
+Requires:       {{ py2pkg('python-openstackclient') }}
+Requires:       {{ py2pkg('osc-lib') }}
+Requires:       {{ py2pkg('oslo.i18n') }}
+Requires:       {{ py2pkg('oslo.log') }}
+Requires:       {{ py2pkg('oslo.utils') }}
+Requires:       {{ py2pkg('websocket-client') }}
+BuildArch:      noarch
+%if 0%{?suse_version}
+Requires(post): update-alternatives
+Requires(postun): update-alternatives
+%else
+# on RDO, update-alternatives is in chkconfig
+Requires(post): chkconfig
+Requires(postun): chkconfig
+%endif
+%python_subpackages
+
+%description
+Client library and command line utility for interacting with Openstack
+Containers API.
+
+%package -n python-zunclient-doc
+Summary:        Documentation for OpenStack Containers API Client
+Group:          Documentation/HTML
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
+
+%description -n python-zunclient-doc
+Client library and command line utility for interacting with Openstack
+Containers API.
+This package contains auto-generated documentation.
+
+%prep
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
+%py_req_cleanup
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
+
+%build
+%{python_build}
+
+PBR_VERSION={{ upstream_version }} sphinx-build -b html doc/source doc/build/html
+# remove the sphinx-build leftovers
+rm -rf doc/build/html/.{doctrees,buildinfo}
+
+
+%install
+%{python_install}
+# bash completion
+install -p -D -m 644 tools/zun.bash_completion %{buildroot}%{_sysconfdir}/bash_completion.d/zun.bash_completion
+%python_clone -a %{buildroot}%{_bindir}/zun
+%python_clone -a %{buildroot}%{_sysconfdir}/bash_completion.d/zun.bash_completion
+
+%post
+%{python_install_alternative zun %{_sysconfdir}/bash_completion.d/zun.bash_completion}
+
+%postun
+%python_uninstall_alternative zun
+
+%check
+%{python_expand rm -rf .testrepository
+export OS_TEST_PATH=./zunclient/tests/unit/
+# we dont want to depend on Tempest so remove the relevant tests
+rm -f zunclient/tests/unit/test_shell.py
+rm -f zunclient/tests/unit/test_functional_utils.py
+rm -rf zunclient/tests/functional
+$python setup.py testr
+}
+
+%files %{python_files}
+%doc README.rst
+%license LICENSE
+%{python_sitelib}/zunclient
+%{python_sitelib}/*.egg-info
+%python_alternative %{_bindir}/zun
+%python_alternative %{_sysconfdir}/bash_completion.d/zun.bash_completion
+
+%files -n python-zunclient-doc
+%license LICENSE
+%doc doc/build/html
+
+%changelog
