@@ -121,6 +121,7 @@ sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 PBR_VERSION={{ upstream_version }} sphinx-build -b html doc/source doc/build/html
 PBR_VERSION={{ upstream_version }} sphinx-build -b man doc/source doc/build/man
+rm -r doc/build/html/.{doctrees,buildinfo}
 
 # config file generation
 PYTHONPATH=. oslo-config-generator --config-file tools/config/cyborg-config-generator.conf \

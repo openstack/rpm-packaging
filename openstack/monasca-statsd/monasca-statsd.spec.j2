@@ -31,6 +31,7 @@ Python Statsd library for sending statsd messages via the Monasca Agent
 %build
 %{py2_build}
 PBR_VERSION={{ upstream_version }} sphinx-build -b html doc/source doc/build/html
+rm -r doc/build/html/.{doctrees,buildinfo}
 
 %install
 %{py2_install}
