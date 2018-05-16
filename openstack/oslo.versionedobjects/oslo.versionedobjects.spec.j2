@@ -67,6 +67,7 @@ This package contains documentation files for %{name}.
 %{python_build}
 
 PYTHONPATH=. sphinx-build -b html doc/source doc/build/html
+rm -r doc/build/html/.{doctrees,buildinfo}
 
 %install
 %{python_install}
