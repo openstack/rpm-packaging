@@ -14,9 +14,7 @@ URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('positional', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('debtcollector') }}
-Requires:       {{ py2pkg('positional') }}
 BuildArch:      noarch
 %if %{with test}
 BuildRequires:  {{ py2pkg('debtcollector', py_versions=['py2', 'py3']) }}
