@@ -12,18 +12,18 @@ Group:          Development/Languages/Python
 URL:            http://launchpad.net/%{sname}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('devel') }}
-BuildRequires:  {{ py2pkg('dogpile.cache') }}
-BuildRequires:  {{ py2pkg('mock') }}
-BuildRequires:  {{ py2pkg('oslo.config') }}
-BuildRequires:  {{ py2pkg('oslo.i18n') }}
-BuildRequires:  {{ py2pkg('oslo.log') }}
-BuildRequires:  {{ py2pkg('oslo.utils') }}
-BuildRequires:  {{ py2pkg('oslotest') }}
-BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('pymongo') }}
-BuildRequires:  {{ py2pkg('python-memcached') }}
-BuildRequires:  {{ py2pkg('six') }}
+BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('dogpile.cache', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.config', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.i18n', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.log', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.utils', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pymongo', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('python-memcached', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('six', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('dogpile.cache') }}
 Requires:       {{ py2pkg('oslo.config') }}
 Requires:       {{ py2pkg('oslo.i18n') }}
@@ -32,6 +32,7 @@ Requires:       {{ py2pkg('oslo.utils') }}
 Requires:       {{ py2pkg('python-memcached') }}
 Requires:       {{ py2pkg('six') }}
 BuildArch:      noarch
+%python_subpackages
 
 %description
 oslo.cache aims to provide a generic caching mechanism for OpenStack projects
@@ -39,12 +40,12 @@ by wrapping the dogpile.cache library. The dogpile.cache library provides
 support memoization, key value storage and interfaces to common caching
 backends such as Memcached.
 
-%package doc
+%package -n {{ py2name() }}-doc
 Summary:        Documentation for the OpenStack Oslo Cache library
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 
-%description doc
+%description -n {{ py2name() }}-doc
 Documentation for the OpenStack Oslo cache library.
 
 %prep
@@ -53,26 +54,28 @@ Documentation for the OpenStack Oslo cache library.
 sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
-%{py2_build}
+%{python_build}
 
 %install
-%{py2_install}
+%{python_install}
 
 # generate html docs
-%{__python2} setup.py build_sphinx
+sphinx-build -b html doc/source doc/build/html
 # remove the sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %check
-%{__python2} setup.py testr
+%{python_expand rm -rf .testrepository
+$python setup.py testr
+}
 
-%files
+%files %{python_files}
 %license LICENSE
 %doc README.rst ChangeLog
-%{python2_sitelib}/oslo_cache
-%{python2_sitelib}/*.egg-info
+%{python_sitelib}/oslo_cache
+%{python_sitelib}/*.egg-info
 
-%files doc
+%files -n {{ py2name() }}-doc
 %license LICENSE
 %doc doc/build/html
 
