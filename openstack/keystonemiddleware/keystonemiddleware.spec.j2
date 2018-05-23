@@ -9,30 +9,30 @@ URL:            https://launchpad.net/%{sname}
 Source0:        https://files.pythonhosted.org/packages/source/k/%{sname}/%{sname}-%{version}.tar.gz
 BuildRequires:  openssl
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('WebOb') }}
-BuildRequires:  {{ py2pkg('WebTest') }}
-BuildRequires:  {{ py2pkg('fixtures') }}
-BuildRequires:  {{ py2pkg('keystoneauth1') }}
-BuildRequires:  {{ py2pkg('python-keystoneclient') }}
-BuildRequires:  {{ py2pkg('mock') }}
-BuildRequires:  {{ py2pkg('oslo.cache') }}
-BuildRequires:  {{ py2pkg('oslo.config') }}
-BuildRequires:  {{ py2pkg('oslo.context') }}
-BuildRequires:  {{ py2pkg('oslo.i18n') }}
-BuildRequires:  {{ py2pkg('oslo.messaging') }}
-BuildRequires:  {{ py2pkg('oslo.serialization') }}
-BuildRequires:  {{ py2pkg('oslo.utils') }}
-BuildRequires:  {{ py2pkg('oslotest') }}
-BuildRequires:  {{ py2pkg('pycadf') }}
-BuildRequires:  {{ py2pkg('pycrypto') }}
-BuildRequires:  {{ py2pkg('python-memcached') }}
-BuildRequires:  {{ py2pkg('requests') }}
-BuildRequires:  {{ py2pkg('requests-mock') }}
-BuildRequires:  {{ py2pkg('six') }}
-BuildRequires:  {{ py2pkg('stevedore') }}
-BuildRequires:  {{ py2pkg('testrepository') }}
-BuildRequires:  {{ py2pkg('testresources') }}
-BuildRequires:  {{ py2pkg('testtools') }}
+BuildRequires:  {{ py2pkg('WebOb', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('WebTest', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('fixtures', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('keystoneauth1', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('python-keystoneclient', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.cache', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.config', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.context', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.i18n', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.messaging', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.serialization', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.utils', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pycadf', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pycrypto', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('python-memcached', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('requests', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('requests-mock', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('six', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('stevedore', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testresources', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('WebOb') }}
 Requires:       {{ py2pkg('keystoneauth1') }}
 Requires:       {{ py2pkg('python-keystoneclient') }}
@@ -47,6 +47,7 @@ Requires:       {{ py2pkg('python-memcached') }}
 Requires:       {{ py2pkg('requests') }}
 Requires:       {{ py2pkg('six') }}
 BuildArch:      noarch
+%python_subpackages
 
 %description
 This package contains middleware modules designed to provide authentication
@@ -54,12 +55,12 @@ and authorization features to web services other than Keystone
 The most prominent module is keystonemiddleware.auth_token. This package
 does not expose any CLI or Python API features.
 
-%package doc
+%package -n {{ py2name('keystonemiddleware') }}-doc
 Summary:        Documentation for Middleware for OpenStack Identity
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 
-%description doc
+%description -n {{ py2name('keystonemiddleware') }}-doc
 Documentation for Middleware for OpenStack Identity.
 
 %prep
@@ -68,27 +69,30 @@ Documentation for Middleware for OpenStack Identity.
 sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
-%{py2_build}
+%{python_build}
 
 %install
-%{py2_install}
+%{python_install}
 
 # generate html docs
-%{__python2} setup.py build_sphinx
+export PYTHONPATH=.
+sphinx-build -b html doc/source doc/build/html
 # remove the sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %check
 export PYTHONWARNINGS="ignore"
-%{__python2} setup.py testr
+%{python_expand rm -rf .testrepository
+$python setup.py testr
+}
 
-%files
+%files %python_files
 %license LICENSE
 %doc ChangeLog README.rst
 %{python2_sitelib}/%{sname}
 %{python2_sitelib}/*.egg-info
 
-%files doc
+%files -n {{ py2name('keystonemiddleware') }}-doc
 %doc doc/build/html
 %license LICENSE
 
