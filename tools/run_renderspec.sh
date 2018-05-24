@@ -16,7 +16,7 @@ for specstyle in $specstyles; do
     rm -rf $OUTPUTDIR/${specstyle}/*
 done
 
-py3onlypackages=("openstack-keystone")
+py3onlypackages=("openstack-glance openstack-keystone")
 
 count=0
 echo "run renderspec over specfiles from ${specdir}"
