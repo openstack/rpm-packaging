@@ -1,0 +1,91 @@
+%global sname os-collect-config
+Name:           {{ py2name('os-collect-config') }}
+Version:        9.0.0
+Release:        0
+Summary:        Collect and cache metadata running hooks on changes
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+URL:            https://launchpad.net/%{sname}
+Source0:        https://files.pythonhosted.org/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
+Source1:        os-collect-config.service
+Source2:        os-collect-config.conf
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('fixtures') }}
+BuildRequires:  {{ py2pkg('python-heatclient') }}
+BuildRequires:  {{ py2pkg('python-keystoneclient') }}
+BuildRequires:  {{ py2pkg('lxml') }}
+BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('oslo.config') }}
+BuildRequires:  {{ py2pkg('oslo.log') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('setuptools') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testscenarios') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+BuildRequires:  {{ py2pkg('python-zaqarclient') }}
+Requires:       {{ py2pkg('anyjson') }}
+Requires:       {{ py2pkg('dogpile.cache') }}
+Requires:       {{ py2pkg('eventlet') }}
+Requires:       {{ py2pkg('python-heatclient') }}
+Requires:       {{ py2pkg('iso8601') }}
+Requires:       {{ py2pkg('python-keystoneclient') }}
+Requires:       {{ py2pkg('lxml') }}
+Requires:       {{ py2pkg('os-refresh-config') }}
+Requires:       {{ py2pkg('oslo.config') }}
+Requires:       {{ py2pkg('oslo.log') }}
+Requires:       {{ py2pkg('pbr') }}
+Requires:       {{ py2pkg('requests') }}
+Requires:       {{ py2pkg('six') }}
+Requires:       {{ py2pkg('python-zaqarclient') }}
+BuildArch:      noarch
+%if 0%{?suse_version}
+BuildRequires:  systemd-rpm-macros
+%{?systemd_requires}
+%else
+BuildRequires:  systemd
+Requires(post): systemd
+Requires(postun): systemd
+Requires(preun): systemd
+%endif
+
+%description
+Service to collect openstack heat metadata.
+
+%prep
+%autosetup -n %{sname}-%{version}
+%py_req_cleanup
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
+
+%build
+%py2_build
+
+%install
+%py2_install
+install -p -D -m 644 %{SOURCE1} %{buildroot}%{_unitdir}/os-collect-config.service
+install -p -D -m 644 %{SOURCE2} %{buildroot}%{_sysconfdir}/os-collect-config.conf
+mkdir -p %{buildroot}%{_localstatedir}/lib/%{name}/local-data
+
+%check
+%{__python2} setup.py testr
+
+%post
+%systemd_post os-collect-config.service
+
+%preun
+%systemd_preun os-collect-config.service
+
+%postun
+%systemd_postun_with_restart os-collect-config.service
+
+%files
+%license LICENSE
+%doc README.rst
+%{_bindir}/os-collect-config
+%config(noreplace) %attr(-, root, root) %{_sysconfdir}/os-collect-config.conf
+%{python2_sitelib}/os_collect_config
+%{python2_sitelib}/*.egg-info
+%{_unitdir}/os-collect-config.service
+%{_localstatedir}/lib/%{name}
+
+%changelog
