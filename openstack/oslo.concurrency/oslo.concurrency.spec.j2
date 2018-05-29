@@ -88,15 +88,11 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %python_uninstall_alternative lockutils-wrapper
 
 %check
-%if 0%{?fedora}
-# This env var is required to fix unit tests in Fedora 28 and later
-export PYTHON_DISALLOW_AMBIGUOUS_VERSION=0
-%endif
 %{python_expand rm -rf .testrepository
 # Test suite fails on 32 bit platforms
 # ifarch/ifnarch can not be used in noarch packages
 if [ "%_lib" = "lib64" ]; then
-$python setup.py testr
+PYTHON=$python $python setup.py testr
 fi
 }
 
