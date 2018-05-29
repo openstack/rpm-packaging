@@ -12,23 +12,23 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('Jinja2') }}
-BuildRequires:  {{ py2pkg('WebOb') }}
-BuildRequires:  {{ py2pkg('debtcollector') }}
-BuildRequires:  {{ py2pkg('devel') }}
-BuildRequires:  {{ py2pkg('fixtures') }}
-BuildRequires:  {{ py2pkg('mock') }}
-BuildRequires:  {{ py2pkg('oslo.config') }}
-BuildRequires:  {{ py2pkg('oslo.context') }}
-BuildRequires:  {{ py2pkg('oslo.i18n') }}
-BuildRequires:  {{ py2pkg('oslo.serialization') }}
-BuildRequires:  {{ py2pkg('oslo.utils') }}
-BuildRequires:  {{ py2pkg('oslotest') }}
-BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('six') }}
-BuildRequires:  {{ py2pkg('statsd') }}
-BuildRequires:  {{ py2pkg('stevedore') }}
-BuildRequires:  {{ py2pkg('testtools') }}
+BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('Jinja2', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('WebOb', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('debtcollector', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('fixtures', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.config', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.context', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.i18n', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.serialization', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.utils', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('six', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('statsd', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('stevedore', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('Jinja2') }}
 Requires:       {{ py2pkg('WebOb') }}
 Requires:       {{ py2pkg('debtcollector') }}
@@ -41,6 +41,7 @@ Requires:       {{ py2pkg('six') }}
 Requires:       {{ py2pkg('statsd') }}
 Requires:       {{ py2pkg('stevedore') }}
 BuildArch:      noarch
+%python_subpackages
 
 %description
 Oslo middleware library includes components that can be injected into wsgi
@@ -48,13 +49,13 @@ pipelines to intercept request/response flows. The base class can be enhanced
 with functionality like add/delete/modification of http headers and support
 for limiting size/connection etc.
 
-%package doc
+%package -n python-oslo-middleware-doc
 Summary:        Documentation for OpenStack middleware library
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 BuildRequires:  {{ py2pkg('reno') }}
 
-%description doc
+%description -n python-oslo-middleware-doc
 Oslo middleware library includes components that can be injected into wsgi
 pipelines to intercept request/response flows. The base class can be enhanced
 with functionality like add/delete/modification of http headers and support
@@ -67,7 +68,7 @@ This package contains the documentation.
 sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
-%{py2_build}
+%{python_build}
 
 # generate html docs
 %{__python2} setup.py build_sphinx
@@ -75,18 +76,20 @@ sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
-%{py2_install}
+%{python_install}
 
 %check
-%{__python2} setup.py testr
+%{python_expand rm -rf .testrepository
+$python setup.py testr
+}
 
-%files
+%files %{python_files}
 %license LICENSE
 %doc README.rst ChangeLog
-%{python2_sitelib}/oslo_middleware
-%{python2_sitelib}/*.egg-info
+%{python_sitelib}/oslo_middleware
+%{python_sitelib}/*.egg-info
 
-%files doc
+%files -n python-oslo-middleware-doc
 %license LICENSE
 %doc doc/build/html
 
