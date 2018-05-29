@@ -1,0 +1,387 @@
+{% set pypi_name = 'cinder' %}
+{% set source = fetch_source('http://tarballs.openstack.org/cinder/cinder-master.tar.gz') %}
+{% set upstream_version = upstream_version() %}
+{% set rpm_release = '1' %}
+%global with_doc 1
+%if 0%{?rhel} || 0%{?fedora}
+%global rdo 1
+%endif
+%global service cinder
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
+Epoch:          {{ epoch('cinder') }}
+Summary:        OpenStack Block Storage (Cinder)
+License:        {{ license('Apache-2.0') }}
+URL:            https://launchpad.net/cinder
+Source0:        {{ source|basename }}
+Source1:        openstack-cinder.logrotate
+Source2:        openstack-cinder-api.service
+Source3:        openstack-cinder-scheduler.service
+Source4:        openstack-cinder-volume.service
+Source5:        openstack-cinder-backup.service
+Source6:        %{service}-sudoers
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('PyMySQL') }}
+BuildRequires:  {{ py2pkg('SQLAlchemy') }}
+BuildRequires:  {{ py2pkg('python-barbicanclient') }}
+BuildRequires:  {{ py2pkg('castellan') }}
+BuildRequires:  {{ py2pkg('cryptography') }}
+BuildRequires:  {{ py2pkg('ddt') }}
+BuildRequires:  {{ py2pkg('decorator') }}
+BuildRequires:  {{ py2pkg('defusedxml') }}
+BuildRequires:  {{ py2pkg('fixtures') }}
+BuildRequires:  {{ py2pkg('python-glanceclient') }}
+BuildRequires:  {{ py2pkg('google-api-python-client') }}
+BuildRequires:  {{ py2pkg('keystonemiddleware') }}
+BuildRequires:  {{ py2pkg('lxml') }}
+BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('python-novaclient') }}
+BuildRequires:  {{ py2pkg('os-brick') }}
+BuildRequires:  {{ py2pkg('os-testr') }}
+BuildRequires:  {{ py2pkg('os-win') }}
+BuildRequires:  {{ py2pkg('oslo.config') }}
+BuildRequires:  {{ py2pkg('oslo.db') }}
+BuildRequires:  {{ py2pkg('oslo.i18n') }}
+BuildRequires:  {{ py2pkg('oslo.log') }}
+BuildRequires:  {{ py2pkg('oslo.policy') }}
+BuildRequires:  {{ py2pkg('oslo.reports') }}
+BuildRequires:  {{ py2pkg('oslo.utils') }}
+BuildRequires:  {{ py2pkg('oslo.versionedobjects') }}
+BuildRequires:  {{ py2pkg('oslo.vmware') }}
+BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('osprofiler') }}
+BuildRequires:  {{ py2pkg('paramiko') }}
+BuildRequires:  {{ py2pkg('psycopg2') }}
+BuildRequires:  {{ py2pkg('pyparsing') }}
+BuildRequires:  {{ py2pkg('requests') }}
+BuildRequires:  {{ py2pkg('retrying') }}
+BuildRequires:  {{ py2pkg('rtslib-fb') }}
+BuildRequires:  {{ py2pkg('setuptools') }}
+BuildRequires:  {{ py2pkg('sqlalchemy-migrate') }}
+BuildRequires:  {{ py2pkg('suds-jurko') }}
+BuildRequires:  {{ py2pkg('python-swiftclient') }}
+BuildRequires:  {{ py2pkg('taskflow') }}
+BuildRequires:  {{ py2pkg('testresources') }}
+BuildRequires:  {{ py2pkg('testscenarios') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+BuildRequires:  {{ py2pkg('tooz') }}
+BuildRequires:  sudo
+Requires:       logrotate
+Requires:       python-{{ pypi_name }} = %{epoch}:%{version}-%{release}
+BuildArch:      noarch
+%if 0%{?suse_version}
+BuildRequires:  systemd-rpm-macros
+%{?systemd_requires}
+%else
+BuildRequires:  systemd
+Requires(post): systemd
+Requires(postun): systemd
+Requires(preun): systemd
+%endif
+%if 0%{?suse_version}
+Requires(pre):  pwdutils
+%endif
+%if 0%{?rdo}
+Requires(pre):  shadow-utils
+%endif
+
+%description
+OpenStack Volume (codename Cinder) provides services to manage and
+access block storage volumes for use by Virtual Machine instances.
+
+%package -n     python-{{ pypi_name }}
+Summary:        OpenStack Volume Python libraries
+Group:          Applications/System
+Requires:       {{ py2pkg('Paste') }}
+Requires:       {{ py2pkg('PasteDeploy') }}
+Requires:       {{ py2pkg('PrettyTable') }}
+Requires:       {{ py2pkg('Routes') }}
+Requires:       {{ py2pkg('SQLAlchemy') }}
+Requires:       {{ py2pkg('WebOb') }}
+Requires:       {{ py2pkg('python-barbicanclient') }}
+Requires:       {{ py2pkg('castellan') }}
+Requires:       {{ py2pkg('cryptography') }}
+Requires:       {{ py2pkg('decorator') }}
+Requires:       {{ py2pkg('defusedxml') }}
+Requires:       {{ py2pkg('enum34') }}
+Requires:       {{ py2pkg('eventlet') }}
+Requires:       {{ py2pkg('python-glanceclient') }}
+Requires:       {{ py2pkg('google-api-python-client') }}
+Requires:       {{ py2pkg('httplib2') }}
+Requires:       {{ py2pkg('ipaddress') }}
+Requires:       {{ py2pkg('iso8601') }}
+Requires:       {{ py2pkg('jsonschema') }}
+Requires:       {{ py2pkg('keystoneauth1') }}
+Requires:       {{ py2pkg('python-keystoneclient') }}
+Requires:       {{ py2pkg('keystonemiddleware') }}
+Requires:       {{ py2pkg('lxml') }}
+Requires:       {{ py2pkg('python-novaclient') }}
+Requires:       {{ py2pkg('oauth2client') }}
+Requires:       {{ py2pkg('os-brick') }}
+Requires:       {{ py2pkg('os-win') }}
+Requires:       {{ py2pkg('oslo.concurrency') }}
+Requires:       {{ py2pkg('oslo.config') }}
+Requires:       {{ py2pkg('oslo.context') }}
+Requires:       {{ py2pkg('oslo.db') }}
+Requires:       {{ py2pkg('oslo.i18n') }}
+Requires:       {{ py2pkg('oslo.log') }}
+Requires:       {{ py2pkg('oslo.messaging') }}
+Requires:       {{ py2pkg('oslo.middleware') }}
+Requires:       {{ py2pkg('oslo.policy') }}
+Requires:       {{ py2pkg('oslo.privsep') }}
+Requires:       {{ py2pkg('oslo.reports') }}
+Requires:       {{ py2pkg('oslo.rootwrap') }}
+Requires:       {{ py2pkg('oslo.serialization') }}
+Requires:       {{ py2pkg('oslo.service') }}
+Requires:       {{ py2pkg('oslo.utils') }}
+Requires:       {{ py2pkg('oslo.versionedobjects') }}
+Requires:       {{ py2pkg('oslo.vmware') }}
+Requires:       {{ py2pkg('osprofiler') }}
+Requires:       {{ py2pkg('paramiko') }}
+Requires:       {{ py2pkg('psutil') }}
+Requires:       {{ py2pkg('pyparsing') }}
+Requires:       {{ py2pkg('pytz') }}
+Requires:       {{ py2pkg('requests') }}
+Requires:       {{ py2pkg('retrying') }}
+Requires:       {{ py2pkg('rtslib-fb') }}
+Requires:       {{ py2pkg('simplejson') }}
+Requires:       {{ py2pkg('six') }}
+Requires:       {{ py2pkg('sqlalchemy-migrate') }}
+Requires:       {{ py2pkg('stevedore') }}
+Requires:       {{ py2pkg('suds-jurko') }}
+Requires:       {{ py2pkg('python-swiftclient') }}
+Requires:       {{ py2pkg('taskflow') }}
+Requires:       {{ py2pkg('tooz') }}
+Requires:       sudo
+
+%description -n python-{{ pypi_name }}
+OpenStack Volume (codename Cinder) provides services to manage and
+access block storage volumes for use by Virtual Machine instances.
+
+This package contains the Cinder Python library.
+
+%if 0%{?with_doc}
+%package doc
+Summary:        Documentation for OpenStack Volume Service
+Group:          Documentation
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
+BuildRequires:  {{ py2pkg('sphinxcontrib-apidoc') }}
+
+%description doc
+OpenStack Volume (codename Cinder) provides services to manage and
+access block storage volumes for use by Virtual Machine instances.
+
+This package contains the documentation.
+%endif
+
+%package api
+Summary:        OpenStack Volume service (Cinder) - API
+Group:          Development/Languages/Python
+Requires:       python-{{ pypi_name }} = %{epoch}:%{version}-%{release}
+
+%description api
+OpenStack Volume (codename Cinder) provides services to manage and
+access block storage volumes for use by Virtual Machine instances.
+
+This package contains the %{name} API server.
+
+%package scheduler
+Summary:        OpenStack Volume service (Cinder) - Scheduler
+Group:          Development/Languages/Python
+Requires:       %{name} = %{epoch}:%{version}-%{release}
+
+%description scheduler
+OpenStack Volume (codename Cinder) provides services to manage and
+access block storage volumes for use by Virtual Machine instances.
+
+This package contains the %{name} scheduler server.
+
+%package volume
+Summary:        OpenStack Volume service (Cinder) - Vlume
+Group:          Development/Languages/Python
+Requires:       %{name} = %{epoch}:%{version}-%{release}
+
+%description volume
+OpenStack Volume (codename Cinder) provides services to manage and
+access block storage volumes for use by Virtual Machine instances.
+
+This package contains the %{name} volume server.
+
+%package backup
+Summary:        OpenStack Volume service (Cinder) - Backup
+Group:          Development/Languages/Python
+Requires:       %{name} = %{epoch}:%{version}-%{release}
+
+%description backup
+OpenStack Volume (codename Cinder) provides services to manage and
+access block storage volumes for use by Virtual Machine instances.
+
+This package contains the %{name} backup server.
+
+%prep
+%autosetup -n {{ pypi_name }}-{{ upstream_version }}
+%py_req_cleanup
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
+
+# We do not want to depend on hacking for unit tests
+rm -f cinder/tests/unit/test_hacking.py
+
+%build
+%{py2_build}
+# build documentation
+%if 0%{?with_doc}
+export PYTHONPATH="$( pwd ):$PYTHONPATH"
+PBR_VERSION={{ upstream_version }} sphinx-build -b html doc/source doc/build/html
+rm -rf doc/build/html/.{doctrees,buildinfo}
+%endif
+# generate the sample config files
+PYTHONPATH=. oslo-config-generator --config-file tools/config/cinder-config-generator.conf
+
+
+%install
+%{py2_install}
+
+
+# Setup directories
+install -d -m 755 %{buildroot}%{_localstatedir}/lib/%{service}
+install -d -m 755 %{buildroot}%{_localstatedir}/lib/%{service}/tmp
+install -d -m 755 %{buildroot}%{_localstatedir}/log/%{service}
+
+# Install config files
+install -d -m 755 %{buildroot}%{_sysconfdir}/%{service}
+install -d -m 755 %{buildroot}%{_sysconfdir}/%{service}/volumes
+install -p -D -m 640 etc/%{service}/rootwrap.conf %{buildroot}%{_sysconfdir}/%{service}/rootwrap.conf
+install -p -D -m 640 etc/%{service}/api-paste.ini %{buildroot}%{_sysconfdir}/%{service}/api-paste.ini
+install -p -D -m 640 etc/%{service}/%{service}.conf.sample %{buildroot}%{_sysconfdir}/%{service}/%{service}.conf
+
+# Install initscripts for services
+install -p -D -m 644 %{SOURCE2} %{buildroot}%{_unitdir}/openstack-%{service}-api.service
+install -p -D -m 644 %{SOURCE3} %{buildroot}%{_unitdir}/openstack-%{service}-scheduler.service
+install -p -D -m 644 %{SOURCE4} %{buildroot}%{_unitdir}/openstack-%{service}-volume.service
+install -p -D -m 644 %{SOURCE5} %{buildroot}%{_unitdir}/openstack-%{service}-backup.service
+
+# Install sudoers
+install -p -D -m 440 %{SOURCE6} %{buildroot}%{_sysconfdir}/sudoers.d/%{service}
+
+# Install logrotate
+install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/openstack-%{service}
+
+# Install pid directory
+install -d -m 755 %{buildroot}%{_localstatedir}/run/%{service}
+
+# Install rootwrap files in /usr/share/cinder/rootwrap
+mkdir -p %{buildroot}%{_datarootdir}/%{service}/rootwrap/
+install -p -D -m 644 etc/%{service}/rootwrap.d/* %{buildroot}%{_datarootdir}/%{service}/rootwrap/
+
+# Symlinks to rootwrap config files
+mkdir -p %{buildroot}%{_sysconfdir}/%{service}/rootwrap.d
+for filter in %{_sysconfdir}/rootwrap.d/os-brick.filters; do
+ln -s $filter %{buildroot}%{_sysconfdir}/%{service}/rootwrap.d/
+done
+
+# Remove duplicate config files under /usr/etc/
+rm -rf %{buildroot}%{_prefix}/%{_sysconfdir}
+
+
+%pre
+%openstack_pre_user_group_create cinder cinder /sbin/nologin
+exit 0
+
+%check
+# OS_TEST_PATH=./cinder/tests/unit PYTHONPATH=. ostestr
+
+
+%post api
+%systemd_post %{name}-api.service
+
+%preun api
+%systemd_preun %{name}-api.service
+
+%postun api
+%systemd_postun_with_restart %{name}-api.service
+
+%post scheduler
+%systemd_post %{name}-scheduler.service
+
+%preun scheduler
+%systemd_preun %{name}-scheduler.service
+
+%postun scheduler
+%systemd_postun_with_restart %{name}-scheduler.service
+
+%post volume
+%systemd_post %{name}-volume.service
+
+%preun volume
+%systemd_preun %{name}-volume.service
+
+%postun volume
+%systemd_postun_with_restart %{name}-volume.service
+
+%post backup
+%systemd_post %{name}-backup.service
+
+%preun backup
+%systemd_preun %{name}-backup.service
+
+%postun backup
+%systemd_postun_with_restart %{name}-backup.service
+
+
+%files
+%license LICENSE
+%dir %attr(0750, root, cinder) %{_sysconfdir}/{{ pypi_name }}
+%config(noreplace) %attr(-, root, %{service}) %{_sysconfdir}/%{service}/%{service}.conf
+%config(noreplace) %attr(-, root, %{service}) %{_sysconfdir}/%{service}/api-paste.ini
+%config(noreplace) %attr(-, root, %{service}) %{_sysconfdir}/%{service}/rootwrap.conf
+%config(noreplace) %{_sysconfdir}/logrotate.d/openstack-%{service}
+%config(noreplace) %{_sysconfdir}/sudoers.d/%{service}
+%{_sysconfdir}/%{service}/rootwrap.d/
+%dir %attr(0750, %{service}, root) %{_localstatedir}/log/%{service}
+%dir %attr(0755, %{service}, root) %{_localstatedir}/run/%{service}
+%dir %attr(0755, %{service}, root) %{_sysconfdir}/%{service}/volumes
+%{_datarootdir}/%{service}
+%defattr(-, %{service}, %{service}, -)
+%dir %{_localstatedir}/lib/%{service}
+%dir %{_localstatedir}/lib//%{service}/tmp
+%{_bindir}/{{ pypi_name }}-manage
+%{_bindir}/{{ pypi_name }}-rootwrap
+%{_bindir}/{{ pypi_name }}-rtstool
+%{_bindir}/{{ pypi_name }}-volume-usage-audit
+
+%files -n python-cinder
+%defattr(-,root,root,-)
+%license LICENSE
+%{python_sitelib}/{{ pypi_name }}*
+
+%if 0%{?with_doc}
+%files doc
+%license LICENSE
+%doc doc/build/html
+%endif
+
+%files api
+%defattr(-,root,root,-)
+%{_unitdir}/openstack-cinder-api.service
+%{_bindir}/{{ pypi_name }}-api
+%{_bindir}/{{ pypi_name }}-wsgi
+
+%files scheduler
+%defattr(-,root,root,-)
+%{_unitdir}/openstack-cinder-scheduler.service
+%{_bindir}/{{ pypi_name }}-scheduler
+
+%files volume
+%defattr(-,root,root,-)
+%{_unitdir}/openstack-cinder-volume.service
+%{_bindir}/{{ pypi_name }}-volume
+
+%files backup
+%defattr(-,root,root,-)
+%{_unitdir}/openstack-cinder-backup.service
+%{_bindir}/{{ pypi_name }}-backup
+
+%changelog
+

@@ -1,0 +1,17 @@
+[Unit]
+Description=OpenStack Cinder Volume Server
+After=syslog.target network.target
+
+[Service]
+LimitNOFILE=131072
+LimitNPROC=131072
+TasksMax=8192
+Type=notify
+User=cinder
+ExecStart=/usr/bin/cinder-volume
+Restart=on-failure
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target
+

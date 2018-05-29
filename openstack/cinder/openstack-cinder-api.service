@@ -1,0 +1,15 @@
+[Unit]
+Description=OpenStack Cinder API Server
+After=syslog.target network.target
+
+[Service]
+Type=notify
+User=cinder
+Group=cinder
+ExecStart=/usr/bin/cinder-api
+Restart=on-failure
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target
+ExecStartPre=-/usr/bin/cinder-manage db sync

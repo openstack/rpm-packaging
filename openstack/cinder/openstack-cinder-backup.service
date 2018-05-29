@@ -1,0 +1,13 @@
+[Unit]
+Description=OpenStack Cinder Backup Server
+After=syslog.target network.target
+
+[Service]
+Type=notify
+User=cinder
+ExecStart=/usr/bin/cinder-backup
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+
