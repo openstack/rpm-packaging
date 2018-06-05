@@ -1,5 +1,5 @@
 {% set pypi_name = 'python-magnumclient' %}
-{% set upstream_version = upstream_version('2.9.0') %}
+{% set upstream_version = upstream_version('2.10.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -30,7 +30,7 @@ BuildRequires:  {{ py2pkg('osprofiler', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('python-subunit', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('setuptools', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('Babel') }}
@@ -82,7 +82,8 @@ sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 %{python_build}
 
 # Build HTML docs and man page
-%{__python2} setup.py build_sphinx --builder=html,man
+PBR_VERSION={{ upstream_version }} sphinx-build -b html doc/source doc/build/html
+PBR_VERSION={{ upstream_version }} sphinx-build -b man doc/source doc/build/man
 rm -rf html/.{doctrees,buildinfo}
 
 %install
@@ -102,9 +103,7 @@ install -p -D -m 644 tools/magnum.bash_completion %{buildroot}%{_sysconfdir}/bas
 %python_uninstall_alternative magnum
 
 %check
-%{python_expand rm -rf .testrepository
-$python setup.py testr
-}
+%python_exec -m stestr.cli run
 
 %files %{python_files}
 %license LICENSE
