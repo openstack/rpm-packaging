@@ -1,45 +1,61 @@
-%global sname pycadf
-Name:           python-%{sname}
-Version:        2.7.0
-Release:        0
+{% set pypi_name = 'pycadf' %}
+{% set upstream_version = upstream_version('2.7.0') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+# NOTE(jpena): This is required to prevent singlespec macros from changing the requires
+%global oldpython python
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
 Summary:        DMTF Cloud Audit (CADF) data model
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://launchpad.net/pycadf
-Source0:        https://files.pythonhosted.org/packages/source/p/%{sname}/%{sname}-%{version}.tar.gz
+Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('devel') }}
-BuildRequires:  {{ py2pkg('fixtures') }}
-BuildRequires:  {{ py2pkg('oslo.config') }}
-BuildRequires:  {{ py2pkg('oslo.serialization') }}
-BuildRequires:  {{ py2pkg('oslotest') }}
-BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('setuptools') }}
+BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('fixtures', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.config', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.serialization', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('setuptools', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
+Requires:       %{oldpython}-pycadf-common
 Requires:       {{ py2pkg('debtcollector') }}
 Requires:       {{ py2pkg('oslo.config') }}
 Requires:       {{ py2pkg('oslo.serialization') }}
 Requires:       {{ py2pkg('pytz') }}
 Requires:       {{ py2pkg('six') }}
 BuildArch:      noarch
+%python_subpackages
 
 %description
 DMTF Cloud Audit (CADF) data model
 
-%package doc
+%package -n python-pycadf-doc
 Summary:        Documentation for the DMTF Cloud Audit (CADF) data model
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 
-%description doc
+%description -n python-pycadf-doc
 Documentation for the DMTF Cloud Audit (CADF) data model.
 
+%package -n python-pycadf-common
+Summary:        Common files for the DMTF Cloud Audit (CADF) data model
+
+%description -n python-pycadf-common
+Configuration files for the DMTF Cloud Audit (CADF) data model.
+
 %prep
-%autosetup -n %{sname}-%{version}
+%autosetup -n {{ pypi_name }}-{{ upstream_version }}
 sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 %py_req_cleanup
 
 %build
-%py2_build
+%{python_build}
 
 # generate html docs
 %{__python2} setup.py build_sphinx
@@ -47,20 +63,28 @@ sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
-%py2_install
+%{python_install}
 # FIXME: pbr/wheel bug installing onfiguration files in /usr/etc
 mkdir -p %{buildroot}/%{_sysconfdir}
-mv %{buildroot}%{_prefix}%{_sysconfdir}/%{sname} %{buildroot}/%{_sysconfdir}/
+mv %{buildroot}%{_prefix}%{_sysconfdir}/{{ pypi_name }} %{buildroot}/%{_sysconfdir}/
 
-%files
+%check
+%{python_expand rm -rf .testrepository
+$python setup.py testr
+}
+
+%files %{python_files}
 %doc README.rst
 %license LICENSE
-%dir %{_sysconfdir}/%{sname}
-%config(noreplace) %{_sysconfdir}/%{sname}/*.conf
-%{python2_sitelib}/%{sname}
-%{python2_sitelib}/%{sname}-*-py?.?.egg-info
+%{python_sitelib}/{{ pypi_name }}
+%{python_sitelib}/{{ pypi_name }}-*-py?.?.egg-info
 
-%files doc
+%files -n python-pycadf-common
+%license LICENSE
+%dir %{_sysconfdir}/{{ pypi_name }}
+%config(noreplace) %{_sysconfdir}/{{ pypi_name }}/*.conf
+
+%files -n python-pycadf-doc
 %license LICENSE
 %doc doc/build/html
 
