@@ -1,29 +1,32 @@
-%global sname os-win
+{% set pypi_name = 'os-win' %}
+{% set upstream_version = upstream_version('4.0.0') %}
+{% set rpm_release = '0' %}
+{% set source = url_pypi() %}
 Name:           {{ py2name('os-win') }}
 Epoch:          {{ epoch('os-win') }}
-Version:        4.0.0
-Release:        0
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
 Summary:        Hyper-V library for OpenStack projects
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
-URL:            https://launchpad.net/%{sname}
-Source0:        https://files.pythonhosted.org/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
+URL:            https://launchpad.net/{{ pypi_name }}
+Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('ddt') }}
-BuildRequires:  {{ py2pkg('devel') }}
-BuildRequires:  {{ py2pkg('eventlet') }}
-BuildRequires:  {{ py2pkg('mock') }}
-BuildRequires:  {{ py2pkg('oslo.concurrency') }}
-BuildRequires:  {{ py2pkg('oslo.i18n') }}
-BuildRequires:  {{ py2pkg('oslo.log') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
-BuildRequires:  {{ py2pkg('oslotest') }}
-BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('python-subunit') }}
-BuildRequires:  {{ py2pkg('testrepository') }}
-BuildRequires:  {{ py2pkg('testscenarios') }}
-BuildRequires:  {{ py2pkg('testtools') }}
+BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('Sphinx', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('ddt', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('eventlet', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.concurrency', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.i18n', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.log', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslosphinx', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('python-subunit', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('Babel') }}
 Requires:       {{ py2pkg('eventlet') }}
 Requires:       {{ py2pkg('oslo.concurrency') }}
@@ -34,47 +37,62 @@ Requires:       {{ py2pkg('oslo.service') }}
 Requires:       {{ py2pkg('oslo.utils') }}
 Requires:       {{ py2pkg('pbr') }}
 BuildArch:      noarch
+%if 0%{?suse_version}
+Requires(post): update-alternatives
+Requires(postun): update-alternatives
+%else
+# on RDO, update-alternatives is in chkconfig
+Requires(post): chkconfig
+Requires(postun): chkconfig
+%endif
+%python_subpackages
 
 %description
 Library contains Windows / Hyper-V code commonly used in the OpenStack projects:
 nova, cinder, networking-hyperv.
 
-%package doc
+%package -n {{ py2name() }}-doc
 Summary:        Documentation for OpenStack Windows/Hyper-V Library
 Group:          Documentation/HTML
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 
-%description doc
+%description -n {{ py2name() }}-doc
 Documentation for the Hyper-V library.
 
 %prep
-%autosetup -n %{sname}-%{version}
+%autosetup -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
 # we dont want to run the hacking tests again (and dont want the needed deps)
 rm -f os_win/tests/unit/test_hacking.py
 sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
-%{py2_build}
+%{python_build}
 %{__python2} setup.py build_sphinx --builder=html,man
-rm -rf html/.{doctrees,buildinfo}
+rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
-%{py2_install}
+%{python_install}
 install -p -D -m 644 doc/build/man/os-win.1 %{buildroot}/%{_mandir}/man1/os-win.1
+%python_clone -a %{buildroot}%{_mandir}/man1/os-win.1
+
+%post
+%python_install_alternative os-win.1
 
 %check
-%{__python2} setup.py test
+%{python_expand rm -rf .testrepository
+PYTHON=$python $python setup.py test
+}
 
-%files
+%files %{python_files}
 %doc README.rst ChangeLog
 %license LICENSE
-%{python2_sitelib}/os_win*
-%{python2_sitelib}/*.egg-info
-%{_mandir}/man1/os-win.1*
+%{python_sitelib}/os_win*
+%{python_sitelib}/*.egg-info
+%python_alternative %{_mandir}/man1/os-win.1
 
-%files doc
+%files -n {{ py2name() }}-doc
 %doc doc/build/html
 %license LICENSE
 
