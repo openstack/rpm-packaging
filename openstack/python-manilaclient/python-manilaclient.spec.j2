@@ -1,5 +1,5 @@
 {% set pypi_name = 'python-manilaclient' %}
-{% set upstream_version = upstream_version('1.22.0') %}
+{% set upstream_version = upstream_version('1.23.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -17,7 +17,7 @@ BuildRequires:  {{ py2pkg('ddt', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('fixtures', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('python-openstackclient', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('Babel') }}
@@ -84,13 +84,12 @@ install -p -D -m 644 tools/manila.bash_completion %{buildroot}%{_sysconfdir}/bas
 %python_uninstall_alternative manila
 
 %check
-%{python_expand rm -rf .testrepository
-export OS_TEST_PATH=./manilaclient/tests/unit/
 # we dont want to depend on Tempest so remove the relevant tests
 rm -f manilaclient/tests/unit/test_shell.py
 rm -f manilaclient/tests/unit/test_functional_utils.py
 rm -rf manilaclient/tests/functional
-$python setup.py testr
+%{python_expand rm -rf .testrepository
+stestr --test-path=manilaclient/tests/unit/ run
 }
 
 %files %{python_files}
