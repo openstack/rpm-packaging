@@ -60,12 +60,8 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %{py2_install}
 
 %check
-%if 0%{?fedora}
-# This env var is required to fix unit tests in Fedora 28 and later
-export PYTHON_DISALLOW_AMBIGUOUS_VERSION=0
-%endif
 export PYTHONPATH=.
-%{__python2} setup.py testr
+PYTHON=python2 %{__python2} setup.py testr
 
 %files
 %license LICENSE
