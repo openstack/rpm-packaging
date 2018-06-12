@@ -12,26 +12,26 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('Babel') }}
-BuildRequires:  {{ py2pkg('ddt') }}
-BuildRequires:  {{ py2pkg('devel') }}
-BuildRequires:  {{ py2pkg('eventlet') }}
-BuildRequires:  {{ py2pkg('fixtures') }}
-BuildRequires:  {{ py2pkg('lxml') }}
-BuildRequires:  {{ py2pkg('mock') }}
-BuildRequires:  {{ py2pkg('mox3') }}
-BuildRequires:  {{ py2pkg('netaddr') }}
-BuildRequires:  {{ py2pkg('oslo.concurrency') }}
-BuildRequires:  {{ py2pkg('oslo.i18n') }}
-BuildRequires:  {{ py2pkg('oslo.utils') }}
-BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('python-subunit') }}
-BuildRequires:  {{ py2pkg('requests') }}
-BuildRequires:  {{ py2pkg('suds-jurko') }}
-BuildRequires:  {{ py2pkg('testrepository') }}
-BuildRequires:  {{ py2pkg('testscenarios') }}
-BuildRequires:  {{ py2pkg('testtools') }}
-BuildRequires:  {{ py2pkg('urllib3') }}
+BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('Babel', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('ddt', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('eventlet', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('fixtures', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('lxml', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('mox3', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('netaddr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.concurrency', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.i18n', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.utils', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('python-subunit', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('requests', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('suds-jurko', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('urllib3', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('PyYAML') }}
 Requires:       {{ py2pkg('eventlet') }}
 Requires:       {{ py2pkg('lxml') }}
@@ -45,6 +45,7 @@ Requires:       {{ py2pkg('stevedore') }}
 Requires:       {{ py2pkg('suds-jurko') }}
 Requires:       {{ py2pkg('urllib3') }}
 BuildArch:      noarch
+%python_subpackages
 
 %description
 The Oslo project intends to produce a python library containing infrastructure
@@ -54,13 +55,13 @@ high quality, stable, consistent and generally useful.
 The Oslo VMware library offers session and API call management for VMware ESX/VC
 server.
 
-%package        doc
+%package        -n {{ py2name() }}-doc
 Summary:        Documentation for OpenStack common VMware library
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 Requires:       %{name} = %{version}
 
-%description doc
+%description -n {{ py2name() }}-doc
 Documentation for OpenStack common VMware library.
 
 %prep
@@ -69,7 +70,7 @@ Documentation for OpenStack common VMware library.
 sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
-%py2_build
+%python_build
 
 # generate html docs
 %{__python2} setup.py build_sphinx
@@ -77,18 +78,20 @@ sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
-%py2_install
+%python_install
 
 %check
-PYTHONPATH=. %{__python2} setup.py test
+%{python_expand rm -rf .testrepository
+PYTHONPATH=. PYTHON=$python $python setup.py test
+}
 
-%files
+%files %{python_files}
 %doc README.rst
 %license LICENSE
 %{python2_sitelib}/oslo_vmware
 %{python2_sitelib}/*.egg-info
 
-%files doc
+%files -n {{ py2name() }}-doc
 %doc doc/build/html
 %license LICENSE
 
