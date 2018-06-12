@@ -1,12 +1,16 @@
 %global sname python-congressclient
-Name:           {{ py2name('python-congressclient') }}
-Version:        1.9.0
-Release:        0
+{% set pypi_name = 'python-congressclient' %}
+{% set upstream_version = upstream_version('1.10.0') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
 Summary:        Client library for Congress
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            http://launchpad.net/%{name}
-Source0:        https://files.pythonhosted.org/packages/source/p/%{sname}/%{sname}-%{version}.tar.gz
+Source0:        {{ source }}
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('fixtures') }}
@@ -21,6 +25,7 @@ BuildRequires:  {{ py2pkg('pbr') }}
 BuildRequires:  {{ py2pkg('python-subunit') }}
 BuildRequires:  {{ py2pkg('requests-mock') }}
 BuildRequires:  {{ py2pkg('setuptools') }}
+BuildRequires:  {{ py2pkg('sphinxcontrib-apidoc') }}
 BuildRequires:  {{ py2pkg('testrepository') }}
 BuildRequires:  {{ py2pkg('testscenarios') }}
 BuildRequires:  {{ py2pkg('testtools') }}
@@ -73,8 +78,8 @@ sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 %{py2_build}
 
 # Build HTML docs and man page
-%{__python2} setup.py build_sphinx
-rm -rf html/.{doctrees,buildinfo}
+PBR_VERSION={{ upstream_version }} sphinx-build -b html doc/source doc/build/html
+rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
 %{py2_install}
