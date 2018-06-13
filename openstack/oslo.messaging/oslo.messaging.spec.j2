@@ -12,49 +12,47 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('PyYAML') }}
-BuildRequires:  {{ py2pkg('WebOb') }}
-BuildRequires:  {{ py2pkg('amqp') }}
-BuildRequires:  {{ py2pkg('cachetools') }}
-BuildRequires:  {{ py2pkg('debtcollector') }}
-BuildRequires:  {{ py2pkg('devel') }}
-BuildRequires:  {{ py2pkg('eventlet') }}
-BuildRequires:  {{ py2pkg('fixtures') }}
-BuildRequires:  {{ py2pkg('futures') }}
-BuildRequires:  {{ py2pkg('futurist') }}
-BuildRequires:  {{ py2pkg('greenlet') }}
-BuildRequires:  {{ py2pkg('kafka-python') }}
-BuildRequires:  {{ py2pkg('kombu') }}
-BuildRequires:  {{ py2pkg('mock') }}
-BuildRequires:  {{ py2pkg('monotonic') }}
-BuildRequires:  {{ py2pkg('oslo.config') }}
-BuildRequires:  {{ py2pkg('oslo.i18n') }}
-BuildRequires:  {{ py2pkg('oslo.log') }}
-BuildRequires:  {{ py2pkg('oslo.middleware') }}
-BuildRequires:  {{ py2pkg('oslo.serialization') }}
-BuildRequires:  {{ py2pkg('oslo.service') }}
-BuildRequires:  {{ py2pkg('oslo.utils') }}
-BuildRequires:  {{ py2pkg('oslotest') }}
-BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('pifpaf') }}
-BuildRequires:  {{ py2pkg('pika') }}
-BuildRequires:  {{ py2pkg('pika-pool') }}
-BuildRequires:  {{ py2pkg('pyngus') }}
-BuildRequires:  {{ py2pkg('python-subunit') }}
-BuildRequires:  {{ py2pkg('pyzmq') }}
-BuildRequires:  {{ py2pkg('redis') }}
-BuildRequires:  {{ py2pkg('six') }}
-BuildRequires:  {{ py2pkg('stevedore') }}
-BuildRequires:  {{ py2pkg('tenacity') }}
-BuildRequires:  {{ py2pkg('testrepository') }}
-BuildRequires:  {{ py2pkg('testscenarios') }}
-BuildRequires:  {{ py2pkg('testtools') }}
+BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('PyYAML', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('WebOb', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('amqp', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('cachetools', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('debtcollector', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('eventlet', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('fixtures', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('futurist', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('greenlet', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('kafka-python', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('kombu', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('monotonic', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.config', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.i18n', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.log', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.middleware', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.serialization', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.service', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.utils', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pifpaf', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pika', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pika-pool', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pyngus', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('python-subunit', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pyzmq', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('redis', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('six', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('stevedore', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('tenacity', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('PyYAML') }}
 Requires:       {{ py2pkg('WebOb') }}
 Requires:       {{ py2pkg('amqp') }}
 Requires:       {{ py2pkg('cachetools') }}
 Requires:       {{ py2pkg('debtcollector') }}
-Requires:       {{ py2pkg('futures') }}
 Requires:       {{ py2pkg('futurist') }}
 Requires:       {{ py2pkg('greenlet') }}
 Requires:       {{ py2pkg('kombu') }}
@@ -72,17 +70,30 @@ Requires:       {{ py2pkg('six') }}
 Requires:       {{ py2pkg('stevedore') }}
 Requires:       {{ py2pkg('tenacity') }}
 BuildArch:      noarch
+%ifpython2
+BuildRequires:  {{ py2pkg('futures') }}
+Requires:       {{ py2pkg('futures') }}
+%endif
+%if 0%{?suse_version}
+Requires(post): update-alternatives
+Requires(postun): update-alternatives
+%else
+# on RDO, update-alternatives is in chkconfig
+Requires(post): chkconfig
+Requires(postun): chkconfig
+%endif
+%python_subpackages
 
 %description
 The Oslo messaging API supports RPC and notifications over a number
 of different messaging transports.
 
-%package doc
+%package -n {{ py2name() }}-doc
 Summary:        Documentation for OpenStack messaging library
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 
-%description doc
+%description -n {{ py2name() }}-doc
 The Oslo messaging API supports RPC and notifications over a number
 of different messaging transports.
 This package contains the documentation.
@@ -97,7 +108,7 @@ sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 rm -f oslo_messaging/tests/drivers/test_amqp_driver.py
 
 %build
-%{py2_build}
+%{python_build}
 
 # generate html docs
 %{__python2} setup.py build_sphinx
@@ -105,24 +116,36 @@ rm -f oslo_messaging/tests/drivers/test_amqp_driver.py
 rm -rf build/sphinx/html/.{doctrees,buildinfo}
 
 %install
-%{py2_install}
+%{python_install}
+%python_clone -a %{buildroot}%{_bindir}/oslo-messaging-zmq-broker
+%python_clone -a %{buildroot}%{_bindir}/oslo-messaging-zmq-proxy
+%python_clone -a %{buildroot}%{_bindir}/oslo-messaging-send-notification
+
+%post
+%python_install_alternative oslo-messaging-zmq-broker
+%python_install_alternative oslo-messaging-zmq-proxy
+%python_install_alternative oslo-messaging-send-notification
+
+%postun
+%python_uninstall_alternative oslo-messaging-zmq-broker
+%python_uninstall_alternative oslo-messaging-zmq-proxy
+%python_uninstall_alternative oslo-messaging-send-notification
 
 %check
-# skip the zmq tests - theses are flaky
-testr init
-testr list-tests| grep -e zmq -v > test-list
-testr run --load-list test-list
+%{python_expand rm -rf .testrepository
+PYTHON=$python $python setup.py testr
+}
 
-%files
+%files %python_files
 %license LICENSE
 %doc README.rst ChangeLog
-%{python2_sitelib}/oslo_messaging
-%{python2_sitelib}/*.egg-info
-%{_bindir}/oslo-messaging-zmq-broker
-%{_bindir}/oslo-messaging-zmq-proxy
-%{_bindir}/oslo-messaging-send-notification
+%{python_sitelib}/oslo_messaging
+%{python_sitelib}/*.egg-info
+%python_alternative %{_bindir}/oslo-messaging-zmq-broker
+%python_alternative %{_bindir}/oslo-messaging-zmq-proxy
+%python_alternative %{_bindir}/oslo-messaging-send-notification
 
-%files doc
+%files -n {{ py2name() }}-doc
 %license LICENSE
 %doc build/sphinx/html
 
