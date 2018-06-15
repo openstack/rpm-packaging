@@ -19,6 +19,7 @@ Source3:        openstack-keystone.tmpfiles
 Source4:        openstack-keystone.defaultconf
 Source5:        openstack-keystone.README.config
 BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('Flask') }}
 BuildRequires:  {{ py2pkg('WebTest') }}
 BuildRequires:  {{ py2pkg('bcrypt') }}
 BuildRequires:  {{ py2pkg('devel') }}
@@ -58,6 +59,7 @@ This package contains the keystone python libraries.
 Summary:        Keystone Python libraries
 Group:          Applications/System
 Requires:       {{ py2pkg('Babel') }}
+Requires:       {{ py2pkg('Flask') }}
 Requires:       {{ py2pkg('Paste') }}
 Requires:       {{ py2pkg('PasteDeploy') }}
 Requires:       {{ py2pkg('PyMySQL') }}
