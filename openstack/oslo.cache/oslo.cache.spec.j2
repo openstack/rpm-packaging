@@ -1,5 +1,5 @@
 {% set pypi_name = 'oslo.cache' %}
-{% set upstream_version = upstream_version('1.30.0') %}
+{% set upstream_version = upstream_version('1.30.1') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -44,6 +44,7 @@ backends such as Memcached.
 Summary:        Documentation for the OpenStack Oslo Cache library
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('openstackdocstheme') }}
+BuildRequires:  {{ py2pkg('sphinxcontrib-apidoc') }}
 
 %description -n {{ py2name() }}-doc
 Documentation for the OpenStack Oslo cache library.
@@ -60,7 +61,7 @@ sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 %{python_install}
 
 # generate html docs
-sphinx-build -b html doc/source doc/build/html
+PBR_VERSION={{ upstream_version }} sphinx-build -b html doc/source doc/build/html
 # remove the sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
