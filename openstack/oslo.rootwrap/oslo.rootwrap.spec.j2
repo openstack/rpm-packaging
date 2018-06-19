@@ -13,16 +13,16 @@ URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
 BuildRequires:  python-devel
-BuildRequires:  {{ py2pkg('eventlet') }}
-BuildRequires:  {{ py2pkg('fixtures') }}
-BuildRequires:  {{ py2pkg('mock') }}
-BuildRequires:  {{ py2pkg('oslotest') }}
-BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('python-subunit') }}
-BuildRequires:  {{ py2pkg('six') }}
-BuildRequires:  {{ py2pkg('testrepository') }}
-BuildRequires:  {{ py2pkg('testscenarios') }}
-BuildRequires:  {{ py2pkg('testtools') }}
+BuildRequires:  {{ py2pkg('eventlet', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('fixtures', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('python-subunit', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('six', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('six') }}
 BuildArch:      noarch
 %if 0%{?suse_version}
@@ -30,18 +30,26 @@ BuildRequires:  iproute2
 %else
 BuildRequires:  iproute
 %endif
+%if 0%{?suse_version}
+Requires(post): update-alternatives
+Requires(postun): update-alternatives
+%else
+# on RDO, update-alternatives is in chkconfig
+Requires(post): chkconfig
+Requires(postun): chkconfig
+%endif
+%python_subpackages
 
 %description
 oslo.rootwrap allows fine-grained filtering of shell commands to run as root
 from OpenStack services.
 
-%package doc
+%package -n {{ py2name() }}-doc
 Summary:        Documentation for OpenStack {{ pypi_name }}
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('openstackdocstheme') }}
-BuildRequires:  {{ py2pkg('reno') }}
 
-%description doc
+%description -n {{ py2name() }}-doc
 Documentation for the OpenStack {{ pypi_name }} library.
 
 %prep
@@ -50,28 +58,43 @@ Documentation for the OpenStack {{ pypi_name }} library.
 sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
-%{py2_build}
+%{python_build}
 
 # generate html docs
 PBR_VERSION={{ upstream_version }} sphinx-build -b html doc/source doc/build/html
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
-%{py2_install}
+%{python_install}
+%python_clone -a %{buildroot}%{_bindir}/oslo-rootwrap
+%python_clone -a %{buildroot}%{_bindir}/oslo-rootwrap-daemon
+
+%post
+%python_install_alternative oslo-rootwrap
+%python_install_alternative oslo-rootwrap-daemon
+
+%postun
+%python_uninstall_alternative oslo-rootwrap
+%python_uninstall_alternative oslo-daemon
 
 %check
 export PYTHONPATH=.
 PYTHON=python2 %{__python2} setup.py testr
+# FIXME(ykarel) Remove the fix test once it works with python3 under root user
+%ifpython3
+rm -rf .testrepository
+PYTHON=python3 %{__python3} setup.py testr --testr-args='^(?!.*test_run_as)'
+%endif
 
-%files
+%files %{python_files}
 %license LICENSE
 %doc ChangeLog README.rst
-%{python2_sitelib}/oslo_rootwrap
-%{python2_sitelib}/*.egg-info
-%{_bindir}/oslo-rootwrap
-%{_bindir}/oslo-rootwrap-daemon
+%{python_sitelib}/oslo_rootwrap
+%{python_sitelib}/*.egg-info
+%python_alternative %{_bindir}/oslo-rootwrap
+%python_alternative %{_bindir}/oslo-rootwrap-daemon
 
-%files doc
+%files -n {{ py2name() }}-doc
 %license LICENSE
 %doc doc/build/html
 

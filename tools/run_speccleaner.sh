@@ -17,9 +17,11 @@ count=0
 for spec in $WORKSPACE/logs/suse/*.spec ; do
     # NOTE(toabctl):spec-cleaner can not ignore epochs currently
     sed -i '/^Epoch:.*/d' $spec
-    # NOTE(jpena): spec-cleaner wants python2 instead of %{__python2}
+    # NOTE(jpena): spec-cleaner wants python2/python3 instead of
+    # %{__python2}/%{__python3}
     # https://github.com/openSUSE/spec-cleaner/issues/173
     sed -i 's/%{__python2}/python2/g' $spec
+    sed -i 's/%{__python3}/python3/g' $spec
     spec-cleaner -m -d --no-copyright --diff-prog "diff -uw" \
                  $spec > $tmpdir/`basename ${spec}`.cleaner.diff &
     let count+=1
