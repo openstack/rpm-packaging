@@ -1,42 +1,44 @@
-%global sname glance_store
+{% set pypi_name = 'glance_store' %}
+{% set upstream_version = upstream_version('0.23.0') %}
+{% set rpm_release = '0' %}
+{% set source = url_pypi() %}
 Name:           {{ py2name('glance_store') }}
-Version:        0.23.0
-Release:        0
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
 Summary:        OpenStack Image Service Store Library
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
-URL:            https://launchpad.net/%{sname}
-Source0:        https://files.pythonhosted.org/packages/source/g/%{sname}/%{sname}-%{version}.tar.gz
+URL:            https://launchpad.net/{{ pypi_name }}
+Source0:        {{ source }}
+BuildRequires:  fdupes
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('python-cinderclient') }}
-BuildRequires:  {{ py2pkg('debtcollector') }}
-BuildRequires:  {{ py2pkg('enum34') }}
-BuildRequires:  {{ py2pkg('eventlet') }}
-BuildRequires:  {{ py2pkg('fixtures') }}
-BuildRequires:  {{ py2pkg('jsonschema') }}
-BuildRequires:  {{ py2pkg('python-keystoneclient') }}
-BuildRequires:  {{ py2pkg('mock') }}
-BuildRequires:  {{ py2pkg('os-brick') }}
-BuildRequires:  {{ py2pkg('os-testr') }}
-BuildRequires:  {{ py2pkg('oslo.concurrency') }}
-BuildRequires:  {{ py2pkg('oslo.config') }}
-BuildRequires:  {{ py2pkg('oslo.i18n') }}
-BuildRequires:  {{ py2pkg('oslo.serialization') }}
-BuildRequires:  {{ py2pkg('oslo.utils') }}
-BuildRequires:  {{ py2pkg('oslo.vmware') }}
-BuildRequires:  {{ py2pkg('oslotest') }}
-BuildRequires:  {{ py2pkg('python-subunit') }}
-BuildRequires:  {{ py2pkg('requests') }}
-BuildRequires:  {{ py2pkg('requests-mock') }}
-BuildRequires:  {{ py2pkg('six') }}
-BuildRequires:  {{ py2pkg('stevedore') }}
-BuildRequires:  {{ py2pkg('python-swiftclient') }}
-BuildRequires:  {{ py2pkg('testrepository') }}
-BuildRequires:  {{ py2pkg('testscenarios') }}
-BuildRequires:  {{ py2pkg('testtools') }}
+BuildRequires:  {{ py2pkg('python-cinderclient', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('debtcollector', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('eventlet', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('fixtures', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('jsonschema', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('python-keystoneclient', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('os-brick', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('os-testr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.concurrency', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.config', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.i18n', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.serialization', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.utils', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.vmware', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('python-subunit', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('requests', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('requests-mock', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('six', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('stevedore', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('python-swiftclient', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('python-cinderclient') }}
 Requires:       {{ py2pkg('debtcollector') }}
-Requires:       {{ py2pkg('enum34') }}
 Requires:       {{ py2pkg('eventlet') }}
 Requires:       {{ py2pkg('httplib2') }}
 Requires:       {{ py2pkg('jsonschema') }}
@@ -55,44 +57,66 @@ Requires:       {{ py2pkg('six') }}
 Requires:       {{ py2pkg('stevedore') }}
 Requires:       {{ py2pkg('python-swiftclient') }}
 BuildArch:      noarch
+%ifpython2
+BuildRequires:  {{ py2pkg('enum34') }}
+Requires:       {{ py2pkg('enum34') }}
+%endif
+%if 0%{?suse_version}
+Requires(post): update-alternatives
+Requires(postun): update-alternatives
+%else
+# on RDO, update-alternatives is in chkconfig
+Requires(post): chkconfig
+Requires(postun): chkconfig
+%endif
+%python_subpackages
 
 %description
 Glance store library.
 
-%package doc
+%package -n {{ py2name('glance_store') }}-doc
 Summary:        Documentation for OpenStack Image Service Store Library
 Group:          Documentation/HTML
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('openstackdocstheme') }}
-BuildRequires:  {{ py2pkg('reno') }}
 
-%description doc
+%description -n {{ py2name('glance_store') }}-doc
 Documentation for the Glance store library.
 
 %prep
-%autosetup -p1 -n %{sname}-%{version}
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
 sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
-%{py2_build}
+%{python_build}
 %{__python2} setup.py build_sphinx
-rm -rf html/.{doctrees,buildinfo}
+rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
-%{py2_install}
+%{python_install}
+%fdupes %{buildroot}%{python_sitelib}
+%python_clone -a %{buildroot}%{_bindir}/glance-rootwrap
+
+%post
+%python_install_alternative glance-rootwrap
+
+%postun
+%python_uninstall_alternative glance-rootwrap
 
 %check
-%{__python2} setup.py testr
+%{python_expand rm -rf .testrepository
+PYTHON=$python $python setup.py testr
+}
 
-%files
+%files %{python_files}
 %doc README.rst ChangeLog
 %license LICENSE
-%{python2_sitelib}/glance_store*
-%{python2_sitelib}/*.egg-info
-%{_bindir}/glance-rootwrap
+%{python_sitelib}/glance_store*
+%{python_sitelib}/*.egg-info
+%python_alternative %{_bindir}/glance-rootwrap
 
-%files doc
+%files -n {{ py2name('glance_store') }}-doc
 %doc doc/build/html
 %license LICENSE
 
