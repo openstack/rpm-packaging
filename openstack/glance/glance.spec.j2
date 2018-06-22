@@ -141,6 +141,24 @@ OpenStack Swift project.
 
 This package contains the Glance Python library.
 
+%package -n python3-{{ pypi_name }}-tests
+Summary:        Glance tests
+Requires:       openstack-{{ pypi_name }} = %{epoch}:%{version}-%{release}
+Provides:       python-glance-tests = %{epoch}:%{version}-%{release}
+
+%description -n python3-{{ pypi_name }}-tests
+The Glance project provides a service where users can upload and discover
+data assets that are meant to be used with other services. This currently
+includes images and metadata definitions.
+Glance image services include discovering, registering, and retrieving
+virtual machine images. Glance has a RESTful API that allows querying of
+VM image metadata as well as retrieval of the actual image.
+VM images made available through Glance can be stored in a variety of
+locations from simple filesystems to object-storage systems like the
+OpenStack Swift project.
+
+This package contains the Glance test files.
+
 %if 0%{?with_doc}
 %package doc
 Summary:        Documentation for OpenStack Image Service
@@ -183,7 +201,7 @@ This package contains the documentation.
 %package api
 Summary:        OpenStack Image service (Glance) - API
 Group:          Development/Languages/Python
-Requires:       python3-{{ pypi_name }} = %{epoch}:%{version}-%{release}
+Requires:       %{name} = %{epoch}:%{version}-%{release}
 
 %description api
 The Glance project provides a service where users can upload and discover
@@ -344,6 +362,11 @@ OS_TEST_PATH=./glance/tests/unit PYTHONPATH=. stestr-3 run
 %defattr(-,root,root,-)
 %license LICENSE
 %{python3_sitelib}/{{ pypi_name }}*
+%exclude %{python3_sitelib}/glance/tests
+
+%files -n python3-{{ pypi_name }}-tests
+%license LICENSE
+%{python3_sitelib}/{{ pypi_name }}/tests
 
 %if 0%{?with_doc}
 %files doc
