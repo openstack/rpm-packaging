@@ -119,6 +119,17 @@ Keystone is a Python implementation of the OpenStack
 (http://docs.openstack.org/developer/keystone/) identity service API.
 This package contains the Keystone Python library.
 
+%package -n python3-{{ pypi_name }}-tests
+Summary:        Keystone tests
+Requires:       openstack-{{ pypi_name }} = %{epoch}:%{version}-%{release}
+Provides:       python-keystone-tests = %{epoch}:%{version}-%{release}
+
+%description -n python3-{{ pypi_name }}-tests
+Keystone is a Python implementation of the OpenStack
+(http://docs.openstack.org/developer/keystone/) identity service API.
+
+This package contains the Keystone test files.
+
 %package doc
 Summary:        Documentation for OpenStack Identity Service
 Group:          Documentation/HTML
@@ -242,9 +253,9 @@ stestr-3 run --black-regex keystone.tests.unit.test_policy.GeneratePolicyFileTes
 %config(noreplace) %attr(0640, keystone, keystone) %{_sysconfdir}/keystone/keystone.policy.yaml
 %config(noreplace) %attr(0640, keystone, keystone) %{_sysconfdir}/keystone/sso_callback_template.html
 %config(noreplace) %{_sysconfdir}/logrotate.d/openstack-keystone
-%dir %attr(0750, %{keystone}, %{keystone}) %{_localstatedir}/lib/keystone
-%dir %attr(0750, %{keystone}, %{keystone}) %{_localstatedir}/log/keystone
-%dir %attr(0750, %{keystone}, %{keystone}) %{_localstatedir}/cache/keystone
+%dir %attr(0750, keystone, keystone) %{_localstatedir}/lib/keystone
+%dir %attr(0750, keystone, keystone) %{_localstatedir}/log/keystone
+%dir %attr(0750, keystone, keystone) %{_localstatedir}/cache/keystone
 %{_sysconfdir}/sysctl.d/openstack-keystone.conf
 
 %files -n python3-keystone
@@ -253,6 +264,11 @@ stestr-3 run --black-regex keystone.tests.unit.test_policy.GeneratePolicyFileTes
 %license LICENSE
 %{python3_sitelib}/keystone*
 %{python3_sitelib}/keystone-*.egg-info
+%exclude %{python3_sitelib}/{{ pypi_name }}/tests
+
+%files -n python3-{{ pypi_name }}-tests
+%license LICENSE
+%{python3_sitelib}/{{ pypi_name }}/tests
 
 %files doc
 %license LICENSE
