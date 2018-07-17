@@ -9,7 +9,7 @@ Release:        {{ py2rpmrelease() }}
 Summary:        A testr wrapper to provide functionality for OpenStack projects
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
-URL:            http://docs.openstack.org/developer/os-testr
+URL:            https://docs.openstack.org/developer/os-testr
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
@@ -36,9 +36,9 @@ Requires(postun): chkconfig
 
 %description
 A testr wrapper to provide functionality for OpenStack projects
-* Documentation: http://docs.openstack.org/developer/os-testr
+* Documentation: https://docs.openstack.org/developer/os-testr
 * Source: http://git.openstack.org/cgit/openstack/os-testr
-* Bugs: http://bugs.launchpad.net/os-testr
+* Bugs: https://bugs.launchpad.net/os-testr
 
 %package -n python-os-testr-doc
 Summary:        Documentation for the testr
