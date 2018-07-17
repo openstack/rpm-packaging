@@ -1,0 +1,37 @@
+From 1948e5317a0bf3d0eb12dafd27a958897edc2300 Mon Sep 17 00:00:00 2001
+From: Gloria Gu <gfu@suse.com>
+Date: Tue, 17 Jul 2018 15:54:07 -0700
+Subject: [PATCH] Fixed monasca ui access issue
+
+The issue is, a regular user can access monasca ui
+but won't be able to pull monasca data.
+
+The fix will only allow the user who has monasca-user role
+to be able to access monasca ui in Horizon
+
+Change-Id: I79746010525784de4b66108e9d1fe749bd57675b
+---
+ monitoring/conf/monitoring_policy.json | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
+
+diff --git a/monitoring/conf/monitoring_policy.json b/monitoring/conf/monitoring_policy.json
+index 693bc5b..2e274ac 100644
+--- a/monitoring/conf/monitoring_policy.json
++++ b/monitoring/conf/monitoring_policy.json
+@@ -1,12 +1,8 @@
+ {
+-    "owner" : "user_id:%(user_id)s",
+-    "admin_required": "role:admin or is_admin:1",
+-    "admin_or_owner": "rule:admin_required or rule:owner",
+-
+     "monasca_user_role": "role:monasca-user",
+ 
+     "default": "@",
+ 
+-    "monitoring:monitoring": "rule:admin_or_owner",
++    "monitoring:monitoring": "rule:monasca_user_role",
+     "monitoring:kibana_access": "rule:monasca_user_role"
+ }
+-- 
+2.12.3
+
