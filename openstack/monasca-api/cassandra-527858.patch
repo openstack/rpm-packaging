@@ -40,18 +40,6 @@ task: 5759
  create mode 100644 devstack/files/cassandra/monasca_schema.cql
  create mode 100644 monasca_api/conf/cassandra.py
 
-Index: monasca-api-2.2.1.dev9/AUTHORS
-===================================================================
---- monasca-api-2.2.1.dev9.orig/AUTHORS
-+++ monasca-api-2.2.1.dev9/AUTHORS
-@@ -35,6 +35,7 @@ Hangdong Zhang <hdzhang@fiberhome.com>
- Hironori Shiina <shiina.hironori@jp.fujitsu.com>
- Igor Natanael <igornsa@lsd.ufcg.edu.br>
- Jakub Wachowski <jakub.wachowski@ts.fujitsu.com>
-+James Gu <jgu@suse.com>
- Janonymous <janonymous.codevulture@gmail.com>
- Jeremy Stanley <fungi@yuggoth.org>
- Joachim Barheine <joachim.barheine@sap.com>
 Index: monasca-api-2.2.1.dev9/devstack/files/cassandra/cassandra_schema.cql
 ===================================================================
 --- monasca-api-2.2.1.dev9.orig/devstack/files/cassandra/cassandra_schema.cql
