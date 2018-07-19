@@ -19,10 +19,10 @@ Upstream: available in master and stable branches from stable/queens onwards
     
     Change-Id: I55660f91fd56eb22dd7ad4674af422aeb2ba2ea3
 
-Index: monasca-ui-1.8.1.dev2/monitoring/config/local_settings.py
+Index: monasca-ui-1.8.1.dev34/monitoring/config/local_settings.py
 ===================================================================
---- monasca-ui-1.8.1.dev2.orig/monitoring/config/local_settings.py
-+++ monasca-ui-1.8.1.dev2/monitoring/config/local_settings.py
+--- monasca-ui-1.8.1.dev34.orig/monitoring/config/local_settings.py
++++ monasca-ui-1.8.1.dev34/monitoring/config/local_settings.py
 @@ -61,18 +61,49 @@ DASHBOARDS = getattr(settings, 'GRAFANA_
  # For any Grafana version additional links to specific dashboards can be
  # created in two formats.
@@ -76,11 +76,11 @@ Index: monasca-ui-1.8.1.dev2/monitoring/config/local_settings.py
  ENABLE_KIBANA_BUTTON = getattr(settings, 'ENABLE_KIBANA_BUTTON', False)
  KIBANA_POLICY_RULE = getattr(settings, 'KIBANA_POLICY_RULE',
                               'monitoring:kibana_access')
-Index: monasca-ui-1.8.1.dev2/monitoring/overview/templates/overview/index.html
+Index: monasca-ui-1.8.1.dev34/monitoring/overview/templates/overview/index.html
 ===================================================================
---- monasca-ui-1.8.1.dev2.orig/monitoring/overview/templates/overview/index.html
-+++ monasca-ui-1.8.1.dev2/monitoring/overview/templates/overview/index.html
-@@ -8,19 +8,29 @@
+--- monasca-ui-1.8.1.dev34.orig/monitoring/overview/templates/overview/index.html
++++ monasca-ui-1.8.1.dev34/monitoring/overview/templates/overview/index.html
+@@ -15,19 +15,29 @@
  {% block main %}
      <div style="padding: 3px;">
        {% if grafana_url %}
@@ -110,11 +110,11 @@ Index: monasca-ui-1.8.1.dev2/monitoring/overview/templates/overview/index.html
            <span class="fa fa-bar-chart"></span>
                {% trans dashboard.title %}
        </a>
-Index: monasca-ui-1.8.1.dev2/monitoring/overview/views.py
+Index: monasca-ui-1.8.1.dev34/monitoring/overview/views.py
 ===================================================================
---- monasca-ui-1.8.1.dev2.orig/monitoring/overview/views.py
-+++ monasca-ui-1.8.1.dev2/monitoring/overview/views.py
-@@ -240,10 +240,14 @@ class IndexView(TemplateView):
+--- monasca-ui-1.8.1.dev34.orig/monitoring/overview/views.py
++++ monasca-ui-1.8.1.dev34/monitoring/overview/views.py
+@@ -245,10 +245,14 @@ class IndexView(TemplateView):
              api_root = self.request.build_absolute_uri(proxy_url_path)
              context["api"] = api_root
          context["dashboards"] = get_dashboard_links(self.request)
@@ -129,14 +129,3 @@ Index: monasca-ui-1.8.1.dev2/monitoring/overview/views.py
          return context
  
  
-@@ -261,7 +265,9 @@ class MonascaProxyView(TemplateView):
-             dimensions_str = req_kwargs['dimensions'][0]
-             dimensions_str_array = dimensions_str.split(',')
-             for dimension in dimensions_str_array:
--                dimension_name_value = dimension.split(':')
-+                # limit splitting since value may contain a ':' such as in
-+                # the `url` dimension of the service_status check.
-+                dimension_name_value = dimension.split(':', 1)
-                 if len(dimension_name_value) == 2:
-                     name = dimension_name_value[0].encode('utf8')
-                     value = dimension_name_value[1].encode('utf8')
