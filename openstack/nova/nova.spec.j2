@@ -458,13 +458,9 @@ find nova -name \*.py -exec sed -i '/\/usr\/bin\/env python/{d;q}' {} +
 %build
 %{py3_build}
 %if 0%{?with_doc}
-%if 0%{?rdo}
-PYTHONPATH=.  PBR_VERSION={{ upstream_version }} sphinx-build-3 -b html doc/source doc/build/html
-PYTHONPATH=.  PBR_VERSION={{ upstream_version }} sphinx-build-3 -b man doc/source doc/build/man
-%else
-PYTHONPATH=.  PBR_VERSION={{ upstream_version }} sphinx-build -b html doc/source doc/build/html
-PYTHONPATH=.  PBR_VERSION={{ upstream_version }} sphinx-build -b man doc/source doc/build/man
-%endif
+export PBR_VERSION={{ upstream_version }} PYTHONPATH=$PWD
+%sphinx_build -b html doc/source doc/build/html
+%sphinx_build -b man doc/source doc/build/man
 # remove the sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 rm -rf doc/build/man/.{doctrees,buildinfo}
