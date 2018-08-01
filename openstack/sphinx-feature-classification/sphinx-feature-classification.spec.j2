@@ -1,0 +1,68 @@
+{% set pypi_name = 'sphinx-feature-classification' %}
+{% set upstream_version = upstream_version('0.3.0') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
+Epoch:          {{ epoch('sphinx-feature-classification') }}
+Summary:        OpenStack sphinx-feature-classification library
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+URL:            https://docs.openstack.org/sphinx-feature-classification/latest/
+Source0:        {{ source }}
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('ddt', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
+Requires:       {{ py2pkg('docutils') }}
+Requires:       {{ py2pkg('pbr') }}
+BuildArch:      noarch
+%python_subpackages
+
+%description
+This is a Sphinx directive that allows creating matrices of drivers
+a project contains and which features they support.
+
+%package -n python-sphinx-feature-classification-doc
+Summary:       Documentation for the OpenStack sphinx-feature-classification library
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
+
+%description -n python-sphinx-feature-classification-doc
+Documentation for the OpenStack sphinx-feature-classification library.
+
+%prep
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
+%py_req_cleanup
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
+
+%build
+%{python_build}
+
+PYTHONPATH=. sphinx-build -b html doc/source doc/build/html
+# remove the sphinx-build leftovers
+rm -rf doc/build/html/.{doctrees,buildinfo}
+
+%install
+%{python_install}
+
+%check
+%{python_expand rm -rf .testrepository
+$python setup.py test
+}
+
+%files %{python_files}
+%license LICENSE
+%{python_sitelib}/sphinx_feature_classification
+%{python_sitelib}/*.egg-info
+
+%files -n python-sphinx-feature-classification-doc
+%doc doc/build/html README.rst
+%license LICENSE
+
+%changelog
