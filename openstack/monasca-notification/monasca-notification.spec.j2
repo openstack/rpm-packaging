@@ -1,5 +1,6 @@
 {% set pypi_name = 'monasca-notification' %}
-{% set upstream_version = upstream_version('1.13.0') %}
+{% set source = fetch_source('http://tarballs.openstack.org/monasca-notification/monasca-notification-master.tar.gz') %}
+{% set upstream_version = upstream_version() %}
 {% set rpm_release = '1' %}
 
 %global sname   monasca-notification
@@ -14,7 +15,7 @@ Summary:        Notification engine sends notifications based on alarm transitio
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://wiki.openstack.org/wiki/Monasca
-Source0:        https://files.pythonhosted.org/packages/source/m/%{sname}/%{sname}-%{version}.tar.gz
+Source0:        {{ source|basename }}
 Source1:        openstack-%{sname}.service
 Source2:        %{sname}.yaml
 Source3:        openstack-monasca-notification.logrotate
@@ -136,7 +137,7 @@ fi
 
 %files
 %license LICENSE
-%doc README.md
+%doc README.rst
 %{_bindir}/monasca-notification
 %{_unitdir}/%{name}.service
 %dir %{notification_conf_dir}

@@ -11,7 +11,8 @@
 #  under the License.
 
 {% set pypi_name = 'monasca-agent' %}
-{% set upstream_version = upstream_version('2.6.2') %}
+{% set source = fetch_source('http://tarballs.openstack.org/monasca-agent/monasca-agent-master.tar.gz') %}
+{% set upstream_version = upstream_version() %}
 {% set rpm_release = '1' %}
 
 %global sname {{ pypi_name }}
@@ -27,7 +28,7 @@ Summary:        OpenStack Monasca metrics agent
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://wiki.openstack.org/wiki/Monasca
-Source0:        https://files.pythonhosted.org/packages/source/m/%{sname}/%{sname}-%{version}.tar.gz
+Source0:        {{ source|basename }}
 Source1:        %{name}-sudoers
 Source2:        %{name}.service
 Source3:        %{name}.tmpfiles

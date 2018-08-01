@@ -1,5 +1,6 @@
 {% set pypi_name = 'monasca-api' %}
-{% set upstream_version = upstream_version('2.5.0') %}
+{% set source = fetch_source('http://tarballs.openstack.org/monasca-api/monasca-api-master.tar.gz') %}
+{% set upstream_version = upstream_version() %}
 {% set rpm_release = '1' %}
 
 %define component           {{ pypi_name }}
@@ -10,7 +11,7 @@ Summary:        Monasca REST API
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://wiki.openstack.org/wiki/Monasca
-Source0:        https://files.pythonhosted.org/packages/source/m/%{component}/%{component}-%{version}.tar.gz
+Source0:        {{ source|basename }}
 Source1:        api-config.conf
 Source2:        api-logging.conf
 Source3:        api-config.ini
@@ -155,7 +156,9 @@ fi
 %files
 %defattr(-, root, root)
 %{_bindir}/monasca-api
+%{_bindir}/monasca-api-wsgi
 %{_bindir}/monasca-api-wsgi.py
+%{_bindir}/monasca_db
 
 %dir %attr(-, root, monasca) %{_sysconfdir}/monasca
 %dir %attr(0750, monasca-api, monasca) %{_var}/lib/%{component}
@@ -173,7 +176,7 @@ fi
 %files -n python-%{component}
 %defattr(-, root, root,-)
 %license LICENSE
-%doc README.md ChangeLog
+%doc README.rst ChangeLog
 %{python2_sitelib}/monasca_api
 %{python2_sitelib}/*.egg-info
 

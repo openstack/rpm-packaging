@@ -1,5 +1,6 @@
 {% set pypi_name = 'monasca-log-api' %}
-{% set upstream_version = upstream_version('2.6.0') %}
+{% set source = fetch_source('http://tarballs.openstack.org/monasca-log-api/monasca-log-api-master.tar.gz') %}
+{% set upstream_version = upstream_version() %}
 {% set rpm_release = '1' %}
 
 %define sname           {{ pypi_name }}
@@ -10,7 +11,7 @@ Summary:        OpenStack Monasca Log Api plugin
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://wiki.openstack.org/wiki/Monasca
-Source0:        https://files.pythonhosted.org/packages/source/m/%{sname}/%{sname}-%{version}.tar.gz
+Source0:        {{ source|basename }}
 Source1:        %{name}-wsgi.conf
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('falcon') }}
@@ -137,7 +138,6 @@ fi
 %files -n python-%{sname}
 %license LICENSE
 %{python2_sitelib}/monasca_log_api
-%{python2_sitelib}/monasca_log_api_tempest
 %{python2_sitelib}/*.egg-info
 
 %changelog
