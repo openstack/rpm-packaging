@@ -12,20 +12,20 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('devel') }}
-BuildRequires:  {{ py2pkg('iso8601') }}
-BuildRequires:  {{ py2pkg('jsonschema') }}
-BuildRequires:  {{ py2pkg('oslo.concurrency') }}
-BuildRequires:  {{ py2pkg('oslo.config') }}
-BuildRequires:  {{ py2pkg('oslo.context') }}
-BuildRequires:  {{ py2pkg('oslo.i18n') }}
-BuildRequires:  {{ py2pkg('oslo.log') }}
-BuildRequires:  {{ py2pkg('oslo.messaging') }}
-BuildRequires:  {{ py2pkg('oslo.serialization') }}
-BuildRequires:  {{ py2pkg('oslo.utils') }}
-BuildRequires:  {{ py2pkg('oslotest') }}
-BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('testtools') }}
+BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('iso8601', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('jsonschema', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.concurrency', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.config', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.context', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.i18n', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.log', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.messaging', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.serialization', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.utils', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('WebOb') }}
 Requires:       {{ py2pkg('iso8601') }}
 Requires:       {{ py2pkg('netaddr') }}
@@ -39,6 +39,7 @@ Requires:       {{ py2pkg('oslo.serialization') }}
 Requires:       {{ py2pkg('oslo.utils') }}
 Requires:       {{ py2pkg('six') }}
 BuildArch:      noarch
+%python_subpackages
 
 %description
 oslo.versionedobjects library deals with DB schema being at different versions
@@ -48,14 +49,13 @@ allows us to support SQL and NoSQL Databases. oslo.versionedobjects is also
 used in RPC APIs, to ensure upgrades happen without spreading version dependent
 code across different services and projects.
 
-%package doc
+%package -n python-oslo.versionedobjects-doc
 Summary:        osloversionedobjects library - Documentation
 Group:          Documentation/HTML
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('openstackdocstheme') }}
-Requires:       %{name} = %{version}
 
-%description doc
+%description -n python-oslo.versionedobjects-doc
 This package contains documentation files for %{name}.
 
 %prep
@@ -63,22 +63,25 @@ This package contains documentation files for %{name}.
 %py_req_cleanup
 
 %build
-%{py2_build}
+%{python_build}
+
 PYTHONPATH=. sphinx-build -b html doc/source doc/build/html
 
 %install
-%{py2_install}
+%{python_install}
 
 %check
-%{__python2} setup.py testr
+%{python_expand rm -rf .testrepository
+$python setup.py testr
+}
 
-%files
+%files %{python_files}
 %license LICENSE
-%doc README.rst ChangeLog
-%{python2_sitelib}/*
+%{python_sitelib}/oslo_versionedobjects
+%{python_sitelib}/*.egg-info
 
-%files doc
+%files -n python-oslo.versionedobjects-doc
 %license LICENSE
-%doc doc/build/html
+%doc doc/build/html README.rst
 
 %changelog
