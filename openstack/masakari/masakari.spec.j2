@@ -128,6 +128,7 @@ This package contains the masakari engine, which is one of core services of masa
 export PYTHONPATH="."
 # from tox.ini's testenv:genconfig
 oslo-config-generator --config-file etc/masakari/masakari-config-generator.conf
+oslopolicy-sample-generator --config-file etc/masakari/masakari-policy-generator.conf
 
 %{__python2} setup.py build_sphinx
 # remove the sphinx-build leftovers
@@ -146,7 +147,7 @@ install -p -D -m 644 %SOURCE3 %{buildroot}/%{_tmpfilesdir}/masakari.conf
 
 install -p -D -m 640 etc/masakari/masakari.conf.sample %{buildroot}%{_sysconfdir}/masakari/masakari.conf
 install -p -D -m 640 etc/masakari/api-paste.ini %{buildroot}%{_sysconfdir}/masakari/api-paste.ini
-install -p -D -m 640 etc/masakari/policy.json %{buildroot}%{_sysconfdir}/masakari/policy.json
+install -p -D -m 640 etc/masakari/policy.yaml.sample %{buildroot}%{_sysconfdir}/masakari/policy.yaml
 chmod +x %{buildroot}%{_bindir}/masakari*
 
 # remove usr/etc
