@@ -1,12 +1,14 @@
+{% set upstream_version = upstream_version('1.6.0') %}
 %global sname saharaclient
 Name:           {{ py2name('python-saharaclient') }}
-Version:        1.5.0
+Version:        {{ py2rpmversion() }}
 Release:        0
 Summary:        Client library for OpenStack Sahara API
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://launchpad.net/%{name}
 Source0:        https://files.pythonhosted.org/packages/source/p/%{name}/%{name}-%{version}.tar.gz
+Patch0:         0001-Fix-build-with-Sphinx-1.7.x.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('python-keystoneclient') }}
@@ -50,7 +52,7 @@ BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 Python client library for interacting with OpenStack Sahara API.
 
 %prep
-%autosetup -n %{name}-%{version}
+%autosetup -p1 -n %{name}-%{version}
 %py_req_cleanup
 # FIXME: can be removed when https://review.openstack.org/#/c/363681/ is merged
 sed -i -e 's/^\s\{4\}git_cmd\(.*\)/    "\/usr\/bin\/true"\1/' doc/source/conf.py
@@ -63,7 +65,7 @@ sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 %py2_install
 
 # Build HTML docs and man page
-%{__python2} setup.py build_sphinx
+PBR_VERSION={{ upstream_version }} PYTHONPATH=%{buildroot}%{python2_sitelib} sphinx-build -b html doc/source doc/build/html
 # remove the sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
