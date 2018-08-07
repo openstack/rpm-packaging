@@ -1,0 +1,55 @@
+%global sname os-refresh-config
+Name:           {{ py2name('os-refresh-config') }}
+Version:        9.0.0
+Release:        0
+Summary:        Refresh system configuration
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+URL:            https://launchpad.net/%{sname}
+Source0:        https://files.pythonhosted.org/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('dib-utils') }}
+BuildRequires:  {{ py2pkg('fixtures') }}
+BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py2pkg('psutil') }}
+BuildRequires:  {{ py2pkg('setuptools') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testscenarios') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+Requires:       {{ py2pkg('dib-utils') }}
+Requires:       {{ py2pkg('pbr') }}
+Requires:       {{ py2pkg('psutil') }}
+BuildArch:      noarch
+
+%description
+Tool to refresh openstack config changes to service.
+
+%prep
+%autosetup -n %{sname}-%{version}
+%py_req_cleanup
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
+
+%build
+%py2_build
+
+%install
+%py2_install
+install -d -m 755 %{buildroot}%{_libexecdir}/%{name}/pre-configure.d
+install -d -m 755 %{buildroot}%{_libexecdir}/%{name}/configure.d
+install -d -m 755 %{buildroot}%{_libexecdir}/%{name}/migration.d
+install -d -m 755 %{buildroot}%{_libexecdir}/%{name}/post-configure.d
+
+%check
+%{__python2} setup.py testr
+
+%files
+%license LICENSE
+%doc README.rst
+%{_bindir}/os-refresh-config
+%{python2_sitelib}/os_refresh_config
+%{python2_sitelib}/*.egg-info
+%{_libexecdir}/%{name}
+
+%changelog

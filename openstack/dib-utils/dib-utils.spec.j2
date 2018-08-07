@@ -1,0 +1,41 @@
+%global sname dib-utils
+Name:           {{ py2name('dib-utils') }}
+Version:        0.0.11
+Release:        0
+Summary:        Pieces of diskimage-builder that are useful standalone
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+URL:            https://launchpad.net/%{sname}
+Source0:        https://tarballs.openstack.org//%{sname}/%{sname}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('d2to1') }}
+BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildArch:      noarch
+
+%description
+Pieces of diskimage-builder that are useful standalone.
+This allows them to be used without pulling in all of
+diskimage-builder and its dependencies.
+
+%prep
+%autosetup -n %{sname}-%{version}
+%py_req_cleanup
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
+
+%build
+%py2_build
+
+%install
+%py2_install
+
+%check
+tests/run_tests.sh
+
+%files
+%license LICENSE
+%doc README.md
+%{_bindir}/dib-run-parts
+%{python2_sitelib}/*.egg-info
+
+%changelog
