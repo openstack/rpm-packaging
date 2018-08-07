@@ -1,5 +1,6 @@
 {% set pypi_name = 'monasca-common' %}
-{% set upstream_version = upstream_version('2.10.0') %}
+{% set source = fetch_source('http://tarballs.openstack.org/monasca-common/monasca-common-master.tar.gz') %}
+{% set upstream_version = upstream_version() %}
 {% set rpm_release = '1' %}
 
 %global sname {{ pypi_name }}
@@ -10,7 +11,7 @@ Summary:        Reusable code for building monitoring related services.
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://wiki.openstack.org/wiki/Monasca
-Source0:        https://files.pythonhosted.org/packages/source/m/%{sname}/%{sname}-%{version}.tar.gz
+Source0:        {{ source|basename }}
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('PyMySQL') }}
 BuildRequires:  {{ py2pkg('kazoo') }}
@@ -61,7 +62,7 @@ ostestr
 
 %files
 %license LICENSE
-%doc README.md ChangeLog
+%doc README.rst ChangeLog
 %{python2_sitelib}/monasca_common
 %{python2_sitelib}/*.egg-info
 
