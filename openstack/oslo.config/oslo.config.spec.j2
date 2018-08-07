@@ -1,5 +1,5 @@
 {% set pypi_name = 'oslo.config' %}
-{% set upstream_version = upstream_version('5.2.0') %}
+{% set upstream_version = upstream_version('6.4.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -20,9 +20,12 @@ BuildRequires:  {{ py2pkg('fixtures', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('netaddr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('oslo.i18n', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.log', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('python-subunit', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('requests', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('requests-mock', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('rfc3986', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('six', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('stevedore', py_versions=['py2', 'py3']) }}
@@ -33,10 +36,15 @@ Requires:       {{ py2pkg('PyYAML') }}
 Requires:       {{ py2pkg('debtcollector') }}
 Requires:       {{ py2pkg('netaddr') }}
 Requires:       {{ py2pkg('oslo.i18n') }}
+Requires:       {{ py2pkg('requests') }}
 Requires:       {{ py2pkg('rfc3986') }}
 Requires:       {{ py2pkg('six') }}
 Requires:       {{ py2pkg('stevedore') }}
 BuildArch:      noarch
+%ifpython2
+BuildRequires:  {{ py2pkg('enum34', py_versions=['py2']) }}
+Requires:       {{ py2pkg('enum34') }}
+%endif
 %if 0%{?suse_version}
 Requires(post): update-alternatives
 Requires(postun): update-alternatives
@@ -72,7 +80,7 @@ sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 %build
 %{python_build}
 
-%{__python2} setup.py build_sphinx
+PBR_VERSION={{ upstream_version }} sphinx-build -b html doc/source doc/build/html
 # remove the sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
