@@ -223,7 +223,7 @@ exit 0
 # don't want to depend on hacking for package building
 rm keystone/tests/unit/test_hacking_checks.py
 %if 0%{?suse_version}
-stestr run --black-regex keystone.tests.unit.test_policy.GeneratePolicyFileTestCase.test_policy_generator_from_command_line
+PYTHON=python3 stestr run --black-regex keystone.tests.unit.test_policy.GeneratePolicyFileTestCase.test_policy_generator_from_command_line
 %endif
 %if 0%{?rdo}
 stestr-3 run --black-regex keystone.tests.unit.test_policy.GeneratePolicyFileTestCase.test_policy_generator_from_command_line
