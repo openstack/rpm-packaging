@@ -290,7 +290,7 @@ exit 0
 
 %check
 %if 0%{?suse_version}
-OS_TEST_PATH=./glance/tests/unit PYTHONPATH=. stestr run
+PYTHON=python3 OS_TEST_PATH=./glance/tests/unit PYTHONPATH=. stestr run
 %endif
 %if 0%{?rdo}
 OS_TEST_PATH=./glance/tests/unit PYTHONPATH=. stestr-3 run
