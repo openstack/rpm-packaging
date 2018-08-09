@@ -1,5 +1,5 @@
 {% set pypi_name = 'python-glanceclient' %}
-{% set upstream_version = upstream_version('2.11.0') %}
+{% set upstream_version = upstream_version('2.12.1') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -22,9 +22,8 @@ BuildRequires:  {{ py2pkg('os-client-config', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('oslo.utils', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('pyOpenSSL', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('reno', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('requests-mock', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('warlock', py_versions=['py2', 'py3']) }}
@@ -59,6 +58,8 @@ Summary:        Documentation for OpenStack Glance API Client
 Group:          Documentation/HTML
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('openstackdocstheme') }}
+BuildRequires:  {{ py2pkg('reno') }}
+BuildRequires:  {{ py2pkg('sphinxcontrib-apidoc') }}
 
 %description -n python-glanceclient-doc
 This is a client for the OpenStack Glance API. There's a Python API (the
@@ -75,7 +76,8 @@ sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 %python_build
 
 # generate html docs
-%{__python2} setup.py build_sphinx --builder=html,man
+PBR_VERSION={{ upstream_version }} sphinx-build -b html doc/source doc/build/html
+PBR_VERSION={{ upstream_version }} sphinx-build -b man doc/source doc/build/man
 # remove the sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
@@ -98,9 +100,8 @@ install -p -D -m 644 doc/build/man/glance.1 %{buildroot}%{_mandir}/man1/glance.1
 # disable tests until rdo updated to requests > 2.14
 true
 %else
-%{python_expand rm -rf .testrepository
-$python setup.py testr
-}
+%python_exec -m stestr.cli run
+
 %endif
 
 %files %{python_files}
