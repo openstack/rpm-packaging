@@ -16,25 +16,17 @@ for specstyle in $specstyles; do
     rm -rf $OUTPUTDIR/${specstyle}/*
 done
 
-py3onlypackages=("openstack-glance openstack-keystone")
-
 count=0
 echo "run renderspec over specfiles from ${specdir}"
 for specstyle in $specstyles; do
-    for spec in ${specdir}/**/*.spec.j2; do
-        echo "run ${spec} for ${specstyle}"
-        pkg_name=$(pymod2pkg --dist $specstyle $(basename $spec .spec.j2))
-        if [[ ! " ${py3onlypackages[@]} " =~ " ${pkg_name} " ]];then
-          skip="--skip-pyversion py3"
-        else
-          skip=""
-        fi
-        renderspec --spec-style ${specstyle} ${spec} \
-                   --requirements $basedir/global-requirements.txt ${skip} \
-                   -o $WORKSPACE/logs/${specstyle}/$pkg_name.spec &
-        let count+=1
-        [[ count -eq $MAXPROC ]] && wait && count=0
-    done
+    find ${specdir} -name '*.spec.j2' -type f -print0 | \
+        xargs -n 1 -0 -P 0 -I __SPEC__ bash -c "
+            set -e
+            skip='--skip-pyversion py3'
+            if grep -q '%package -n python3-' __SPEC__; then
+                skip=""
+            fi
+            pkg_name=\$(pymod2pkg --dist $specstyle \$(basename __SPEC__ .spec.j2))
+            renderspec --spec-style $specstyle __SPEC__ \
+                \$skip -o $WORKSPACE/logs/$specstyle/\$pkg_name.spec"
 done
-
-wait
