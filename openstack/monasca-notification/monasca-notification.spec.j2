@@ -22,6 +22,7 @@ Source3:        openstack-monasca-notification.logrotate
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('Jinja2') }}
 BuildRequires:  {{ py2pkg('SQLAlchemy') }}
+BuildRequires:  {{ py2pkg('keystoneauth1') }}
 BuildRequires:  {{ py2pkg('mock') }}
 BuildRequires:  {{ py2pkg('monasca-common') }}
 BuildRequires:  {{ py2pkg('monasca-statsd') }}
@@ -60,6 +61,7 @@ Requires:       {{ py2pkg('Jinja2') }}
 Requires:       {{ py2pkg('PyYAML') }}
 Requires:       {{ py2pkg('SQLAlchemy') }}
 Requires:       {{ py2pkg('debtcollector') }}
+Requires:       {{ py2pkg('keystoneauth1') }}
 Requires:       {{ py2pkg('monasca-common') }}
 Requires:       {{ py2pkg('monasca-statsd') }}
 Requires:       {{ py2pkg('oslo.config') }}
