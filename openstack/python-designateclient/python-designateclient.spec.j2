@@ -1,6 +1,6 @@
 %global sname python-designateclient
 Name:           {{ py2name('python-designateclient') }}
-Version:        2.9.0
+Version:        2.10.0
 Release:        0
 Summary:        OpenStack DNS as a Service - Client
 License:        {{ license('Apache-2.0') }}
@@ -17,7 +17,7 @@ BuildRequires:  {{ py2pkg('pbr') }}
 BuildRequires:  {{ py2pkg('python-subunit') }}
 BuildRequires:  {{ py2pkg('requests-mock') }}
 BuildRequires:  {{ py2pkg('setuptools') }}
-BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('stestr') }}
 Requires:       {{ py2pkg('cliff') }}
 Requires:       {{ py2pkg('debtcollector') }}
 Requires:       {{ py2pkg('jsonschema') }}
@@ -61,7 +61,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 install -p -D -m 644 doc/build/man/*designateclient.1 %{buildroot}%{_mandir}/man1/designateclient.1
 
 %check
-%{__python2} setup.py testr
+stestr run
 
 %files
 %license LICENSE
