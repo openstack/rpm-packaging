@@ -43,6 +43,7 @@ BuildRequires:  {{ py2pkg('pycrypto') }}
 BuildRequires:  {{ py2pkg('pymongo') }}
 BuildRequires:  {{ py2pkg('setuptools') }}
 BuildRequires:  {{ py2pkg('six') }}
+BuildRequires:  {{ py2pkg('stestr') }}
 BuildRequires:  {{ py2pkg('python-swiftclient') }}
 Requires:       python-{{ pypi_name }} = %{version}-%{release}
 BuildArch:      noarch
@@ -180,7 +181,8 @@ rm -fr %{buildroot}%{_prefix}/freezer/scripts/vss.ps1
 
 
 %check
-OS_TEST_PATH=./freezer/tests/unit python setup.py testr
+export OS_TEST_PATH=./freezer/tests/unit
+stestr run
 
 %files
 %license LICENSE
