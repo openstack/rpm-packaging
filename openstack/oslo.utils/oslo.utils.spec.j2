@@ -1,5 +1,5 @@
 {% set pypi_name = 'oslo.utils' %}
-{% set upstream_version = upstream_version('3.36.0') %}
+{% set upstream_version = upstream_version('3.36.4') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -26,7 +26,7 @@ BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('pyparsing', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('python-subunit', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('debtcollector') }}
@@ -66,14 +66,13 @@ sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 %python_install
 
 # generate html docs
-%{__python2} setup.py build_sphinx
+#%{__python2} setup.py build_sphinx
+PBR_VERSION={{ upstream_version }} sphinx-build -b html doc/source doc/build/html
 # remove the sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %check
-%{python_expand rm -rf .testrepository
-$python setup.py test
-}
+%python_exec -m stestr.cli run
 
 %files %{python_files}
 %license LICENSE
