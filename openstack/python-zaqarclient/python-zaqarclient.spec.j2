@@ -1,6 +1,6 @@
 %global sname zaqarclient
 Name:           {{ py2name('python-zaqarclient') }}
-Version:        1.9.0
+Version:        1.10.0
 Release:        0
 Summary:        Client Library for OpenStack Zaqar Queueing API
 License:        {{ license('Apache-2.0') }}
@@ -62,7 +62,7 @@ sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 %py2_build
 
 # Build HTML docs and man page
-%{__python2} setup.py build_sphinx
+PBR_VERSION=%{version} sphinx-build -b html doc/source doc/build/html
 
 %install
 %py2_install
