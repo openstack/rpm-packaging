@@ -1,5 +1,5 @@
 Name:           {{ py2name('microversion_parse') }}
-Version:        0.1.4
+Version:        0.2.1
 Release:        0
 Summary:        OpenStack microversion header parser
 License:        {{ license('Apache-2.0') }}
@@ -9,7 +9,9 @@ Source0:        https://files.pythonhosted.org/packages/source/m/microversion_pa
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('WebOb') }}
 BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('gabbi') }}
 BuildRequires:  {{ py2pkg('setuptools') }}
+BuildRequires:  {{ py2pkg('stestr') }}
 BuildRequires:  {{ py2pkg('testrepository') }}
 BuildRequires:  {{ py2pkg('testtools') }}
 BuildArch:      noarch
@@ -42,7 +44,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %{py2_install}
 
 %check
-%{__python2} setup.py testr
+stestr run
 
 %files
 %license LICENSE
