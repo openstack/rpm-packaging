@@ -1,5 +1,5 @@
 {% set pypi_name = 'python-freezerclient' %}
-{% set upstream_version = upstream_version('1.6.0') %}
+{% set upstream_version = upstream_version('1.7.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -67,7 +67,7 @@ sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 %{python_build}
 
 # Build HTML docs and man page
-%{__python2} setup.py build_sphinx
+PBR_VERSION={{ upstream_version }} sphinx-build -b html doc/source doc/build/html
 rm -rf html/.{doctrees,buildinfo}
 
 %install
