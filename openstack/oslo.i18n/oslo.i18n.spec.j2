@@ -1,5 +1,5 @@
 {% set pypi_name = 'oslo.i18n' %}
-{% set upstream_version = upstream_version('3.20.0') %}
+{% set upstream_version = upstream_version('3.21.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -16,6 +16,7 @@ BuildRequires:  {{ py2pkg('Babel', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('Babel') }}
 Requires:       {{ py2pkg('six') }}
@@ -52,9 +53,7 @@ sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %check
-%{python_expand rm -rf .testrepository
-$python setup.py test
-}
+%python_exec -m stestr.cli run
 
 %files %{python_files}
 %license LICENSE
