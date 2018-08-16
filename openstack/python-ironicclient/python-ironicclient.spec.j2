@@ -1,5 +1,5 @@
 {% set pypi_name = 'python-ironicclient' %}
-{% set upstream_version = upstream_version('2.3.0') %}
+{% set upstream_version = upstream_version('2.5.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -68,6 +68,7 @@ Group:          Documentation/HTML
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 BuildRequires:  {{ py2pkg('reno') }}
+BuildRequires:  {{ py2pkg('sphinxcontrib-apidoc') }}
 
 %description -n {{ py2name() }}-doc
 This is a client for the OpenStack Ironic API (Bare Metal. There's a
@@ -83,7 +84,7 @@ sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 %build
 %{python_build}
 
-%{__python2} setup.py build_sphinx
+PBR_VERSION={{ upstream_version }} sphinx-build -b html doc/source doc/build/html
 # remove the sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
@@ -101,9 +102,7 @@ install -p -D -m 644 tools/ironic.bash_completion %{buildroot}%{_sysconfdir}/bas
 %python_uninstall_alternative ironic
 
 %check
-%{python_expand rm -rf .testrepository
-ostestr
-}
+%python_exec -m stestr.cli run
 
 %files %{python_files}
 %license LICENSE
