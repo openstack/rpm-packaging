@@ -1,5 +1,5 @@
 {% set pypi_name = 'os-service-types' %}
-{% set upstream_version = upstream_version('1.2.0') %}
+{% set upstream_version = upstream_version('1.3.0') %}
 {% set rpm_release = '1' %}
 
 Name:           {{ py2name() }}
@@ -16,6 +16,7 @@ BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('python-subunit', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('requests-mock', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('pbr') }}
 BuildArch:      noarch
@@ -60,9 +61,8 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %{python_install}
 
 %check
-%{python_expand rm -rf .testrepository
-$python setup.py testr
-}
+export OS_TEST_PATH=os_service_types/tests
+%python_exec -m stestr.cli run
 
 %files %{python_files}
 %license LICENSE
