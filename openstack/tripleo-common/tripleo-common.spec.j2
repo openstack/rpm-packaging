@@ -1,7 +1,7 @@
 %global sname tripleo-common
-%global sversion 8.4.0
+%global sversion 9.2.0
 Name:           {{ py2name('tripleo-common') }}
-Version:        8.4.0
+Version:        9.2.0
 Release:        0
 Summary:        Python library for code used by TripleO projects
 License:        {{ license('Apache-2.0') }}
@@ -24,6 +24,7 @@ BuildRequires:  {{ py2pkg('oslotest') }}
 BuildRequires:  {{ py2pkg('paramiko') }}
 BuildRequires:  {{ py2pkg('passlib') }}
 BuildRequires:  {{ py2pkg('python-subunit') }}
+BuildRequires:  {{ py2pkg('tenacity') }}
 BuildRequires:  {{ py2pkg('testrepository') }}
 BuildRequires:  {{ py2pkg('testscenarios') }}
 BuildRequires:  {{ py2pkg('testtools') }}
@@ -52,6 +53,7 @@ Requires:       {{ py2pkg('oslo.utils') }}
 Requires:       {{ py2pkg('paramiko') }}
 Requires:       {{ py2pkg('passlib') }}
 Requires:       {{ py2pkg('six') }}
+Requires:       {{ py2pkg('tenacity') }}
 Requires:       {{ py2pkg('python-zaqarclient') }}
 BuildArch:      noarch
 
@@ -103,7 +105,6 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %{_prefix}/lib/heat/undercloud_heat_plugins
 %{_bindir}/create_freeipa_enroll_envfile.py
 %{_bindir}/run-validation
-%{_bindir}/upgrade-non-controller.sh
 %{_bindir}/upload-puppet-modules
 %{_bindir}/upload-swift-artifacts
 %{_bindir}/tripleo-build-images
