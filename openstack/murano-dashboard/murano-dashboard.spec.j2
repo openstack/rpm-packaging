@@ -1,5 +1,5 @@
 {% set pypi_name = 'murano-dashboard' %}
-{% set upstream_version = upstream_version('5.0.0') %}
+{% set upstream_version = upstream_version('6.0.0.0rc1') %}
 {% set rpm_release = '1' %}
 
 %global sname {{ pypi_name }}
@@ -16,7 +16,7 @@ Summary:        The Murano Dashboard
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://wiki.openstack.org/wiki/Murano
-Source0:        https://files.pythonhosted.org/packages/source/m/%{sname}/%{sname}-%{version}.tar.gz
+Source0:        https://files.pythonhosted.org/packages/source/m/%{sname}/%{sname}-{{upstream_version}}.tar.gz
 BuildRequires:  fdupes
 BuildRequires:  {{ py2pkg('horizon') }}
 BuildRequires:  openstack-macros
@@ -46,7 +46,7 @@ Requires:      {{ py2pkg('yaql') }}
 The Murano UI Horizon plugin adds Murano panel to the OpenStack dashboard.
 
 %prep
-%autosetup -n %{sname}-%{version}
+%autosetup -n %{sname}-{{upstream_version}}
 %py_req_cleanup
 
 %build
