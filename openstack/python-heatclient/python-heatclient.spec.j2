@@ -1,5 +1,5 @@
 {% set pypi_name = 'python-heatclient' %}
-{% set upstream_version = upstream_version('1.14.0') %}
+{% set upstream_version = upstream_version('1.16.1') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -70,12 +70,13 @@ This package contains auto-generated documentation.
 %prep
 %autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
-sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
 %{python_build}
 
 %{__python2} setup.py build_sphinx --builder=html,man
+PBR_VERSION={{ upstream_version }} sphinx-build -b html doc/source doc/build/html
+PBR_VERSION={{ upstream_version }} sphinx-build -b man doc/source doc/build/man
 # remove the sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
