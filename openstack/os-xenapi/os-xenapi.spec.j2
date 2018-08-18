@@ -1,6 +1,6 @@
 %define with_tests 1
 {% set pypi_name = 'os-xenapi' %}
-{% set upstream_version = upstream_version('0.3.1') %}
+{% set upstream_version = upstream_version('0.3.3') %}
 {% set rpm_release = '1' %}
 Name:           {{ py2name() }}
 Version:        {{ py2rpmversion() }}
@@ -19,6 +19,7 @@ BuildRequires:  {{ py2pkg('oslo.i18n') }}
 BuildRequires:  {{ py2pkg('oslo.log') }}
 BuildRequires:  {{ py2pkg('oslo.utils') }}
 BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('paramiko') }}
 BuildRequires:  {{ py2pkg('pbr') }}
 BuildRequires:  {{ py2pkg('six') }}
 BuildRequires:  {{ py2pkg('testrepository') }}
@@ -30,6 +31,7 @@ Requires:       {{ py2pkg('oslo.concurrency') }}
 Requires:       {{ py2pkg('oslo.i18n') }}
 Requires:       {{ py2pkg('oslo.log') }}
 Requires:       {{ py2pkg('oslo.utils') }}
+Requires:       {{ py2pkg('paramiko') }}
 Requires:       {{ py2pkg('pbr') }}
 Requires:       {{ py2pkg('six') }}
 BuildArch:      noarch
@@ -69,6 +71,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %doc ChangeLog README.rst
 %{python2_sitelib}/os_xenapi
 %{python2_sitelib}/*.egg-info
+%{_bindir}/xenapi_bootstrap
 
 %files doc
 %license LICENSE
