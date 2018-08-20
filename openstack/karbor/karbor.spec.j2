@@ -12,7 +12,7 @@ Release:        {{ py2rpmrelease() }}
 Summary:        OpenStack Application Data Protection Service
 License:        {{ license('Apache-2.0') }}
 URL:            https://launchpad.net/karbor
-Source0:        http://tarballs.openstack.org/{{ pypi_name }}/{{ pypi_name }}-{{upstream_version}}.tar.gz
+Source0:        https://tarballs.openstack.org/{{ pypi_name }}/{{ pypi_name }}-{{upstream_version}}.tar.gz
 Source1:        openstack-karbor.logrotate
 Source2:        openstack-karbor-operationengine.service
 Source3:        openstack-karbor-protection.service
@@ -125,7 +125,7 @@ Requires:       {{ py2pkg('taskflow') }}
 
 %description -n   python-{{ pypi_name }}
 Karbor is a Python implementation of the OpenStack
-(http://docs.openstack.org/developer/karbor/) Application Data Protection API.
+(https://docs.openstack.org/developer/karbor/) Application Data Protection API.
 This package contains the Karbor Python library.
 
 %if 0%{?with_doc}

@@ -1,5 +1,5 @@
 {% set pypi_name = 'freezer' %}
-{% set source = fetch_source('http://tarballs.openstack.org/freezer/freezer-master.tar.gz') %}
+{% set source = fetch_source('https://tarballs.openstack.org/freezer/freezer-master.tar.gz') %}
 {% set upstream_version = upstream_version() %}
 {% set rpm_release = '1' %}
 %if 0%{?rhel} || 0%{?fedora}
