@@ -1,6 +1,6 @@
 %global sname python-senlinclient
 Name:           {{ py2name('python-senlinclient') }}
-Version:        1.7.0
+Version:        1.8.0
 Release:        0
 Summary:        Python API and CLI for OpenStack Senlin
 License:        {{ license('Apache-2.0')}}
@@ -29,6 +29,7 @@ BuildRequires:  {{ py2pkg('pbr') }}
 BuildRequires:  {{ py2pkg('python-subunit') }}
 BuildRequires:  {{ py2pkg('requests') }}
 BuildRequires:  {{ py2pkg('requests-mock') }}
+BuildRequires:  {{ py2pkg('stestr') }}
 BuildRequires:  {{ py2pkg('testtools') }}
 Requires:       {{ py2pkg('PrettyTable') }}
 Requires:       {{ py2pkg('PyYAML') }}
@@ -68,12 +69,13 @@ auto-generated documentation.
 %prep
 %autosetup -n %{sname}-%{version}
 %py_req_cleanup
-sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
+
 
 %build
 %{py2_build}
 
 %{__python2} setup.py build_sphinx
+PBR_VERSION=%version sphinx-build -b html doc/source doc/build/html
 # remove the sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
@@ -81,7 +83,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %{py2_install}
 
 %check
-%{__python2} setup.py testr
+stestr run
 
 %files
 %license LICENSE
