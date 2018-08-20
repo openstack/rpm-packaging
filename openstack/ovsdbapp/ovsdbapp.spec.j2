@@ -17,7 +17,7 @@ BuildRequires:  {{ py2pkg('os-testr') }}
 BuildRequires:  {{ py2pkg('oslotest') }}
 BuildRequires:  {{ py2pkg('ovs') }}
 BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('stestr') }}
 BuildRequires:  {{ py2pkg('testscenarios') }}
 BuildRequires:  {{ py2pkg('testtools') }}
 Requires:       {{ py2pkg('fixtures') }}
@@ -55,7 +55,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %if 0%{?with_tests}
 %check
-%{__python2} setup.py test
+stestr run
 %endif
 
 %files
