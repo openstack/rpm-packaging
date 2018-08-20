@@ -1,5 +1,5 @@
 Name:           {{ py2name('python-muranoclient') }}
-Version:        1.0.1
+Version:        1.1.1
 Release:        0
 Summary:        Python API and CLI for OpenStack Murano
 License:        {{ license('Apache-2.0') }}
@@ -22,7 +22,7 @@ BuildRequires:  {{ py2pkg('pbr') }}
 BuildRequires:  {{ py2pkg('pyOpenSSL') }}
 BuildRequires:  {{ py2pkg('requests-mock') }}
 BuildRequires:  {{ py2pkg('setuptools') }}
-BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('stestr') }}
 BuildRequires:  {{ py2pkg('testscenarios') }}
 BuildRequires:  {{ py2pkg('testtools') }}
 BuildRequires:  {{ py2pkg('yaql') }}
@@ -70,14 +70,13 @@ sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 %py2_build
 
 # Build HTML docs and man page
-%{__python2} setup.py build_sphinx
-rm -rf html/.{doctrees,buildinfo}
+PBR_VERSION=%version sphinx-build -b html doc/source doc/build/html
 
 %install
 %py2_install
 
 %check
-%{__python2} setup.py testr
+stestr run
 
 %files
 %doc README.rst
