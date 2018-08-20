@@ -1,6 +1,6 @@
 %global sname aodhclient
 Name:           {{ py2name('aodhclient') }}
-Version:        0.9.0
+Version:        1.1.0
 Release:        0
 Summary:        Python client library for Aodh
 License:        {{ license('Apache-2.0') }}
@@ -11,6 +11,7 @@ BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('cliff') }}
 BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('keystoneauth1') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 BuildRequires:  {{ py2pkg('oslo.serialization') }}
 BuildRequires:  {{ py2pkg('oslo.utils') }}
 BuildRequires:  {{ py2pkg('oslotest') }}
@@ -59,7 +60,7 @@ This package contains auto-generated documentation.
 %install
 %py2_install
 
-%{__python2} setup.py build_sphinx
+PBR_VERSION=%{version} sphinx-build -b html doc/source doc/build/html
 # Fix hidden-file-or-dir warnings
 rm -rf html/.doctrees html/.buildinfo
 
