@@ -1,6 +1,6 @@
 %global sname python-karborclient
 Name:           {{ py2name('python-karborclient') }}
-Version:        1.0.0
+Version:        1.1.0
 Release:        0
 Summary:        Python API and CLI for OpenStack Karbor
 License:        {{ license('Apache-2.0')}}
@@ -65,7 +65,7 @@ sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 %build
 %{py2_build}
 
-%{__python2} setup.py build_sphinx
+PBR_VERSION=%version sphinx-build -b html doc/source doc/build/html
 # remove the sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
