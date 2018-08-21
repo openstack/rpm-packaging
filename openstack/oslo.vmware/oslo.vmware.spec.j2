@@ -1,5 +1,5 @@
 {% set pypi_name = 'oslo.vmware' %}
-{% set upstream_version = upstream_version('2.29.1') %}
+{% set upstream_version = upstream_version('2.31.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -27,8 +27,8 @@ BuildRequires:  {{ py2pkg('oslo.utils', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('python-subunit', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('requests', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('suds-jurko', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('urllib3', py_versions=['py2', 'py3']) }}
@@ -45,6 +45,9 @@ Requires:       {{ py2pkg('stevedore') }}
 Requires:       {{ py2pkg('suds-jurko') }}
 Requires:       {{ py2pkg('urllib3') }}
 BuildArch:      noarch
+%ifpython3
+BuildRequires:  python3-dbm
+%endif
 %python_subpackages
 
 %description
@@ -81,9 +84,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %python_install
 
 %check
-%{python_expand rm -rf .testrepository
-PYTHONPATH=. PYTHON=$python $python setup.py test
-}
+%python_exec -m stestr.cli run
 
 %files %{python_files}
 %doc README.rst
