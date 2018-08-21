@@ -11,6 +11,9 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://launchpad.net/%{name}
 Source0:        {{ source }}
+# https://review.openstack.org/585387
+# Needed for osprofiler==2.3.0
+Patch0:         0001-Fix-broken-unittests.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('cliff', py_versions=['py2', 'py3']) }}
@@ -52,9 +55,6 @@ Requires:       {{ py2pkg('simplejson') }}
 Requires:       {{ py2pkg('six') }}
 BuildArch:      noarch
 %if 0%{?suse_version}
-# https://review.openstack.org/585387
-# Needed for osprofiler==2.3.0
-Patch0:         0001-Fix-broken-unittests.patch
 Requires(post): update-alternatives
 Requires(postun): update-alternatives
 %else
