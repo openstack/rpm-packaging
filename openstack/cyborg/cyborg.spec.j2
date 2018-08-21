@@ -1,0 +1,170 @@
+{% set pypi_name = 'cyborg' %}
+{% set source = fetch_source('http://tarballs.openstack.org/cyborg/cyborg-master.tar.gz') %}
+{% set upstream_version = upstream_version() %}
+{% set rpm_release = '1' %}
+%if 0%{?rhel} || 0%{?fedora}
+%global rdo 1
+%endif
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
+Summary:        OpenStack Accelerator as a Service
+License:        {{ license('Apache-2.0') }}
+URL:            https://launchpad.net/cyborg
+Source0:        {{ source|basename }}
+BuildRequires:  fdupes
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('Tempest') }}
+BuildRequires:  {{ py2pkg('WSME') }}
+BuildRequires:  {{ py2pkg('astroid') }}
+BuildRequires:  {{ py2pkg('coverage') }}
+BuildRequires:  {{ py2pkg('ddt') }}
+BuildRequires:  {{ py2pkg('eventlet') }}
+BuildRequires:  {{ py2pkg('fixtures') }}
+BuildRequires:  {{ py2pkg('jsonpatch') }}
+BuildRequires:  {{ py2pkg('keystonemiddleware') }}
+BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('oslo.config')}}
+BuildRequires:  {{ py2pkg('oslo.context') }}
+BuildRequires:  {{ py2pkg('oslo.db') }}
+BuildRequires:  {{ py2pkg('oslo.i18n') }}
+BuildRequires:  {{ py2pkg('oslo.log') }}
+BuildRequires:  {{ py2pkg('oslo.policy') }}
+BuildRequires:  {{ py2pkg('oslo.versionedobjects') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('pecan') }}
+BuildRequires:  {{ py2pkg('psutil') }}
+BuildRequires:  {{ py2pkg('reno') }}
+BuildRequires:  {{ py2pkg('six') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testresources') }}
+BuildRequires:  {{ py2pkg('testscenarios') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+Requires:       python-{{ pypi_name }} = %{version}-%{release}
+BuildArch:      noarch
+%if 0%{?suse_version}
+BuildRequires:  systemd-rpm-macros
+Requires(pre):  pwdutils
+%{?systemd_requires}
+%endif
+%if 0%{?rdo}
+BuildRequires:  systemd
+Requires(post): systemd
+Requires(postun): systemd
+Requires(pre):  shadow-utils
+Requires(preun): systemd
+%endif
+
+%description
+Cyborg (previously known as Nomad) is an OpenStack project that aims to
+provide a general purpose management framework for acceleration
+resources (i.e. various types of accelerators such as GPU, FPGA, ASIC,
+NP, SoCs, NVMe/NOF SSDs, ODP, DPDK/SPDK and so on). 
+
+%package -n     python-{{ pypi_name }}
+Summary:        Cyborg Python library
+Group:          Applications/System
+Requires:       {{ py2pkg('SQLAlchemy') }}
+Requires:       {{ py2pkg('WSME') }}
+Requires:       {{ py2pkg('alembic') }}
+Requires:       {{ py2pkg('eventlet') }}
+Requires:       {{ py2pkg('jsonpatch') }}
+Requires:       {{ py2pkg('keystonemiddleware') }}
+Requires:       {{ py2pkg('oslo.concurrency') }}
+Requires:       {{ py2pkg('oslo.config')}}
+Requires:       {{ py2pkg('oslo.context') }}
+Requires:       {{ py2pkg('oslo.db') }}
+Requires:       {{ py2pkg('oslo.i18n') }}
+Requires:       {{ py2pkg('oslo.log') }}
+Requires:       {{ py2pkg('oslo.messaging') }}
+Requires:       {{ py2pkg('oslo.policy') }}
+Requires:       {{ py2pkg('oslo.service')}}
+Requires:       {{ py2pkg('oslo.utils') }}
+Requires:       {{ py2pkg('oslo.versionedobjects') }}
+Requires:       {{ py2pkg('pbr') }}
+Requires:       {{ py2pkg('pecan') }}
+Requires:       {{ py2pkg('psutil') }}
+Requires:       {{ py2pkg('six') }}
+Requires:       {{ py2pkg('stevedore') }}
+
+%description -n python-{{ pypi_name }}
+Cyborg (previously known as Nomad) is an OpenStack project that aims to
+provide a general purpose management framework for acceleration
+resources (i.e. various types of accelerators such as GPU, FPGA, ASIC,
+NP, SoCs, NVMe/NOF SSDs, ODP, DPDK/SPDK and so on). 
+
+This package contains the Cyborg python libraries.
+
+%package doc
+Summary:        Documentation for OpenStack Backup Service
+Group:          Documentation/HTML
+BuildRequires:  fdupes
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('os-api-ref') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('sphinxcontrib-pecanwsme ') }}
+BuildRequires:  {{ py2pkg('sphinxcontrib-seqdiag ') }}
+
+%description doc
+OpenStack Cyborg documentation.
+
+This package contains the documentation
+
+%prep
+%autosetup -p1 -n openstack-{{ pypi_name }}-{{upstream_version}}
+%py_req_cleanup
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
+
+%build
+%{py2_build}
+
+%{__python2} setup.py build_sphinx --builder=html,man
+# remove the Sphinx-build leftovers
+
+# config file generation
+PYTHONPATH=. oslo-config-generator --config-file tools/config/cyborg-config-generator.conf \
+    --output-file etc/cyborg/cyborg.conf.sample
+PYTHONPATH=. oslopolicy-sample-generator --config-file tools/config/cyborg-policy-generator.conf \
+    --output-file etc/cyborg/policy.json.sample
+
+%install
+CFLAGS="%{optflags}" %{__python2} %{py_setup} %{?py_setup_args} install -O1 --skip-build --root %{buildroot} --install-data="/"
+install -d -m 755 %{buildroot}%{_localstatedir}/log/cyborg
+install -p -D -m 640 etc/cyborg/cyborg.conf.sample %{buildroot}%{_sysconfdir}/cyborg/cyborg.conf
+install -p -D -m 640 etc/cyborg/policy.json.sample %{buildroot}%{_sysconfdir}/cyborg/policy.json
+
+# remove duplicates
+%fdupes %{buildroot}%{python2_sitelib}
+
+%pre
+%openstack_pre_user_group_create cyborg cyborg /sbin/nologin
+
+%files
+%license LICENSE
+%doc README.rst
+%{_bindir}/cyborg-api
+%{_bindir}/cyborg-conductor
+%{_bindir}/cyborg-dbsync
+%{_bindir}/cyborg-agent
+%dir %attr(0750, root, cyborg) %{_sysconfdir}/cyborg/
+%dir %attr(0750, root, cyborg) %{_sysconfdir}/cyborg/rootwrap.d/
+%config(noreplace) %attr(0640, root, cyborg) %{_sysconfdir}/cyborg/cyborg.conf
+%config(noreplace) %attr(0640, root, cyborg) %{_sysconfdir}/cyborg/api-paste.ini
+%config(noreplace) %attr(0640, root, cyborg) %{_sysconfdir}/cyborg/policy.json
+%config(noreplace) %attr(0640, root, cyborg) %{_sysconfdir}/cyborg/rootwrap.conf
+%config(noreplace) %attr(0640, root, cyborg) %{_sysconfdir}/cyborg/rootwrap.d/acceleration.filters
+%dir %attr(0750, cyborg, cyborg) %{_localstatedir}/log/cyborg
+
+%files -n python-{{ pypi_name }}
+%defattr(-,root,root,-)
+%doc README.rst
+%license LICENSE
+%{python2_sitelib}/cyborg/
+%{python2_sitelib}/openstack_cyborg*.egg-info
+
+%files doc
+%license LICENSE
+%doc build/sphinx/html
+
+%changelog
