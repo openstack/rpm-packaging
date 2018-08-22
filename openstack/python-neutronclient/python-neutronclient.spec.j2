@@ -1,5 +1,5 @@
 {% set pypi_name = 'python-neutronclient' %}
-{% set upstream_version = upstream_version('6.8.0') %}
+{% set upstream_version = upstream_version('6.9.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -88,7 +88,8 @@ sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 %{python_build}
 
 # Build HTML docs and man page
-%{__python2} setup.py build_sphinx
+PBR_VERSION={{ upstream_version }} sphinx-build -b html doc/source doc/build/html
+PBR_VERSION={{ upstream_version }} sphinx-build -b man doc/source doc/build/man
 
 %install
 %{python_install}
