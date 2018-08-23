@@ -1,5 +1,5 @@
 Name:           {{ py2name('mistral-lib') }}
-Version:        0.4.0
+Version:        1.0.0
 Release:        0
 Summary:        Mistral shared routings and utilities
 License:        {{ license('Apache-2.0') }}
@@ -11,7 +11,7 @@ BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('oslo.serialization') }}
 BuildRequires:  {{ py2pkg('oslosphinx') }}
 BuildRequires:  {{ py2pkg('oslotest') }}
-BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('stestr') }}
 BuildRequires:  {{ py2pkg('testscenarios') }}
 BuildRequires:  {{ py2pkg('testtools') }}
 Requires:       {{ py2pkg('oslo.serialization') }}
@@ -37,7 +37,7 @@ This library also contains the public interfaces for 3rd party integration
 %{__python2} setup.py install --skip-build --prefix=%{_prefix} --root=%{buildroot}
 
 %check
-%{__python2} setup.py testr
+stestr run
 
 %files
 %defattr(-,root,root,-)
