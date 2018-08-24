@@ -3,15 +3,13 @@
 %global rdo 1
 %endif
 Name:           {{ py2name('taskflow') }}
-Version:        3.1.0
+Version:        3.2.0
 Release:        0
 Summary:        Taskflow structured state management library
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://launchpad.net/taskflow
 Source0:        https://files.pythonhosted.org/packages/source/t/%{pypi_name}/%{pypi_name}-%{version}.tar.gz
-# https://review.openstack.org/#/c/542320/
-Patch0:         0001-Fix-invalid-json-unit-test.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('PyMySQL', py_versions=['py2', 'py3']) }}
