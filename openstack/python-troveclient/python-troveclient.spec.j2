@@ -1,5 +1,5 @@
 Name:           {{ py2name('python-troveclient') }}
-Version:        2.15.0
+Version:        2.16.0
 Release:        0
 Summary:        Client library for OpenStack DBaaS API
 License:        {{ license('Apache-2.0') }}
@@ -21,6 +21,7 @@ BuildRequires:  {{ py2pkg('requests') }}
 BuildRequires:  {{ py2pkg('requests-mock') }}
 BuildRequires:  {{ py2pkg('setuptools') }}
 BuildRequires:  {{ py2pkg('simplejson') }}
+BuildRequires:  {{ py2pkg('sphinxcontrib-apidoc') }}
 BuildRequires:  {{ py2pkg('python-swiftclient') }}
 BuildRequires:  {{ py2pkg('testrepository') }}
 BuildRequires:  {{ py2pkg('testscenarios') }}
@@ -61,7 +62,7 @@ sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 %build
 %py2_build
 # Generate html docs
-%{__python2} setup.py build_sphinx
+PBR_VERSION=%version sphinx-build -b html doc/source doc/build/html
 # Remove the Sphinx-build leftovers
 rm -rf html/.{doctrees,buildinfo}
 
