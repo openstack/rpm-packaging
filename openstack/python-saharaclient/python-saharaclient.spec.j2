@@ -1,4 +1,4 @@
-{% set upstream_version = upstream_version('1.6.0') %}
+{% set upstream_version = upstream_version('2.0.0') %}
 %global sname saharaclient
 Name:           {{ py2name('python-saharaclient') }}
 Version:        {{ py2rpmversion() }}
@@ -8,11 +8,11 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://launchpad.net/%{name}
 Source0:        https://files.pythonhosted.org/packages/source/p/%{name}/%{name}-%{version}.tar.gz
-Patch0:         0001-Fix-build-with-Sphinx-1.7.x.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('python-keystoneclient') }}
 BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 BuildRequires:  {{ py2pkg('os-testr') }}
 BuildRequires:  {{ py2pkg('osc-lib') }}
 BuildRequires:  {{ py2pkg('oslo.i18n') }}
@@ -46,7 +46,6 @@ Python client library for interacting with OpenStack Sahara API.
 Summary:        Documentation for Client library for OpenStack Sahara API
 Group:          Documentation/HTML
 BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 
 %description doc
 Python client library for interacting with OpenStack Sahara API.
