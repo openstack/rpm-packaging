@@ -24,6 +24,7 @@ BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('reno', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('requests-kerberos', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('requests-mock', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testresources', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('PyYAML') }}
@@ -74,9 +75,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %check
 rm -v keystoneauth1/tests/unit/test_hacking_checks.py
-%{python_expand rm -rf .testrepository
-ostestr
-}
+%python_exec -m stestr.cli run
 
 %files %{python_files}
 %license LICENSE
