@@ -1,5 +1,5 @@
 {% set pypi_name = 'monasca-api' %}
-{% set source = fetch_source('http://tarballs.openstack.org/monasca-api/monasca-api-master.tar.gz') %}
+{% set source = fetch_source('http://tarballs.openstack.org/monasca-api/monasca-api-stable-rocky.tar.gz') %}
 {% set upstream_version = upstream_version() %}
 {% set rpm_release = '1' %}
 
@@ -33,7 +33,6 @@ BuildRequires:  {{ py2pkg('python-keystoneclient') }}
 BuildRequires:  {{ py2pkg('keystonemiddleware') }}
 BuildRequires:  {{ py2pkg('mock') }}
 BuildRequires:  {{ py2pkg('monasca-common') }}
-BuildRequires:  {{ py2pkg('mox') }}
 BuildRequires:  {{ py2pkg('nose') }}
 BuildRequires:  {{ py2pkg('os-testr') }}
 BuildRequires:  {{ py2pkg('oslo.config') }}
