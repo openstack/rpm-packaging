@@ -326,7 +326,6 @@ OS_TEST_PATH=./glance/tests/unit PYTHONPATH=. stestr-3 run
 %dir %attr(0750, root, glance) %{_sysconfdir}/glance/glance-registry.conf.d/
 %config(noreplace) %attr(0640, root, glance) %{_sysconfdir}/glance/glance.conf.d/010-glance.conf
 %{_sysconfdir}/{{ pypi_name }}/README.config
-%config(noreplace) %attr(0640, root, glance) %{_sysconfdir}/{{ pypi_name }}/rootwrap.conf
 %config(noreplace) %attr(0640, root, glance) %{_sysconfdir}/{{ pypi_name }}/glance-api.conf
 %config(noreplace) %attr(0640, root, glance) %{_sysconfdir}/{{ pypi_name }}/glance-cache.conf
 %config(noreplace) %attr(0640, root, glance) %{_sysconfdir}/{{ pypi_name }}/glance-image-import.conf
