@@ -1,5 +1,5 @@
 {% set pypi_name = 'pyghmi' %}
-{% set upstream_version = upstream_version('1.2.4') %}
+{% set upstream_version = upstream_version('1.2.16') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -14,8 +14,9 @@ Source0:        {{ source }}
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('cryptography', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('openstackdocstheme', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('cryptography')  }}
 BuildArch:      noarch
 %if 0%{?suse_version}
@@ -61,21 +62,22 @@ rm -rf html/.{doctrees,buildinfo}
 %python_clone -a %{buildroot}%{_bindir}/pyghmicons
 %python_clone -a %{buildroot}%{_bindir}/pyghmiutil
 %python_clone -a %{buildroot}%{_bindir}/virshbmc
+%python_clone -a %{buildroot}%{_bindir}/fakebmc
 
 %post
 %python_install_alternative pyghmicons
 %python_install_alternative pyghmiutil
 %python_install_alternative virshbmc
+%python_install_alternative fakebmc
 
 %postun
 %python_uninstall_alternative pyghmicons
 %python_uninstall_alternative pyghmiutil
 %python_uninstall_alternative virshbmc
+%python_uninstall_alternative fakebmc
 
 %check
-%{python_expand rm -rf .testrepository
-$python setup.py testr
-}
+%python_exec -m stestr.cli run
 
 %files %{python_files}
 %doc README.md ChangeLog
@@ -83,6 +85,7 @@ $python setup.py testr
 %python_alternative %{_bindir}/pyghmicons
 %python_alternative %{_bindir}/pyghmiutil
 %python_alternative %{_bindir}/virshbmc
+%python_alternative %{_bindir}/fakebmc
 %{python_sitelib}/pyghmi*
 %{python_sitelib}/*.egg-info
 
