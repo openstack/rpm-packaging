@@ -21,7 +21,6 @@ BuildRequires:  {{ py2pkg('keystonemiddleware') }}
 BuildRequires:  {{ py2pkg('mock') }}
 BuildRequires:  {{ py2pkg('monasca-common') }}
 BuildRequires:  {{ py2pkg('monasca-statsd') }}
-BuildRequires:  {{ py2pkg('os-testr') }}
 BuildRequires:  {{ py2pkg('oslo.config') }}
 BuildRequires:  {{ py2pkg('oslo.context') }}
 BuildRequires:  {{ py2pkg('oslo.log') }}
@@ -31,6 +30,7 @@ BuildRequires:  {{ py2pkg('oslo.utils') }}
 BuildRequires:  {{ py2pkg('oslotest') }}
 BuildRequires:  {{ py2pkg('pbr') }}
 BuildRequires:  {{ py2pkg('simplejson') }}
+BuildRequires:  {{ py2pkg('stestr') }}
 Requires:       python-%{sname} = %{version}
 BuildArch:      noarch
 %if 0%{?suse_version}
@@ -111,7 +111,7 @@ rm -f %{buildroot}%{python2_sitelib}/monasca_log_api/.gitignore
 
 %check
 find . -type f -name *.pyc -delete
-OS_TEST_PATH=./monasca_log_api/tests PYTHONPATH=. ostestr
+OS_TEST_PATH=./monasca_log_api/tests PYTHONPATH=. python2 -m stestr.cli run
 
 %pre
 %openstack_pre_user_group_create monasca-log-api monasca

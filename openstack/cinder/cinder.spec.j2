@@ -39,7 +39,6 @@ BuildRequires:  {{ py2pkg('lxml') }}
 BuildRequires:  {{ py2pkg('mock') }}
 BuildRequires:  {{ py2pkg('python-novaclient') }}
 BuildRequires:  {{ py2pkg('os-brick') }}
-BuildRequires:  {{ py2pkg('os-testr') }}
 BuildRequires:  {{ py2pkg('os-win') }}
 BuildRequires:  {{ py2pkg('oslo.config') }}
 BuildRequires:  {{ py2pkg('oslo.db') }}
@@ -293,7 +292,7 @@ rm -rf %{buildroot}%{_prefix}/%{_sysconfdir}
 exit 0
 
 %check
-# OS_TEST_PATH=./cinder/tests/unit PYTHONPATH=. ostestr
+stestr run
 
 
 %post api

@@ -18,14 +18,13 @@ BuildRequires:  {{ py2pkg('ddt', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('fixtures', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('keystoneauth1', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('os-testr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('oslo.serialization', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('oslo.utils', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('python-subunit', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('requests', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('requests-mock', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('Babel') }}
@@ -96,9 +95,7 @@ install -p -D -m 644 tools/cinder.bash_completion %{buildroot}%{_sysconfdir}/bas
 
 %check
 rm cinderclient/tests/unit/test_shell.py
-%{python_expand rm -rf .testrepository
-ostestr
-}
+%python_exec -m stestr.cli run
 
 %files %{python_files}
 %license LICENSE

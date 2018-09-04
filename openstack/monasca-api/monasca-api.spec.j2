@@ -33,7 +33,6 @@ BuildRequires:  {{ py2pkg('keystonemiddleware') }}
 BuildRequires:  {{ py2pkg('mock') }}
 BuildRequires:  {{ py2pkg('monasca-common') }}
 BuildRequires:  {{ py2pkg('nose') }}
-BuildRequires:  {{ py2pkg('os-testr') }}
 BuildRequires:  {{ py2pkg('oslo.config') }}
 BuildRequires:  {{ py2pkg('oslo.context') }}
 BuildRequires:  {{ py2pkg('oslo.db') }}
@@ -48,6 +47,7 @@ BuildRequires:  {{ py2pkg('pyparsing') }}
 BuildRequires:  {{ py2pkg('python-subunit') }}
 BuildRequires:  {{ py2pkg('simplejson') }}
 BuildRequires:  {{ py2pkg('six') }}
+BuildRequires:  {{ py2pkg('stestr') }}
 BuildRequires:  {{ py2pkg('testrepository') }}
 BuildRequires:  {{ py2pkg('testscenarios') }}
 BuildRequires:  {{ py2pkg('testtools') }}
@@ -141,7 +141,7 @@ install -D -m 755 %{SOURCE5} %{buildroot}%{_bindir}/monasca-api-wsgi.py
 
 %check
 find . -type f -name *.pyc -delete
-OS_TEST_PATH=./monasca_api/tests PYTHONPATH=. ostestr
+OS_TEST_PATH=./monasca_api/tests PYTHONPATH=. python2 -m stestr.cli run
 
 %pre
 %openstack_pre_user_group_create monasca-api monasca /sbin/nologin

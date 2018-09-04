@@ -26,13 +26,13 @@ BuildRequires:  {{ py2pkg('keystoneauth1') }}
 BuildRequires:  {{ py2pkg('mock') }}
 BuildRequires:  {{ py2pkg('monasca-common') }}
 BuildRequires:  {{ py2pkg('monasca-statsd') }}
-BuildRequires:  {{ py2pkg('os-testr') }}
 BuildRequires:  {{ py2pkg('oslo.config') }}
 BuildRequires:  {{ py2pkg('oslo.log') }}
 BuildRequires:  {{ py2pkg('oslotest') }}
 BuildRequires:  {{ py2pkg('pbr') }}
 BuildRequires:  {{ py2pkg('requests') }}
 BuildRequires:  {{ py2pkg('six') }}
+BuildRequires:  {{ py2pkg('stestr') }}
 Requires:       logrotate
 Requires:       python-%{sname} = %{version}-%{release}
 BuildArch:      noarch
