@@ -1,0 +1,41 @@
+From 31b73b936a97bd57525be82624d328585f6fe91b Mon Sep 17 00:00:00 2001
+From: Doug Hellmann <doug@doughellmann.com>
+Date: Tue, 7 Aug 2018 16:17:31 -0400
+Subject: [PATCH] add python 3.6 unit test job
+
+See the python3-first goal document for details:
+https://governance.openstack.org/tc/goals/stein/python3-first.html
+
+This also modifies a unit test to not attempt to pass the re.LOCALE flag
+when the regex is a string, which is prohibited in Python 3.6. It would
+be possible to use a raw bytes object as the regex instead, but we're
+testing the repr() here and it has a different representation between
+Python 2 and Python 3. Just use the re.IGNORECASE flag instead for the
+purposes of the test.
+
+Change-Id: I666d49d0a29963bcaef6ca69be34dc4869f6db6f
+Co-Authored-By: Zane Bitter <zbitter@redhat.com>
+Story: #2002586
+Task: #24322
+---
+ mox3/tests/test_mox.py | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/mox3/tests/test_mox.py b/mox3/tests/test_mox.py
+index 1b1883b..a1ddb18 100644
+--- a/mox3/tests/test_mox.py
++++ b/mox3/tests/test_mox.py
+@@ -320,8 +320,8 @@ class RegexTest(testtools.TestCase):
+ 
+     def testReprWithFlags(self):
+         """repr should return the regular expression pattern and flags."""
+-        self.assertTrue(repr(mox.Regex(r"a\s+b", flags=4)) ==
+-                        "<regular expression 'a\s+b', flags=4>")
++        self.assertTrue(repr(mox.Regex(r"a\s+b", flags=2)) ==
++                        "<regular expression 'a\s+b', flags=2>")
+ 
+ 
+ class IsTest(testtools.TestCase):
+-- 
+2.17.1
+
