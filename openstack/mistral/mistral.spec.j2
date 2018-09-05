@@ -1,5 +1,5 @@
 {% set pypi_name = 'mistral' %}
-{% set upstream_version = upstream_version('7.0.0.0b1') %}
+{% set upstream_version = upstream_version('7.0.4') %}
 {% set source = url_pypi() %}
 {% set rpm_release = '1' %}
 %if 0%{?rhel} || 0%{?fedora}
@@ -12,7 +12,7 @@ Summary:        Workflow Service for OpenStack cloud
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Libraries
 URL:            https://launchpad.net/mistral
-Source0:        {{ source|basename }}
+Source0:        {{ source }}
 Source1:        mistral-api.service
 Source2:        mistral-engine.service
 Source3:        mistral-executor.service
@@ -35,6 +35,7 @@ BuildRequires:  {{ py2pkg('kazoo') }}
 BuildRequires:  {{ py2pkg('python-keystoneclient') }}
 BuildRequires:  {{ py2pkg('keystonemiddleware') }}
 BuildRequires:  {{ py2pkg('python-magnumclient') }}
+BuildRequires:  {{ py2pkg('python-manilaclient') }}
 BuildRequires:  {{ py2pkg('mistral-lib') }}
 BuildRequires:  {{ py2pkg('python-mistralclient') }}
 BuildRequires:  {{ py2pkg('python-muranoclient') }}
@@ -54,6 +55,7 @@ BuildRequires:  {{ py2pkg('oslotest') }}
 BuildRequires:  {{ py2pkg('osprofiler') }}
 BuildRequires:  {{ py2pkg('pbr') }}
 BuildRequires:  {{ py2pkg('python-subunit') }}
+BuildRequires:  {{ py2pkg('python-qinlingclient') }}
 BuildRequires:  {{ py2pkg('reno') }}
 BuildRequires:  {{ py2pkg('requests-mock') }}
 BuildRequires:  {{ py2pkg('python-senlinclient') }}
@@ -67,7 +69,9 @@ BuildRequires:  {{ py2pkg('testtools') }}
 BuildRequires:  {{ py2pkg('tooz') }}
 BuildRequires:  {{ py2pkg('python-troveclient') }}
 BuildRequires:  {{ py2pkg('unittest2') }}
+BuildRequires:  {{ py2pkg('python-vitrageclient') }}
 BuildRequires:  {{ py2pkg('python-zaqarclient') }}
+BuildRequires:  {{ py2pkg('python-zunclient') }}
 Requires:       python-mistral = %{version}-%{release}
 BuildArch:      noarch
 %if 0%{?suse_version}
@@ -124,6 +128,7 @@ Requires:       {{ py2pkg('jsonschema') }}
 Requires:       {{ py2pkg('python-keystoneclient') }}
 Requires:       {{ py2pkg('keystonemiddleware') }}
 Requires:       {{ py2pkg('python-magnumclient') }}
+Requires:       {{ py2pkg('python-manilaclient') }}
 Requires:       {{ py2pkg('mistral-lib') }}
 Requires:       {{ py2pkg('python-mistralclient') }}
 Requires:       {{ py2pkg('mock') }}
@@ -145,6 +150,7 @@ Requires:       {{ py2pkg('osprofiler') }}
 Requires:       {{ py2pkg('paramiko') }}
 Requires:       {{ py2pkg('pbr') }}
 Requires:       {{ py2pkg('pecan') }}
+Requires:       {{ py2pkg('python-qinlingclient') }}
 Requires:       {{ py2pkg('requests') }}
 Requires:       {{ py2pkg('retrying') }}
 Requires:       {{ py2pkg('python-senlinclient') }}
@@ -155,9 +161,11 @@ Requires:       {{ py2pkg('python-swiftclient') }}
 Requires:       {{ py2pkg('python-tackerclient') }}
 Requires:       {{ py2pkg('tooz') }}
 Requires:       {{ py2pkg('python-troveclient') }}
+Requires:       {{ py2pkg('python-vitrageclient') }}
 Requires:       {{ py2pkg('yaql') }}
 Requires:       {{ py2pkg('zake') }}
 Requires:       {{ py2pkg('python-zaqarclient') }}
+Requires:       {{ py2pkg('python-zunclient') }}
 
 %description -n python-{{ pypi_name }}
 Mistral is a workflow service.
@@ -210,7 +218,7 @@ export PYTHONPATH="."
 oslo-config-generator --config-file tools/config/config-generator.mistral.conf \
 --output-file etc/mistral.conf.sample
 
-%{__python2} setup.py build_sphinx -b html
+PBR_VERSION={{ upstream_version }} sphinx-build -b html doc/source doc/build/html
 # remove the sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
@@ -235,7 +243,7 @@ chmod +x %{buildroot}%{_bindir}/mistral*
 %openstack_pre_user_group_create mistral mistral
 
 %check
-%{__python2} setup.py test
+%{__python2} -m stestr.cli run
 
 %post api
 %systemd_post openstack-mistral-api.service
