@@ -18,7 +18,6 @@ BuildRequires:  {{ py2pkg('Babel', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('castellan', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('ddt', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('eventlet', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('os-testr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('os-win', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('oslo.concurrency', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('oslo.i18n', py_versions=['py2', 'py3']) }}
@@ -34,7 +33,7 @@ BuildRequires:  {{ py2pkg('reno', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('requests', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('retrying', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('six', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
 Requires:       %{oldpython}-os-brick-common
@@ -97,9 +96,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 mv %{buildroot}%{_prefix}%{_sysconfdir}/* %{buildroot}/%{_sysconfdir}/
 
 %check
-%{python_expand rm -rf .testrepository
-PYTHON=$python $python setup.py test
-}
+%python_exec -m stestr.cli run --concurrency=1
 
 %files %{python_files}
 %license LICENSE
