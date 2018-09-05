@@ -10,8 +10,9 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://docs.openstack.org/developer/os-service-types
 Source0:        https://files.pythonhosted.org/packages/source/o/{{ pypi_name }}/{{ pypi_name }}-%{version}.tar.gz
+# https://review.openstack.org/599979
+Patch0:         0001-Use-keystoneauth-only-in-applicable-test.patch
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('keystoneauth1', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('python-subunit', py_versions=['py2', 'py3']) }}
@@ -48,6 +49,11 @@ This package contains the documentation.
 %autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
 sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
+# The TestRemote test cases must be excluded because they introduce a circular
+# dependency on python-keystoneauth1.
+# Using --black-regex with stestr is not enough because the problem occurs when
+# keystoneauth is imported, not when the test is run.
+rm os_service_types/tests/test_remote.py
 
 %build
 %{python_build}
