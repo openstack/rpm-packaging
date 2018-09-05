@@ -1,6 +1,6 @@
 %global sname os-collect-config
 Name:           {{ py2name('os-collect-config') }}
-Version:        9.1.0
+Version:        9.2.0
 Release:        0
 Summary:        Collect and cache metadata running hooks on changes
 License:        {{ license('Apache-2.0') }}
@@ -20,7 +20,7 @@ BuildRequires:  {{ py2pkg('oslo.config') }}
 BuildRequires:  {{ py2pkg('oslo.log') }}
 BuildRequires:  {{ py2pkg('pbr') }}
 BuildRequires:  {{ py2pkg('setuptools') }}
-BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('stestr') }}
 BuildRequires:  {{ py2pkg('testscenarios') }}
 BuildRequires:  {{ py2pkg('testtools') }}
 BuildRequires:  {{ py2pkg('python-zaqarclient') }}
@@ -67,7 +67,7 @@ install -p -D -m 644 %{SOURCE2} %{buildroot}%{_sysconfdir}/os-collect-config.con
 mkdir -p %{buildroot}%{_localstatedir}/lib/%{name}/local-data
 
 %check
-%{__python2} setup.py testr
+%{__python2} -m stestr.cli run
 
 %post
 %systemd_post os-collect-config.service
