@@ -2,7 +2,7 @@
 %bcond_with test
 %bcond_with docs
 Name:           {{ py2name('os-apply-config') }}
-Version:        9.0.0
+Version:        9.1.0
 Release:        0
 Summary:        OpenStack os-apply-config Configuration Library
 License:        {{ license('Apache-2.0') }}
@@ -24,7 +24,7 @@ BuildArch:      noarch
 BuildRequires:  {{ py2pkg('fixtures') }}
 BuildRequires:  {{ py2pkg('mock') }}
 BuildRequires:  {{ py2pkg('python-subunit') }}
-BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('stestr') }}
 BuildRequires:  {{ py2pkg('testscenarios') }}
 BuildRequires:  {{ py2pkg('testtools') }}
 %endif
@@ -61,7 +61,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %if %{with test}
 %check
-%{__python2} setup.py testr
+%{__python2} -m stestr.cli run
 %endif
 
 %files
