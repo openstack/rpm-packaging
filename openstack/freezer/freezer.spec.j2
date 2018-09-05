@@ -124,6 +124,7 @@ Group:          Documentation/HTML
 BuildRequires:  fdupes
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('openstackdocstheme') }}
+BuildRequires:  {{ py2pkg('sphinxcontrib-apidoc') }}
 
 %description doc
 OpenStack Freezer documentaion.
@@ -138,8 +139,7 @@ sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 %build
 %{py2_build}
 
-#NOTE(aplanas): The manual page cannot be generated yet
-%{__python2} setup.py build_sphinx --builder=html
+PBR_VERSION={{ upstream_version }} sphinx-build -b html doc/source doc/build/html
 # remove the Sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 %fdupes doc/build/html/

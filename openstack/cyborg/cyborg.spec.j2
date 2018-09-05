@@ -119,8 +119,8 @@ sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 %build
 %{py2_build}
 
-%{__python2} setup.py build_sphinx --builder=html,man
-# remove the Sphinx-build leftovers
+PBR_VERSION={{ upstream_version }} sphinx-build -b html doc/source doc/build/html
+PBR_VERSION={{ upstream_version }} sphinx-build -b man doc/source doc/build/man
 
 # config file generation
 PYTHONPATH=. oslo-config-generator --config-file tools/config/cyborg-config-generator.conf \
@@ -157,7 +157,6 @@ install -p -D -m 640 etc/cyborg/policy.json.sample %{buildroot}%{_sysconfdir}/cy
 %dir %attr(0750, cyborg, cyborg) %{_localstatedir}/log/cyborg
 
 %files -n python-{{ pypi_name }}
-%defattr(-,root,root,-)
 %doc README.rst
 %license LICENSE
 %{python2_sitelib}/cyborg/
@@ -165,6 +164,6 @@ install -p -D -m 640 etc/cyborg/policy.json.sample %{buildroot}%{_sysconfdir}/cy
 
 %files doc
 %license LICENSE
-%doc build/sphinx/html
+%doc doc/build/html
 
 %changelog
