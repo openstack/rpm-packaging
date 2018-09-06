@@ -1,6 +1,9 @@
 %global sname python-tripleoclient
+%if 0%{?rhel} || 0%{?fedora}
+%global rdo 1
+%endif
 Name:           {{ py2name('python-tripleoclient') }}
-Version:        9.2.0
+Version:        11.1.0
 Release:        0
 Summary:        OpenstackClient plugin for tripleoclient
 License:        {{ license('Apache-2.0') }}
@@ -20,6 +23,7 @@ BuildRequires:  {{ py2pkg('passlib') }}
 BuildRequires:  {{ py2pkg('psutil') }}
 BuildRequires:  {{ py2pkg('requests-mock') }}
 BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testscenarios') }}
 BuildRequires:  {{ py2pkg('testtools') }}
 BuildRequires:  {{ py2pkg('tripleo-common') }}
 BuildRequires:  {{ py2pkg('python-zaqarclient') }}
@@ -39,6 +43,9 @@ Requires:       {{ py2pkg('tripleo-common') }}
 Requires:       {{ py2pkg('websocket-client') }}
 Requires:       {{ py2pkg('python-zaqarclient') }}
 BuildArch:      noarch
+%if 0%{?rdo}
+BuildRequires:  hostname
+%endif
 
 %description
 python-tripleoclient is a Python plugin to OpenstackClient
@@ -48,6 +55,7 @@ for TripleO.
 Summary:        Documentation for OpenstackClient plugin for tripleoclient
 Group:          Documentation/HTML
 BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 BuildRequires:  {{ py2pkg('oslosphinx') }}
 
 %description      doc
@@ -61,8 +69,9 @@ This package contains auto-generated documentation.
 %build
 %{py2_build}
 
-%{__python2} setup.py build_sphinx --builder=html,man
-# remove the sphinx-build leftovers
+PYTHONPATH=. sphinx-build -b html doc/source doc/build/html
+PYTHONPATH=. sphinx-build -b man doc/source doc/build/man
+# remove the Sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
