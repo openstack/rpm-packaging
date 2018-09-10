@@ -144,7 +144,7 @@ PBR_VERSION={{ upstream_version }} sphinx-build -b html doc/source doc/build/htm
 rm -rf doc/build/html/.{doctrees,buildinfo}
 %fdupes doc/build/html/
 # config file generation
-PYTHONPATH=. oslo-config-generator --config-file config-generator/scheduler.conf \
+PYTHONPATH=. oslo-config-generator --config-file etc/config-generator.conf \
     --output-file etc/scheduler.conf.sample
 
 %install
