@@ -1,5 +1,5 @@
 Name:           {{ py2name('oslotest') }}
-Version:        3.4.2
+Version:        3.6.0
 Release:        0
 Summary:        OpenStack test framework
 License:        {{ license('Apache-2.0') }}
@@ -15,7 +15,7 @@ BuildRequires:  {{ py2pkg('mox3', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('python-subunit', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('six', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('debtcollector') }}
 Requires:       {{ py2pkg('fixtures') }}
@@ -25,7 +25,7 @@ Requires:       {{ py2pkg('mox3') }}
 # Requires:       {{ py2pkg('os-client-config') }}
 Requires:       {{ py2pkg('python-subunit') }}
 Requires:       {{ py2pkg('six') }}
-Requires:       {{ py2pkg('testrepository') }}
+Requires:       {{ py2pkg('stestr') }}
 Requires:       {{ py2pkg('testtools') }}
 BuildArch:      noarch
 %if 0%{?suse_version}
@@ -66,9 +66,7 @@ better support for mocking results.
 %python_uninstall_alternative oslo_run_pre_release_tests
 
 %check
-%{python_expand rm -rf .testrepository
-$python setup.py testr
-}
+%python_exec -m stestr.cli run
 
 %files %{python_files}
 %license LICENSE
