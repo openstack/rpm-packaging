@@ -1,6 +1,6 @@
 %global pypi_name debtcollector
 Name:           {{ py2name('debtcollector') }}
-Version:        1.19.0
+Version:        1.20.0
 Release:        0
 Summary:        A collection of Python deprecation patterns and strategies
 License:        {{ license('Apache-2.0') }}
@@ -14,7 +14,7 @@ BuildRequires:  {{ py2pkg('funcsigs', py_versions=['py2']) }}
 BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('python-subunit', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('setuptools', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('wrapt', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('pbr') }}
 Requires:       {{ py2pkg('six') }}
@@ -69,9 +69,7 @@ sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 rm -rf html/.{doctrees,buildinfo}
 
 %check
-%{python_expand rm -rf .testrepository
-$python setup.py test
-}
+%python_exec -m stestr.cli run
 
 %install
 %python_install
