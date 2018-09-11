@@ -1,5 +1,5 @@
 {% set pypi_name = 'karbor' %}
-{% set upstream_version = '1.0.0' %}
+{% set upstream_version = '1.1.0' %}
 {% set rpm_release = '1' %}
 %global with_doc 0
 %if 0%{?rhel} || 0%{?fedora}
@@ -201,6 +201,9 @@ mkdir -p %{buildroot}%{_sysconfdir}/karbor/providers.d/
 install -p -D -m 640 etc/karbor.conf.sample %{buildroot}%{_sysconfdir}/karbor/karbor.conf
 install -p -D -m 640 etc/api-paste.ini %{buildroot}%{_sysconfdir}/karbor/api-paste.ini
 install -p -D -m 640 etc/providers.d/*.conf %{buildroot}%{_sysconfdir}/karbor/providers.d/
+
+# remove wrongly installed tree
+rm -rv  %{buildroot}/%{_prefix}%{_sysconfdir}/
 
 # Setup log directory
 mkdir -p %{buildroot}%{_localstatedir}/log/karbor
