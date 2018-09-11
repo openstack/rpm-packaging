@@ -1,5 +1,5 @@
 {% set pypi_name = 'oslo.policy' %}
-{% set upstream_version = upstream_version('1.37.0') %}
+{% set upstream_version = upstream_version('1.38.1') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -14,15 +14,19 @@ Source0:        {{ source }}
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('PyYAML', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('docutils', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('oslo.config', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.context', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('oslo.i18n', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('oslo.serialization', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('requests', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('requests-mock', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('PyYAML') }}
 Requires:       {{ py2pkg('oslo.config') }}
+Requires:       {{ py2pkg('oslo.context') }}
 Requires:       {{ py2pkg('oslo.i18n') }}
 Requires:       {{ py2pkg('oslo.serialization') }}
 Requires:       {{ py2pkg('requests') }}
@@ -46,8 +50,8 @@ RBAC policy enforcement library for OpenStack.
 %package -n python-oslo.policy-doc
 Summary:        Documentation for the Oslo Policy library
 Group:          Documentation/HTML
-BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('openstackdocstheme') }}
+BuildRequires:  {{ py2pkg('Sphinx', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('openstackdocstheme', py_versions=['py2', 'py3']) }}
 
 %description -n python-oslo.policy-doc
 Documentation for the Oslo Policy library.
@@ -79,9 +83,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %python_uninstall_alternative oslopolicy-checker
 
 %check
-%{python_expand rm -rf .testrepository
-python setup.py testr
-}
+%python_exec -m stestr.cli run
 
 %files %{python_files}
 %license LICENSE
