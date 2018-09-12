@@ -84,7 +84,7 @@ sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 # Build HTML docs and man page
 PBR_VERSION={{ upstream_version }} sphinx-build -b html doc/source doc/build/html
 PBR_VERSION={{ upstream_version }} sphinx-build -b man doc/source doc/build/man
-rm -rf html/.{doctrees,buildinfo}
+rm -r doc/build/html/.{doctrees,buildinfo}
 
 %install
 %{python_install}
