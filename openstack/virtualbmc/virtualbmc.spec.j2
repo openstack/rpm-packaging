@@ -1,5 +1,5 @@
 {% set pypi_name = 'virtualbmc' %}
-{% set upstream_version = upstream_version('1.3.0') %}
+{% set upstream_version = upstream_version('1.4.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -11,6 +11,7 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            http://www.openstack.org/
 Source0:        {{ source }}
+Source1:        virtualbmc.service
 BuildRequires:  fdupes
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
@@ -21,6 +22,15 @@ Requires:       {{ py2pkg('pbr') }}
 Requires:       {{ py2pkg('pyghmi') }}
 Requires:       {{ py2pkg('six') }}
 BuildArch:      noarch
+%if 0%{?suse_version}
+BuildRequires:  systemd-rpm-macros
+%{?systemd_requires}
+%else
+BuildRequires:  systemd
+Requires(post): systemd
+Requires(postun): systemd
+Requires(preun): systemd
+%endif
 %if 0%{?suse_version}
 Requires(post): update-alternatives
 Requires(postun): update-alternatives
@@ -45,16 +55,35 @@ sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 %install
 %python_install
 %python_clone -a %{buildroot}%{_bindir}/vbmc
+%python_clone -a %{buildroot}%{_bindir}/vbmcd
+
+# directories
+install -d -m 755 %{buildroot}%{_datadir}/{{ pypi_name }}
+install -d -m 755 %{buildroot}%{_sharedstatedir}/{{ pypi_name }}
+install -d -m 750 %{buildroot}%{_localstatedir}/lib/{{ pypi_name }}
+
+# systemd
+install -p -D -m 444 %{SOURCE1} %{buildroot}%{_unitdir}/virtualbmc.service
 
 %post
 %python_install_alternative vbmc
+%python_install_alternative vbmcd
+%systemd_post virtualbmc.service
 
 %postun
+%systemd_postun virtualbmc.service
 %python_uninstall_alternative vbmc
+%python_uninstall_alternative vbmcd
 
 %files %{python_files}
 %license LICENSE
 %{python_sitelib}/*
 %python_alternative %{_bindir}/vbmc
+%python_alternative %{_bindir}/vbmcd
+%if 0%{?suse_version}
+%python3_only %{_unitdir}/virtualbmc.service
+%else
+%{_unitdir}/virtualbmc.service
+%endif
 
 %changelog
