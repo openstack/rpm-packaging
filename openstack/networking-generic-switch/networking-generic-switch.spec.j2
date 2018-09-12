@@ -1,0 +1,92 @@
+{% set pypi_name = 'networking-generic-switch' %}
+{% set source = fetch_source('https://tarballs.openstack.org/networking-generic-switch/networking-generic-switch-stable-rocky.tar.gz') %}
+{% set upstream_version = upstream_version() %}
+{% set rpm_release = '0' %}
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
+Summary:        Generic Switch ML2 Neutron Driver
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+URL:            https://launchpad.net/{{ pypi_name }}
+Source0:      	{{ source|basename }}
+BuildRequires:  fdupes
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('neutron') }}
+BuildRequires:  {{ py2pkg('netmiko') }}
+BuildRequires:  {{ py2pkg('neutron-lib') }}
+BuildRequires:  {{ py2pkg('oslo.config') }}
+BuildRequires:  {{ py2pkg('oslo.db') }}
+BuildRequires:  {{ py2pkg('oslo.i18n') }}
+BuildRequires:  {{ py2pkg('oslo.log') }}
+BuildRequires:  {{ py2pkg('oslo.middleware') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('six') }}
+BuildRequires:  {{ py2pkg('stestr') }}
+BuildRequires:  {{ py2pkg('stevedore') }}
+BuildRequires:  {{ py2pkg('tenacity') }}
+BuildRequires:  {{ py2pkg('testresources') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+BuildRequires:  {{ py2pkg('tooz') }}
+Requires: {{ py2pkg('neutron') }}
+Requires: {{ py2pkg('netmiko') }}
+Requires: {{ py2pkg('oslo.config') }}
+Requires: {{ py2pkg('oslo.db') }}
+Requires: {{ py2pkg('oslo.i18n') }}
+Requires: {{ py2pkg('oslo.log') }}
+Requires: {{ py2pkg('oslo.middleware') }}
+Requires: {{ py2pkg('six') }}
+Requires: {{ py2pkg('stevedore') }}
+Requires: {{ py2pkg('tenacity') }}
+Requires: {{ py2pkg('tooz') }}
+BuildArch:      noarch
+
+%description
+This is a Modular Layer 2 `Neutron Mechanism driver
+<https://wiki.openstack.org/wiki/Neutron/ML2>`_. The mechanism driver is
+responsible for applying configuration information to hardware equipment.
+``GenericSwitch`` provides a pluggable framework to implement
+functionality required for use-cases like OpenStack Ironic multi-tenancy mode.
+It abstracts applying changes to all switches managed by this ML2 plugin
+and handling ``local_link_information`` field of Neutron port.
+
+%package doc
+Summary:        Generic Switch ML2 Neutron Driver Doc
+Group:          Documentation/HTML
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
+BuildRequires:  {{ py2pkg('reno') }}
+
+%description doc
+Documentation for OpenStack Generic Switch ML2 Neutron Driver.
+
+%prep
+%autosetup -p1 -n {{ pypi_name }}-{{upstream_version}}
+%py_req_cleanup
+
+%build
+%{py2_build}
+
+PBR_VERSION={{ upstream_version }} sphinx-build -b html doc/source doc/build/html
+# remove the sphinx-build leftovers
+rm -rf doc/build/html/.{doctrees,buildinfo}
+
+%install
+%{py2_install}
+%fdupes %{buildroot}%{python2_sitelib}
+
+%check
+%{__python2} -m stestr.cli run
+
+%files -n python-{{ pypi_name }}
+%license LICENSE
+%doc README.rst
+%{python2_sitelib}/networking_generic_switch
+%{python2_sitelib}/networking_generic_switch*egg-info
+
+%files doc
+%license LICENSE
+%doc doc/build/html
+
+%changelog
