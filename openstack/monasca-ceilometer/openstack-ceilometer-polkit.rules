@@ -1,0 +1,8 @@
+// grant ceilometer libvirt management permissions
+
+polkit.addRule(function(action, subject) {
+    if (action.id == "org.libvirt.unix.monitor" &&
+        subject.user == "ceilometer") {
+        return polkit.Result.YES;
+    }
+});
