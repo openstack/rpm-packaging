@@ -27,16 +27,16 @@ BuildArch:      noarch
 
 %description
 The ovdsbapp library is useful for creating applications that communicate via
-Open_vSwitchs OVSDB protocol (https://tools.ietf.org/html/rfc7047). It wraps
-the Python 'ovs' and adds an event loop and transactions.
+Open_vSwitch's OVSDB protocol (https://tools.ietf.org/html/rfc7047). It wraps
+the Python "ovs" module and adds an event loop and transactions.
 
 %package doc
-Summary:        Documentation for OpenStack log library
+Summary:        Documentation for the OpenStack log library
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 
 %description doc
-Documentation for the ovsdbap library.
+Documentation for the ovsdbapp library.
 
 %prep
 %autosetup -p1 -n {{pypi_name }}-%{version}
