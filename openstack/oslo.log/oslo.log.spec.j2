@@ -1,5 +1,5 @@
 {% set pypi_name = 'oslo.log' %}
-{% set upstream_version = upstream_version('3.39.0') %}
+{% set upstream_version = upstream_version('3.40.1') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -26,7 +26,7 @@ BuildRequires:  {{ py2pkg('pyinotify', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('python-dateutil', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('python-subunit', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('six', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('debtcollector') }}
@@ -72,7 +72,7 @@ sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 %{python_build}
 
 # generate html docs
-%{__python2} setup.py build_sphinx
+PYTHONPATH=. PBR_VERSION={{ upstream_version }} sphinx-build -b html doc/source doc/build/html
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
@@ -86,10 +86,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %python_uninstall_alternative convert-json
 
 %check
-%{python_expand rm -rf .testrepository
-$python setup.py testr
-}
-
+%python_exec -m stestr.cli run
 
 %files %{python_files}
 %license LICENSE
