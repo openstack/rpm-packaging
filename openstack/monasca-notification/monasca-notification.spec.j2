@@ -19,6 +19,7 @@ Source0:        {{ source|basename }}
 Source1:        openstack-%{sname}.service
 Source2:        %{sname}.yaml
 Source3:        openstack-monasca-notification.logrotate
+BuildRequires:  fdupes
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('Jinja2') }}
 BuildRequires:  {{ py2pkg('SQLAlchemy') }}
@@ -107,6 +108,8 @@ install -p -D -m 644 %{SOURCE1} %{buildroot}%{_unitdir}/%{name}.service
 %if 0%{?suse_version}
 ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}
 %endif
+
+%fdupes %{buildroot}%{python2_sitelib}
 
 %check
 export OS_TEST_PATH=./tests
