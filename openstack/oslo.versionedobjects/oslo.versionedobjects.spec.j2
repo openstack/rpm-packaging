@@ -1,5 +1,5 @@
 {% set pypi_name = 'oslo.versionedobjects' %}
-{% set upstream_version = upstream_version('1.33.3') %}
+{% set upstream_version = upstream_version('1.34.1') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -25,7 +25,7 @@ BuildRequires:  {{ py2pkg('oslo.serialization', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('oslo.utils', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('WebOb') }}
 Requires:       {{ py2pkg('iso8601') }}
@@ -73,9 +73,7 @@ rm -r doc/build/html/.{doctrees,buildinfo}
 %{python_install}
 
 %check
-%{python_expand rm -rf .testrepository
-$python setup.py testr
-}
+%python_exec -m stestr.cli run
 
 %files %{python_files}
 %license LICENSE
