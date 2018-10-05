@@ -1,6 +1,6 @@
 %global sname neutron-lib
 Name:           {{ py2name('neutron-lib') }}
-Version:        1.18.0
+Version:        1.19.0
 Release:        0
 Summary:        OpenStack Neutron library
 License:        {{ license('Apache-2.0') }}
@@ -14,6 +14,7 @@ BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('fixtures') }}
 BuildRequires:  {{ py2pkg('keystoneauth1') }}
 BuildRequires:  {{ py2pkg('os-api-ref') }}
+BuildRequires:  {{ py2pkg('os-traits') }}
 BuildRequires:  {{ py2pkg('oslo.concurrency') }}
 BuildRequires:  {{ py2pkg('oslo.config') }}
 BuildRequires:  {{ py2pkg('oslo.context') }}
@@ -40,6 +41,7 @@ BuildRequires:  {{ py2pkg('weakrefmethod') }}
 Requires:       {{ py2pkg('SQLAlchemy') }}
 Requires:       {{ py2pkg('debtcollector') }}
 Requires:       {{ py2pkg('keystoneauth1') }}
+Requires:       {{ py2pkg('os-traits') }}
 Requires:       {{ py2pkg('oslo.concurrency') }}
 Requires:       {{ py2pkg('oslo.config') }}
 Requires:       {{ py2pkg('oslo.context') }}
