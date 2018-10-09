@@ -10,7 +10,7 @@ Summary:        VMware-NSX family of Neutron plugins
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            http://launchpad.net/vmware-nsx
-Source0:        {{ source }}
+Source0:        {{ source|basename }}
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('mock') }}
 BuildRequires:  {{ py2pkg('neutron-lib') }}
