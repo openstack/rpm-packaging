@@ -1,5 +1,5 @@
 {% set pypi_name = 'python-neutronclient' %}
-{% set upstream_version = upstream_version('6.9.0') %}
+{% set upstream_version = upstream_version('6.10.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -13,7 +13,6 @@ URL:            https://launchpad.net/%{name}
 Source0:        {{ source }}
 # https://review.openstack.org/585387
 # Needed for osprofiler==2.3.0
-Patch0:         0001-Fix-broken-unittests.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('cliff', py_versions=['py2', 'py3']) }}
