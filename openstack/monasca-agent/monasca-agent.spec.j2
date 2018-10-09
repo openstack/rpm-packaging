@@ -33,6 +33,7 @@ Source1:        %{name}-sudoers
 Source2:        %{name}.service
 Source3:        %{name}.tmpfiles
 Source4:        %{name}.polkit
+BuildRequires:  fdupes
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('PyYAML') }}
 BuildRequires:  {{ py2pkg('devel') }}
@@ -156,6 +157,8 @@ install -D -m 644 %{SOURCE3} %{buildroot}%{_tmpfilesdir}/openstack-monasca-agent
 
 # polkit permissions
 install -D -m 644 %{SOURCE4} %{buildroot}%{_sysconfdir}/polkit-1/rules.d/49-monasca-agent.rules
+
+%fdupes %{buildroot}%{python2_sitelib}
 
 %pre
 # create user and groups

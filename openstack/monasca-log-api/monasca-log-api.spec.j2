@@ -13,6 +13,7 @@ Group:          Development/Languages/Python
 URL:            https://wiki.openstack.org/wiki/Monasca
 Source0:        {{ source|basename }}
 Source1:        %{name}-wsgi.conf
+BuildRequires:  fdupes
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('falcon') }}
 BuildRequires:  {{ py2pkg('fixtures') }}
@@ -105,6 +106,8 @@ sed -e "
 rm -rf %{_sysconfdir}/monasca/monasca || true
 
 rm -f %{buildroot}%{python2_sitelib}/monasca_log_api/.gitignore
+
+%fdupes %{buildroot}%{python2_sitelib}
 
 %check
 find . -type f -name *.pyc -delete
