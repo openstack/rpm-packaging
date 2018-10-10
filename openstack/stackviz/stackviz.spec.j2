@@ -1,0 +1,104 @@
+{% set pypi_name = 'stackviz' %}
+{% set source = fetch_source('https://tarballs.openstack.org/stackviz/stackviz-master.tar.gz') %}
+{% set upstream_version = upstream_version() %}
+{% set rpm_release = '1' %}
+%global common_desc \
+A visualization utility to help analyze the performance of \
+DevStack setup and Tempest executions
+%global with_doc 1
+%global with_tests 0
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
+Summary:        Visualization utility
+License:        {{ license('Apache-2.0') }}
+URL:            http://git.openstack.org/cgit/openstack/stackviz
+Source0:        {{ source|basename }}
+BuildRequires: openstack-macros
+BuildRequires: {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
+BuildRequires: {{ py2pkg('python-subunit', py_versions=['py2', 'py3']) }}
+BuildRequires: {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
+BuildRequires: {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
+Requires:      {{ py2pkg('python-subunit') }}
+Requires:      {{ py2pkg('testrepository') }}
+Requires:      {{ py2pkg('testtools') }}
+BuildArch:      noarch
+%if 0%{?rdo}
+BuildRequires: {{ py2pkg('subunit2sql') }}
+Requires:      {{ py2pkg('subunit2sql') }}
+%endif
+%if 0%{?with_tests}
+BuildRequires: {{ py2pkg('docutils', py_versions=['py2', 'py3']) }}
+%endif
+%if 0%{?suse_version}
+Requires(post): update-alternatives
+Requires(postun): update-alternatives
+%else
+# on RDO, update-alternatives is in chkconfig
+Requires(post): chkconfig
+Requires(postun): chkconfig
+%endif
+%python_subpackages
+
+%description
+%{common_desc}
+
+%if 0%{?with_doc}
+%package -n python-stackviz-doc
+Summary:    Documentation for stackviz
+BuildRequires: {{ py2pkg('Sphinx') }}
+BuildRequires: {{ py2pkg('openstackdocstheme') }}
+
+%description -n python-stackviz-doc
+It contains the documentation for the stackviz.
+%endif
+
+
+%prep
+%autosetup -n {{ pypi_name }}-{{ upstream_version }}
+%py_req_cleanup
+# Remove bundled egg-info
+rm -rf %{module}.egg-info
+
+%build
+%{python_build}
+
+# Generate Docs
+%if 0%{?with_doc}
+export PYTHONPATH="$( pwd ):$PYTHONPATH"
+PBR_VERSION={{ upstream_version }} sphinx-build -b html doc/source doc/build/html
+# remove the sphinx-build leftovers
+rm -rf doc/build/html/.{doctrees,buildinfo}
+%endif
+
+%install
+%{python_install}
+%python_clone -a %{buildroot}%{_bindir}/stackviz-export
+
+
+%if 0%{?with_tests}
+%check
+export OS_TEST_PATH=./stackviz/tests
+export PYTHONPATH=.
+%{__python2} setup.py test
+%endif
+
+%post
+%python_install_alternative stackviz-export
+
+%postun
+%python_uninstall_alternative stackviz-export
+
+%files %{python_files}
+%license LICENSE
+%python_alternative %{_bindir}/stackviz-export
+%{python_sitelib}/stackviz
+%{python_sitelib}/stackviz-*.egg-info
+
+%if 0%{?with_doc}
+%files -n python-stackviz-doc
+%license LICENSE
+%doc doc/build/html
+%endif
+
+%changelog
