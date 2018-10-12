@@ -493,7 +493,7 @@ end
         return print_altered(line)\
     end\
 \
-    local PROPERTY_COPY_UNMODIFIED = lookup_table { "Summary:", "Version:", "BuildArch:" }\
+    local PROPERTY_COPY_UNMODIFIED = lookup_table { "Epoch:", "Summary:", "Version:", "BuildArch:" }\
     local PROPERTY_COPY_MODIFIED = lookup_table {\
         "Requires:", "Provides:",\
         "Recommends:", "Suggests:",\
