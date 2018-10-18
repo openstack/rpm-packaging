@@ -1,0 +1,235 @@
+{% set pypi_name = 'watcher' %}
+{% set source = fetch_source("https://tarballs.openstack.org/watcher/watcher-stable-rocky.tar.gz") %}
+{% set upstream_version = upstream_version() %}
+{% set rpm_release = '1' %}
+{% set build_py_versions = ['py2'] %}
+
+%global with_doc 1
+%if 0%{?rhel} || 0%{?fedora}
+%global rdo 1
+%endif
+%if 0%{?rhel} || 0%{?fedora}
+%global wsgi_dir %{_datarootdir}/{{ pypi_name }}
+%else
+%global wsgi_dir /srv/www/{{ pypi_name }}
+%endif
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
+Epoch:          {{ epoch('{{ pypi_name }}') }}
+Summary:        Resource optimization service for OpenStack. (Wathcer)
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+URL:            https://launchpad.net/{{ pypi_name }}
+Source0:        {{ source|basename }}
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('microversion_parse') }}
+BuildRequires:  {{ py2pkg('os-api-ref') }}
+BuildRequires:  {{ py2pkg('APScheduler', py_versions=build_py_versions) }}
+BuildRequires:  {{ py2pkg('PrettyTable', py_versions=build_py_versions) }}
+BuildRequires:  {{ py2pkg('SQLAlchemy', py_versions=build_py_versions) }}
+BuildRequires:  {{ py2pkg('WSME', py_versions=build_py_versions) }}
+BuildRequires:  {{ py2pkg('WebOb', py_versions=build_py_versions) }}
+BuildRequires:  {{ py2pkg('cinderclient', py_versions=build_py_versions) }}
+BuildRequires:  {{ py2pkg('coverage', py_versions=build_py_versions) }}
+BuildRequires:  {{ py2pkg('croniter', py_versions=build_py_versions) }}
+BuildRequires:  {{ py2pkg('freezegun', py_versions=build_py_versions) }}
+BuildRequires:  {{ py2pkg('glanceclient', py_versions=build_py_versions) }}
+BuildRequires:  {{ py2pkg('gnocchiclient', py_versions=build_py_versions) }}
+BuildRequires:  {{ py2pkg('ironicclient', py_versions=build_py_versions) }}
+BuildRequires:  {{ py2pkg('jsonpatch', py_versions=build_py_versions) }}
+BuildRequires:  {{ py2pkg('jsonschema', py_versions=build_py_versions) }}
+BuildRequires:  {{ py2pkg('keystoneauth1', py_versions=build_py_versions) }}
+BuildRequires:  {{ py2pkg('keystoneclient', py_versions=build_py_versions) }}
+BuildRequires:  {{ py2pkg('keystonemiddleware', py_versions=build_py_versions) }}
+BuildRequires:  {{ py2pkg('lxml', py_versions=build_py_versions) }}
+BuildRequires:  {{ py2pkg('mock', py_versions=build_py_versions) }}
+BuildRequires:  {{ py2pkg('monascaclient', py_versions=build_py_versions) }}
+BuildRequires:  {{ py2pkg('networkx', py_versions=build_py_versions) }}
+BuildRequires:  {{ py2pkg('neutronclient', py_versions=build_py_versions) }}
+BuildRequires:  {{ py2pkg('novaclient', py_versions=build_py_versions) }}
+BuildRequires:  {{ py2pkg('openstackclient', py_versions=build_py_versions) }}
+BuildRequires:  {{ py2pkg('oslo.cache', py_versions=build_py_versions) }}
+BuildRequires:  {{ py2pkg('oslo.concurrency', py_versions=build_py_versions) }}
+BuildRequires:  {{ py2pkg('oslo.context', py_versions=build_py_versions) }}
+BuildRequires:  {{ py2pkg('oslo.db', py_versions=build_py_versions) }}
+BuildRequires:  {{ py2pkg('oslo.messaging', py_versions=build_py_versions) }}
+BuildRequires:  {{ py2pkg('oslo.policy', py_versions=build_py_versions) }}
+BuildRequires:  {{ py2pkg('oslo.reports', py_versions=build_py_versions) }}
+BuildRequires:  {{ py2pkg('oslo.serialization', py_versions=build_py_versions) }}
+BuildRequires:  {{ py2pkg('oslo.service', py_versions=build_py_versions) }}
+BuildRequires:  {{ py2pkg('oslo.utils', py_versions=build_py_versions) }}
+BuildRequires:  {{ py2pkg('oslo.versionedobjects', py_versions=build_py_versions) }}
+BuildRequires:  {{ py2pkg('oslotest', py_versions=build_py_versions) }}
+BuildRequires:  {{ py2pkg('pbr', py_versions=build_py_versions) }}
+BuildRequires:  {{ py2pkg('pecan', py_versions=build_py_versions) }}
+BuildRequires:  {{ py2pkg('six', py_versions=build_py_versions) }}
+BuildRequires:  {{ py2pkg('stestr', py_versions=build_py_versions) }}
+BuildRequires:  {{ py2pkg('stevedore', py_versions=build_py_versions) }}
+BuildRequires:  {{ py2pkg('taskflow', py_versions=build_py_versions) }}
+Requires:       python-{{ pypi_name }} = %{epoch}:%{version}-%{release}
+BuildArch:      noarch
+%if 0%{?suse_version}
+BuildRequires:  apache2-mod_wsgi
+BuildRequires:  systemd-rpm-macros
+Requires:       apache2-mod_wsgi
+%{?systemd_requires}
+%else
+BuildRequires:  mod_wsgi
+BuildRequires:  systemd
+Requires:       mod_wsgi
+%endif
+
+%description
+OpenStack Watcher provides a flexible and scalable resource optimization
+service for multi-tenant OpenStack-based clouds.
+Watcher provides a robust framework to realize a wide range of cloud
+optimization goals, including the reduction of data center
+operating costs, increased system performance via intelligent virtual machine
+migration, increased energy efficiency and more!
+
+%package -n     python-{{ pypi_name }}
+Summary:        Resource optimization service for OpenStack. (Wathcer) - Python Module
+Group:          Applications/System
+BuildRequires:  fdupes
+Requires:       {{ py2pkg('microversion_parse') }}
+Requires:       {{ py2pkg('APScheduler', py_versions=build_py_versions) }}
+Requires:       {{ py2pkg('PasteDeploy', py_versions=build_py_versions) }}
+Requires:       {{ py2pkg('PrettyTable', py_versions=build_py_versions) }}
+Requires:       {{ py2pkg('SQLAlchemy', py_versions=build_py_versions) }}
+Requires:       {{ py2pkg('WSME', py_versions=build_py_versions) }}
+Requires:       {{ py2pkg('WebOb', py_versions=build_py_versions) }}
+Requires:       {{ py2pkg('croniter', py_versions=build_py_versions) }}
+Requires:       {{ py2pkg('enum34', py_versions=build_py_versions) }}
+Requires:       {{ py2pkg('gnocchiclient', py_versions=build_py_versions) }}
+Requires:       {{ py2pkg('jsonpatch', py_versions=build_py_versions) }}
+Requires:       {{ py2pkg('jsonschema', py_versions=build_py_versions) }}
+Requires:       {{ py2pkg('keystoneauth1', py_versions=build_py_versions) }}
+Requires:       {{ py2pkg('keystonemiddleware', py_versions=build_py_versions) }}
+Requires:       {{ py2pkg('lxml', py_versions=build_py_versions) }}
+Requires:       {{ py2pkg('networkx', py_versions=build_py_versions) }}
+Requires:       {{ py2pkg('openstackclient', py_versions=build_py_versions) }}
+Requires:       {{ py2pkg('oslo.cache', py_versions=build_py_versions) }}
+Requires:       {{ py2pkg('oslo.db', py_versions=build_py_versions) }}
+Requires:       {{ py2pkg('oslo.messaging', py_versions=build_py_versions) }}
+Requires:       {{ py2pkg('oslo.policy', py_versions=build_py_versions) }}
+Requires:       {{ py2pkg('oslo.reports', py_versions=build_py_versions) }}
+Requires:       {{ py2pkg('oslo.serialization', py_versions=build_py_versions) }}
+Requires:       {{ py2pkg('oslo.service', py_versions=build_py_versions) }}
+Requires:       {{ py2pkg('oslo.versionedobjects', py_versions=build_py_versions) }}
+Requires:       {{ py2pkg('pbr', py_versions=build_py_versions) }}
+Requires:       {{ py2pkg('pecan', py_versions=build_py_versions) }}
+Requires:       {{ py2pkg('six', py_versions=build_py_versions) }}
+Requires:       {{ py2pkg('stevedore', py_versions=build_py_versions) }}
+Requires:       {{ py2pkg('taskflow', py_versions=build_py_versions) }}
+BuildArch:      noarch
+
+%description -n     python-{{ pypi_name }}
+OpenStack Watcher provides a flexible and scalable resource optimization
+service for multi-tenant OpenStack-based clouds.
+Watcher provides a robust framework to realize a wide range of cloud
+optimization goals, including the reduction of data center
+operating costs, increased system performance via intelligent virtual machine
+migration, increased energy efficiency and more!
+
+This package contains the Watcher Python library.
+
+%if 0%{?with_doc}
+%package -n {{ py2name() }}-doc
+Summary:        Documentation for OpenStack Watcher Service
+Group:          Documentation/HTML
+BuildRequires:  fdupes
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('os-api-ref') }}
+BuildRequires:  {{ py2pkg('sphinxcontrib-apidoc') }}
+BuildRequires:  {{ py2pkg('sphinxcontrib-pecanwsme ') }}
+BuildRequires:  {{ py2pkg('sphinxcontrib-seqdiag ') }}
+
+%description -n {{ py2name() }}-doc
+OpenStack Watcher documentation.
+
+This package contains the documentation
+%endif
+
+
+%prep
+%autosetup -n python-{{ pypi_name }}-{{ upstream_version }}
+%py_req_cleanup
+
+%build
+%{py2_build}
+
+%if 0%{?with_doc}
+PYTHONPATH=.  PBR_VERSION={{ upstream_version }} sphinx-build -b html doc/source doc/build/html
+rm -rf doc/build/html/.{doctrees,buildinfo}
+%fdupes doc/build/html/
+%endif
+
+# policy/config file generation
+PYTHONPATH=. oslo-config-generator --config-file=etc/watcher/oslo-config-generator/watcher.conf \
+    --output-file etc/watcher/watcher.conf.sample
+PYTHONPATH=. oslopolicy-sample-generator --config-file=etc/watcher/oslo-policy-generator/watcher-policy-generator.conf  \
+    --output-file etc/watcher/policy.yaml.sample
+
+sed -e "
+    s|%WATCHER_SERVICE_PORT%|9322|g;
+    s|%WATCHER_WSGI_DIR%|%{wsgi_dir}|g;
+    s|%USER%|%{apache_user}|g;
+    s|%APIWORKERS%|2|g;
+    s|%APACHE_NAME%|apache2|g;
+" -i devstack/files/apache-watcher-api.template
+
+%install
+%{py2_install}
+%python_expand %fdupes %{buildroot}%{$python_sitelib}
+
+# Install service configuration files
+install -d -m 755 %{buildroot}%{_sysconfdir}/{{ pypi_name }}
+install -d -m 755 %{buildroot}%{_sysconfdir}/{{ pypi_name }}/{{ pypi_name }}.conf.d
+
+# (re)move install artifacts
+mv %{buildroot}%{_prefix}%{_sysconfdir}/{{ pypi_name }}/* %{buildroot}%{_sysconfdir}/{{ pypi_name }}
+rm -r %{buildroot}%{_prefix}%{_sysconfdir}/apache2
+rm -r %{buildroot}%{_sysconfdir}/{{ pypi_name }}/oslo-{config,policy}-generator/
+rm %{buildroot}%{_sysconfdir}/{{ pypi_name }}/README-{{ pypi_name}}.conf.txt
+
+# Install apache configuration files
+install -d -m 755 %{buildroot}%{apache_conf_dir}/
+install -p -D -m 644 devstack/files/apache-watcher-api.template %{buildroot}%{apache_conf_dir}/{{ pypi_name }}.conf.sample
+
+# Install wsgi file
+install -d -m 755 %{buildroot}%{wsgi_dir}
+install -p -D -m 644 watcher/api/app.wsgi %{buildroot}%{wsgi_dir}
+
+%pre
+%openstack_pre_user_group_create watcher watcher /sbin/nologin
+
+%files
+%{_bindir}/{{ pypi_name }}-api
+%{_bindir}/{{ pypi_name }}-applier
+%{_bindir}/{{ pypi_name }}-db-manage
+%{_bindir}/{{ pypi_name }}-decision-engine
+%{_bindir}/{{ pypi_name }}-sync
+%dir %attr(0770, root, %{apache_group}) %{wsgi_dir}
+%attr(0770, root, %{apache_group}) %{wsgi_dir}/app.wsgi
+%attr(0770, root, %{apache_group}) %{apache_conf_dir}/{{ pypi_name }}.conf.sample
+%dir %config(noreplace) %attr(0640, root, watcher) %{_sysconfdir}/{{ pypi_name }}
+%config(noreplace) %attr(0640, root, watcher) %{_sysconfdir}/{{ pypi_name }}/policy.yaml.sample
+%config(noreplace) %attr(0640, root, watcher) %{_sysconfdir}/{{ pypi_name }}/{{ pypi_name }}.conf.sample
+%dir %attr(0750, root, watcher) %{_sysconfdir}/{{ pypi_name }}/{{ pypi_name }}.conf.d/
+
+%files -n python-{{ pypi_name}}
+%defattr(-,root,root,-)
+%license LICENSE
+%doc AUTHORS README.rst
+%{python2_sitelib}/{{ pypi_name }}/
+%{python2_sitelib}/python_{{ pypi_name }}-*.egg-info
+
+%if 0%{?with_doc}
+%files -n {{ py2name() }}-doc
+%defattr(-,root,root,-)
+%license LICENSE
+%doc doc/build/html
+%endif
+
+%changelog
