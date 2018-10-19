@@ -1,0 +1,87 @@
+{% set pypi_name = 'neutron-tempest-plugin' %}
+{% set source=fetch_source('https://tarballs.openstack.org/neutron-tempest-plugin/neutron-tempest-plugin-master.tar.gz') %}
+{% set upstream_version = upstream_version() %}
+{% set rpm_release = '1' %}
+
+%global sname neutron_tempest_plugin
+%global with_doc 0
+%global common_desc \
+This package contains Tempest tests to cover the neutron project. \
+Additionally it provides a plugin to automatically load these tests into Tempest.
+Name:          {{ py2pkg('neutron-tempest-plugin') }}
+Version:       {{ py2rpmversion() }}
+Release:       {{ py2rpmrelease() }}
+Summary:       Tempest plugin for the neutron project
+License:       {{ license('Apache-2.0') }}
+Group:         Development/Languages/Python
+URL:           https://git.openstack.org/cgit/openstack/{{ pypi_name }}
+Source0:       {{ source|basename }}
+BuildRequires: openstack-macros
+BuildRequires: {{ py2pkg('devel') }}
+BuildRequires: {{ py2pkg('pbr') }}
+BuildRequires: {{ py2pkg('setuptools') }}
+Requires:      {{ py2pkg('Tempest') }}
+Requires:      {{ py2pkg('ddt') }}
+Requires:      {{ py2pkg('debtcollector') }}
+Requires:      {{ py2pkg('eventlet') }}
+Requires:      {{ py2pkg('ipaddress') }}
+Requires:      {{ py2pkg('netaddr') }}
+Requires:      {{ py2pkg('neutron-lib') }}
+Requires:      {{ py2pkg('oslo.config') }}
+Requires:      {{ py2pkg('oslo.log') }}
+Requires:      {{ py2pkg('oslo.serialization') }}
+Requires:      {{ py2pkg('oslo.utils') }}
+Requires:      {{ py2pkg('paramiko') }}
+Requires:      {{ py2pkg('pbr') }}
+Requires:      {{ py2pkg('six') }}
+Requires:      {{ py2pkg('testscenarios') }}
+Requires:      {{ py2pkg('testtools') }}
+BuildArch:     noarch
+
+%description
+%{common_desc}
+
+%if 0%{?with_doc}
+%package doc
+Summary:    Documentation for neutron tempest plugin
+BuildRequires: {{ py2pkg('Sphinx') }}
+BuildRequires: {{ py2pkg('oslosphinx') }}
+
+%description doc
+It contains the documentation for the neutron tempest tests.
+%endif
+
+%prep
+%autosetup -n {{ pypi_name }}-{{ upstream_version }}
+
+# Let's handle dependencies ourseleves
+%py_req_cleanup
+# Remove bundled egg-info
+rm -rf %{module}.egg-info
+
+%build
+%{py2_build}
+
+# Generate Docs
+%if 0%{?with_doc}
+%{__python2} setup.py build_sphinx
+# remove the sphinx build leftovers
+rm -rf doc/build/html/.{doctrees,buildinfo}
+%endif
+
+%install
+%{py2_install}
+
+%files
+%license LICENSE
+%doc README.rst
+%{python2_sitelib}/neutron_tempest_plugin
+%{python2_sitelib}/*.egg-info
+
+%if 0%{?with_doc}
+%files doc
+%doc doc/build/html
+%license LICENSE
+%endif
+
+%changelog
