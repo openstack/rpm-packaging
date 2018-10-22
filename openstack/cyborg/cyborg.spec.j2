@@ -148,6 +148,7 @@ install -p -D -m 640 etc/cyborg/policy.json.sample %{buildroot}%{_sysconfdir}/cy
 %{_bindir}/cyborg-conductor
 %{_bindir}/cyborg-dbsync
 %{_bindir}/cyborg-agent
+%{_bindir}/{{pypi_name}}-wsgi-api
 %dir %attr(0750, root, cyborg) %{_sysconfdir}/cyborg/
 %dir %attr(0750, root, cyborg) %{_sysconfdir}/cyborg/rootwrap.d/
 %config(noreplace) %attr(0640, root, cyborg) %{_sysconfdir}/cyborg/cyborg.conf
