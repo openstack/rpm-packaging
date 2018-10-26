@@ -1,0 +1,90 @@
+{% set pypi_name = 'oslo.upgradecheck' %}
+{% set upstream_version = upstream_version('0.1.0') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
+Epoch:          {{ epoch( pypi_name ) }}
+Summary:        Common code for writing OpenStack upgrade checks
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+URL:            https://launchpad.net/{{ pypi_name }}
+Source0:        {{ source }}
+BuildRequires:  fdupes
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('Babel', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('PrettyTable', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.config', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.i18n', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
+Requires:       {{ py2pkg('Babel') }}
+Requires:       {{ py2pkg('PrettyTable') }}
+Requires:       {{ py2pkg('oslo.config') }}
+Requires:       {{ py2pkg('oslo.i18n') }}
+BuildArch:      noarch
+%ifpython2
+BuildRequires:  {{ py2pkg('enum34') }}
+Requires:       {{ py2pkg('enum34') }}
+%endif
+%if 0%{?suse_version}
+Requires(post): update-alternatives
+Requires(postun): update-alternatives
+%else
+# on RDO, update-alternatives is in chkconfig
+Requires(post): chkconfig
+Requires(postun): chkconfig
+%endif
+%python_subpackages
+
+%description
+This project contains the common code necessary for writing upgrade checks
+in OpenStack projects. It includes a module (oslo_upgradecheck.upgradecheck)
+for the common code as well as an example (oslo_upgradecheck.__main__) of
+integrating that code into a project.
+
+%package -n python-{{ pypi_name }}-doc
+Summary:        Common code for writing OpenStack upgrade checks
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+
+%description -n python-{{ pypi_name }}-doc
+Documentation for the {{ pypi_name }} library.
+
+%prep
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
+%py_req_cleanup
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
+
+%build
+%{python_build}
+
+PBR_VERSION={{ upstream_version }} sphinx-build -b html doc/source doc/build/html
+# remove the sphinx-build leftovers
+rm -rf doc/build/html/.{doctrees,buildinfo}
+%fdupes doc/build/html/
+
+%install
+%{python_install}
+
+%check
+%{python_expand rm -rf .testrepository
+# set this so that the variable can be passed to a subprocess.call
+export PYTHONPATH=`pwd`
+%python_exec -m stestr.cli run
+}
+
+%files %{python_files}
+%defattr(-,root,root,-)
+%license LICENSE
+%{python_sitelib}/oslo_upgradecheck
+%{python_sitelib}/*.egg-info
+
+%files -n python-{{ pypi_name }}-doc
+%doc doc/build/html README.rst
+%license LICENSE
+
+%changelog
