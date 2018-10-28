@@ -201,7 +201,6 @@ install -p -D -m 640 etc/keystone.conf.sample %{buildroot}%{_sysconfdir}/keyston
 install -D -m 640 %{SOURCE4} %{buildroot}/%{_sysconfdir}/keystone/keystone.conf.d/010-keystone.conf
 install -D -m 440 %{SOURCE5} %{buildroot}/%{_sysconfdir}/keystone/README.config
 install -p -D -m 640 etc/logging.conf.sample %{buildroot}%{_sysconfdir}/keystone/logging.conf
-install -p -D -m 640 etc/keystone-paste.ini %{buildroot}%{_sysconfdir}/keystone/keystone-paste.ini
 install -p -D -m 640 etc/keystone.policy.yaml %{buildroot}%{_sysconfdir}/keystone/keystone.policy.yaml
 install -p -D -m 640 etc/default_catalog.templates %{buildroot}%{_sysconfdir}/keystone/default_catalog.templates
 install -p -D -m 640 etc/sso_callback_template.html %{buildroot}%{_sysconfdir}/keystone/sso_callback_template.html
@@ -250,7 +249,6 @@ stestr-3 run --black-regex keystone.tests.unit.test_policy.GeneratePolicyFileTes
 %{_sysconfdir}/keystone/README.config
 %config(noreplace) %attr(0640, root, keystone) %{_sysconfdir}/keystone/keystone.conf
 %config(noreplace) %attr(0640, root, keystone) %{_sysconfdir}/keystone/keystone.conf.d/010-keystone.conf
-%config(noreplace) %attr(0640, root, keystone) %{_sysconfdir}/keystone/keystone-paste.ini
 %config(noreplace) %attr(0640, root, keystone) %{_sysconfdir}/keystone/logging.conf
 %config(noreplace) %attr(0640, root, keystone) %{_sysconfdir}/keystone/default_catalog.templates
 %config(noreplace) %attr(0640, keystone, keystone) %{_sysconfdir}/keystone/keystone.policy.yaml
