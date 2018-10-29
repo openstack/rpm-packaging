@@ -31,6 +31,7 @@ BuildRequires:  {{ py2pkg('oslo.i18n') }}
 BuildRequires:  {{ py2pkg('oslo.log') }}
 BuildRequires:  {{ py2pkg('oslo.middleware') }}
 BuildRequires:  {{ py2pkg('oslo.policy') }}
+BuildRequires:  {{ py2pkg('oslo.upgradecheck') }}
 BuildRequires:  {{ py2pkg('reno') }}
 BuildRequires:  {{ py2pkg('six') }}
 BuildRequires:  {{ py2pkg('testrepository') }}
@@ -139,6 +140,7 @@ OS_PATH_TEST=./freezer_api/tests/unit python setup.py test
 %{_bindir}/freezer-api
 %{_bindir}/freezer-api-wsgi
 %{_bindir}/freezer-manage
+%{_bindir}/freezer-manager-status
 %dir %attr(0750, root, freezer) %{_sysconfdir}/freezer/
 %dir %attr(0750, root, freezer) %{_sysconfdir}/freezer/freezer-api.conf.d/
 %config(noreplace) %attr(0640, root, freezer) %{_sysconfdir}/freezer/freezer-api.conf
