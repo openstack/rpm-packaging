@@ -70,6 +70,7 @@ This package contains the keystone python libraries.
 %package -n     python3-{{ pypi_name }}
 Summary:        Keystone Python libraries
 Group:          Applications/System
+Requires:       {{ py2pkg('python-ldap', py_versions=['py3']) }}
 Requires:       {{ py2pkg('Babel', py_versions=['py3']) }}
 Requires:       {{ py2pkg('Flask', py_versions=['py3']) }}
 Requires:       {{ py2pkg('Flask-RESTful', py_versions=['py3']) }}
@@ -109,12 +110,6 @@ Requires:       {{ py2pkg('python-memcached', py_versions=['py3']) }}
 Requires:       {{ py2pkg('six', py_versions=['py3']) }}
 Requires:       {{ py2pkg('sqlalchemy-migrate', py_versions=['py3']) }}
 Requires:       {{ py2pkg('stevedore', py_versions=['py3']) }}
-%if 0%{?suse_version}
-Requires:       {{ py2pkg('pyldap', py_versions=['py3']) }}
-%endif
-%if 0%{?rdo}
-Requires:       {{ py2pkg('python-ldap', py_versions=['py3']) }}
-%endif
 
 %description -n   python3-{{ pypi_name }}
 Keystone is a Python implementation of the OpenStack
