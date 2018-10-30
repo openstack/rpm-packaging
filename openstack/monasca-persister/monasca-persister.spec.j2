@@ -3,7 +3,6 @@
 {% set upstream_version = upstream_version() %}
 {% set rpm_release = '1' %}
 
-%global sname {{ pypi_name }}
 Name:           {{ py2name() }}
 Version:        {{ py2rpmversion() }}
 Release:        {{ py2rpmrelease() }}
@@ -58,7 +57,7 @@ Consumes metrics and alarm state transitions from message queue and stores them 
 Data is read from Kafka queue and saved either in InfluxDB or Cassandra
 
 %prep
-%autosetup -n %{sname}-{{ upstream_version }}
+%autosetup -n {{pypi_name}}-{{ upstream_version }}
 %py_req_cleanup
 
 %build
