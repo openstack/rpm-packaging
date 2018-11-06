@@ -1,0 +1,6 @@
+[Unit]
+Description=Monasca Agent
+Wants=openstack-monasca-agent-collector.service openstack-monasca-agent-forwarder.service openstack-monasca-agent-statsd.service
+
+[Install]
+WantedBy=multi-user.target

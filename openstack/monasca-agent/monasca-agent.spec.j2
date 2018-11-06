@@ -30,9 +30,12 @@ Group:          Development/Languages/Python
 URL:            https://wiki.openstack.org/wiki/Monasca
 Source0:        {{ source|basename }}
 Source1:        %{name}-sudoers
-Source2:        %{name}.service
+Source2:        %{name}.target
 Source3:        %{name}.tmpfiles
 Source4:        %{name}.polkit
+Source5:        %{name}-collector.service
+Source6:        %{name}-forwarder.service
+Source7:        %{name}-statsd.service
 BuildRequires:  fdupes
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('PyYAML') }}
@@ -59,7 +62,6 @@ BuildRequires:  {{ py2pkg('python-memcached') }}
 BuildRequires:  {{ py2pkg('redis') }}
 BuildRequires:  {{ py2pkg('requests') }}
 BuildRequires:  {{ py2pkg('stevedore') }}
-BuildRequires:  {{ py2pkg('supervisor') }}
 BuildRequires:  {{ py2pkg('testrepository') }}
 BuildRequires:  {{ py2pkg('tornado') }}
 BuildRequires:  sudo
@@ -104,7 +106,6 @@ Requires:       {{ py2pkg('python-memcached') }}
 Requires:       {{ py2pkg('redis') }}
 Requires:       {{ py2pkg('requests') }}
 Requires:       {{ py2pkg('stevedore') }}
-Requires:       {{ py2pkg('supervisor') }}
 # FIXME(jpena): Remove this conditional once python-toml is available in RDO
 %if 0%{?rdo}
 Requires:       {{ py2pkg('tornado') }}
@@ -146,7 +147,10 @@ install -d -m 750  %{buildroot}%{_localstatedir}/log/%{sname}
 install -D -m 440 %{SOURCE1} %{buildroot}%{_sysconfdir}/sudoers.d/%{name}
 
 # systemd unit file
-install -D -m 644 %{SOURCE2} %{buildroot}%{_unitdir}/%{name}.service
+install -D -m 644 %{SOURCE2} %{buildroot}%{_unitdir}/%{name}.target
+install -D -m 644 %{SOURCE5} %{buildroot}%{_unitdir}/%{name}-collector.service
+install -D -m 644 %{SOURCE6} %{buildroot}%{_unitdir}/%{name}-forwarder.service
+install -D -m 644 %{SOURCE7} %{buildroot}%{_unitdir}/%{name}-statsd.service
 %if 0%{?suse_version}
 mkdir -p %{buildroot}%{_sbindir}
 ln -sr %{buildroot}%{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}
@@ -166,13 +170,22 @@ install -D -m 644 %{SOURCE4} %{buildroot}%{_sysconfdir}/polkit-1/rules.d/49-mona
 
 %post
 %tmpfiles_create %{_tmpfilesdir}/openstack-monasca-agent.conf
-%systemd_post %{name}.service
+%systemd_post %{name}.target
+%systemd_post %{name}-collector.service
+%systemd_post %{name}-forwarder.service
+%systemd_post %{name}-statsd.service
 
 %preun
-%systemd_preun %{name}.service
+%systemd_preun %{name}.target
+%systemd_preun %{name}-collector.service
+%systemd_preun %{name}-forwarder.service
+%systemd_preun %{name}-statsd.service
 
 %postun
-%systemd_postun %{name}.service
+%systemd_postun %{name}.target
+%systemd_postun %{name}-collector.service
+%systemd_postun %{name}-forwarder.service
+%systemd_postun %{name}-statsd.service
 
 %check
 find . -type f -name *.pyc -delete
@@ -191,7 +204,10 @@ python setup.py test
 %dir %{_prefix}/lib/monasca
 %{_prefix}/lib/monasca/agent
 %dir %attr(0750, %{username}, %{groupname}) %{_localstatedir}/log/%{sname}
-%{_unitdir}/%{name}.service
+%{_unitdir}/%{name}.target
+%{_unitdir}/%{name}-collector.service
+%{_unitdir}/%{name}-forwarder.service
+%{_unitdir}/%{name}-statsd.service
 %if 0%{?suse_version}
 %{_sbindir}/rc%{name}
 %endif

@@ -1,0 +1,15 @@
+[Unit]
+Description=Monasca Agent - Collector
+PartOf=monasca-agent.target
+After=monasca-forwarder.service
+Wants=monasca-forwarder.service
+
+[Service]
+Type=simple
+User=monasca-agent
+Group=monasca
+Restart=always
+ExecStart=/usr/bin/monasca-collector foreground
+
+[Install]
+WantedBy=multi-user.target
