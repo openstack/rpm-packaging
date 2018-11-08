@@ -10,7 +10,7 @@ Summary:        VMware NSX python library
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            http://launchpad.net/vmware-nsxlib
-Source0:        {{ source }}
+Source0:        {{ source|basename }}
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('mock') }}
 BuildRequires:  {{ py2pkg('neutron-lib') }}
