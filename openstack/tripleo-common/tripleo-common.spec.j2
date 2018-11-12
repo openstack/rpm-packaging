@@ -1,5 +1,4 @@
 %global sname tripleo-common
-%global sversion 9.3.0
 Name:           {{ py2name('tripleo-common') }}
 Version:        9.3.0
 Release:        0
@@ -7,7 +6,7 @@ Summary:        Python library for code used by TripleO projects
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://launchpad.net/%{sname}
-Source0:        https://files.pythonhosted.org/packages/source/t/%{sname}/%{sname}-%{sversion}.tar.gz
+Source0:        https://files.pythonhosted.org/packages/source/t/%{sname}/%{sname}-%{version}.tar.gz
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('GitPython') }}
 BuildRequires:  {{ py2pkg('PyYAML') }}
@@ -79,7 +78,7 @@ This package installs the TripleO tools for developers and CI that typically
 don't fit in a product.
 
 %prep
-%autosetup -n %{sname}-%{sversion}
+%autosetup -n %{sname}-%{version}
 sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
