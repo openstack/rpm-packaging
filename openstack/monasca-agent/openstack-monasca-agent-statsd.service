@@ -1,8 +1,8 @@
 [Unit]
 Description=Monasca Agent - Statsd
-PartOf=monasca-agent.target
-After=monasca-forwarder.service
-Wants=monasca-forwarder.service
+PartOf=openstack-monasca-agent.target
+After=openstack-monasca-forwarder.service
+Wants=openstack-monasca-forwarder.service
 
 [Service]
 Type=simple

@@ -1,6 +1,6 @@
 [Unit]
 Description=Monasca Agent - Forwarder
-PartOf=monasca-agent.target
+PartOf=openstack-monasca-agent.target
 After=network-online.target
 Wants=network-online.target
 
