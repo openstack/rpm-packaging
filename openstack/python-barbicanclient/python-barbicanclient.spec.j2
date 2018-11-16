@@ -1,16 +1,14 @@
 %global sname python-barbicanclient
 Name:           {{ py2name('python-barbicanclient') }}
-Version:        4.5.2
+Version:        4.5.3
 Release:        0
 Summary:        Client for the Barbican Key Management API
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            http://launchpad.net/%{sname}
 Source0:        https://pypi.io/packages/source/p/%{sname}/%{sname}-%{version}.tar.gz
-# From https://review.openstack.org/#/c/538186/
-Patch1:         0001-Pass-OSC-interface-through-to-barbican-plugin.patch
 # backport of https://review.openstack.org/#/c/550621/
-Patch2:         0001-Updating-time-for-functional-tests.patch
+Patch1:         0001-Updating-time-for-functional-tests.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('cliff') }}
 BuildRequires:  {{ py2pkg('devel') }}
