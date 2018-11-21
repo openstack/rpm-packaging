@@ -1,5 +1,5 @@
 {% set pypi_name = 'oslo.config' %}
-{% set upstream_version = upstream_version('6.4.0') %}
+{% set upstream_version = upstream_version('6.7.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -87,9 +87,10 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %install
 %{python_install}
 %python_clone -a %{buildroot}%{_bindir}/oslo-config-generator
+%python_clone -a %{buildroot}%{_bindir}/oslo-config-validator
 
 %post
-%python_install_alternative oslo-config-generator
+%{python_install_alternative oslo-config-generator oslo-config-validator}
 
 %postun
 %python_uninstall_alternative oslo-config-generator
@@ -102,6 +103,7 @@ $python setup.py testr
 %files %{python_files}
 %license LICENSE
 %python_alternative %{_bindir}/oslo-config-generator
+%python_alternative %{_bindir}/oslo-config-validator
 %{python_sitelib}/oslo_config
 %{python_sitelib}/*.egg-info
 
