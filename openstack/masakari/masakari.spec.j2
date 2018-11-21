@@ -28,17 +28,15 @@ BuildRequires:  {{ py2pkg('oslo.messaging') }}
 BuildRequires:  {{ py2pkg('oslo.middleware') }}
 BuildRequires:  {{ py2pkg('oslo.policy') }}
 BuildRequires:  {{ py2pkg('oslo.service') }}
+BuildRequires:  {{ py2pkg('oslo.upgradecheck') }}
 BuildRequires:  {{ py2pkg('oslo.versionedobjects') }}
 BuildRequires:  {{ py2pkg('oslotest') }}
 BuildRequires:  {{ py2pkg('python-subunit') }}
 BuildRequires:  {{ py2pkg('reno') }}
 BuildRequires:  {{ py2pkg('requests-mock') }}
 BuildRequires:  {{ py2pkg('setuptools') }}
+BuildRequires:  {{ py2pkg('stestr') }}
 BuildRequires:  {{ py2pkg('taskflow') }}
-BuildRequires:  {{ py2pkg('testrepository') }}
-BuildRequires:  {{ py2pkg('testresources') }}
-BuildRequires:  {{ py2pkg('testscenarios') }}
-BuildRequires:  {{ py2pkg('testtools') }}
 Requires:       python-masakari = %{version}-%{release}
 BuildArch:      noarch
 %if 0%{?suse_version}
@@ -89,6 +87,7 @@ Requires:       {{ py2pkg('oslo.messaging') }}
 Requires:       {{ py2pkg('oslo.middleware') }}
 Requires:       {{ py2pkg('oslo.policy') }}
 Requires:       {{ py2pkg('oslo.service') }}
+Requires:       {{ py2pkg('oslo.upgradecheck') }}
 Requires:       {{ py2pkg('oslo.utils') }}
 Requires:       {{ py2pkg('oslo.versionedobjects') }}
 Requires:       {{ py2pkg('pbr') }}
@@ -160,9 +159,7 @@ rm -rf %{buildroot}%{_prefix}%{_sysconfdir}/
 %tmpfiles_create %{_tmpfilesdir}/masakari.conf
 
 %check
-testr init
-testr list-tests > list
-testr run --load-list=list
+%{__python2} -m stestr.cli run
 
 %post api
 %systemd_post openstack-masakari-api.service
@@ -192,6 +189,7 @@ testr run --load-list=list
 %files api
 %{_bindir}/masakari-api
 %{_bindir}/masakari-manage
+%{_bindir}/masakari-status
 %{_bindir}/masakari-wsgi
 %{_unitdir}/openstack-masakari-api.service
 
