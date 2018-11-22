@@ -1,0 +1,15 @@
+[Unit]
+Description=OpenStack ceilometer polling service - notification agent
+After=syslog.target network.target
+After=mysql.service postgresql.service rabbitmq-server.service
+
+[Service]
+Type=simple
+User=ceilometer
+Group=ceilometer
+WorkingDirectory=/var/lib/ceilometer
+PrivateTmp=yes
+ExecStart=/usr/bin/ceilometer-agent-notification
+
+[Install]
+WantedBy=multi-user.target
