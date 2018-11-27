@@ -41,6 +41,7 @@ BuildRequires:  {{ py2pkg('oslo.db') }}
 BuildRequires:  {{ py2pkg('oslo.log') }}
 BuildRequires:  {{ py2pkg('oslo.middleware') }}
 BuildRequires:  {{ py2pkg('oslo.serialization') }}
+BuildRequires:  {{ py2pkg('oslo.upgradecheck') }}
 BuildRequires:  {{ py2pkg('oslo.utils') }}
 BuildRequires:  {{ py2pkg('oslotest') }}
 BuildRequires:  {{ py2pkg('pbr') }}
@@ -83,6 +84,7 @@ Requires:       {{ py2pkg('oslo.db') }}
 Requires:       {{ py2pkg('oslo.log') }}
 Requires:       {{ py2pkg('oslo.middleware') }}
 Requires:       {{ py2pkg('oslo.serialization') }}
+Requires:       {{ py2pkg('oslo.upgradecheck') }}
 Requires:       {{ py2pkg('oslo.utils') }}
 Requires:       {{ py2pkg('pbr') }}
 Requires:       {{ py2pkg('pyparsing') }}
@@ -157,6 +159,7 @@ fi
 %{_bindir}/monasca-api
 %{_bindir}/monasca-api-wsgi
 %{_bindir}/monasca-api-wsgi.py
+%{_bindir}/monasca-status
 %{_bindir}/monasca_db
 
 %dir %attr(-, root, monasca) %{_sysconfdir}/monasca
