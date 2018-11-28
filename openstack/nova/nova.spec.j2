@@ -561,7 +561,7 @@ mkdir -p %{buildroot}%{_datarootdir}/nova/rootwrap/
 install -p -D -m 644 etc/nova/rootwrap.d/* %{buildroot}%{_datarootdir}/nova/rootwrap/
 cp -a etc/nova/rootwrap.d/ %{buildroot}%{_sysconfdir}/nova/
 # Install pid directory
-install -d -m 750 %{buildroot}%{_localstatedir}/run/nova
+install -d -m 750 %{buildroot}%{_rundir}/nova
 %fdupes %{buildroot}/%{python2_sitelib}
 
 %if 0%{?with_tests}
@@ -708,7 +708,7 @@ usermod -a -G qemu nova
 %dir %{_localstatedir}/lib/nova/networks
 %dir %{_localstatedir}/lib/nova/tmp
 %dir %attr(0750, nova, root) %{_localstatedir}/log/nova
-%dir %attr(0750, nova, root) %{_localstatedir}/run/nova
+%dir %attr(0750, nova, root) %{_rundir}/nova
 %{_sysconfdir}/bash_completion.d/openstack-nova-manage.sh
 %{_sysconfdir}/nova/release
 %config(noreplace) %{_sysconfdir}/logrotate.d/%{name}
