@@ -220,7 +220,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 
 mkdir -p %{buildroot}%{_sysconfdir}/mistral/
 mkdir -p %{buildroot}%{_localstatedir}/log/mistral
-mkdir -p %{buildroot}%{_localstatedir}/run/mistral
+mkdir -p %{buildroot}%{_rundir}/mistral
 #systemd unitfiles
 install -p -D -m 644 %SOURCE1 %{buildroot}%{_unitdir}/openstack-mistral-api.service
 install -p -D -m 644 %SOURCE2 %{buildroot}%{_unitdir}/openstack-mistral-engine.service
@@ -272,7 +272,7 @@ chmod +x %{buildroot}%{_bindir}/mistral*
 %dir %{_sysconfdir}/mistral
 %config(noreplace) %attr(-, mistral, mistral) %{_sysconfdir}/mistral/*
 %{_bindir}/mistral-*
-%dir %attr(750, mistral, mistral) %{_localstatedir}/run/mistral
+%dir %attr(750, mistral, mistral) %{_rundir}/mistral
 %dir %attr(750, mistral, mistral) %{_localstatedir}/log/mistral
 
 %files doc

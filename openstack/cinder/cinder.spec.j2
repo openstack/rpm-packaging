@@ -272,7 +272,7 @@ install -p -D -m 440 %{SOURCE6} %{buildroot}%{_sysconfdir}/sudoers.d/%{service}
 install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/openstack-%{service}
 
 # Install pid directory
-install -d -m 755 %{buildroot}%{_localstatedir}/run/%{service}
+install -d -m 755 %{buildroot}%{_rundir}/%{service}
 
 # Install rootwrap files in /usr/share/cinder/rootwrap
 mkdir -p %{buildroot}%{_datarootdir}/%{service}/rootwrap/
@@ -343,7 +343,7 @@ exit 0
 %config(noreplace) %{_sysconfdir}/sudoers.d/%{service}
 %{_sysconfdir}/%{service}/rootwrap.d/
 %dir %attr(0750, %{service}, root) %{_localstatedir}/log/%{service}
-%dir %attr(0755, %{service}, root) %{_localstatedir}/run/%{service}
+%dir %attr(0755, %{service}, root) %{_rundir}/%{service}
 %dir %attr(0755, %{service}, root) %{_sysconfdir}/%{service}/volumes
 %{_datarootdir}/%{service}
 %defattr(-, %{service}, %{service}, -)
