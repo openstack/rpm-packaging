@@ -104,3 +104,13 @@ sed -i "s/%{2}/%{1}_tests/g" $tempest_egg_path/PKG-INFO \
 #
 %ext_info .gz
 %ext_man .gz
+
+
+# This macro defines environment variables available during the build
+# Currently sets:
+# - RHEL_ALLOW_PYTHON2_FOR_BUILD=1
+# (enable python2 in RHEL between 7 and 9 buildroot)
+%__openstack_set_env  %{lua:
+rhel_version=tonumber(rpm.expand(0%{?rhel}))
+if rhel_version > 7 then posix.env("RHEL_ALLOW_PYTHON2_FOR_BUILD",1) end
+}
