@@ -13,7 +13,7 @@
     ErrorLog /var/log/apache2/openstack-dashboard-error_log
     TransferLog /var/log/apache2/openstack-dashboard-access_log
 
-    WSGIScriptAlias / /var/lib/openstack-dashboard/openstack_dashboard/wsgi/wsgi.py
+    WSGIScriptAlias / /var/lib/openstack-dashboard/openstack_dashboard/wsgi.py
     WSGIDaemonProcess horizon user=wwwrun group=www processes=3 threads=10
     WSGIApplicationGroup %{GLOBAL}
     WSGIProcessGroup horizon
