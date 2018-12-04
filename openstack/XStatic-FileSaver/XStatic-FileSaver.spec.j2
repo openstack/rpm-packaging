@@ -1,0 +1,37 @@
+{% set js_name = 'FileSaver' %}
+%global sname {{ 'XStatic-' + js_name }}
+{% set build_py_versions = ['py2', 'py3'] %}
+Name:           {{ py2name('XStatic-' + js_name) }}
+Version:        1.3.2.0
+Release:        0
+Summary:        {{ js_name }} %{version} (XStatic packaging standard)
+License:        {{ license('MIT') }}
+Group:          Development/Languages/Python
+URL:            https://git.openstack.org/cgit/openstack/xstatic-{{ js_name | lower }}/
+Source0:        https://files.pythonhosted.org/packages/source/X/%{sname}/%{sname}-%{version}.tar.gz
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('setuptools', py_versions=build_py_versions) }}
+Requires:       {{ py2pkg('XStatic', py_versions=build_py_versions) }}
+BuildArch:      noarch
+%python_subpackages
+
+%description
+{{ js_name }} javascript library packaged for setuptools (easy_install) / pip.
+
+%prep
+%autosetup -n %{sname}-%{version}
+%py_req_cleanup
+
+%build
+%{python_build}
+
+%install
+%{python_install}
+
+%files %{python_files}
+%doc README.txt
+%{python_sitelib}/xstatic
+%{python_sitelib}/XStatic_{{ js_name | replace('-', '_') }}-%{version}-py?.?.egg-info
+%{python_sitelib}/XStatic_{{ js_name | replace('-', '_') }}-%{version}-py?.?-nspkg.pth
+
+%changelog
