@@ -1,0 +1,106 @@
+{% set pypi_name = 'heat-dashboard' %}
+{% set source = fetch_source("https://tarballs.openstack.org/heat-dashboard/heat-dashboard-stable-rocky.tar.gz") %}
+{% set upstream_version = upstream_version() %}
+{% set rpm_release = '1' %}
+
+%if 0%{?rhel} || 0%{?fedora}
+%global http_dashboard_dir %{_datarootdir}/openstack-dashboard
+%else
+%global http_dashboard_dir /srv/www/openstack-dashboard
+%endif
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
+Summary:        Horizon plugin for heat
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+URL:            https://launchpad.net/{{ pypi_name }}
+Source0:        {{ source|basename }}
+BuildRequires:  fdupes
+BuildRequires:  {{ py2pkg('horizon') }}
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('XStatic-Angular-UUID') }}
+BuildRequires:  {{ py2pkg('XStatic-Angular-Vis') }}
+BuildRequires:  {{ py2pkg('XStatic-FileSaver') }}
+BuildRequires:  {{ py2pkg('XStatic-JS-Yaml') }}
+BuildRequires:  {{ py2pkg('XStatic-Json2yaml') }}
+BuildRequires:  {{ py2pkg('python-heatclient') }}
+BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('mox3') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+Requires:       {{ py2pkg('horizon-plugin-heat-ui') }} = %{version}
+BuildArch:      noarch
+
+%description
+Heat dashboard is a horizon plugin for Heat.
+
+%package -n     {{ py2pkg('horizon-plugin-heat-ui') }}
+Summary:        Horizon plugin for heat - Python Module
+Requires:       {{ py2pkg('XStatic-Angular-UUID') }}
+Requires:       {{ py2pkg('XStatic-Angular-Vis') }}
+Requires:       {{ py2pkg('XStatic-FileSaver') }}
+Requires:       {{ py2pkg('XStatic-JS-Yaml') }}
+Requires:       {{ py2pkg('XStatic-Json2yaml') }}
+Requires:       {{ py2pkg('python-heatclient') }}
+Requires:       {{ py2pkg('pbr') }}
+
+%description -n {{ py2pkg('horizon-plugin-heat-ui') }}
+OpenStack Heat plugin for Horizon.
+
+This package contains the core Python module of the heat-ui.
+
+%package test
+Summary:       Heat Management Plugin for Horizon - Testsuite
+Requires:      {{ py2pkg('mock') }}
+#Requires:      {{ py2pkg('nodeenv') }}
+Requires:      {{ py2pkg('testtools') }}
+
+%description test
+OpenStack Heat management plugin for Horizon.
+It is used to verify the functionality of the Heat UI Plugin.
+
+%prep
+%autosetup -p1 -n {{ pypi_name }}-{{upstream_version}}
+%py_req_cleanup
+
+%build
+%py2_build
+
+%check
+PYTHONPATH=%{http_dashboard_dir} python manage.py test heat_dashboard --settings=heat_dashboard.test.settings
+
+%install
+%py2_install
+
+install -m 0755 -d %{buildroot}%{http_dashboard_dir}/openstack_dashboard/enabled/
+cp -a heat_dashboard/enabled/*.py %{buildroot}%{http_dashboard_dir}/openstack_dashboard/enabled/
+
+%fdupes %{buildroot}%{python2_sitelib}
+%fdupes %{buildroot}%{http_dashboard_dir}
+
+%post
+su %{apache_user} -s /bin/sh -c "python %{http_dashboard_dir}/manage.py collectstatic --noinput --clear > /dev/null"
+su %{apache_user} -s /bin/sh -c "python %{http_dashboard_dir}/manage.py compress --force > /dev/null"
+
+%postun
+su %{apache_user} -s /bin/sh -c "python %{http_dashboard_dir}/manage.py collectstatic --noinput --clear > /dev/null"
+su %{apache_user} -s /bin/sh -c "python %{http_dashboard_dir}/manage.py compress --force > /dev/null"
+
+%files
+%doc ChangeLog CONTRIBUTING.rst README.rst
+%license LICENSE
+%{http_dashboard_dir}/openstack_dashboard/enabled/*.py
+
+%files -n {{ py2pkg('horizon-plugin-heat-ui') }}
+%doc README.rst
+%license LICENSE
+%{python2_sitelib}/heat_dashboard/
+%{python2_sitelib}/heat_dashboard-*.egg-info
+%exclude %{http_dashboard_dir}/openstack_dashboard/enabled/*.pyc
+%exclude %{http_dashboard_dir}/openstack_dashboard/enabled/*.pyo
+%exclude %{python_sitelib}/heat_dashboard/test*
+
+%files test
+%{python_sitelib}/heat_dashboard/test*
+
+%changelog
