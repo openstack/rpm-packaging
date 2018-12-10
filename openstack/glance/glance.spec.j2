@@ -43,6 +43,7 @@ BuildRequires:  {{ py2pkg('oslo.log', py_versions=['py3']) }}
 BuildRequires:  {{ py2pkg('oslo.messaging', py_versions=['py3']) }}
 BuildRequires:  {{ py2pkg('oslo.middleware', py_versions=['py3']) }}
 BuildRequires:  {{ py2pkg('oslo.policy', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('oslo.upgradecheck', py_versions=['py3']) }}
 BuildRequires:  {{ py2pkg('oslo.utils', py_versions=['py3']) }}
 BuildRequires:  {{ py2pkg('oslotest', py_versions=['py3']) }}
 BuildRequires:  {{ py2pkg('osprofiler', py_versions=['py3']) }}
@@ -116,6 +117,7 @@ Requires:       {{ py2pkg('oslo.log', py_versions=['py3']) }}
 Requires:       {{ py2pkg('oslo.messaging', py_versions=['py3']) }}
 Requires:       {{ py2pkg('oslo.middleware', py_versions=['py3']) }}
 Requires:       {{ py2pkg('oslo.policy', py_versions=['py3']) }}
+Requires:       {{ py2pkg('oslo.upgradecheck', py_versions=['py3']) }}
 Requires:       {{ py2pkg('oslo.utils', py_versions=['py3']) }}
 Requires:       {{ py2pkg('osprofiler', py_versions=['py3']) }}
 Requires:       {{ py2pkg('pbr', py_versions=['py3']) }}
@@ -328,6 +330,7 @@ OS_TEST_PATH=./glance/tests/unit PYTHONPATH=. stestr-3 run
 %{_bindir}/glance-manage
 %{_bindir}/glance-replicator
 %{_bindir}/glance-scrubber
+%{_bindir}/glance-status
 
 %files -n python3-glance
 %defattr(-,root,root,-)
