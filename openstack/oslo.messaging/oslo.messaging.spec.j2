@@ -9,6 +9,14 @@ Url:            https://launchpad.net/%{sname}
 Source0:        https://pypi.io/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
 # Backport of https://review.openstack.org/519701
 Patch0:         0001-Catch-socket.timeout-when-doing-heartbeat_check.patch
+# Backport of https://review.openstack.org/#/c/593691/
+Patch1:         0001-Avoid-logging-passwords-on-connection-events.patch
+# Backport of https://review.openstack.org/#/c/580717/
+Patch2:         0001-Do-not-access-the-connection-s-socket-during-error-c.patch
+# Backport of https://review.openstack.org/#/c/413698/
+Patch3:         0001-reject-when-skipping-failed-messages.patch
+# Backport of https://review.openstack.org/#/c/500210/
+Patch4:         0001-Suppress-excessive-debug-logs-when-consume-rabbit.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('PyYAML') }}
 BuildRequires:  {{ py2pkg('WebOb') }}
@@ -89,6 +97,10 @@ This package contains the documentation.
 %prep
 %setup -q -n %{sname}-%{version}
 %patch0 -p1
+%patch1 -p1
+%patch2 -p1
+%patch3 -p1
+%patch4 -p1
 
 %build
 %{py2_build}

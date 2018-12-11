@@ -1,0 +1,26 @@
+From 85b05a7f2f31923f9744fb66aaf757c339e86b1e Mon Sep 17 00:00:00 2001
+From: gord chung <gord@live.ca>
+Date: Wed, 21 Dec 2016 16:02:37 +0000
+Subject: [PATCH] reject when skipping failed messages
+
+reject is a more accurate action when we are tossing away messages
+we cannot handle.
+
+Change-Id: I7f40ac8809f93afb8e518f236d0ddf64a3b241eb
+---
+ oslo_messaging/_drivers/impl_rabbit.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+Index: oslo.messaging-5.10.2/oslo_messaging/_drivers/impl_rabbit.py
+===================================================================
+--- oslo.messaging-5.10.2.orig/oslo_messaging/_drivers/impl_rabbit.py
++++ oslo.messaging-5.10.2/oslo_messaging/_drivers/impl_rabbit.py
+@@ -364,7 +364,7 @@ class Consumer(object):
+         except Exception:
+             LOG.exception(_LE("Failed to process message"
+                               " ... skipping it."))
+-            message.ack()
++            message.reject()
+ 
+ 
+ class DummyConnectionLock(_utils.DummyLock):

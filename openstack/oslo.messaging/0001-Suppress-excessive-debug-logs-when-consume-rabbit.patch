@@ -1,0 +1,61 @@
+From 147186c7b4aabd2155f58f61913882f7a066bcbc Mon Sep 17 00:00:00 2001
+From: Zhen Qin <zhenqin@cisco.com>
+Date: Fri, 1 Sep 2017 13:38:05 -0400
+Subject: [PATCH] Suppress excessive debug logs when consume rabbit
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+If using rabbitmq as rpc backend, oslo.messaging generates large amount
+of redundant timeout debug logs (several logs per second on multiple
+openstack services, such as nova, heat, cinder), in format of 'Timed out
+waiting for RPC response: Timeout while waiting on RPC response - topic:
+"<unknown>", RPC method: "<unknown>" info: "<unknown>'. It's because
+each socket timeout exception is raised to multiple levels of error
+recovery callback functions then logged repeatedly.
+
+However, the accompanying value of socket.timeout exception is currently
+always “timed out”. Besides, oslo.messaging has implemented retry
+mechanism to recover socket timeout failure. Therefore, IMO those logs
+should be suppressed, even if at debug level, to save disk space and
+make debugging more convenient.
+
+Change-Id: Iafc360f8d18871cff93e7fd721d793ecdef5f4a1
+Closes-Bug: #1714558
+---
+ oslo_messaging/_drivers/impl_rabbit.py | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
+
+Index: oslo.messaging-5.10.2/oslo_messaging/_drivers/impl_rabbit.py
+===================================================================
+--- oslo.messaging-5.10.2.orig/oslo_messaging/_drivers/impl_rabbit.py
++++ oslo.messaging-5.10.2/oslo_messaging/_drivers/impl_rabbit.py
+@@ -1045,14 +1045,13 @@ class Connection(object):
+         timer = rpc_common.DecayingTimer(duration=timeout)
+         timer.start()
+ 
+-        def _raise_timeout(exc):
+-            LOG.debug('Timed out waiting for RPC response: %s', exc)
++        def _raise_timeout():
+             raise rpc_common.Timeout()
+ 
+         def _recoverable_error_callback(exc):
+             if not isinstance(exc, rpc_common.Timeout):
+                 self._new_tags = set(self._consumers.values())
+-            timer.check_return(_raise_timeout, exc)
++            timer.check_return(_raise_timeout)
+ 
+         def _error_callback(exc):
+             _recoverable_error_callback(exc)
+@@ -1085,9 +1084,9 @@ class Connection(object):
+                 try:
+                     self.connection.drain_events(timeout=poll_timeout)
+                     return
+-                except socket.timeout as exc:
++                except socket.timeout:
+                     poll_timeout = timer.check_return(
+-                        _raise_timeout, exc, maximum=self._poll_timeout)
++                        _raise_timeout, maximum=self._poll_timeout)
+ 
+         with self._connection_lock:
+             self.ensure(_consume,

@@ -16,11 +16,11 @@ Closes-Bug: #1657444
  oslo_messaging/_drivers/impl_rabbit.py | 3 ++-
  1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/oslo_messaging/_drivers/impl_rabbit.py b/oslo_messaging/_drivers/impl_rabbit.py
-index b517240..a61d5b8 100644
---- a/oslo_messaging/_drivers/impl_rabbit.py
-+++ b/oslo_messaging/_drivers/impl_rabbit.py
-@@ -961,7 +961,8 @@ class Connection(object):
+Index: oslo.messaging-5.10.2/oslo_messaging/_drivers/impl_rabbit.py
+===================================================================
+--- oslo.messaging-5.10.2.orig/oslo_messaging/_drivers/impl_rabbit.py
++++ oslo.messaging-5.10.2/oslo_messaging/_drivers/impl_rabbit.py
+@@ -986,7 +986,8 @@ class Connection(object):
  
                  recoverable_errors = (
                      self.connection.recoverable_channel_errors +
@@ -30,6 +30,3 @@ index b517240..a61d5b8 100644
  
                  try:
                      try:
--- 
-2.15.0
-
