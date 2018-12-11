@@ -1,0 +1,112 @@
+From fc8548e6b7a4cb9ecf4b8ca719b4236c2949ffc5 Mon Sep 17 00:00:00 2001
+From: Colleen Murphy <colleen.murphy@suse.com>
+Date: Wed, 21 Jun 2017 10:45:22 +0200
+Subject: [PATCH] Add support for a domain dropdown menu at login
+
+On clouds that use domain-specific Identity configuration[1], a user
+must provide both their username and domain in order to log into
+horizon. Without this patch, users must be aware of their domain's name
+and enter it into a text box at login. This is sensible on public
+clouds, because supplying potential domains to an unauthenticated user
+exposes too much information about other customers and makes potential
+attacks easier. On private clouds, however, it is a hinderance to
+usability. For example, when migrating from a single-domain
+configuration to a multi-domain configuration, users must now guess or
+be informed of their domain in order to enter it in the text box. As
+another example, when keystone domains are mapped to Active Directory
+domains, the user may not be used to having to know their AD domains and
+would prefer to select a likely one based on their geographical location
+or department from a dropdown menu.
+
+This patch adds support for a new config option,
+"OPENSTACK_KEYSTONE_DOMAIN_DROPDOWN" for enabling a dropdown menu
+instead of a textbox when MULTIDOMAIN_SUPPORT is enabled. The dropdown
+is disabled by default. If enabled, choices for domains to display and
+submit are configured in "OPENSTACK_KEYSTONE_DOMAIN_CHOICES". It is not
+possible to dynamically generate a list of domains before the user has
+authenticated and this would be a huge security hole if this was
+possible. Requiring the admin to statically set the domain list allows
+them to hide private domains like the service users domain.
+
+[1] https://docs.openstack.org/developer/keystone/configuration.html#domain-specific-drivers
+
+Change-Id: Ie0a7e36b9975342fab81ddebb87880608d3ef187
+Needed-By: I71d64182524d1f54745d9e42347b3a605fa2a920
+(cherry picked from commit 35a2fb35a712633a88850211de11d78e7f39c343)
+---
+ openstack_auth/forms.py       | 21 ++++++++++++++++-----
+ openstack_auth/tests/tests.py | 26 ++++++++++++++++++++++++++
+ 2 files changed, 42 insertions(+), 5 deletions(-)
+
+diff --git a/openstack_auth/forms.py b/openstack_auth/forms.py
+index 6e4bf8b..44fc39e 100644
+--- a/openstack_auth/forms.py
++++ b/openstack_auth/forms.py
+@@ -61,11 +61,22 @@ class Login(django_auth_forms.AuthenticationForm):
+                    'OPENSTACK_KEYSTONE_MULTIDOMAIN_SUPPORT',
+                    False):
+             last_domain = self.request.COOKIES.get('login_domain', None)
+-            self.fields['domain'] = forms.CharField(
+-                initial=last_domain,
+-                label=_("Domain"),
+-                required=True,
+-                widget=forms.TextInput(attrs={"autofocus": "autofocus"}))
++            if getattr(settings,
++                       'OPENSTACK_KEYSTONE_DOMAIN_DROPDOWN',
++                       False):
++                self.fields['domain'] = forms.ChoiceField(
++                    label=_("Domain"),
++                    initial=last_domain,
++                    required=True,
++                    choices=getattr(settings,
++                                    'OPENSTACK_KEYSTONE_DOMAIN_CHOICES',
++                                    ()))
++            else:
++                self.fields['domain'] = forms.CharField(
++                    initial=last_domain,
++                    label=_("Domain"),
++                    required=True,
++                    widget=forms.TextInput(attrs={"autofocus": "autofocus"}))
+             self.fields['username'].widget = forms.widgets.TextInput()
+             fields_ordering = ['domain', 'username', 'password', 'region']
+         self.fields['region'].choices = self.get_region_choices()
+diff --git a/openstack_auth/tests/tests.py b/openstack_auth/tests/tests.py
+index 2802fcb..7396724 100644
+--- a/openstack_auth/tests/tests.py
++++ b/openstack_auth/tests/tests.py
+@@ -789,6 +789,32 @@ class OpenStackAuthTestsV3(OpenStackAuthTestsMixin, test.TestCase):
+             token=unscoped.auth_token)
+         self.assertEqual(project_list, expected_projects)
+ 
++    def test_login_form_multidomain(self):
++        override = self.settings(OPENSTACK_KEYSTONE_MULTIDOMAIN_SUPPORT=True)
++        override.enable()
++        self.addCleanup(override.disable)
++
++        url = reverse('login')
++        response = self.client.get(url)
++        self.assertEqual(response.status_code, 200)
++        self.assertContains(response, 'name="domain" type="text"')
++
++    def test_login_form_multidomain_dropdown(self):
++        override = self.settings(OPENSTACK_KEYSTONE_MULTIDOMAIN_SUPPORT=True,
++                                 OPENSTACK_KEYSTONE_DOMAIN_DROPDOWN=True,
++                                 OPENSTACK_KEYSTONE_DOMAIN_CHOICES=(
++                                     ('Default', 'Default'),)
++                                 )
++        override.enable()
++        self.addCleanup(override.disable)
++
++        url = reverse('login')
++        response = self.client.get(url)
++        self.assertEqual(response.status_code, 200)
++        self.assertContains(response, 'select id="id_domain" name="domain"')
++        self.assertContains(response, 'option value="Default"')
++        settings.OPENSTACK_KEYSTONE_DOMAIN_DROPDOWN = False
++
+ 
+ class OpenStackAuthTestsWebSSO(OpenStackAuthTestsMixin, test.TestCase):
+ 
+-- 
+2.13.1
+

@@ -7,6 +7,10 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            http://docs.openstack.org/developer/django_openstack_auth/
 Source0:        https://tarballs.openstack.org/%{pypi_name}/%{pypi_name}-%{version}.tar.gz
+# PATCH-FEATURE-UPSTREAM 0001-Add-support-for-a-domain-dropdown-menu-at-login.patch bsc#1046986
+Patch0:         0001-Add-support-for-a-domain-dropdown-menu-at-login.patch
+# PATCH-FEATURE-UPSTREAM 0002-Allow-for-manual-setting-of-default-service-region.patch bsc#1046906
+Patch1:         0002-Allow-for-manual-setting-of-default-service-region.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('Django') }}
 BuildRequires:  python-devel
@@ -48,6 +52,9 @@ This package contains documentation in HTML format.
 
 %prep
 %setup -q -n %{pypi_name}-%{version}
+%patch0 -p1
+%patch1 -p1
+
 
 %build
 %py2_build
