@@ -16,7 +16,6 @@ BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('PyMySQL') }}
 BuildRequires:  {{ py2pkg('kazoo') }}
 BuildRequires:  {{ py2pkg('mock') }}
-BuildRequires:  {{ py2pkg('os-testr') }}
 BuildRequires:  {{ py2pkg('oslo.config') }}
 BuildRequires:  {{ py2pkg('oslo.context') }}
 BuildRequires:  {{ py2pkg('oslo.policy') }}
@@ -26,21 +25,19 @@ BuildRequires:  {{ py2pkg('pyparsing') }}
 BuildRequires:  {{ py2pkg('requests-mock') }}
 BuildRequires:  {{ py2pkg('setuptools') }}
 BuildRequires:  {{ py2pkg('six') }}
+BuildRequires:  {{ py2pkg('stestr') }}
 BuildRequires:  {{ py2pkg('ujson') }}
 Requires:       {{ py2pkg('PyMySQL') }}
 Requires:       {{ py2pkg('kazoo') }}
 Requires:       {{ py2pkg('oslo.config') }}
 Requires:       {{ py2pkg('oslo.policy') }}
-Requires:       {{ py2pkg('pykafka') }}
 Requires:       {{ py2pkg('pyparsing') }}
 Requires:       {{ py2pkg('six') }}
 Requires:       {{ py2pkg('ujson') }}
 BuildArch:      noarch
-%if "%{version}" != "2.3.0"
-# Currently monasca vendored kafka and will only eventually
-# switch to pykafka. atm it is not used
-BuildRequires:  {{ py2pkg('pykafka') }}
-Requires:       {{ py2pkg('pykafka') }}
+%if 0%{?suse_version}
+BuildRequires:  {{ py2pkg('confluent-kafka') }}
+Requires:       {{ py2pkg('confluent-kafka') }}
 %endif
 
 %description
@@ -57,8 +54,10 @@ platform code for building monitoring related services.
 %install
 %{py2_install}
 
+%if 0%{?suse_version}
 %check
-ostestr
+stestr run
+%endif
 
 %files
 %license LICENSE
