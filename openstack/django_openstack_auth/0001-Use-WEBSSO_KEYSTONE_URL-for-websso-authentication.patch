@@ -1,0 +1,77 @@
+From b31e85268b922f8c3c9ee948331389dc1acd512a Mon Sep 17 00:00:00 2001
+From: Guang Yee <guang.yee@suse.com>
+Date: Tue, 16 Oct 2018 10:04:07 -0700
+Subject: [PATCH] Use WEBSSO_KEYSTONE_URL for websso authentication
+
+If WEBSSO_KEYSTONE_URL is set in local/local_settings.py,
+the URL will be used for the WebSSO authentication.
+This URL takes precedence over OPENSTACK_KEYSTONE_URL
+which in multi-network deployments might not be reachable
+from the external network where the identity provider lives.
+---
+ openstack_auth/tests/tests.py | 19 +++++++++++++++++++
+ openstack_auth/utils.py       |  3 ++-
+ openstack_auth/views.py       |  3 ++-
+ 3 files changed, 23 insertions(+), 2 deletions(-)
+
+diff --git a/openstack_auth/tests/tests.py b/openstack_auth/tests/tests.py
+index 78edc8f..ff41deb 100644
+--- a/openstack_auth/tests/tests.py
++++ b/openstack_auth/tests/tests.py
+@@ -1213,6 +1213,25 @@ class OpenStackAuthTestsWebSSO(OpenStackAuthTestsMixin,
+         self.assertRedirects(response, redirect_url, status_code=302,
+                              target_status_code=404)
+ 
++    def test_websso_redirect_using_websso_keystone_url(self):
++        settings.WEBSSO_KEYSTONE_URL = 'http://keystone-public:5000/v3'
++        origin = 'http://testserver/auth/websso/'
++        protocol = 'oidc'
++        redirect_url = ('%s/auth/OS-FEDERATION/identity_providers/%s'
++                        '/protocols/%s/websso?origin=%s' %
++                        (settings.WEBSSO_KEYSTONE_URL, self.idp_id,
++                         protocol, origin))
++
++        form_data = {'auth_type': self.idp_oidc_id,
++                     'region': settings.OPENSTACK_KEYSTONE_URL}
++        url = reverse('login')
++
++        # POST to the page and redirect to keystone.
++        response = self.client.post(url, form_data)
++        # verify that the request was sent back to WEBSSO_KEYSTONE_URL
++        self.assertRedirects(response, redirect_url, status_code=302,
++                             target_status_code=404)
++
+     def test_websso_login(self):
+         projects = [self.data.project_one, self.data.project_two]
+         domains = []
+diff --git a/openstack_auth/utils.py b/openstack_auth/utils.py
+index cac0d7a..5ddde25 100644
+--- a/openstack_auth/utils.py
++++ b/openstack_auth/utils.py
+@@ -179,7 +179,8 @@ def get_websso_url(request, auth_url, websso_auth):
+     :param request: Django http request object.
+     :type request: django.http.HttpRequest
+     :param auth_url: Keystone endpoint configured in the horizon setting.
+-                     The value is derived from:
++                     If WEBSSO_KEYSTONE_URL is defined, its value is used.
++                     If not, the value is derived from:
+                      - OPENSTACK_KEYSTONE_URL
+                      - AVAILABLE_REGIONS
+     :type auth_url: string
+diff --git a/openstack_auth/views.py b/openstack_auth/views.py
+index 7ae3063..c630986 100644
+--- a/openstack_auth/views.py
++++ b/openstack_auth/views.py
+@@ -60,7 +60,8 @@ def login(request, template_name=None, extra_context=None, **kwargs):
+     if request.method == 'POST':
+         auth_type = request.POST.get('auth_type', 'credentials')
+         if utils.is_websso_enabled() and auth_type != 'credentials':
+-            auth_url = request.POST.get('region')
++            auth_url = getattr(settings, 'WEBSSO_KEYSTONE_URL',
++                               request.POST.get('region'))
+             url = utils.get_websso_url(request, auth_url, auth_type)
+             return shortcuts.redirect(url)
+ 
+-- 
+2.17.1
+
