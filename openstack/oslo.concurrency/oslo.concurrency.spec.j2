@@ -1,5 +1,5 @@
 {% set pypi_name = 'oslo.concurrency' %}
-{% set upstream_version = upstream_version('3.27.0') %}
+{% set upstream_version = upstream_version('3.29.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -24,7 +24,7 @@ BuildRequires:  {{ py2pkg('oslo.i18n', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('oslo.utils', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('fasteners') }}
@@ -88,13 +88,9 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %python_uninstall_alternative lockutils-wrapper
 
 %check
-%{python_expand rm -rf .testrepository
-# Test suite fails on 32 bit platforms
-# ifarch/ifnarch can not be used in noarch packages
 if [ "%_lib" = "lib64" ]; then
-PYTHON=$python $python setup.py testr
+%python_exec -m stestr.cli run
 fi
-}
 
 %files %{python_files}
 %license LICENSE
