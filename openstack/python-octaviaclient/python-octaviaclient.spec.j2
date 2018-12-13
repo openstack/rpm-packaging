@@ -1,0 +1,87 @@
+{% set pypi_name = 'python-octaviaclient' %}
+{% set upstream_version = upstream_version('1.6.0') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
+Summary:        Octavia Plugin for the OpenStack Command-line Client
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+URL:            https://launchpad.net/{{ pypi_name }}
+Source0:        {{ source }}
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('python-openstackclient', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('requests-mock', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
+Requires:       {{ py2pkg('Babel') }}
+Requires:       {{ py2pkg('appdirs') }}
+Requires:       {{ py2pkg('cliff') }}
+Requires:       {{ py2pkg('keystoneauth1') }}
+Requires:       {{ py2pkg('python-neutronclient') }}
+Requires:       {{ py2pkg('python-openstackclient') }}
+Requires:       {{ py2pkg('oslo.i18n') }}
+Requires:       {{ py2pkg('oslo.serialization') }}
+Requires:       {{ py2pkg('oslo.utils') }}
+Requires:       {{ py2pkg('requests') }}
+Requires:       {{ py2pkg('six') }}
+BuildArch:      noarch
+%if 0%{?suse_version}
+Requires(post): update-alternatives
+Requires(postun): update-alternatives
+%else
+# on RDO, update-alternatives is in chkconfig
+Requires(post): chkconfig
+Requires(postun): chkconfig
+%endif
+%python_subpackages
+
+%description
+The Python Octavia Client (python-octaviaclient) is a command-line client for
+the OpenStack Load Balancing service.
+
+%package -n python-octaviaclient-doc
+Summary:        Documentation for OpenStack Octavia API Client
+Group:          Documentation/HTML
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
+BuildRequires:  {{ py2pkg('reno') }}
+
+%description -n python-octaviaclient-doc
+The Python Octavia Client (python-octaviaclient) is a command-line client for
+the OpenStack Load Balancing service.
+This package contains auto-generated documentation.
+
+%prep
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
+%py_req_cleanup
+
+%build
+%{python_build}
+
+PBR_VERSION={{ upstream_version }} sphinx-build -b html doc/source doc/build/html
+# remove the sphinx-build leftovers
+rm -rf doc/build/html/.{doctrees,buildinfo}
+
+%install
+%{python_install}
+
+%check
+%python_exec -m stestr.cli run
+
+%files %{python_files}
+%doc README.rst
+%license LICENSE
+%{python_sitelib}/octaviaclient
+%{python_sitelib}/*.egg-info
+
+%files -n python-octaviaclient-doc
+%license LICENSE
+%doc doc/build/html
+
+%changelog
