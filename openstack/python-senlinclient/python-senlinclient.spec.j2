@@ -1,41 +1,40 @@
-%global sname python-senlinclient
-Name:           {{ py2name('python-senlinclient') }}
-Version:        1.8.0
-Release:        0
+{% set pypi_name = 'python-senlinclient' %}
+{% set upstream_version = upstream_version('1.9.0') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
 Summary:        Python API and CLI for OpenStack Senlin
 License:        {{ license('Apache-2.0')}}
 Group:          Development/Languages/Python
-URL:            https://launchpad.net/%{sname}
-Source0:        https://files.pythonhosted.org/packages/source/p/%{sname}/%{sname}-%{version}.tar.gz
+URL:            https://launchpad.net/{{ pypi_name }}
+Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('Babel') }}
-BuildRequires:  {{ py2pkg('PrettyTable') }}
-BuildRequires:  {{ py2pkg('PyYAML') }}
-BuildRequires:  {{ py2pkg('appdirs') }}
-BuildRequires:  {{ py2pkg('devel') }}
-BuildRequires:  {{ py2pkg('fixtures') }}
-BuildRequires:  {{ py2pkg('python-heatclient') }}
-BuildRequires:  {{ py2pkg('jsonschema') }}
-BuildRequires:  {{ py2pkg('mock') }}
-BuildRequires:  {{ py2pkg('python-openstackclient') }}
-BuildRequires:  {{ py2pkg('openstacksdk') }}
-BuildRequires:  {{ py2pkg('os-testr') }}
-BuildRequires:  {{ py2pkg('osc-lib') }}
-BuildRequires:  {{ py2pkg('oslo.i18n') }}
-BuildRequires:  {{ py2pkg('oslo.serialization') }}
-BuildRequires:  {{ py2pkg('oslo.utils') }}
-BuildRequires:  {{ py2pkg('oslotest') }}
-BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('python-subunit') }}
-BuildRequires:  {{ py2pkg('requests') }}
-BuildRequires:  {{ py2pkg('requests-mock') }}
-BuildRequires:  {{ py2pkg('stestr') }}
-BuildRequires:  {{ py2pkg('testtools') }}
+BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('Babel', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('PrettyTable', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('PyYAML', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('fixtures', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('python-heatclient', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('python-openstackclient', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('openstacksdk', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('os-testr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('osc-lib', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.i18n', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.serialization', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.utils', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('requests', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('requests-mock', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
+Requires:       {{ py2pkg('Babel') }}
 Requires:       {{ py2pkg('PrettyTable') }}
 Requires:       {{ py2pkg('PyYAML') }}
-Requires:       {{ py2pkg('appdirs') }}
 Requires:       {{ py2pkg('python-heatclient') }}
-Requires:       {{ py2pkg('jsonschema') }}
 Requires:       {{ py2pkg('keystoneauth1') }}
 Requires:       {{ py2pkg('python-openstackclient') }}
 Requires:       {{ py2pkg('openstacksdk') }}
@@ -47,6 +46,7 @@ Requires:       {{ py2pkg('pbr') }}
 Requires:       {{ py2pkg('requests') }}
 Requires:       {{ py2pkg('six') }}
 BuildArch:      noarch
+%python_subpackages
 
 %description
 OpenStack Clustering service Provisioning API Client Library
@@ -54,25 +54,25 @@ OpenStack Clustering service Provisioning API Client Library
 This is a client for the OpenStack Senlin API.
 It provides a Python API (the senlinclient module).
 
-%package doc
+%package -n python-senlinclient-doc
 Summary:        Documentation for OpenStack Senlin API Client
 Group:          Documentation/HTML
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 BuildRequires:  {{ py2pkg('reno') }}
 
-%description doc
+%description -n python-senlinclient-doc
 This is a client for the OpenStack Senlin API.
 It implements 100% of the OpenStack Senlin API. This package contains
 auto-generated documentation.
 
 %prep
-%autosetup -n %{sname}-%{version}
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
 
 
 %build
-%{py2_build}
+%{python_build}
 
 %{__python2} setup.py build_sphinx
 PBR_VERSION=%version sphinx-build -b html doc/source doc/build/html
@@ -80,18 +80,18 @@ PBR_VERSION=%version sphinx-build -b html doc/source doc/build/html
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
-%{py2_install}
+%{python_install}
 
 %check
-stestr run
+%python_exec -m stestr.cli run
 
-%files
+%files %{python_files}
 %license LICENSE
 %doc README.rst
-%{python2_sitelib}/senlinclient
-%{python2_sitelib}/*.egg-info
+%{python_sitelib}/senlinclient
+%{python_sitelib}/*.egg-info
 
-%files doc
+%files -n python-senlinclient-doc
 %license LICENSE
 %doc doc/build/html
 
