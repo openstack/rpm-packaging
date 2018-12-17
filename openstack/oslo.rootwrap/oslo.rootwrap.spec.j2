@@ -1,5 +1,5 @@
 {% set pypi_name = 'oslo.rootwrap' %}
-{% set upstream_version = upstream_version('5.14.1') %}
+{% set upstream_version = upstream_version('5.15.1') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -20,6 +20,7 @@ BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('python-subunit', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('six', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
@@ -79,12 +80,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %check
 export PYTHONPATH=.
-PYTHON=python2 %{__python2} setup.py testr
-# FIXME(ykarel) Remove the fix test once it works with python3 under root user
-%ifpython3
-rm -rf .testrepository
-PYTHON=python3 %{__python3} setup.py testr --testr-args='^(?!.*test_run_as)'
-%endif
+%python_exec -m stestr.cli run
 
 %files %{python_files}
 %license LICENSE
