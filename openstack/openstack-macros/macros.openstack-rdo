@@ -18,7 +18,10 @@
 %nil
 
 
-%py_req_cleanup rm -rf *requirements.txt
+%py_req_cleanup() \
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg \
+rm -rf *requirements.txt \
+%nil
 
 # Create a fake tempest plugin entry point which will
 # resides under %{python2_sitelib}/%{service}_tests.egg-info.
