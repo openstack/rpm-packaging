@@ -1,5 +1,5 @@
 {% set pypi_name = 'os-service-types' %}
-{% set upstream_version = upstream_version('1.3.0') %}
+{% set upstream_version = upstream_version('1.4.0') %}
 {% set rpm_release = '1' %}
 
 Name:           {{ py2name() }}
@@ -10,8 +10,6 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://docs.openstack.org/developer/os-service-types
 Source0:        https://files.pythonhosted.org/packages/source/o/{{ pypi_name }}/{{ pypi_name }}-%{version}.tar.gz
-# https://review.openstack.org/599979
-Patch0:         0001-Use-keystoneauth-only-in-applicable-test.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
