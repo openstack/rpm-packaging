@@ -1,5 +1,5 @@
 {% set pypi_name = 'oslo.context' %}
-{% set upstream_version = upstream_version('2.21.0') %}
+{% set upstream_version = upstream_version('2.22.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -14,7 +14,7 @@ URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('debtcollector') }}
 BuildArch:      noarch
 %if %{with test}
@@ -56,9 +56,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %if %{with test}
 %check
-%{python_expand rm -rf .testrepository
-$python setup.py testr
-}
+%python_exec -m stestr.cli run
 %endif
 
 %files %{python_files}
