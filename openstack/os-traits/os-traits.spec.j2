@@ -11,16 +11,17 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        https://files.pythonhosted.org/packages/source/o/{{ pypi_name }}/{{ pypi_name }}-%{version}.tar.gz
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('devel') }}
-BuildRequires:  {{ py2pkg('oslotest') }}
-BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('python-subunit') }}
-BuildRequires:  {{ py2pkg('stestr') }}
-BuildRequires:  {{ py2pkg('testscenarios') }}
-BuildRequires:  {{ py2pkg('testtools') }}
+BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('python-subunit', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('pbr') }}
 Requires:       {{ py2pkg('six') }}
 BuildArch:      noarch
+%python_subpackages
 
 %description
 Traits are strings that represent a feature of some resource provider.  This
@@ -28,13 +29,13 @@ library contains the catalog of constants that have been standardized in the
 OpenStack community to refer to a particular hardware, virtualization, storage,
 network, or device trait.
 
-%package doc
+%package -n python-os-traits-doc
 Summary:        Documentation for OpenStack traits Library
 Group:          Documentation/HTML
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 
-%description doc
+%description -n python-os-traits-doc
 Traits are strings that represent a feature of some resource provider.  This
 library contains the catalog of constants that have been standardized in the
 OpenStack community to refer to a particular hardware, virtualization, storage,
@@ -43,28 +44,28 @@ network, or device trait.
 This package contains the documentation.
 
 %prep
-%autosetup -p1 -n {{ pypi_name }}-%{version}
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
-sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
-%{py2_build}
-%{__python2} setup.py build_sphinx --builder=html
-rm -rf html/.{doctrees,buildinfo}
+%{python_build}
+PBR_VERSION={{ upstream_version }} sphinx-build -b html doc/source doc/build/html
+# remove the sphinx-build leftovers
+rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
-%{py2_install}
+%{python_install}
 
 %check
-stestr run
+%python_exec -m stestr.cli run
 
-%files
+%files %{python_files}
 %doc README.rst ChangeLog
 %license LICENSE
-%{python2_sitelib}/os_traits*
-%{python2_sitelib}/*.egg-info
+%{python_sitelib}/os_traits*
+%{python_sitelib}/*.egg-info
 
-%files doc
+%files -n python-os-traits-doc
 %doc doc/build/html
 %license LICENSE
 
