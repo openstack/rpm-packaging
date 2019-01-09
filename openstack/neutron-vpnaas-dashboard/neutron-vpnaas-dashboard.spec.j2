@@ -90,15 +90,13 @@ su %{apache_user} -s /bin/sh -c "python %{http_dashboard_dir}/manage.py collects
 %files
 %doc ChangeLog CONTRIBUTING.rst README.rst
 %license LICENSE
-%{http_dashboard_dir}/openstack_dashboard/enabled/*.py
+%{http_dashboard_dir}/openstack_dashboard/enabled/*.py*
 
 %files -n {{ py2pkg('horizon-plugin-neutron-vpnaas-ui') }}
 %doc README.rst
 %license LICENSE
 %{python2_sitelib}/neutron_vpnaas_dashboard/
 %{python2_sitelib}/neutron_vpnaas_dashboard-*.egg-info
-%exclude %{http_dashboard_dir}/openstack_dashboard/enabled/*.pyc
-%exclude %{http_dashboard_dir}/openstack_dashboard/enabled/*.pyo
 %exclude %{python_sitelib}/neutron_vpnaas_dashboard/test*
 
 %files test
