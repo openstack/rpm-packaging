@@ -74,7 +74,7 @@ su %{apache_user} -s /bin/sh -c "python %{http_dashboard_dir}/manage.py collects
 %files
 %doc ChangeLog CONTRIBUTING.rst README.rst
 %license LICENSE
-%{http_dashboard_dir}/openstack_dashboard/enabled/*.py
+%{http_dashboard_dir}/openstack_dashboard/enabled/*.py*
 %{http_dashboard_dir}/openstack_dashboard/local/local_settings.d/_50_murano.py.example
 %{http_dashboard_dir}/openstack_dashboard/conf/murano_policy.json
 
@@ -83,7 +83,5 @@ su %{apache_user} -s /bin/sh -c "python %{http_dashboard_dir}/manage.py collects
 %license LICENSE
 %{python2_sitelib}/muranodashboard
 %{python2_sitelib}/murano_dashboard-*.egg-info
-%exclude %{http_dashboard_dir}/openstack_dashboard/enabled/*.pyc
-%exclude %{http_dashboard_dir}/openstack_dashboard/enabled/*.pyo
 
 %changelog
