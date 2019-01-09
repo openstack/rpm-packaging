@@ -1,45 +1,47 @@
-%global sname neutron-lib
-Name:           {{ py2name('neutron-lib') }}
-Version:        1.21.0
-Release:        0
+{% set pypi_name = 'neutron-lib' %}
+{% set upstream_version = upstream_version('1.21.0') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
 Summary:        OpenStack Neutron library
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://docs.openstack.org/developer/neutron-lib/
-Source0:        https://files.pythonhosted.org/packages/source/n/%{sname}/%{sname}-%{version}.tar.gz
+Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('SQLAlchemy') }}
-BuildRequires:  {{ py2pkg('debtcollector') }}
-BuildRequires:  {{ py2pkg('devel') }}
-BuildRequires:  {{ py2pkg('fixtures') }}
-BuildRequires:  {{ py2pkg('keystoneauth1') }}
-BuildRequires:  {{ py2pkg('os-api-ref') }}
-BuildRequires:  {{ py2pkg('os-traits') }}
-BuildRequires:  {{ py2pkg('oslo.concurrency') }}
-BuildRequires:  {{ py2pkg('oslo.config') }}
-BuildRequires:  {{ py2pkg('oslo.context') }}
-BuildRequires:  {{ py2pkg('oslo.db') }}
-BuildRequires:  {{ py2pkg('oslo.i18n') }}
-BuildRequires:  {{ py2pkg('oslo.log') }}
-BuildRequires:  {{ py2pkg('oslo.messaging') }}
-BuildRequires:  {{ py2pkg('oslo.policy') }}
-BuildRequires:  {{ py2pkg('oslo.service') }}
-BuildRequires:  {{ py2pkg('oslo.utils') }}
-BuildRequires:  {{ py2pkg('oslotest') }}
-BuildRequires:  {{ py2pkg('osprofiler') }}
-BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('pecan') }}
-BuildRequires:  {{ py2pkg('pep8') }}
-BuildRequires:  {{ py2pkg('python-subunit') }}
-BuildRequires:  {{ py2pkg('setuptools') }}
-BuildRequires:  {{ py2pkg('stestr') }}
-BuildRequires:  {{ py2pkg('testrepository') }}
-BuildRequires:  {{ py2pkg('testresources') }}
-BuildRequires:  {{ py2pkg('testscenarios') }}
-BuildRequires:  {{ py2pkg('testtools') }}
+BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('weakrefmethod') }}
+BuildRequires:  {{ py2pkg('SQLAlchemy', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('debtcollector', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('fixtures', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('keystoneauth1', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('os-api-ref', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('os-traits', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.concurrency', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.config', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.context', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.db', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.i18n', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.log', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.messaging', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.policy', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.service', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.utils', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('osprofiler', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pecan', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('python-subunit', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('setuptools', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testresources', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('SQLAlchemy') }}
-Requires:       {{ py2pkg('debtcollector') }}
 Requires:       {{ py2pkg('keystoneauth1') }}
 Requires:       {{ py2pkg('os-traits') }}
 Requires:       {{ py2pkg('oslo.concurrency') }}
@@ -52,19 +54,28 @@ Requires:       {{ py2pkg('oslo.messaging') }}
 Requires:       {{ py2pkg('oslo.policy') }}
 Requires:       {{ py2pkg('oslo.service') }}
 Requires:       {{ py2pkg('oslo.utils') }}
+Requires:       {{ py2pkg('oslo.versionedobjects') }}
+Requires:       {{ py2pkg('osprofiler') }}
+Requires:       {{ py2pkg('pecan') }}
+Requires:       {{ py2pkg('six') }}
+Requires:       {{ py2pkg('stevedore') }}
 BuildArch:      noarch
+%ifpython2
+Requires:       {{ py2pkg('weakrefmethod') }}
+%endif
+%python_subpackages
 
 %description
 OpenStack Neutron library shared by all Neutron sub-projects.
 
-%package doc
+%package -n python-neutron-lib-doc
 Summary:        OpenStack Neutron library documentation
 Group:          Documentation/HTML
-BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('openstackdocstheme') }}
-BuildRequires:  {{ py2pkg('reno') }}
+BuildRequires:  {{ py2pkg('Sphinx', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('openstackdocstheme', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('reno', py_versions=['py2', 'py3']) }}
 
-%description doc
+%description -n python-neutron-lib-doc
 OpenStack Neutron library shared by all Neutron sub-projects.
 
 %prep
@@ -72,10 +83,10 @@ OpenStack Neutron library shared by all Neutron sub-projects.
 sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
-%{py2_build}
+%{python_build}
 
 %install
-%{py2_install}
+%{python_install}
 
 # Build HTML docs and man page
 PBR_VERSION=%{version} sphinx-build -b html doc/source doc/build/html
@@ -83,18 +94,15 @@ PBR_VERSION=%{version} sphinx-build -b html doc/source doc/build/html
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %check
-rm -rf .testrepository
-stestr init
-stestr run
+%python_exec -m stestr.cli run
 
-
-%files
+%files %{python_files}
 %license LICENSE
 %doc README.rst
-%{python2_sitelib}/neutron_lib
-%{python2_sitelib}/neutron_lib*egg-info
+%{python_sitelib}/neutron_lib
+%{python_sitelib}/neutron_lib*egg-info
 
-%files doc
+%files -n python-neutron-lib-doc
 %doc doc/build/html
 %license LICENSE
 
