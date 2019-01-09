@@ -82,7 +82,7 @@ su %{apache_user} -s /bin/sh -c "python %{http_dashboard_dir}/manage.py collects
 
 %files
 %doc ChangeLog README.rst
-%{http_dashboard_dir}/openstack_dashboard/enabled/_50_admin_add_monitoring_panel.py
+%{http_dashboard_dir}/openstack_dashboard/enabled/_50_admin_add_monitoring_panel.py*
 %{http_dashboard_dir}/openstack_dashboard/conf/monitoring_policy.json
 
 %if 0%{?suse_version}
@@ -94,7 +94,5 @@ su %{apache_user} -s /bin/sh -c "python %{http_dashboard_dir}/manage.py collects
 %license LICENSE
 %{python2_sitelib}/monitoring
 %{python2_sitelib}/monasca_ui-*.egg-info
-%exclude %{http_dashboard_dir}/openstack_dashboard/enabled/_50_admin_add_monitoring_panel.pyc
-%exclude %{http_dashboard_dir}/openstack_dashboard/enabled/_50_admin_add_monitoring_panel.pyo
 
 %changelog

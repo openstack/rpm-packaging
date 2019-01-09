@@ -59,14 +59,12 @@ su %{apache_user} -s /bin/sh -c "python %{http_dashboard_dir}/manage.py collects
 %files
 %doc ChangeLog README.rst
 %license LICENSE
-%{http_dashboard_dir}/openstack_dashboard/enabled/*.py
+%{http_dashboard_dir}/openstack_dashboard/enabled/*.py*
 
 %files -n {{ py2pkg('horizon-plugin-freezer-ui') }}
 %doc README.rst
 %license LICENSE
 %{python2_sitelib}/disaster_recovery
 %{python2_sitelib}/freezer_web_ui-*.egg-info
-%exclude %{http_dashboard_dir}/openstack_dashboard/enabled/*.pyc
-%exclude %{http_dashboard_dir}/openstack_dashboard/enabled/*.pyo
 
 %changelog
