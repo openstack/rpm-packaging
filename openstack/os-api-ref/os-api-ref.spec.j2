@@ -1,30 +1,34 @@
-%global sname os-api-ref
-Name:           {{ py2name('os-api-ref') }}
-Version:        1.5.0
-Release:        0
+{% set pypi_name = 'os-api-ref' %}
+{% set upstream_version = upstream_version('1.6.0') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
 Summary:        Sphinx Extensions to support API reference sites in OpenStack
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://launchpad.net/%{sname}
-Source0:        https://files.pythonhosted.org/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
+Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('PyYAML') }}
-BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('beautifulsoup4') }}
-BuildRequires:  {{ py2pkg('docutils') }}
-BuildRequires:  {{ py2pkg('openstackdocstheme') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
-BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('python-subunit') }}
-BuildRequires:  {{ py2pkg('sphinx-testing') }}
-BuildRequires:  {{ py2pkg('testrepository') }}
-BuildRequires:  {{ py2pkg('testtools') }}
+BuildRequires:  {{ py2pkg('PyYAML', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('Sphinx', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('beautifulsoup4', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('openstackdocstheme', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslosphinx', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('python-subunit', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('sphinx-testing', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('PyYAML') }}
 Requires:       {{ py2pkg('Sphinx') }}
-Requires:       {{ py2pkg('docutils') }}
 Requires:       {{ py2pkg('openstackdocstheme') }}
 Requires:       {{ py2pkg('pbr') }}
 BuildArch:      noarch
+%python_subpackages
 
 %description
 This project is a collection of sphinx stanzas that assist in building an API
@@ -39,22 +43,22 @@ of collapsing sections for REST methods and javascript controls to
 expand / collapse all sections.
 
 %prep
-%autosetup -n %{sname}-%{version}
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
 
 %build
-%{py2_build}
+%{python_build}
 
 %install
-%{py2_install}
+%{python_install}
 
 %check
-%{__python2} setup.py testr
+%python_exec -m stestr.cli run
 
-%files
+%files %{python_files}
 %license LICENSE
 %doc README.rst ChangeLog
-%{python2_sitelib}/os_api_ref
-%{python2_sitelib}/*.egg-info
+%{python_sitelib}/os_api_ref
+%{python_sitelib}/*.egg-info
 
 %changelog
