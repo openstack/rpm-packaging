@@ -74,6 +74,9 @@ PYTHONPATH=%{http_dashboard_dir} python manage.py test heat_dashboard --settings
 
 install -m 0755 -d %{buildroot}%{http_dashboard_dir}/openstack_dashboard/enabled/
 cp -a heat_dashboard/enabled/*.py %{buildroot}%{http_dashboard_dir}/openstack_dashboard/enabled/
+install -m 0755 -d %{buildroot}%{http_dashboard_dir}/openstack_dashboard/local/local_settings.d/
+cp -a heat_dashboard/local_settings.d/_1699_orchestration_settings.py \
+     %{buildroot}%{http_dashboard_dir}/openstack_dashboard/local/local_settings.d/_1699_orchestration_settings.py
 
 %fdupes %{buildroot}%{python2_sitelib}
 %fdupes %{buildroot}%{http_dashboard_dir}
@@ -90,6 +93,7 @@ su %{apache_user} -s /bin/sh -c "python %{http_dashboard_dir}/manage.py compress
 %doc ChangeLog CONTRIBUTING.rst README.rst
 %license LICENSE
 %{http_dashboard_dir}/openstack_dashboard/enabled/*.py
+%{http_dashboard_dir}/openstack_dashboard/local/local_settings.d/_1699_orchestration_settings.py*
 
 %files -n {{ py2pkg('horizon-plugin-heat-ui') }}
 %doc README.rst
