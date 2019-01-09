@@ -78,7 +78,7 @@ su %{apache_user} -s /bin/sh -c "python %{http_dashboard_dir}/manage.py collects
 su %{apache_user} -s /bin/sh -c "python %{http_dashboard_dir}/manage.py collectstatic --noinput --clear > /dev/null"
 
 %files
-%{http_dashboard_dir}/openstack_dashboard/enabled/_50_admin_add_monitoring_panel.py
+%{http_dashboard_dir}/openstack_dashboard/enabled/_50_admin_add_monitoring_panel.py*
 %{http_dashboard_dir}/openstack_dashboard/conf/monitoring_policy.json
 %license LICENSE
 %doc ChangeLog README.rst
@@ -94,7 +94,5 @@ su %{apache_user} -s /bin/sh -c "python %{http_dashboard_dir}/manage.py collects
 %doc README.rst
 %{python2_sitelib}/monitoring
 %{python2_sitelib}/monasca_ui-*.egg-info
-%exclude %{http_dashboard_dir}/openstack_dashboard/enabled/_50_admin_add_monitoring_panel.pyc
-%exclude %{http_dashboard_dir}/openstack_dashboard/enabled/_50_admin_add_monitoring_panel.pyo
 
 %changelog
