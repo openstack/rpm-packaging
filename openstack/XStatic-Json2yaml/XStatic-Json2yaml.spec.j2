@@ -11,7 +11,7 @@ URL:            https://git.openstack.org/cgit/openstack/xstatic-{{ js_name | lo
 Source0:        https://files.pythonhosted.org/packages/source/X/%{sname}/%{sname}-%{version}.tar.gz
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('setuptools', py_versions=build_py_versions) }}
-Requires:       {{ py2pkg('XStatic', py_versions=build_py_versions) }}
+Requires:       {{ py2pkg('XStatic') }}
 BuildArch:      noarch
 %python_subpackages
 
