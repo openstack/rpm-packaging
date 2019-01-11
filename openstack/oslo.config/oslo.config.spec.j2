@@ -20,7 +20,6 @@ BuildRequires:  {{ py2pkg('fixtures', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('netaddr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('oslo.i18n', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.log', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('python-subunit', py_versions=['py2', 'py3']) }}
@@ -80,7 +79,8 @@ sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 %build
 %{python_build}
 
-PBR_VERSION={{ upstream_version }} sphinx-build -b html doc/source doc/build/html
+PBR_VERSION={{ upstream_version }} PYTHONPATH=$CWD \
+    sphinx-build -b html doc/source doc/build/html
 # remove the sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
@@ -95,6 +95,8 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %python_uninstall_alternative oslo-config-generator
 
 %check
+# Requires oslo.log which we can't depend on for build cycle reasons
+rm -v oslo_config/tests/test_cfg.py
 %{python_expand rm -rf .testrepository
 $python setup.py testr
 }
