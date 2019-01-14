@@ -10,7 +10,9 @@
 # Make %license work like %doc for now - discussion started with openSUSE
 %_defaultlicensedir %_defaultdocdir
 
-%py_req_cleanup sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
+%py_req_cleanup() \
+sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg \
+%nil
 
 # Create given user with given group (to be used as %pre scriptlet for
 # openstack related daemons). Also migrates away from openstack- prefixed

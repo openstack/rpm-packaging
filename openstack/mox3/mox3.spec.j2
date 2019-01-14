@@ -47,13 +47,12 @@ This package contains documentation in HTML format.
 %prep
 %autosetup -p1 -n %{pypi_name}-%{version}
 %py_req_cleanup
-sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
 %python_build
 
 # generate html docs
-%{__python2} setup.py build_sphinx
+PBR_VERSION=%version PYTHONPATH=. sphinx-build -a -E -d doc/build/doctrees -b html doc/source doc/build/html
 
 %check
 %python_exec -m stestr.cli run
