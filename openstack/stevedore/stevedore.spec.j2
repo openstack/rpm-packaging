@@ -16,8 +16,9 @@ BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('docutils', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pytest', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('setuptools', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('pbr') }}
 Requires:       {{ py2pkg('six') }}
 BuildArch:      noarch
@@ -70,7 +71,8 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %python_install
 
 %check
-%python_exec -m stestr.cli run
+# use pytest instead of stestr to break a build cycle between python-cliff, python-stestr and python-stevedore
+%python_exec -m pytest stevedore/tests
 
 %files %{python_files}
 %license LICENSE
