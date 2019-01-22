@@ -79,7 +79,7 @@ sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 %build
 %{python_build}
 
-PBR_VERSION={{ upstream_version }} PYTHONPATH=$CWD \
+PBR_VERSION={{ upstream_version }} PYTHONPATH=. \
     sphinx-build -b html doc/source doc/build/html
 # remove the sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
