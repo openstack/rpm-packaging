@@ -1,14 +1,12 @@
 %global sname oslo.messaging
 Name:           {{ py2name('oslo.messaging') }}
-Version:        5.30.6
+Version:        5.30.7
 Release:        0
 Summary:        OpenStack oslo.messaging library
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            https://launchpad.net/%{sname}
 Source0:        https://pypi.io/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
-# Backport of https://review.openstack.org/#/c/605324/
-Patch0:         0001-Do-not-access-the-connection-s-socket-during-error-c.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('PyYAML') }}
 BuildRequires:  {{ py2pkg('WebOb') }}
