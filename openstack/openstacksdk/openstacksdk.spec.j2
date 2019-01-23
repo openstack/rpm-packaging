@@ -1,5 +1,5 @@
 {% set pypi_name = 'openstacksdk' %}
-{% set upstream_version = upstream_version('0.17.2') %}
+{% set upstream_version = upstream_version('0.23.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -43,8 +43,8 @@ BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('PyYAML') }}
 Requires:       {{ py2pkg('appdirs') }}
+Requires:       {{ py2pkg('cryptography') }}
 Requires:       {{ py2pkg('decorator') }}
-Requires:       {{ py2pkg('deprecation') }}
 Requires:       {{ py2pkg('dogpile.cache') }}
 Requires:       {{ py2pkg('iso8601') }}
 Requires:       {{ py2pkg('jmespath') }}
