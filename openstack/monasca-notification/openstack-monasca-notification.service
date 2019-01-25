@@ -2,14 +2,13 @@
 Description=Monasca Notification
 Requires=network.target
 After=network.target
-ConditionPathExists=/etc/monasca-notification
 ConditionPathIsDirectory=/var/log/monasca-notification
 
 [Service]
 Type=simple
 User=monasca-notification
 Group=monasca
-ExecStart=/usr/bin/monasca-notification /etc/monasca-notification/monasca-notification.yaml
+ExecStart=/usr/bin/monasca-notification
 Restart=always
 RestartSec=10
 

@@ -6,7 +6,7 @@
 %global sname   monasca-notification
 %define username    monasca-notification
 %define groupname   monasca
-%define notification_conf_dir %{_sysconfdir}/%{sname}
+%define notification_conf_dir %{_sysconfdir}/monasca/
 %define notification_log_dir %{_localstatedir}/log/%{sname}
 Name:           {{ py2name() }}
 Version:        {{ py2rpmversion() }}
@@ -17,7 +17,6 @@ Group:          Development/Languages/Python
 URL:            https://wiki.openstack.org/wiki/Monasca
 Source0:        {{ source|basename }}
 Source1:        openstack-%{sname}.service
-Source2:        %{sname}.yaml
 Source3:        openstack-monasca-notification.logrotate
 BuildRequires:  fdupes
 BuildRequires:  openstack-macros
@@ -86,6 +85,9 @@ This package contains the core Python module of Monasca-notification
 
 %build
 %py2_build
+PYTHONPATH=. oslo-config-generator \
+  --config-file config-generator/notification.conf \
+  --output-file etc/monasca/notification.conf.sample
 
 %install
 %py2_install
@@ -101,7 +103,7 @@ install -p -D -m 644 %{SOURCE3} %{buildroot}%{_sysconfdir}/logrotate.d/openstack
 
 ## etc
 install -d -m 755 %{buildroot}%{notification_conf_dir}
-install -D -m 644 %{SOURCE2} %{buildroot}%{notification_conf_dir}/%{sname}.yaml.sample
+install -D -m 644 etc/monasca/notification.conf.sample %{buildroot}%{notification_conf_dir}/notification.conf
 
 ## system stuff
 install -p -D -m 644 %{SOURCE1} %{buildroot}%{_unitdir}/%{name}.service
@@ -146,7 +148,7 @@ fi
 %{_bindir}/monasca-notification
 %{_unitdir}/%{name}.service
 %dir %{notification_conf_dir}
-%config(noreplace) %attr(640, root, %{groupname}) %{notification_conf_dir}/%{sname}.yaml.sample
+%config(noreplace) %attr(640, root, %{groupname}) %{notification_conf_dir}/notification.conf
 %config(noreplace) %{_sysconfdir}/logrotate.d/openstack-monasca-notification.logrotate
 %dir %attr(750, %{username}, %{groupname}) %notification_log_dir
 %if 0%{?suse_version}
