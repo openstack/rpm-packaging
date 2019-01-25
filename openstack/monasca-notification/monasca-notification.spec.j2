@@ -117,8 +117,8 @@ find . -type f -name *.pyc -delete
 # we dont have the jira module currently
 rm tests/test_jira_notification.py
 export PYTHONPATH=.
-# test_overriding needs jira
-ostestr --black-regex '^tests.test_config.TestYamlOverriding.test_overriding'
+# test_overriding and test_enabled_notifications needs jira
+ostestr --black-regex '^(tests.test_config.TestYamlOverriding.test_overriding|tests.test_notifiers.TestInterface.test_enabled_notifications)'
 
 %pre
 # create monasca group and monasca-notification user
