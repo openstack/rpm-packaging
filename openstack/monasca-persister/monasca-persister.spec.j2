@@ -62,6 +62,9 @@ Data is read from Kafka queue and saved either in InfluxDB or Cassandra
 
 %build
 %{py2_build}
+PYTHONPATH=. oslo-config-generator \
+  --config-file config-generator/persister.conf \
+  --output-file etc/monasca/persister.conf.sample
 
 %install
 %{py2_install}
@@ -73,6 +76,7 @@ install -d -m 755 %{buildroot}%{_var}/log/{{ pypi_name }}
 
 # install config
 install -D -m 640 etc/monasca/persister-logging.conf %{buildroot}%{_sysconfdir}/monasca/persister-logging.conf
+install -D -m 644 etc/monasca/persister.conf.sample %{buildroot}%{_sysconfdir}/monasca/persister.conf
 
 # install systemd service
 install -p -D -m 444 %{SOURCE1} %{buildroot}%{_unitdir}/openstack-monasca-persister.service
@@ -109,6 +113,7 @@ fi
 %dir %attr(-, root, monasca) %{_sysconfdir}/monasca
 %dir %attr(0750, monasca-persister, monasca) %{_var}/lib/{{ pypi_name }}
 %dir %attr(0750, monasca-persister, monasca) %{_var}/log/{{ pypi_name }}
+%config(noreplace) %attr(0640, root, monasca) %{_sysconfdir}/monasca/persister.conf
 %config(noreplace) %attr(0640, root, monasca) %{_sysconfdir}/monasca/persister-logging.conf
 %config(noreplace) %{_sysconfdir}/logrotate.d/openstack-monasca-persister.logrotate
 %{_unitdir}/openstack-monasca-persister.service
