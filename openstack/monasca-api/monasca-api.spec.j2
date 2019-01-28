@@ -12,7 +12,6 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://wiki.openstack.org/wiki/Monasca
 Source0:        {{ source|basename }}
-Source1:        api-config.conf
 Source2:        api-logging.conf
 Source3:        api-config.ini
 Source4:        api-wsgi.conf
@@ -103,6 +102,9 @@ and managing monitoring related resources.
 
 %build
 %py2_build
+PYTHONPATH=. oslo-config-generator \
+  --config-file config-generator/monasca-api.conf \
+  --output-file etc/monasca-api.conf.sample
 
 %install
 %py2_install
@@ -118,7 +120,7 @@ install -d -m 755 %{buildroot}%{apache_site_dir}
 # copy embedded configuration files
 
 ## copy configs
-install -D -m 640 %{SOURCE1} %{buildroot}%{_sysconfdir}/monasca/api-config.conf
+install -D -m 644 etc/monasca-api.conf.sample %{buildroot}/%{_sysconfdir}/monasca/monasca-api.conf
 install -D -m 640 %{SOURCE2} %{buildroot}%{_sysconfdir}/monasca/api-logging.conf
 install -D -m 640 %{SOURCE3} %{buildroot}%{_sysconfdir}/monasca/api-config.ini
 # some files from the devstack dir needed to do basic deployment
@@ -170,7 +172,7 @@ fi
 %dir %attr(0755, monasca-api, monasca) %{_usr}/share/%{component}/vertica
 %{_usr}/share/%{component}/schema/*
 %{_usr}/share/%{component}/vertica/*
-%config(noreplace) %attr(0640, root, monasca) %{_sysconfdir}/monasca/api-config.conf
+%config(noreplace) %attr(0640, root, monasca) %{_sysconfdir}/monasca/monasca-api.conf
 %config(noreplace) %attr(0640, root, monasca) %{_sysconfdir}/monasca/api-logging.conf
 %config(noreplace) %attr(0640, root, monasca) %{_sysconfdir}/monasca/api-config.ini
 %config(noreplace) %attr(0640, root, monasca) %{apache_site_dir}/%{component}.conf.sample
