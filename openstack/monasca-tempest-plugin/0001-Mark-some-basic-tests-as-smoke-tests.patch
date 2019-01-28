@@ -1,0 +1,135 @@
+From aadc24ea03f9f73c9bb2e943eb734893be5c9290 Mon Sep 17 00:00:00 2001
+From: Thomas Bechtold <tbechtold@suse.com>
+Date: Fri, 4 Jan 2019 15:11:33 +0100
+Subject: [PATCH] Mark some basic tests as smoke tests
+
+When running tempest with "tempest run -s", only tests that are tagged
+as "smoke" tests are executed.
+It's useful to also run a couple of monasca tests during a smoke run
+to confirm that at least the basic functions are working.
+
+Change-Id: Iffb4148fd93577809260e1e926f46c8c4cdcdcb9
+Story: #2004700
+Task: # 28721
+---
+ monasca_tempest_tests/tests/api/test_alarm_definitions.py | 4 ++--
+ monasca_tempest_tests/tests/api/test_alarms.py            | 2 +-
+ monasca_tempest_tests/tests/api/test_dimensions.py        | 2 +-
+ monasca_tempest_tests/tests/api/test_measurements.py      | 2 +-
+ monasca_tempest_tests/tests/api/test_metrics.py           | 4 ++--
+ monasca_tempest_tests/tests/api/test_metrics_names.py     | 2 +-
+ monasca_tempest_tests/tests/log_api/test_single.py        | 2 +-
+ 7 files changed, 9 insertions(+), 9 deletions(-)
+
+diff --git a/monasca_tempest_tests/tests/api/test_alarm_definitions.py b/monasca_tempest_tests/tests/api/test_alarm_definitions.py
+index d598a4f..6d0b4f8 100644
+--- a/monasca_tempest_tests/tests/api/test_alarm_definitions.py
++++ b/monasca_tempest_tests/tests/api/test_alarm_definitions.py
+@@ -31,7 +31,7 @@ NUM_ALARM_DEFINITIONS = 2
+ 
+ class TestAlarmDefinitions(base.BaseMonascaTest):
+ 
+-    @decorators.attr(type="gate")
++    @decorators.attr(type=["gate", "smoke"])
+     def test_create_alarm_definition(self):
+         # Create an alarm definition
+         name = data_utils.rand_name('alarm_definition')
+@@ -321,7 +321,7 @@ class TestAlarmDefinitions(base.BaseMonascaTest):
+ 
+     # List
+ 
+-    @decorators.attr(type="gate")
++    @decorators.attr(type=["gate", "smoke"])
+     def test_list_alarm_definitions(self):
+         expression = "avg(cpu_utilization{service=compute}) >= 1234"
+         response_body_list = self._create_alarm_definitions(
+diff --git a/monasca_tempest_tests/tests/api/test_alarms.py b/monasca_tempest_tests/tests/api/test_alarms.py
+index 27edc01..72e918e 100644
+--- a/monasca_tempest_tests/tests/api/test_alarms.py
++++ b/monasca_tempest_tests/tests/api/test_alarms.py
+@@ -34,7 +34,7 @@ class TestAlarms(base.BaseMonascaTest):
+     def resource_cleanup(cls):
+         super(TestAlarms, cls).resource_cleanup()
+ 
+-    @decorators.attr(type="gate")
++    @decorators.attr(type=["gate", "smoke"])
+     def test_list_alarms(self):
+         alarm_definition_ids, expected_metric \
+             = self._create_alarms_for_test_alarms(num=1)
+diff --git a/monasca_tempest_tests/tests/api/test_dimensions.py b/monasca_tempest_tests/tests/api/test_dimensions.py
+index aba2f64..05f5aa0 100644
+--- a/monasca_tempest_tests/tests/api/test_dimensions.py
++++ b/monasca_tempest_tests/tests/api/test_dimensions.py
+@@ -170,7 +170,7 @@ class TestDimensions(base.BaseMonascaTest):
+         self.assertRaises(exceptions.UnprocessableEntity,
+                           self.monasca_client.list_dimension_values)
+ 
+-    @decorators.attr(type='gate')
++    @decorators.attr(type=["gate", "smoke"])
+     def test_list_dimension_names(self):
+         resp, response_body = self.monasca_client.list_dimension_names()
+         self.assertEqual(200, resp.status)
+diff --git a/monasca_tempest_tests/tests/api/test_measurements.py b/monasca_tempest_tests/tests/api/test_measurements.py
+index 3823b45..5a5717b 100644
+--- a/monasca_tempest_tests/tests/api/test_measurements.py
++++ b/monasca_tempest_tests/tests/api/test_measurements.py
+@@ -115,7 +115,7 @@ class TestMeasurements(base.BaseMonascaTest):
+         cls._start_time = start_time
+         cls._end_time = end_time
+ 
+-    @decorators.attr(type="gate")
++    @decorators.attr(type=["gate", "smoke"])
+     def test_list_measurements(self):
+         query_parms = '?name=' + str(self._names_list[0]) + \
+                       '&merge_metrics=true' + \
+diff --git a/monasca_tempest_tests/tests/api/test_metrics.py b/monasca_tempest_tests/tests/api/test_metrics.py
+index c764360..6c1c43c 100644
+--- a/monasca_tempest_tests/tests/api/test_metrics.py
++++ b/monasca_tempest_tests/tests/api/test_metrics.py
+@@ -32,7 +32,7 @@ from monasca_tempest_tests.tests.api import helpers
+ 
+ class TestMetrics(base.BaseMonascaTest):
+ 
+-    @decorators.attr(type='gate')
++    @decorators.attr(type=["gate", "smoke"])
+     def test_create_metric(self):
+         name = data_utils.rand_name('name')
+         key = data_utils.rand_name('key')
+@@ -385,7 +385,7 @@ class TestMetrics(base.BaseMonascaTest):
+                           self.monasca_client.create_metrics,
+                           metric)
+ 
+-    @decorators.attr(type='gate')
++    @decorators.attr(type=["gate", "smoke"])
+     def test_list_metrics(self):
+         resp, response_body = self.monasca_client.list_metrics()
+         self.assertEqual(200, resp.status)
+diff --git a/monasca_tempest_tests/tests/api/test_metrics_names.py b/monasca_tempest_tests/tests/api/test_metrics_names.py
+index e96dd29..3ac0e77 100644
+--- a/monasca_tempest_tests/tests/api/test_metrics_names.py
++++ b/monasca_tempest_tests/tests/api/test_metrics_names.py
+@@ -71,7 +71,7 @@ class TestMetricsNames(base.BaseMonascaTest):
+     def resource_cleanup(cls):
+         super(TestMetricsNames, cls).resource_cleanup()
+ 
+-    @decorators.attr(type='gate')
++    @decorators.attr(type=["gate", "smoke"])
+     def test_list_metrics_names(self):
+         resp, response_body = self.monasca_client.list_metrics_names()
+         metric_names = self._verify_response(resp, response_body)
+diff --git a/monasca_tempest_tests/tests/log_api/test_single.py b/monasca_tempest_tests/tests/log_api/test_single.py
+index 8b9449c..810ca0d 100644
+--- a/monasca_tempest_tests/tests/log_api/test_single.py
++++ b/monasca_tempest_tests/tests/log_api/test_single.py
+@@ -51,7 +51,7 @@ class TestSingleLog(base.BaseLogsTestCase):
+ 
+         return response
+ 
+-    @decorators.attr(type="gate")
++    @decorators.attr(type=["gate", "smoke"])
+     def test_small_message(self):
+         self._run_and_wait(*base.generate_small_message())
+ 
+-- 
+2.20.1
+
