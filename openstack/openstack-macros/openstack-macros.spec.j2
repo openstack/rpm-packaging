@@ -2,7 +2,7 @@
 %global rdo 1
 %endif
 Name:           openstack-macros
-Version:        2018.2.6
+Version:        2018.2.7
 Release:        0
 Summary:        OpenStack Packaging - RPM Macros
 License:        {{ license('Apache-2.0') }}
@@ -39,7 +39,7 @@ install -D -m644 %{SOURCE2} %{buildroot}%{_sysconfdir}/rpm/macros.openstack-suse
 %if 0%{?rdo}
 install -D -m644 %{SOURCE3} %{buildroot}%{_sysconfdir}/rpm/macros.openstack-rdo
 %endif
-%if 0%{?fedora}
+%if 0%{?fedora} || 0%{?rhel} > 7
 install -D -m644 %{SOURCE4} %{buildroot}%{_sysconfdir}/rpm/macros.openstack-fedora
 %endif
 
