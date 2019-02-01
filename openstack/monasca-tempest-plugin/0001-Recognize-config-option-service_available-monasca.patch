@@ -1,0 +1,35 @@
+From e0679f5086c8e3a0eeb831d822de75d4c34c4701 Mon Sep 17 00:00:00 2001
+From: Thomas Bechtold <tbechtold@suse.com>
+Date: Fri, 1 Feb 2019 10:42:59 +0100
+Subject: [PATCH] Recognize config option [service_available]monasca
+
+Currently, setting [service_available]monasca in tempest.conf does not
+have any effect. That can lead to the situation where the
+monasca-tempest-plugin is installed but monasca is not configured
+which results in all monasca tempest tests failing.
+With this patch, setting [service_available]monasca to False will skip
+all available tests for monasca.
+
+Change-Id: I1f0cbb95765ae5fc6dca0da7af8ab56d2daf9a7f
+Story: 2004917
+Task: 29277
+---
+ monasca_tempest_tests/tests/api/base.py | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/monasca_tempest_tests/tests/api/base.py b/monasca_tempest_tests/tests/api/base.py
+index 7641112..b909110 100644
+--- a/monasca_tempest_tests/tests/api/base.py
++++ b/monasca_tempest_tests/tests/api/base.py
+@@ -29,6 +29,8 @@ class BaseMonascaTest(tempest.test.BaseTestCase):
+     @classmethod
+     def skip_checks(cls):
+         super(BaseMonascaTest, cls).skip_checks()
++        if not CONF.service_available.monasca:
++            raise cls.skipException("Monasca support is required")
+ 
+     @classmethod
+     def resource_setup(cls):
+-- 
+2.20.1
+

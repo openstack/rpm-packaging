@@ -1,6 +1,6 @@
 {% set pypi_name = 'monasca-tempest-plugin' %}
-{% set source=fetch_source('https://tarballs.openstack.org/monasca-tempest-plugin/monasca-tempest-plugin-0.2.0.tar.gz') %}
-{% set upstream_version = upstream_version('0.2.0') %}
+{% set source=fetch_source('https://tarballs.openstack.org/monasca-tempest-plugin/monasca-tempest-plugin-0.3.0.tar.gz') %}
+{% set upstream_version = upstream_version('0.3.0') %}
 {% set rpm_release = '1' %}
 
 %global sname monasca_tempest_plugin
@@ -16,8 +16,8 @@ License:       {{ license('Apache-2.0') }}
 Group:         Development/Languages/Python
 URL:           https://git.openstack.org/cgit/openstack/{{ pypi_name }}
 Source0:       {{ source|basename }}
-# https://git.openstack.org/cgit/openstack/monasca-tempest-plugin/commit/?id=aadc24ea03f9f73c9bb2e943eb734893be5c9290
-Patch1:        0001-Mark-some-basic-tests-as-smoke-tests.patch
+# https://review.openstack.org/#/c/634386/
+Patch1:        0001-Recognize-config-option-service_available-monasca.patch
 BuildRequires: openstack-macros
 BuildRequires: {{ py2pkg('devel') }}
 BuildRequires: {{ py2pkg('pbr') }}
