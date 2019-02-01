@@ -91,7 +91,7 @@ su %{apache_user} -s /bin/sh -c "python %{http_dashboard_dir}/manage.py compress
 %files
 %doc ChangeLog CONTRIBUTING.rst README.rst
 %license LICENSE
-%{http_dashboard_dir}/openstack_dashboard/enabled/*.py
+%{http_dashboard_dir}/openstack_dashboard/enabled/*.py*
 %{http_dashboard_dir}/openstack_dashboard/local/local_settings.d/_1699_orchestration_settings.py*
 
 %files -n {{ py2pkg('horizon-plugin-heat-ui') }}
@@ -99,8 +99,6 @@ su %{apache_user} -s /bin/sh -c "python %{http_dashboard_dir}/manage.py compress
 %license LICENSE
 %{python2_sitelib}/heat_dashboard/
 %{python2_sitelib}/heat_dashboard-*.egg-info
-%exclude %{http_dashboard_dir}/openstack_dashboard/enabled/*.pyc
-%exclude %{http_dashboard_dir}/openstack_dashboard/enabled/*.pyo
 %exclude %{python_sitelib}/heat_dashboard/test*
 
 %files test
