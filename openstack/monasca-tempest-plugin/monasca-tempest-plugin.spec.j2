@@ -17,7 +17,7 @@ Group:         Development/Languages/Python
 URL:           https://git.openstack.org/cgit/openstack/{{ pypi_name }}
 Source0:       {{ source|basename }}
 # https://review.openstack.org/#/c/634386/
-Patch1:        0001-Recognize-config-option-service_available-monasca.patch
+Patch1:        0001-Recognize-config-options-from-service_available.patch
 BuildRequires: openstack-macros
 BuildRequires: {{ py2pkg('devel') }}
 BuildRequires: {{ py2pkg('pbr') }}

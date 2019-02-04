@@ -1,0 +1,106 @@
+From 0c36f44ccae4640662350705115bbe10dbaf42f6 Mon Sep 17 00:00:00 2001
+From: Thomas Bechtold <tbechtold@suse.com>
+Date: Fri, 1 Feb 2019 10:42:59 +0100
+Subject: [PATCH] Recognize config options from [service_available]
+
+Currently, settings in [service_available] for Monasca in tempest.conf
+do not have any effect. That can lead to the situation where the
+monasca-tempest-plugin is installed but monasca is not configured
+which results in all monasca tempest tests failing.
+With this patch, setting:
+
+- [service_available]monasca
+- [service_available]logs
+- [service_available]logs-search
+
+to "False" will skip all available tests for monasca.
+If only monasca-api is available (no monasca-log-api and/or
+elasticsearch), [service_available]monasca can be set to "True" and
+the other 2 options ("logs" and "logs-search") to "False" so only the
+monasca-api tempest tests are executed.
+
+Change-Id: I1f0cbb95765ae5fc6dca0da7af8ab56d2daf9a7f
+Story: 2004917
+Task: 29277
+---
+ monasca_tempest_tests/tests/api/base.py            |  2 ++
+ monasca_tempest_tests/tests/log_api/base.py        | 14 +++++++++++++-
+ monasca_tempest_tests/tests/log_api/test_single.py |  2 +-
+ .../tests/log_api/test_unicode.py                  |  2 +-
+ 4 files changed, 17 insertions(+), 3 deletions(-)
+
+diff --git a/monasca_tempest_tests/tests/api/base.py b/monasca_tempest_tests/tests/api/base.py
+index 7641112..b909110 100644
+--- a/monasca_tempest_tests/tests/api/base.py
++++ b/monasca_tempest_tests/tests/api/base.py
+@@ -29,6 +29,8 @@ class BaseMonascaTest(tempest.test.BaseTestCase):
+     @classmethod
+     def skip_checks(cls):
+         super(BaseMonascaTest, cls).skip_checks()
++        if not CONF.service_available.monasca:
++            raise cls.skipException("Monasca support is required")
+ 
+     @classmethod
+     def resource_setup(cls):
+diff --git a/monasca_tempest_tests/tests/log_api/base.py b/monasca_tempest_tests/tests/log_api/base.py
+index 3df6728..7cc2541 100644
+--- a/monasca_tempest_tests/tests/log_api/base.py
++++ b/monasca_tempest_tests/tests/log_api/base.py
+@@ -93,11 +93,13 @@ def _get_data(message):
+ 
+ 
+ class BaseLogsTestCase(test.BaseTestCase):
+-    """Base test case class for all Monitoring API tests."""
++    """Base test case class for all Logs tests."""
+ 
+     @classmethod
+     def skip_checks(cls):
+         super(BaseLogsTestCase, cls).skip_checks()
++        if not CONF.service_available.logs:
++            raise cls.skipException("Monasca logs support is required")
+ 
+     @classmethod
+     def resource_setup(cls):
+@@ -120,3 +122,13 @@ class BaseLogsTestCase(test.BaseTestCase):
+                 method(resource_id)
+             except exceptions.EndpointNotFound:
+                 pass
++
++
++class BaseLogsSearchTestCase(BaseLogsTestCase):
++    """Base test case class for all LogsSearch tests."""
++    @classmethod
++    def skip_checks(cls):
++        super(BaseLogsSearchTestCase, cls).skip_checks()
++        # logs-search tests need both, 'logs' and 'logs-search'
++        if not CONF.service_available.logs_search:
++            raise cls.skipException("Monasca logs-search support is required")
+diff --git a/monasca_tempest_tests/tests/log_api/test_single.py b/monasca_tempest_tests/tests/log_api/test_single.py
+index 810ca0d..4a3e628 100644
+--- a/monasca_tempest_tests/tests/log_api/test_single.py
++++ b/monasca_tempest_tests/tests/log_api/test_single.py
+@@ -22,7 +22,7 @@ _RETRY_COUNT = 15
+ _RETRY_WAIT = 2
+ 
+ 
+-class TestSingleLog(base.BaseLogsTestCase):
++class TestSingleLog(base.BaseLogsSearchTestCase):
+     def _run_and_wait(self, key, data,
+                       content_type='application/json',
+                       headers=None, fields=None):
+diff --git a/monasca_tempest_tests/tests/log_api/test_unicode.py b/monasca_tempest_tests/tests/log_api/test_unicode.py
+index 0174fca..c462fe8 100644
+--- a/monasca_tempest_tests/tests/log_api/test_unicode.py
++++ b/monasca_tempest_tests/tests/log_api/test_unicode.py
+@@ -23,7 +23,7 @@ _RETRY_WAIT = 2
+ _UNICODE_CASES = test_metric_validation.UNICODE_MESSAGES
+ 
+ 
+-class TestUnicodeV3(base.BaseLogsTestCase):
++class TestUnicodeV3(base.BaseLogsSearchTestCase):
+ 
+     def _run_and_wait(self, key, data,
+                       content_type='application/json',
+-- 
+2.20.1
+
