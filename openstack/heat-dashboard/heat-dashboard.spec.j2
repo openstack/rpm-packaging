@@ -83,11 +83,9 @@ cp -a heat_dashboard/local_settings.d/_1699_orchestration_settings.py \
 
 %post
 su %{apache_user} -s /bin/sh -c "python %{http_dashboard_dir}/manage.py collectstatic --noinput --clear > /dev/null"
-su %{apache_user} -s /bin/sh -c "python %{http_dashboard_dir}/manage.py compress --force > /dev/null"
 
 %postun
 su %{apache_user} -s /bin/sh -c "python %{http_dashboard_dir}/manage.py collectstatic --noinput --clear > /dev/null"
-su %{apache_user} -s /bin/sh -c "python %{http_dashboard_dir}/manage.py compress --force > /dev/null"
 
 %files
 %doc ChangeLog CONTRIBUTING.rst README.rst
