@@ -120,6 +120,14 @@ install -p -D -m 644 %{SOURCE1} %{buildroot}%{_unitdir}/openstack-neutron-dvs-ag
 install -p -D -m 644 %{SOURCE2} %{buildroot}%{_unitdir}/openstack-neutron-ovsvapp-agent.service
 install -p -D -m 644 %{SOURCE3} %{buildroot}%{_unitdir}/openstack-neutron-ovsvapp-agent-monitor.service
 chmod +x %{buildroot}%{python2_sitelib}/networking_vsphere/monitor/ovsvapp-agent-monitor.sh
+# Copy the drivers provided from python-networking-vsphere for
+# Nova. Apparently VMWare drivers are out of the Nova tree, and
+# maintained outside Nova, so we need to copy the provided driver.
+mkdir -p %{buildroot}%{python2_sitelib}/nova/virt/vmwareapi/
+cp -a %{buildroot}%{python2_sitelib}/networking_vsphere/nova/virt/vmwareapi/ovsvapp_vc_driver.py* \
+      %{buildroot}%{python2_sitelib}/nova/virt/vmwareapi/
+cp -a %{buildroot}%{python2_sitelib}/networking_vsphere/nova/virt/vmwareapi/ovsvapp_vmops.py* \
+      %{buildroot}%{python2_sitelib}/nova/virt/vmwareapi/
 %fdupes %{buildroot}%{python2_sitelib}
 
 # %check
@@ -162,6 +170,7 @@ chmod +x %{buildroot}%{python2_sitelib}/networking_vsphere/monitor/ovsvapp-agent
 %license LICENSE
 %{python2_sitelib}/networking_vsphere
 %{python2_sitelib}/networking_vsphere-*.egg-info
+%{python2_sitelib}/nova/virt/vmwareapi/*
 # Part of test subpackage
 %exclude %{python2_sitelib}/networking_vsphere/tests
 
