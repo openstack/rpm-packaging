@@ -147,7 +147,7 @@ fi
 %doc README.rst
 %{_bindir}/monasca-notification
 %{_unitdir}/%{name}.service
-%dir %{notification_conf_dir}
+%dir %attr(-, root, %{groupname}) %{notification_conf_dir}
 %config(noreplace) %attr(640, root, %{groupname}) %{notification_conf_dir}/notification.conf
 %config(noreplace) %{_sysconfdir}/logrotate.d/openstack-monasca-notification.logrotate
 %dir %attr(750, %{username}, %{groupname}) %notification_log_dir
