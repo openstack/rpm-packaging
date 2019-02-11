@@ -18,6 +18,8 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://wiki.openstack.org/OpenStackDashboard
 Source0:        {{ source|basename }}
+# https://review.openstack.org/#/c/635159/
+Patch0:         0001-Do-not-set-COMPRESS_ENABLED-explicitly.patch
 BuildRequires:  fdupes
 BuildRequires:  gettext
 BuildRequires:  openstack-macros
