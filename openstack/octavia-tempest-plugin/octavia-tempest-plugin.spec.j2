@@ -1,0 +1,60 @@
+{% set pypi_name = 'octavia-tempest-plugin' %}
+{% set source=fetch_source('https://tarballs.openstack.org/octavia-tempest-plugin/octavia-tempest-plugin-0.2.0.tar.gz') %}
+{% set upstream_version = upstream_version() %}
+{% set rpm_release = '1' %}
+
+Name:          {{ py2pkg('octavia-tempest-plugin') }}
+Version:       {{ py2rpmversion() }}
+Release:       {{ py2rpmrelease() }}
+Summary:       Tempest plugin for the Octavia project
+License:       {{ license('Apache-2.0') }}
+Group:         Development/Languages/Python
+URL:           https://git.openstack.org/cgit/openstack/{{ pypi_name }}
+Source0:       {{ source|basename }}
+BuildRequires: openstack-macros
+BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
+Requires:      {{ py2pkg('Tempest') }}
+Requires:      {{ py2pkg('cryptography') }}
+Requires:      {{ py2pkg('oslo.config') }}
+Requires:      {{ py2pkg('oslo.log') }}
+Requires:      {{ py2pkg('oslo.utils') }}
+Requires:      {{ py2pkg('oslotest') }}
+Requires:      {{ py2pkg('pbr') }}
+Requires:      {{ py2pkg('python-dateutil') }}
+Requires:      {{ py2pkg('requests') }}
+Requires:      {{ py2pkg('six') }}
+Requires:      {{ py2pkg('tenacity') }}
+%if 0%{?suse_version}
+BuildRequires:  golang-packaging
+%else
+BuildRequires:  golang
+%endif
+%python_subpackages
+
+%description
+This project contains the Tempest plugin for the Octavia project for
+OpenStack Load Balancing.
+
+%prep
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
+%py_req_cleanup
+
+%build
+pushd octavia_tempest_plugin/contrib/httpd
+# we don't want to ship a binary blob that we didn't build ourself
+rm -f httpd.bin
+go build -ldflags '-linkmode=external' -o httpd.bin httpd.go
+popd
+%{python_build}
+
+%install
+%{python_install}
+
+%files %{python_files}
+%license LICENSE
+%doc README.rst
+%{python_sitelib}/octavia_tempest_plugin
+%{python_sitelib}/*.egg-info
+
+%changelog
