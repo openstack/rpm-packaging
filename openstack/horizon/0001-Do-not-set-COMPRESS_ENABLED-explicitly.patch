@@ -1,0 +1,36 @@
+From 63a568a42073647218dab3766fa88a73ecb8899e Mon Sep 17 00:00:00 2001
+From: Sumit Jamgade <sjamgade@suse.com>
+Date: Wed, 6 Feb 2019 14:55:10 +0100
+Subject: [PATCH] Do not set COMPRESS_ENABLED explicitly
+
+it is always opposite of DEBUG[1].
+this also helps keep compressor OFF during test as test do not need
+static files
+
+Any plugins needing compression can explicitly enable in its own
+local_settings
+
+1-
+https://django-compressor.readthedocs.io/en/stable/settings/#django.conf.settings.COMPRESS_ENABLED
+
+Change-Id: I9f3979da38cca677256799be8eb215a4ea32cf12
+---
+ horizon/test/settings.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/horizon/test/settings.py b/horizon/test/settings.py
+index 5834cdd87..d93ba37ee 100644
+--- a/horizon/test/settings.py
++++ b/horizon/test/settings.py
+@@ -126,7 +126,7 @@ STATICFILES_DIRS = settings_utils.get_xstatic_dirs(
+     settings_utils.BASE_XSTATIC_MODULES, HORIZON_CONFIG
+ )
+ 
+-COMPRESS_ENABLED = True
++COMPRESS_ENABLED = False
+ COMPRESS_OFFLINE = False
+ COMPRESS_ROOT = "/tmp/"
+ COMPRESS_PARSER = 'compressor.parser.HtmlParser'
+--
+2.16.4
+
