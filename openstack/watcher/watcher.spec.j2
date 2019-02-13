@@ -23,10 +23,10 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source|basename }}
 BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('PrettyTable') }}
 BuildRequires:  {{ py2pkg('microversion_parse') }}
 BuildRequires:  {{ py2pkg('os-api-ref') }}
 BuildRequires:  {{ py2pkg('APScheduler', py_versions=build_py_versions) }}
-BuildRequires:  {{ py2pkg('PrettyTable', py_versions=build_py_versions) }}
 BuildRequires:  {{ py2pkg('SQLAlchemy', py_versions=build_py_versions) }}
 BuildRequires:  {{ py2pkg('WSME', py_versions=build_py_versions) }}
 BuildRequires:  {{ py2pkg('WebOb', py_versions=build_py_versions) }}
@@ -92,10 +92,11 @@ migration, increased energy efficiency and more!
 Summary:        Resource optimization service for OpenStack. (Wathcer) - Python Module
 Group:          Applications/System
 BuildRequires:  fdupes
+# NOTE: python2-PrettyTable is not provided on SLES so use python-PrettyTable
+Requires:       {{ py2pkg('PrettyTable') }}
 Requires:       {{ py2pkg('microversion_parse') }}
 Requires:       {{ py2pkg('APScheduler', py_versions=build_py_versions) }}
 Requires:       {{ py2pkg('PasteDeploy', py_versions=build_py_versions) }}
-Requires:       {{ py2pkg('PrettyTable', py_versions=build_py_versions) }}
 Requires:       {{ py2pkg('SQLAlchemy', py_versions=build_py_versions) }}
 Requires:       {{ py2pkg('WSME', py_versions=build_py_versions) }}
 Requires:       {{ py2pkg('WebOb', py_versions=build_py_versions) }}
