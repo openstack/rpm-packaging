@@ -278,11 +278,11 @@ This package contains testsuite files for %{name}.
 
 # copy monasca-ceilometer source files
 cp  ../%{monasca_ceilometer_source_base_name}*/ceilosca/ceilometer/monasca_client.py ../%{ceilometer_name}*/%{ceilometer_name}/
-cp  ../%{monasca_ceilometer_source_base_name}*/ceilosca/ceilometer/monasca_ceilometer_opts.py ../%{ceilometer_name}*/%{ceilometer_name}/
+cp  ../%{monasca_ceilometer_source_base_name}*/ceilosca/ceilometer/monasca_opts.py ../%{ceilometer_name}*/%{ceilometer_name}/
 cp  ../%{monasca_ceilometer_source_base_name}*/ceilosca/ceilometer/opts.py ../%{ceilometer_name}*/%{ceilometer_name}/
 cp  ../%{monasca_ceilometer_source_base_name}*/ceilosca/ceilometer/service.py ../%{ceilometer_name}*/%{ceilometer_name}/
 cp  ../%{monasca_ceilometer_source_base_name}*/ceilosca/ceilometer/publisher/monasca_data_filter.py ../%{ceilometer_name}*/%{ceilometer_name}/publisher/
-cp  ../%{monasca_ceilometer_source_base_name}*/ceilosca/ceilometer/publisher/monclient.py ../%{ceilometer_name}*/%{ceilometer_name}/publisher/
+cp  ../%{monasca_ceilometer_source_base_name}*/ceilosca/ceilometer/publisher/monasca.py ../%{ceilometer_name}*/%{ceilometer_name}/publisher/
 
 # copy tests
 cp -r  ../%{monasca_ceilometer_source_base_name}*/ceilosca/ceilometer/tests/ ../%{ceilometer_name}*/%{ceilometer_name}/
@@ -291,7 +291,7 @@ cp -r  ../%{monasca_ceilometer_source_base_name}*/ceilosca/ceilometer/tests/ ../
 %define setup_cfg ../%{ceilometer_name}*/setup.cfg
 # add monasca-ceilometer publisher to entry points
 pub_list=`crudini --get %{setup_cfg} entry_points ceilometer.sample.publisher`
-pub_list="$pub_list"$'\n'"monasca = ceilometer.publisher.monclient:MonascaPublisher"
+pub_list="$pub_list"$'\n'"monasca = ceilometer.publisher.monasca:MonascaPublisher"
 crudini --set %{setup_cfg} entry_points ceilometer.sample.publisher $"$pub_list"
 
 %build
