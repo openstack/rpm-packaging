@@ -290,7 +290,7 @@ cp -r  ../%{monasca_ceilometer_source_base_name}*/ceilosca/ceilometer/tests/ ../
 %define setup_cfg ../%{ceilometer_name}*/setup.cfg
 # add monasca-ceilometer publisher to entry points
 pub_list=`crudini --get %{setup_cfg} entry_points ceilometer.sample.publisher`
-pub_list="$pub_list"$'\n'"monasca = ceilometer.publisher.monclient:MonascaPublisher"
+pub_list="$pub_list"$'\n'"monasca = ceilometer.publisher.monasca:MonascaPublisher"
 crudini --set %{setup_cfg} entry_points ceilometer.sample.publisher $"$pub_list"
 
 %build
