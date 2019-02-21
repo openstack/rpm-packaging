@@ -117,3 +117,50 @@ sed -i "s/%{2}/%{1}_tests/g" $tempest_egg_path/PKG-INFO \
 rhel_version=tonumber(rpm.expand("0%{?rhel}"))
 if rhel_version > 7 then posix.setenv("RHEL_ALLOW_PYTHON2_FOR_BUILD",1) end
 }
+
+# Compatibility with fedora in CentOS7
+
+# Macro to replace overly complicated references to PyPI source files.
+# Expands to the pythonhosted URL for a package
+# Accepts zero to three arguments:
+# 1:  The PyPI project name, defaulting to %srcname if it is defined, then
+#     %pypi_name if it is defined, then just %name.
+# 2:  The PYPI version, defaulting to %version.
+# 3:  The file extension, defaulting to "tar.gz".  (A period will be added
+#     automatically.)
+# Requires %__pypi_url and %__pypi_default_extension to be defined.
+%__pypi_url https://files.pythonhosted.org/packages/source/
+%__pypi_default_extension tar.gz
+
+%pypi_source() %{lua:
+    local src = rpm.expand('%1')
+    local ver = rpm.expand('%2')
+    local ext = rpm.expand('%3')
+    local url = rpm.expand('%__pypi_url')
+\
+    -- If no first argument, try %srcname, then %pypi_name, then %name
+    -- Note that rpm leaves macros unchanged if they are not defined.
+    if src == '%1' then
+        src = rpm.expand('%srcname')
+    end
+    if src == '%srcname' then
+        src = rpm.expand('%pypi_name')
+    end
+    if src == '%pypi_name' then
+        src = rpm.expand('%name')
+    end
+\
+    -- If no second argument, use %version
+    if ver == '%2' then
+        ver = rpm.expand('%version')
+    end
+\
+    -- If no third argument, use the preset default extension
+    if ext == '%3' then
+        ext = rpm.expand('%__pypi_default_extension')
+    end
+\
+    local first = string.sub(src, 1, 1)
+\
+    print(url .. first .. '/' .. src .. '/' .. src .. '-' .. ver .. '.' .. ext)
+}
