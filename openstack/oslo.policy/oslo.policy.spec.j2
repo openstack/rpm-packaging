@@ -1,5 +1,5 @@
 {% set pypi_name = 'oslo.policy' %}
-{% set upstream_version = upstream_version('1.39.1') %}
+{% set upstream_version = upstream_version('2.1.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -14,7 +14,6 @@ Source0:        {{ source }}
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('PyYAML', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('docutils', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('oslo.config', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('oslo.context', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('oslo.i18n', py_versions=['py2', 'py3']) }}
@@ -75,6 +74,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %python_clone -a %{buildroot}%{_bindir}/oslopolicy-list-redundant
 %python_clone -a %{buildroot}%{_bindir}/oslopolicy-policy-generator
 %python_clone -a %{buildroot}%{_bindir}/oslopolicy-sample-generator
+%python_clone -a %{buildroot}%{_bindir}/oslopolicy-policy-upgrade
 
 %post
 %{python_install_alternative oslopolicy-checker oslopolicy-list-redundant oslopolicy-policy-generator oslopolicy-sample-generator}
@@ -92,6 +92,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %python_alternative %{_bindir}/oslopolicy-list-redundant
 %python_alternative %{_bindir}/oslopolicy-policy-generator
 %python_alternative %{_bindir}/oslopolicy-sample-generator
+%python_alternative %{_bindir}/oslopolicy-policy-upgrade
 %{python_sitelib}/oslo_policy
 %{python_sitelib}/*.egg-info
 
