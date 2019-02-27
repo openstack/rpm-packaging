@@ -1,5 +1,5 @@
 {% set pypi_name = 'os-vif' %}
-{% set upstream_version = upstream_version('1.11.1') %}
+{% set upstream_version = upstream_version('1.15.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -21,6 +21,7 @@ BuildRequires:  {{ py2pkg('oslo.log') }}
 BuildRequires:  {{ py2pkg('oslo.privsep') }}
 BuildRequires:  {{ py2pkg('oslo.versionedobjects') }}
 BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('ovsdbapp') }}
 BuildRequires:  {{ py2pkg('pbr') }}
 BuildRequires:  {{ py2pkg('pyroute2') }}
 BuildRequires:  {{ py2pkg('python-subunit') }}
@@ -30,6 +31,7 @@ BuildRequires:  {{ py2pkg('stevedore') }}
 BuildRequires:  {{ py2pkg('testrepository') }}
 BuildRequires:  {{ py2pkg('testscenarios') }}
 BuildRequires:  {{ py2pkg('testtools') }}
+Requires:       {{ py2pkg('debtcollector') }}
 Requires:       {{ py2pkg('netaddr') }}
 Requires:       {{ py2pkg('oslo.concurrency') }}
 Requires:       {{ py2pkg('oslo.config') }}
@@ -37,6 +39,7 @@ Requires:       {{ py2pkg('oslo.i18n') }}
 Requires:       {{ py2pkg('oslo.log') }}
 Requires:       {{ py2pkg('oslo.privsep') }}
 Requires:       {{ py2pkg('oslo.versionedobjects') }}
+Requires:       {{ py2pkg('ovsdbapp') }}
 Requires:       {{ py2pkg('pbr') }}
 Requires:       {{ py2pkg('pyroute2') }}
 Requires:       {{ py2pkg('six') }}
