@@ -1,5 +1,5 @@
 {% set pypi_name = 'neutron-lib' %}
-{% set upstream_version = upstream_version('1.22.0') %}
+{% set upstream_version = upstream_version('1.25.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -14,6 +14,7 @@ Source0:        {{ source }}
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('SQLAlchemy', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('WebOb', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('debtcollector', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('fixtures', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('keystoneauth1', py_versions=['py2', 'py3']) }}
@@ -34,6 +35,7 @@ BuildRequires:  {{ py2pkg('osprofiler', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('pecan', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('python-subunit', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('setproctitle', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('setuptools', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
@@ -42,6 +44,7 @@ BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('weakrefmethod', py_versions=['py2']) }}
 Requires:       {{ py2pkg('SQLAlchemy') }}
+Requires:       {{ py2pkg('WebOb') }}
 Requires:       {{ py2pkg('keystoneauth1') }}
 Requires:       {{ py2pkg('os-traits') }}
 Requires:       {{ py2pkg('oslo.concurrency') }}
@@ -52,11 +55,13 @@ Requires:       {{ py2pkg('oslo.i18n') }}
 Requires:       {{ py2pkg('oslo.log') }}
 Requires:       {{ py2pkg('oslo.messaging') }}
 Requires:       {{ py2pkg('oslo.policy') }}
+Requires:       {{ py2pkg('oslo.serialization') }}
 Requires:       {{ py2pkg('oslo.service') }}
 Requires:       {{ py2pkg('oslo.utils') }}
 Requires:       {{ py2pkg('oslo.versionedobjects') }}
 Requires:       {{ py2pkg('osprofiler') }}
 Requires:       {{ py2pkg('pecan') }}
+Requires:       {{ py2pkg('setproctitle') }}
 Requires:       {{ py2pkg('six') }}
 Requires:       {{ py2pkg('stevedore') }}
 BuildArch:      noarch
