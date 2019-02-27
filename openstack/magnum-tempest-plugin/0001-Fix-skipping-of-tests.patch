@@ -1,0 +1,62 @@
+From 5a18c8ebf022ab78f2dcbac2c3d353fa2155f885 Mon Sep 17 00:00:00 2001
+From: Colleen Murphy <colleen.murphy@suse.de>
+Date: Fri, 22 Feb 2019 11:15:51 +0100
+Subject: [PATCH] Fix skipping of tests
+
+The plugin defines a 'magnum' option in the '[service_available]' group
+but does not respect it, so if the plugin is installed but
+[service_available]/magnum=false, the tests will still run unless
+blacklisted. This patch corrects the issue by defining the tempest
+skip_checks class method. This also requires using the correct tempest
+base class as recommended in the tempest guide[1].
+
+[1] https://docs.openstack.org/tempest/latest/write_tests.html
+
+Change-Id: I6b9a8f802129fa800d9f4a3eadd8943962c951c0
+---
+ magnum_tempest_plugin/common/base.py | 15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
+
+diff --git a/magnum_tempest_plugin/common/base.py b/magnum_tempest_plugin/common/base.py
+index 93d86e3..738f014 100755
+--- a/magnum_tempest_plugin/common/base.py
++++ b/magnum_tempest_plugin/common/base.py
+@@ -14,15 +14,17 @@ import logging
+ import os
+ import subprocess
+ 
+-from tempest.lib import base
++from tempest import config
++from tempest import test
+ 
+ import magnum_tempest_plugin
+ 
+ 
++CONF = config.CONF
+ COPY_LOG_HELPER = "magnum_tempest_plugin/tests/contrib/copy_instance_logs.sh"
+ 
+ 
+-class BaseMagnumTest(base.BaseTestCase):
++class BaseMagnumTest(test.BaseTestCase):
+     """Sets up configuration required for functional tests"""
+ 
+     LOG = logging.getLogger(__name__)
+@@ -30,6 +32,15 @@ class BaseMagnumTest(base.BaseTestCase):
+     def __init__(self, *args, **kwargs):
+         super(BaseMagnumTest, self).__init__(*args, **kwargs)
+ 
++    @classmethod
++    def skip_checks(cls):
++        super(BaseMagnumTest, cls).skip_checks()
++
++        if not CONF.service_available.magnum:
++            skip_msg = ("%s skipped as magnum is not available"
++                        % cls.__name__)
++            raise cls.skipException(skip_msg)
++
+     @classmethod
+     def copy_logs_handler(cls, get_nodes_fn, coe, keypair):
+         """Copy logs closure.
+-- 
+2.20.1
+
