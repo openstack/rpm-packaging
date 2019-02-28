@@ -1,5 +1,5 @@
 {% set pypi_name = 'pycadf' %}
-{% set upstream_version = upstream_version('2.8.0') %}
+{% set upstream_version = upstream_version('2.9.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 # NOTE(jpena): This is required to prevent singlespec macros from changing the requires
@@ -20,7 +20,7 @@ BuildRequires:  {{ py2pkg('oslo.serialization', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('setuptools', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
 Requires:       %{oldpython}-pycadf-common
@@ -69,9 +69,7 @@ mkdir -p %{buildroot}/%{_sysconfdir}
 mv %{buildroot}%{_prefix}%{_sysconfdir}/{{ pypi_name }} %{buildroot}/%{_sysconfdir}/
 
 %check
-%{python_expand rm -rf .testrepository
-$python setup.py testr
-}
+%python_exec -m stestr.cli run
 
 %files %{python_files}
 %doc README.rst
