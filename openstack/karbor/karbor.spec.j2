@@ -1,5 +1,5 @@
 {% set pypi_name = 'karbor' %}
-{% set upstream_version = '1.1.0' %}
+{% set upstream_version = '1.2.0' %}
 {% set rpm_release = '1' %}
 %global with_doc 0
 %if 0%{?rhel} || 0%{?fedora}
@@ -262,6 +262,7 @@ install -p -D -m 644 %SOURCE3 %{buildroot}%{_unitdir}/openstack-karbor-protectio
 %dir %attr(0750, root, karbor) %{_sysconfdir}/karbor/providers.d/
 %dir %attr(0750, karbor, karbor) %{_localstatedir}/log/karbor
 %{_bindir}/karbor-manage
+%{_bindir}/karbor-status
 %config(noreplace) %{_sysconfdir}/logrotate.d/openstack-karbor
 %config(noreplace) %attr(0640, root, karbor) %{_sysconfdir}/karbor/karbor.conf
 %config(noreplace) %attr(0640, root, karbor) %{_sysconfdir}/karbor/api-paste.ini
