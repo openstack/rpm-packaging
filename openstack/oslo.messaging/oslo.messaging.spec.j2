@@ -1,5 +1,5 @@
 {% set pypi_name = 'oslo.messaging' %}
-{% set upstream_version = upstream_version('8.1.0') %}
+{% set upstream_version = upstream_version('9.4.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -17,15 +17,15 @@ BuildRequires:  {{ py2pkg('PyYAML', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('WebOb', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('amqp', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('cachetools', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('confluent-kafka', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('debtcollector', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('eventlet', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('fixtures', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('futurist', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('greenlet', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('kafka-python', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('kombu', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('monotonic', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('monotonic', py_versions=['py2']) }}
 BuildRequires:  {{ py2pkg('oslo.config', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('oslo.i18n', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('oslo.log', py_versions=['py2', 'py3']) }}
@@ -56,7 +56,6 @@ Requires:       {{ py2pkg('debtcollector') }}
 Requires:       {{ py2pkg('futurist') }}
 Requires:       {{ py2pkg('greenlet') }}
 Requires:       {{ py2pkg('kombu') }}
-Requires:       {{ py2pkg('monotonic') }}
 Requires:       {{ py2pkg('oslo.config') }}
 Requires:       {{ py2pkg('oslo.i18n') }}
 Requires:       {{ py2pkg('oslo.log') }}
@@ -68,11 +67,11 @@ Requires:       {{ py2pkg('pika') }}
 Requires:       {{ py2pkg('pika-pool') }}
 Requires:       {{ py2pkg('six') }}
 Requires:       {{ py2pkg('stevedore') }}
-Requires:       {{ py2pkg('tenacity') }}
 BuildArch:      noarch
 %ifpython2
 BuildRequires:  {{ py2pkg('futures') }}
 Requires:       {{ py2pkg('futures') }}
+Requires:       {{ py2pkg('monotonic') }}
 %endif
 %if 0%{?suse_version}
 Requires(post): update-alternatives
@@ -117,18 +116,12 @@ rm -rf build/sphinx/html/.{doctrees,buildinfo}
 
 %install
 %{python_install}
-%python_clone -a %{buildroot}%{_bindir}/oslo-messaging-zmq-broker
-%python_clone -a %{buildroot}%{_bindir}/oslo-messaging-zmq-proxy
 %python_clone -a %{buildroot}%{_bindir}/oslo-messaging-send-notification
 
 %post
-%python_install_alternative oslo-messaging-zmq-broker
-%python_install_alternative oslo-messaging-zmq-proxy
 %python_install_alternative oslo-messaging-send-notification
 
 %postun
-%python_uninstall_alternative oslo-messaging-zmq-broker
-%python_uninstall_alternative oslo-messaging-zmq-proxy
 %python_uninstall_alternative oslo-messaging-send-notification
 
 %check
@@ -139,8 +132,6 @@ rm -rf build/sphinx/html/.{doctrees,buildinfo}
 %doc README.rst ChangeLog
 %{python_sitelib}/oslo_messaging
 %{python_sitelib}/*.egg-info
-%python_alternative %{_bindir}/oslo-messaging-zmq-broker
-%python_alternative %{_bindir}/oslo-messaging-zmq-proxy
 %python_alternative %{_bindir}/oslo-messaging-send-notification
 
 %files -n {{ py2name() }}-doc
