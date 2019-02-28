@@ -37,6 +37,7 @@ Requires:       logrotate
 Requires:       python-%{sname} = %{version}-%{release}
 BuildArch:      noarch
 %if 0%{?suse_version}
+BuildRequires:  {{ py2pkg('jira') }}
 BuildRequires:  systemd-rpm-macros
 Requires(pre):  pwdutils
 %else
@@ -85,9 +86,12 @@ This package contains the core Python module of Monasca-notification
 
 %build
 %py2_build
+# NOTE: RDO currenty does not have python-jira in the CI
+%if 0%{?suse_version}
 PYTHONPATH=. oslo-config-generator \
   --config-file config-generator/notification.conf \
   --output-file etc/monasca/notification.conf.sample
+%endif
 
 %install
 %py2_install
@@ -103,7 +107,9 @@ install -p -D -m 644 %{SOURCE3} %{buildroot}%{_sysconfdir}/logrotate.d/openstack
 
 ## etc
 install -d -m 755 %{buildroot}%{notification_conf_dir}
+%if 0%{?suse_version}
 install -D -m 644 etc/monasca/notification.conf.sample %{buildroot}%{notification_conf_dir}/notification.conf
+%endif
 
 ## system stuff
 install -p -D -m 644 %{SOURCE1} %{buildroot}%{_unitdir}/%{name}.service
@@ -114,13 +120,10 @@ ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}
 %fdupes %{buildroot}%{python2_sitelib}
 
 %check
-export OS_TEST_PATH=./tests
-find . -type f -name *.pyc -delete
-# we dont have the jira module currently
-rm tests/test_jira_notification.py
-export PYTHONPATH=.
-# test_overriding and test_enabled_notifications needs jira
-ostestr --black-regex '^(tests.test_config.TestYamlOverriding.test_overriding|tests.test_notifiers.TestInterface.test_enabled_notifications)'
+# NOTE: RDO currenty does not have python-jira in the CI
+%if 0%{?suse_version}
+%{__python2} -m stestr.cli run
+%endif
 
 %pre
 # create monasca group and monasca-notification user
@@ -148,7 +151,9 @@ fi
 %{_bindir}/monasca-notification
 %{_unitdir}/%{name}.service
 %dir %attr(-, root, %{groupname}) %{notification_conf_dir}
+%if 0%{?suse_version}
 %config(noreplace) %attr(640, root, %{groupname}) %{notification_conf_dir}/notification.conf
+%endif
 %config(noreplace) %{_sysconfdir}/logrotate.d/openstack-monasca-notification.logrotate
 %dir %attr(750, %{username}, %{groupname}) %notification_log_dir
 %if 0%{?suse_version}
