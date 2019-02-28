@@ -3,7 +3,7 @@
 %global rdo 1
 %endif
 Name:           {{ py2name('tooz') }}
-Version:        1.62.0
+Version:        1.64.2
 Release:        0
 Summary:        Coordination library for distributed systems
 License:        {{ license('Apache-2.0') }}
@@ -43,7 +43,6 @@ Requires:       {{ py2pkg('six') }}
 Requires:       {{ py2pkg('stevedore') }}
 Requires:       {{ py2pkg('tenacity') }}
 Requires:       {{ py2pkg('voluptuous') }}
-Requires:       {{ py2pkg('zake') }}
 BuildArch:      noarch
 
 %description
@@ -56,7 +55,6 @@ Summary:        Documentation for %{name}
 Group:          Documentation/HTML
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('openstackdocstheme') }}
-BuildRequires:  {{ py2pkg('redis') }}
 
 %description doc
 The Tooz project aims at centralizing the most common distributed primitives
