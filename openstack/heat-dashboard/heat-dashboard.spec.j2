@@ -66,7 +66,8 @@ It is used to verify the functionality of the Heat UI Plugin.
 %py2_build
 
 %check
-PYTHONPATH=%{http_dashboard_dir} python manage.py test heat_dashboard --settings=heat_dashboard.test.settings
+rm -r heat_dashboard/test/integration
+PYTHONPATH=%{http_dashboard_dir} python manage.py test heat_dashboard.test --settings=heat_dashboard.test.settings --exclude-tag=integration
 
 %install
 %py2_install
