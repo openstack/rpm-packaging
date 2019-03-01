@@ -1,6 +1,6 @@
 %global sname keystonemiddleware
 Name:           {{ py2name('keystonemiddleware') }}
-Version:        5.2.0
+Version:        6.0.0
 Release:        0
 Summary:        Middleware for OpenStack Identity
 License:        {{ license('Apache-2.0') }}
@@ -29,8 +29,8 @@ BuildRequires:  {{ py2pkg('python-memcached', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('requests', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('requests-mock', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('six', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('stevedore', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testresources', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('WebOb') }}
@@ -82,10 +82,7 @@ PBR_VERSION=%{version} sphinx-build -b html doc/source doc/build/html
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %check
-export PYTHONWARNINGS="ignore"
-%{python_expand rm -rf .testrepository
-$python setup.py testr
-}
+%python_exec -m stestr.cli run
 
 %files %python_files
 %license LICENSE
