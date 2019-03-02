@@ -1,13 +1,12 @@
 %global pypi_name mox3
 Name:           {{ py2name('mox3') }}
-Version:        0.26.0
+Version:        0.27.0
 Release:        0
 Summary:        An unofficial port of the Google mox framework to Python 3
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://bugs.launchpad.net/python-mox3
 Source0:        https://files.pythonhosted.org/packages/source/m/%{pypi_name}/%{pypi_name}-%{version}.tar.gz
-Patch0001:      0001-add-python-3.6-unit-test-job.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('coverage', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('fixtures', py_versions=['py2', 'py3']) }}
@@ -27,8 +26,7 @@ BuildRequires:  python3-dbm
 %description
 Mox3 is an unofficial port of the Google mox framework to Python 3. It
 was meant to be as compatible with mox as possible, but small
-enhancements have been made. The library was tested on Python version
-3.2, 2.7 and 2.6.
+enhancements have been made.
 
 %package -n python-mox3-doc
 Summary:        Documentation for %{name}
