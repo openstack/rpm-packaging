@@ -1,5 +1,5 @@
 {% set pypi_name = 'ceilometermiddleware' %}
-{% set upstream_version = upstream_version('1.3.0') %}
+{% set upstream_version = upstream_version('1.4.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -23,8 +23,8 @@ BuildRequires:  {{ py2pkg('oslo.utils') }}
 BuildRequires:  {{ py2pkg('oslotest') }}
 BuildRequires:  {{ py2pkg('pbr') }}
 BuildRequires:  {{ py2pkg('pycadf') }}
-BuildRequires:  {{ py2pkg('python-subunit') }}
 BuildRequires:  {{ py2pkg('setuptools') }}
+BuildRequires:  {{ py2pkg('stestr') }}
 BuildRequires:  {{ py2pkg('testrepository') }}
 Requires:       {{ py2pkg('keystoneauth1') }}
 Requires:       {{ py2pkg('python-keystoneclient') }}
@@ -65,7 +65,7 @@ This package contains documentation in HTML format.
 rm -rf html/.{doctrees,buildinfo}
 
 %check
-%{__python2} setup.py testr
+%{__python2} -m stestr.cli run
 
 %install
 %py2_install
