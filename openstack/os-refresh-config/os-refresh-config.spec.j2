@@ -36,10 +36,10 @@ sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %install
 %py2_install
-install -d -m 755 %{buildroot}%{_libexecdir}/%{name}/pre-configure.d
-install -d -m 755 %{buildroot}%{_libexecdir}/%{name}/configure.d
-install -d -m 755 %{buildroot}%{_libexecdir}/%{name}/migration.d
-install -d -m 755 %{buildroot}%{_libexecdir}/%{name}/post-configure.d
+install -d -m 755 %{buildroot}%{_libexecdir}/os-refresh-config/pre-configure.d
+install -d -m 755 %{buildroot}%{_libexecdir}/os-refresh-config/configure.d
+install -d -m 755 %{buildroot}%{_libexecdir}/os-refresh-config/migration.d
+install -d -m 755 %{buildroot}%{_libexecdir}/os-refresh-config/post-configure.d
 
 %check
 %{__python2} -m stestr.cli run
@@ -50,6 +50,6 @@ install -d -m 755 %{buildroot}%{_libexecdir}/%{name}/post-configure.d
 %{_bindir}/os-refresh-config
 %{python2_sitelib}/os_refresh_config
 %{python2_sitelib}/*.egg-info
-%{_libexecdir}/%{name}
+%{_libexecdir}/os-refresh-config
 
 %changelog
