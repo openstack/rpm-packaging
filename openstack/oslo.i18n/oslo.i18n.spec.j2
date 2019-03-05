@@ -1,5 +1,5 @@
 {% set pypi_name = 'oslo.i18n' %}
-{% set upstream_version = upstream_version('3.23.0') %}
+{% set upstream_version = upstream_version('3.23.1') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -39,7 +39,6 @@ Documentation for the oslo.i18n library.
 %prep
 %autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
-sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
 %{python_build}
