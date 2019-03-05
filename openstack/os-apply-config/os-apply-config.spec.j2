@@ -58,6 +58,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
 %{py2_install}
+install -d -m 755 %{buildroot}%{_libexecdir}/os-apply-config/templates
 
 %if %{with test}
 %check
@@ -71,6 +72,8 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %{_bindir}/os-config-applier
 %{python2_sitelib}/os_apply_config
 %{python2_sitelib}/*.egg-info
+%dir %{_libexecdir}/os-apply-config
+%dir %{_libexecdir}/os-apply-config/templates
 
 %if %{with docs}
 %files doc
