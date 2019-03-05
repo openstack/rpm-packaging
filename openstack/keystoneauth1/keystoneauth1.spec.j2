@@ -1,14 +1,12 @@
 %global sname keystoneauth1
 Name:           {{ py2name('keystoneauth1') }}
-Version:        3.13.0
+Version:        3.13.1
 Release:        0
 Summary:        OpenStack authenticating tools
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://launchpad.net/keystoneauth
 Source0:        https://files.pythonhosted.org/packages/source/k/%{sname}/%{sname}-%{version}.tar.gz
-# https://review.openstack.org/640957
-Patch0:         0001-Fix-rate-semaphore-for-keystoneclient.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('PyYAML', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('betamax', py_versions=['py2', 'py3']) }}
