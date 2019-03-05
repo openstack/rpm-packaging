@@ -11,12 +11,13 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://launchpad.net/%{sname}
 Source0:        {{ source }}
+# https://review.openstack.org/#/c/630146/
+Patch1:         0001-Fix-microversion-test-handle-different-HTML-renderin.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('PyYAML', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('Sphinx', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('beautifulsoup4', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('openstackdocstheme', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslosphinx', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('python-subunit', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('sphinx-testing', py_versions=['py2', 'py3']) }}
