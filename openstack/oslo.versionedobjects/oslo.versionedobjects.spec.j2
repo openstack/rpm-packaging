@@ -1,5 +1,5 @@
 {% set pypi_name = 'oslo.versionedobjects' %}
-{% set upstream_version = upstream_version('1.34.1') %}
+{% set upstream_version = upstream_version('1.35.1') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -26,7 +26,6 @@ BuildRequires:  {{ py2pkg('oslo.utils', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('WebOb') }}
 Requires:       {{ py2pkg('iso8601') }}
 Requires:       {{ py2pkg('netaddr') }}
