@@ -1,5 +1,5 @@
 {% set pypi_name = 'castellan' %}
-{% set upstream_version = upstream_version('1.0.0') %}
+{% set upstream_version = upstream_version('1.2.2') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -26,14 +26,15 @@ BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('Babel') }}
+Requires:       {{ py2pkg('python-barbicanclient') }}
 Requires:       {{ py2pkg('cryptography') }}
 Requires:       {{ py2pkg('keystoneauth1') }}
 Requires:       {{ py2pkg('oslo.config') }}
 Requires:       {{ py2pkg('oslo.context') }}
+Requires:       {{ py2pkg('oslo.i18n') }}
 Requires:       {{ py2pkg('oslo.log') }}
-Requires:       {{ py2pkg('oslo.policy') }}
-Requires:       {{ py2pkg('oslo.serialization') }}
 Requires:       {{ py2pkg('oslo.utils') }}
+Requires:       {{ py2pkg('stevedore') }}
 BuildArch:      noarch
 %python_subpackages
 
@@ -53,7 +54,6 @@ This package contains the documentation
 %prep
 %autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
-sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
 %{python_build}
