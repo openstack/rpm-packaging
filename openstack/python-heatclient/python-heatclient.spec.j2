@@ -1,5 +1,5 @@
 {% set pypi_name = 'python-heatclient' %}
-{% set upstream_version = upstream_version('1.16.1') %}
+{% set upstream_version = upstream_version('1.17.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -22,8 +22,8 @@ BuildRequires:  {{ py2pkg('osc-lib', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('oslo.serialization', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('requests-mock', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('python-swiftclient', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('Babel') }}
@@ -97,9 +97,7 @@ install -p -D -m 644 tools/heat.bash_completion %{buildroot}%{_sysconfdir}/bash_
 %python_uninstall_alternative heat
 
 %check
-%{python_expand rm -rf .testrepository
-$python setup.py testr
-}
+%python_exec -m stestr.cli run
 
 %files %{python_files}
 %license LICENSE
