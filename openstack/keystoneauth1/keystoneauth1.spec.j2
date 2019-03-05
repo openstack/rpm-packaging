@@ -7,6 +7,8 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://launchpad.net/keystoneauth
 Source0:        https://files.pythonhosted.org/packages/source/k/%{sname}/%{sname}-%{version}.tar.gz
+# https://review.openstack.org/640957
+Patch0:         0001-Fix-rate-semaphore-for-keystoneclient.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('PyYAML', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('betamax', py_versions=['py2', 'py3']) }}
@@ -55,7 +57,7 @@ BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 Documentation for OpenStack authenticating tools.
 
 %prep
-%autosetup -n %{sname}-%{version}
+%autosetup -p1 -n %{sname}-%{version}
 %py_req_cleanup
 sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
