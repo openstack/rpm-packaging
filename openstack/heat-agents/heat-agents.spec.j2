@@ -1,0 +1,185 @@
+{% set pypi_name = 'heat-agents' %}
+{% set upstream_version = upstream_version('1.7.0') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
+Summary:        OpenStack Heat agents
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+URL:            https://git.openstack.org/cgit/openstack/heat-agents
+Source0:        {{ source }}
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('os-apply-config') }}
+BuildRequires:  {{ py2pkg('os-refresh-config') }}
+BuildRequires:  {{ py2pkg('pbr') }}
+BuildArch:      noarch
+
+%description
+Heat Agents are python hooks for deploying software configurations using heat.
+
+%prep
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
+%py_req_cleanup
+
+%build
+
+%install
+# Use os-apply-config to bootstrap /etc/os-collect-config.conf
+# from heat boot data
+install -p -D -m 755 heat-config/os-refresh-config/configure.d/20-os-apply-config %{buildroot}%{_libexecdir}/os-refresh-config/configure.d/20-os-apply-config
+install -p -D -m 600 heat-config/os-apply-config/%{_sysconfdir}/os-collect-config.conf %{buildroot}%{_libexecdir}/os-apply-config/templates/%{_sysconfdir}/os-collect-config.conf
+
+# utilities which can be run by deployment scripts
+install -p -D -m 755 heat-config/bin/heat-config-notify %{buildroot}/%{_bindir}/heat-config-notify
+install -p -D -m 755 heat-config/bin/heat-config-rebuild-deployed %{buildroot}/%{_bindir}/heat-config-rebuild-deployed
+
+# os-refresh-config script to run heat deployment resources
+install -p -D -m 600 heat-config/os-apply-config/%{_localstatedir}/run/heat-config/heat-config %{buildroot}%{_libexecdir}/os-apply-config/templates/run/heat-config/heat-config
+install -p -D -m 755 heat-config/os-refresh-config/configure.d/55-heat-config %{buildroot}%{_libexecdir}/os-refresh-config/configure.d/55-heat-config
+
+# hook to perform configuration with scripts
+install -p -D -m 755 heat-config-script/install.d/hook-script.py %{buildroot}%{_libexecdir}/heat-config/hooks/script
+
+# hook to perform configuration with puppet
+install -p -D -m 755 heat-config-puppet/install.d/hook-puppet.py %{buildroot}%{_libexecdir}/heat-config/hooks/puppet
+
+# hook to perform configuration with ansible
+install -p -D -m 755 heat-config-ansible/install.d/hook-ansible.py %{buildroot}%{_libexecdir}/heat-config/hooks/ansible
+
+# hook to perform configuration with os-apply-config
+install -p -D -m 755 heat-config-apply-config/install.d/hook-apply-config.py %{buildroot}%{_libexecdir}/heat-config/hooks/apply-config
+
+# hook to perform configuration with hiera
+install -p -D -m 755 heat-config-hiera/install.d/hook-hiera.py %{buildroot}%{_libexecdir}/heat-config/hooks/hiera
+
+# hook to perform configuration with json-file
+install -p -D -m 755 heat-config-json-file/install.d/hook-json-file.py %{buildroot}%{_libexecdir}/heat-config/hooks/json-file
+
+# hook to perform configuration with docker commands
+install -p -D -m 755 heat-config-docker-cmd/os-refresh-config/configure.d/50-heat-config-docker-cmd %{buildroot}%{_libexecdir}/os-refresh-config/configure.d/50-heat-config-docker-cmd
+install -p -D -m 755 heat-config-docker-cmd/install.d/hook-docker-cmd.py %{buildroot}%{_libexecdir}/heat-config/hooks/docker-cmd
+
+%package -n python-heat-agent
+Summary:  Agent for performing Heat software deployments
+Requires:       {{ py2pkg('dib-utils') }}
+Requires:       {{ py2pkg('heat-cfntools') }}
+Requires:       {{ py2pkg('python-heatclient') }}
+Requires:       {{ py2pkg('os-apply-config') }}
+Requires:       {{ py2pkg('os-collect-config') }}
+Requires:       {{ py2pkg('os-refresh-config') }}
+Requires:       {{ py2pkg('requests') }}
+Requires:       {{ py2pkg('python-zaqarclient') }}
+
+%description -n python-heat-agent
+Heat Agents are python hooks for deploying software configurations using heat.
+
+This package installs and configures os-collect-config to allow Heat software
+deployments to perform script based configuration tasks.
+
+%package -n python-heat-agent-puppet
+Summary:  Agent for performing Puppet based Heat software deployments
+Requires:       puppet
+Requires:       python-heat-agent
+
+%description -n python-heat-agent-puppet
+Heat Agents are python hooks for deploying software configurations using heat.
+
+This package installs and configures os-collect-config to allow Heat software
+deployments to perform puppet based configuration tasks.
+
+%package -n python-heat-agent-ansible
+Summary:  Agent for performing Ansible based Heat software deployments
+Requires:       {{ py2pkg('ansible') }}
+Requires:       python-heat-agent
+
+%description -n python-heat-agent-ansible
+Heat Agents are python hooks for deploying software configurations using heat.
+
+This package installs and configures os-collect-config to allow Heat software
+deployments to perform ansible based configuration tasks.
+
+%package -n python-heat-agent-apply-config
+Summary:  Agent for performing os-apply-config based Heat software deployments
+Requires:       python-heat-agent
+Requires:       {{ py2pkg('os-apply-config') }}
+
+%description -n python-heat-agent-apply-config
+Heat Agents are python hooks for deploying software configurations using heat.
+
+This package installs and configures os-collect-config to allow Heat software
+deployments to perform os-apply-config based configuration tasks.
+
+%package -n python-heat-agent-hiera
+Summary:  Agent for performing hiera based Heat software deployments
+Requires:       python-heat-agent
+
+%description -n python-heat-agent-hiera
+Heat Agents are python hooks for deploying software configurations using heat.
+
+This package installs and configures os-collect-config to allow Heat software
+deployments to perform hiera based configuration tasks.
+
+%package -n python-heat-agent-json-file
+Summary:  Agent for performing json-file based Heat software deployments
+Requires:       python-heat-agent
+
+%description -n python-heat-agent-json-file
+Heat Agents are python hooks for deploying software configurations using heat.
+
+This package installs and configures os-collect-config to allow Heat software
+deployments to perform json-file based configuration tasks.
+
+%package -n python-heat-agent-docker-cmd
+Summary:  Agent for performing Docker based Heat software deployments
+Requires:       python-heat-agent
+Requires:       {{ py2pkg('paunch') }}
+
+%description -n python-heat-agent-docker-cmd
+Heat Agents are python hooks for deploying software configurations using heat.
+
+This package installs and configures os-collect-config to allow Heat software
+deployments to perform docker based configuration tasks.
+
+%files
+%license LICENSE
+
+%files -n python-heat-agent
+%license LICENSE
+%dir %{_libexecdir}/os-refresh-config/configure.d/
+%dir %{_libexecdir}/os-apply-config/templates/run/heat-config
+%{_bindir}/heat-config-notify
+%{_bindir}/heat-config-rebuild-deployed
+%dir %{_libexecdir}/os-apply-config/templates/%{_sysconfdir}/
+%dir %{_libexecdir}/os-apply-config/templates/run/
+%{_libexecdir}/os-apply-config/templates/%{_sysconfdir}/os-collect-config.conf
+%{_libexecdir}/os-apply-config/templates/run/heat-config/heat-config
+%{_libexecdir}/os-refresh-config/configure.d/20-os-apply-config
+%{_libexecdir}/os-refresh-config/configure.d/55-heat-config
+%dir %{_libexecdir}/heat-config
+%dir %{_libexecdir}/heat-config/hooks
+%{_libexecdir}/heat-config/hooks/script
+
+%files -n python-heat-agent-puppet
+%license LICENSE
+%{_libexecdir}/heat-config/hooks/puppet
+
+%files -n python-heat-agent-ansible
+%{_libexecdir}/heat-config/hooks/ansible
+
+%files -n python-heat-agent-apply-config
+%{_libexecdir}/heat-config/hooks/apply-config
+
+%files -n python-heat-agent-hiera
+%{_libexecdir}/heat-config/hooks/hiera
+
+%files -n python-heat-agent-json-file
+%{_libexecdir}/heat-config/hooks/json-file
+
+%files -n python-heat-agent-docker-cmd
+%{_libexecdir}/heat-config/hooks/docker-cmd
+%{_libexecdir}/os-refresh-config/configure.d/50-heat-config-docker-cmd
+
+%changelog
