@@ -11,6 +11,8 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://docs.openstack.org/developer/osc-lib
 Source0:        {{ source }}
+# https://review.openstack.org/#/c/618137/
+Patch1:         0001-Fix-formatter-handling-for-python-3.7.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('Babel', py_versions=['py2', 'py3']) }}

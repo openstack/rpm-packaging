@@ -1,0 +1,69 @@
+From 72fbf45ed15a1b4c8111cac9f4446289ca187b0d Mon Sep 17 00:00:00 2001
+From: Rabi Mishra <ramishra@redhat.com>
+Date: Thu, 15 Nov 2018 16:57:22 +0530
+Subject: [PATCH] Fix formatter handling for python 3.7
+
+Calling issubclass() on a python function fails in Python 3.7.
+
+Change-Id: Id2abfaad6ed96532157b9bc7b2124e6f6ad37511
+Story: #2003322
+Task: 27942
+---
+ osc_lib/utils/__init__.py | 18 ++++++++++++++----
+ 1 file changed, 14 insertions(+), 4 deletions(-)
+
+diff --git a/osc_lib/utils/__init__.py b/osc_lib/utils/__init__.py
+index d640ca8..f3573c7 100644
+--- a/osc_lib/utils/__init__.py
++++ b/osc_lib/utils/__init__.py
+@@ -430,9 +430,10 @@ def get_dict_properties(item, fields, mixed_case_fields=None, formatters=None):
+         data = item[field_name] if field_name in item else ''
+         if field in formatters:
+             formatter = formatters[field]
+-            if issubclass(formatter, cliff_columns.FormattableColumn):
++            if (isinstance(formatter, type) and issubclass(
++                    formatter, cliff_columns.FormattableColumn)):
+                 data = formatter(data)
+-            else:
++            elif callable(formatter):
+                 warnings.warn(
+                     'The usage of formatter functions is now discouraged. '
+                     'Consider using cliff.columns.FormattableColumn instead. '
+@@ -440,6 +441,10 @@ def get_dict_properties(item, fields, mixed_case_fields=None, formatters=None):
+                     category=DeprecationWarning)
+                 if data is not None:
+                     data = formatter(data)
++            else:
++                msg = "Invalid formatter provided."
++                raise exceptions.CommandError(msg)
++
+         row.append(data)
+     return tuple(row)
+ 
+@@ -492,9 +497,10 @@ def get_item_properties(item, fields, mixed_case_fields=None, formatters=None):
+         data = getattr(item, field_name, '')
+         if field in formatters:
+             formatter = formatters[field]
+-            if issubclass(formatter, cliff_columns.FormattableColumn):
++            if (isinstance(formatter, type) and issubclass(
++                    formatter, cliff_columns.FormattableColumn)):
+                 data = formatter(data)
+-            else:
++            elif callable(formatter):
+                 warnings.warn(
+                     'The usage of formatter functions is now discouraged. '
+                     'Consider using cliff.columns.FormattableColumn instead. '
+@@ -502,6 +508,10 @@ def get_item_properties(item, fields, mixed_case_fields=None, formatters=None):
+                     category=DeprecationWarning)
+                 if data is not None:
+                     data = formatter(data)
++            else:
++                msg = "Invalid formatter provided."
++                raise exceptions.CommandError(msg)
++
+         row.append(data)
+     return tuple(row)
+ 
+-- 
+2.21.0
+
