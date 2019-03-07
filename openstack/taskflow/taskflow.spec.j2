@@ -1,15 +1,16 @@
-%global pypi_name taskflow
-%if 0%{?rhel} || 0%{?fedora}
-%global rdo 1
-%endif
-Name:           {{ py2name('taskflow') }}
-Version:        3.4.0
-Release:        0
+{% set pypi_name = 'taskflow' %}
+{% set upstream_version = upstream_version('3.4.0') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
 Summary:        Taskflow structured state management library
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://launchpad.net/taskflow
-Source0:        https://files.pythonhosted.org/packages/source/t/%{pypi_name}/%{pypi_name}-%{version}.tar.gz
+Source0:        {{ source }}
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('PyMySQL', py_versions=['py2', 'py3']) }}
@@ -81,9 +82,8 @@ different backends to be used with OpenStack projects.
 This package contains the associated documentation.
 
 %prep
-%autosetup -p1 -n %{pypi_name}-%{version}
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
-sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %if 0%{?rdo}
 # TODO(jpena) remove once python-networking subpackaging is fixed
@@ -109,8 +109,8 @@ stestr run
 %files %{python_files}
 %doc README.rst
 %license LICENSE
-%{python2_sitelib}/%{pypi_name}
-%{python2_sitelib}/%{pypi_name}-*.egg-info
+%{python_sitelib}/{{ pypi_name }}
+%{python_sitelib}/{{ pypi_name }}-*.egg-info
 
 %files -n {{ py2name('taskflow') }}-doc
 %license LICENSE
