@@ -11,6 +11,10 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://launchpad.net/osprofiler
 Source0:        {{ source }}
+# backport sql collector -- https://github.com/openstack/osprofiler/commit/032a21861854c5f63a039c997a58b4a979e62750
+Patch0:         0001-Add-sqlalchemy-collector.patch
+# https://review.openstack.org/#/c/642407/
+Patch1:         0001-Don-t-fail-if-sqlalchemy-driver-fails-to-initialize.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('PrettyTable', py_versions=['py2', 'py3']) }}
