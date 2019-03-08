@@ -1,5 +1,5 @@
 {% set pypi_name = 'python-swiftclient' %}
-{% set upstream_version = upstream_version('3.6.0') %}
+{% set upstream_version = upstream_version('3.7.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -17,7 +17,7 @@ BuildRequires:  {{ py2pkg('python-keystoneclient', py_versions=['py2', 'py3']) }
 BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('setuptools', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('requests') }}
 Requires:       {{ py2pkg('six') }}
@@ -75,9 +75,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %python_uninstall_alternative swift
 
 %check
-%{python_expand rm -rf .testrepository
-$python setup.py testr
-}
+%python_exec -m stestr.cli run
 
 %files %{python_files}
 %license LICENSE
