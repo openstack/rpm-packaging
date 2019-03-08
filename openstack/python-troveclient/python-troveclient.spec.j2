@@ -1,5 +1,5 @@
 Name:           {{ py2name('python-troveclient') }}
-Version:        2.16.0
+Version:        2.17.0
 Release:        0
 Summary:        Client library for OpenStack DBaaS API
 License:        {{ license('Apache-2.0') }}
@@ -22,8 +22,8 @@ BuildRequires:  {{ py2pkg('requests-mock') }}
 BuildRequires:  {{ py2pkg('setuptools') }}
 BuildRequires:  {{ py2pkg('simplejson') }}
 BuildRequires:  {{ py2pkg('sphinxcontrib-apidoc') }}
+BuildRequires:  {{ py2pkg('stestr') }}
 BuildRequires:  {{ py2pkg('python-swiftclient') }}
-BuildRequires:  {{ py2pkg('testrepository') }}
 BuildRequires:  {{ py2pkg('testscenarios') }}
 BuildRequires:  {{ py2pkg('testtools') }}
 Requires:       {{ py2pkg('Babel') }}
@@ -70,10 +70,7 @@ rm -r doc/build/html/.{doctrees,buildinfo}
 %py2_install
 
 %check
-# Disable tests until https://bugs.launchpad.net/python-troveclient/+bug/1706538 got fixed
-%if "%{version}" != "2.11.0"
-PYTHONPATH=. %{__python2} setup.py testr
-%endif
+stestr run
 
 %files
 %doc README.rst
