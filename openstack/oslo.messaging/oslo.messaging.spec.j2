@@ -99,7 +99,6 @@ This package contains the documentation.
 %prep
 %autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
-sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 # FIXME(jpena): since version 5.23.0, four tests in the amqp driver are
 # failing. Let's remove the tests for now, so we can build a package and
 # figure out whatis wrong.

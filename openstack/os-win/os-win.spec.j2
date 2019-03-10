@@ -64,7 +64,6 @@ Documentation for the Hyper-V library.
 %py_req_cleanup
 # we dont want to run the hacking tests again (and dont want the needed deps)
 rm -f os_win/tests/unit/test_hacking.py
-sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
 %{python_build}
