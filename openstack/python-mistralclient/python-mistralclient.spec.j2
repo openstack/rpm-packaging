@@ -51,7 +51,6 @@ This package contains the documentation.
 %prep
 %autosetup -p1 -n %{name}-%{version}
 %py_req_cleanup
-sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
 %py2_build

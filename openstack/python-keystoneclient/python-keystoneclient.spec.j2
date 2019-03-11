@@ -60,7 +60,6 @@ Identity API.
 %py_req_cleanup
 # disable intersphinx - no network access during build
 echo "intersphinx_mapping = {}" >> doc/source/conf.py
-sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
 %{python_build}
