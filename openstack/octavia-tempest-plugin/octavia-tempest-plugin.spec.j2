@@ -12,7 +12,6 @@ Group:         Development/Languages/Python
 URL:           https://git.openstack.org/cgit/openstack/{{ pypi_name }}
 Source0:       {{ source|basename }}
 BuildRequires: openstack-macros
-BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
 Requires:      {{ py2pkg('Tempest') }}
 Requires:      {{ py2pkg('cryptography') }}
