@@ -58,7 +58,6 @@ Documentation for OpenStack utils library.
 %prep
 %autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 
-sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 %py_req_cleanup
 
 %build
