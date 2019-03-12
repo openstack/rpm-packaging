@@ -1,6 +1,6 @@
 %global with_doc 1
 %global sname neutron
-{% set upstream_version = '13.0.0.0b2' %}
+{% set upstream_version = '14.0.0.0b2' %}
 {% set rpm_release = '1' %}
 %if 0%{?rhel} || 0%{?fedora}
 %global rdo 1
@@ -279,7 +279,6 @@ mv %{buildroot}%{_prefix}%{_sysconfdir}/%{sname}/rootwrap.d/*.filters %{buildroo
 install -d -m 755 %{buildroot}%{_sysconfdir}/%{sname}
 mv %{buildroot}%{_prefix}%{_sysconfdir}/%{sname}/* %{buildroot}%{_sysconfdir}/%{sname}
 install -p -D -m 640 etc/api-paste.ini %{buildroot}%{_sysconfdir}/%{sname}/api-paste.ini
-install -p -D -m 640 etc/policy.json %{buildroot}%{_sysconfdir}/%{sname}/policy.json
 install -p -D -m 640 etc/l3_agent.ini %{buildroot}%{_sysconfdir}/%{sname}/l3_agent.ini
 install -p -D -m 640 etc/dhcp_agent.ini %{buildroot}%{_sysconfdir}/%{sname}/dhcp_agent.ini
 install -p -D -m 640 etc/metadata_agent.ini %{buildroot}%{_sysconfdir}/%{sname}/metadata_agent.ini
@@ -437,6 +436,7 @@ rm neutron/tests/unit/hacking/test_checks.py
 %{_bindir}/neutron-rootwrap-daemon
 %{_bindir}/neutron-rootwrap-xen-dom0
 %{_bindir}/neutron-sanity-check
+%{_bindir}/neutron-status
 %{_bindir}/neutron-usage-audit
 %{_unitdir}/neutron-dhcp-agent.service
 %{_unitdir}/neutron-l3-agent.service
@@ -445,7 +445,6 @@ rm neutron/tests/unit/hacking/test_checks.py
 %config(noreplace) %attr(0640, root, %{sname}) %{_sysconfdir}/%{sname}/dhcp_agent.ini
 %config(noreplace) %attr(0640, root, %{sname}) %{_sysconfdir}/%{sname}/l3_agent.ini
 %config(noreplace) %attr(0640, root, %{sname}) %{_sysconfdir}/%{sname}/metadata_agent.ini
-%config(noreplace) %attr(0640, root, %{sname}) %{_sysconfdir}/%{sname}/policy.json
 %config(noreplace) %attr(0640, root, %{sname}) %{_sysconfdir}/%{sname}/rootwrap.conf
 %config(noreplace) %attr(0640, root, %{sname}) %{_sysconfdir}/%{sname}/%{sname}.conf
 %{_sysconfdir}/%{sname}/README.config
