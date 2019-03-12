@@ -1,5 +1,5 @@
 {% set pypi_name = 'python-ironicclient' %}
-{% set upstream_version = upstream_version('2.6.0') %}
+{% set upstream_version = upstream_version('2.7.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -41,6 +41,7 @@ Requires:       {{ py2pkg('keystoneauth1') }}
 Requires:       {{ py2pkg('python-openstackclient') }}
 Requires:       {{ py2pkg('osc-lib') }}
 Requires:       {{ py2pkg('oslo.i18n') }}
+Requires:       {{ py2pkg('oslo.serialization') }}
 Requires:       {{ py2pkg('oslo.utils') }}
 Requires:       {{ py2pkg('pbr') }}
 Requires:       {{ py2pkg('requests') }}
