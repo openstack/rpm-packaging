@@ -1,6 +1,6 @@
 
 Name:           {{ py2name('python-solumclient') }}
-Version:        2.7.1
+Version:        2.8.0
 Release:        0
 Summary:        Python API and CLI for OpenStack Solum
 License:        {{ license('Apache-2.0') }}
@@ -23,7 +23,7 @@ BuildRequires:  {{ py2pkg('oslotest') }}
 BuildRequires:  {{ py2pkg('pbr') }}
 BuildRequires:  {{ py2pkg('python-subunit') }}
 BuildRequires:  {{ py2pkg('setuptools') }}
-BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('stestr') }}
 BuildRequires:  {{ py2pkg('testscenarios') }}
 BuildRequires:  {{ py2pkg('testtools') }}
 Requires:       {{ py2pkg('Babel') }}
@@ -52,6 +52,7 @@ Summary:        Documentation for OpenStack Solum API client libary
 Group:          Documentation/HTML
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('openstackdocstheme') }}
+BuildRequires:  {{ py2pkg('sphinxcontrib-apidoc') }}
 
 %description doc
 Client library for Solum built on the Solum API. It provides a Python API
@@ -67,8 +68,9 @@ sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 %py2_build
 
 # Build HTML docs and man page
-%{__python2} setup.py build_sphinx
-rm -rf html/.{doctrees,buildinfo}
+PBR_VERSION=%{version} sphinx-build -b html doc/source doc/build/html
+PBR_VERSION=%{version} sphinx-build -b man doc/source doc/build/man
+rm -r doc/build/html/.{doctrees,buildinfo}
 
 %install
 %py2_install
@@ -78,9 +80,9 @@ rm -rf html/.{doctrees,buildinfo}
 # We are hitting http://bugs.python.org/issue18015 with two tests
 if  [[ $(python --version 2>&1 | awk '{print $2}') == '2.7.5' ]];
 then
-    %{__python2} setup.py testr ||:
+    %{__python2} -m stestr.cli run ||:
 else
-    %{__python2} setup.py testr
+    %{__python2} -m stestr.cli run
 fi
 
 %files
