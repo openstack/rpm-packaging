@@ -1,6 +1,6 @@
 %global sname python-masakariclient
 Name:           {{ py2name('python-masakariclient') }}
-Version:        5.3.0
+Version:        5.4.0
 Release:        0
 Summary:        Python API and CLI for OpenStack Masakari
 License:        {{ license('Apache-2.0') }}
@@ -40,6 +40,7 @@ Summary:        Documentation for OpenStack Masakari API client libary
 Group:          Documentation/HTML
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('sphinxcontrib-apidoc') }}
 
 %description doc
 Client library for Masakari built on the Masakari API. It provides a Python API
@@ -54,8 +55,9 @@ This package contains the documentation.
 %py2_build
 
 # Build HTML docs and man page
-%{__python2} setup.py build_sphinx --builder=html,man
-rm -rf html/.{doctrees,buildinfo}
+PBR_VERSION=%{version} sphinx-build -b html doc/source doc/build/html
+PBR_VERSION=%{version} sphinx-build -b man doc/source doc/build/man
+rm -r doc/build/html/.{doctrees,buildinfo}
 
 %install
 %py2_install
