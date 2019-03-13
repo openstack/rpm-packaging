@@ -1,5 +1,5 @@
 {% set pypi_name = 'python-openstackclient' %}
-{% set upstream_version = upstream_version('3.16.0') %}
+{% set upstream_version = upstream_version('3.18.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -27,8 +27,8 @@ BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('osprofiler', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('requests', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('requests-mock', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('stevedore', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('wrapt', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('Babel') }}
@@ -114,9 +114,7 @@ install -p -D -m 644 doc/build/man/openstack.1 %{buildroot}%{_mandir}/man1/opens
 
 
 %check
-%{python_expand rm -rf .testrepository
-$python setup.py testr
-}
+%python_exec -m stestr.cli run
 
 %files %{python_files}
 %doc README.rst
