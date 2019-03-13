@@ -1,5 +1,5 @@
 {% set pypi_name = 'python-qinlingclient' %}
-{% set upstream_version = upstream_version('2.0.0') %}
+{% set upstream_version = upstream_version('2.1.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -15,7 +15,10 @@ BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('cliff', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('keystoneauth1', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('python-keystoneclient', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('osc-lib', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.log', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('requests-mock', py_versions=['py2', 'py3']) }}
