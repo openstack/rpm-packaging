@@ -57,7 +57,6 @@ This package contains documentation in HTML format.
 %prep
 %autosetup -n %{pypi_name}-%{version}
 %py_req_cleanup
-sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
 %python_build

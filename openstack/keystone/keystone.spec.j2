@@ -170,7 +170,6 @@ find keystone -name \*.py -exec sed -i '/\/usr\/bin\/env python/d' {} \;
 sed -i 's#/local/bin#/bin#' httpd/wsgi-keystone.conf
 sed -i 's#apache2#httpd#' httpd/wsgi-keystone.conf
 %endif
-sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
 %{py3_build}

@@ -46,7 +46,6 @@ This package contains the documentation.
 %prep
 %autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
-sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 # The TestRemote test cases must be excluded because they introduce a circular
 # dependency on python-keystoneauth1.
 # Using --black-regex with stestr is not enough because the problem occurs when
