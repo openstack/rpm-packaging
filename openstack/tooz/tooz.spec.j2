@@ -1,40 +1,43 @@
-%global pypi_name tooz
+{% set pypi_name = 'tooz' %}
+{% set upstream_version = upstream_version('1.64.2') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
 %if 0%{?rhel} || 0%{?fedora}
 %global rdo 1
 %endif
-Name:           {{ py2name('tooz') }}
-Version:        1.64.2
-Release:        0
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
 Summary:        Coordination library for distributed systems
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://docs.openstack.org/developer/tooz/
-Source0:        https://files.pythonhosted.org/packages/source/t/%{pypi_name}/%{pypi_name}-%{version}.tar.gz
+Source0:        {{ source }}
 # https://review.openstack.org/#/c/640695/
 Patch1:         0001-Remove-grpcio-from-requirements.txt.patch
 BuildRequires:  memcached
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('enum34') }}
-BuildRequires:  {{ py2pkg('fasteners') }}
-BuildRequires:  {{ py2pkg('fixtures') }}
-BuildRequires:  {{ py2pkg('futures') }}
-BuildRequires:  {{ py2pkg('futurist') }}
-BuildRequires:  {{ py2pkg('iso8601') }}
-BuildRequires:  {{ py2pkg('mock') }}
-BuildRequires:  {{ py2pkg('oslo.serialization') }}
-BuildRequires:  {{ py2pkg('oslo.utils') }}
-BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('pifpaf') }}
-BuildRequires:  {{ py2pkg('pymemcache') }}
-BuildRequires:  {{ py2pkg('setuptools') }}
-BuildRequires:  {{ py2pkg('stevedore') }}
-BuildRequires:  {{ py2pkg('tenacity') }}
-BuildRequires:  {{ py2pkg('testtools') }}
-BuildRequires:  {{ py2pkg('voluptuous') }}
+BuildRequires:  {{ py2pkg('enum34', py_versions=['py2']) }}
+BuildRequires:  {{ py2pkg('fasteners', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('fixtures', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('futures', py_versions=['py2']) }}
+BuildRequires:  {{ py2pkg('futurist', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('iso8601', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.serialization', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.utils', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pifpaf', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pymemcache', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('setuptools', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('stevedore', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('tenacity', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('voluptuous', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('Babel') }}
 Requires:       {{ py2pkg('enum34') }}
 Requires:       {{ py2pkg('fasteners') }}
-Requires:       {{ py2pkg('futures') }}
 Requires:       {{ py2pkg('futurist') }}
 Requires:       {{ py2pkg('iso8601') }}
 Requires:       {{ py2pkg('msgpack') }}
@@ -45,19 +48,23 @@ Requires:       {{ py2pkg('stevedore') }}
 Requires:       {{ py2pkg('tenacity') }}
 Requires:       {{ py2pkg('voluptuous') }}
 BuildArch:      noarch
+%ifpython2
+Requires:       {{ py2pkg('futures') }}
+%endif
+%python_subpackages
 
 %description
 The Tooz project aims at centralizing the most common distributed primitives
 like group membership protocol, lock service and leader election by providing
 a coordination API helping developers to build distributed applications.
 
-%package doc
+%package -n python-tooz-doc
 Summary:        Documentation for %{name}
 Group:          Documentation/HTML
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 
-%description doc
+%description  -n python-tooz-doc
 The Tooz project aims at centralizing the most common distributed primitives
 like group membership protocol, lock service and leader election by providing
 a coordination API helping developers to build distributed applications.
@@ -65,36 +72,36 @@ a coordination API helping developers to build distributed applications.
 This package contains documentation in HTML format.
 
 %prep
-%autosetup -n %{pypi_name}-%{version}
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
-sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
-%py2_build
+%{python_build}
 
 # generate html docs
-%{__python2} setup.py build_sphinx
+PYTHONPATH=. \
+    sphinx-build -b html doc/source doc/build/html
 # remove the Sphinx-build leftovers
-rm -rf build/sphinx/html/.{doctrees,buildinfo}
+rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %check
 %if ! 0%{?rdo}
 export TOOZ_TEST_DRIVERS="memcached"
 export PATH=%{_prefix}/sbin:$PATH
+export LC_ALL=en_US.UTF-8
 bash run-tests.sh
 %endif
 
 %install
-%py2_install
+%{python_install}
 
-%files
+%files %{python_files}
 %license LICENSE
-%doc README.rst
-%{python2_sitelib}/%{pypi_name}
-%{python2_sitelib}/%{pypi_name}-*.egg-info
+%{python_sitelib}/{{ pypi_name }}
+%{python_sitelib}/{{ pypi_name }}-*.egg-info
 
-%files doc
+%files -n python-tooz-doc
 %license LICENSE
-%doc build/sphinx/html
+%doc doc/build/html README.rst
 
 %changelog
