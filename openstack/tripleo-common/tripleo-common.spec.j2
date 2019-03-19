@@ -1,20 +1,25 @@
-%global sname tripleo-common
-Name:           {{ py2name('tripleo-common') }}
-Version:        9.3.0
-Release:        0
+{% set pypi_name = 'tripleo-common' %}
+{% set upstream_version = upstream_version('10.6.0') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
 Summary:        Python library for code used by TripleO projects
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
-URL:            https://launchpad.net/%{sname}
-Source0:        https://files.pythonhosted.org/packages/source/t/%{sname}/%{sname}-%{version}.tar.gz
+URL:            https://launchpad.net/tripleo-common
+Source0:        {{ source }}
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('GitPython') }}
 BuildRequires:  {{ py2pkg('PyYAML') }}
-BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('docker') }}
+BuildRequires:  {{ py2pkg('eventlet') }}
 BuildRequires:  {{ py2pkg('python-heatclient') }}
 BuildRequires:  {{ py2pkg('python-ironic-inspector-client') }}
 BuildRequires:  {{ py2pkg('python-ironicclient') }}
+BuildRequires:  {{ py2pkg('metalsmith') }}
 BuildRequires:  {{ py2pkg('mistral-lib') }}
 BuildRequires:  {{ py2pkg('python-mistralclient') }}
 BuildRequires:  {{ py2pkg('oslo.concurrency') }}
@@ -23,8 +28,10 @@ BuildRequires:  {{ py2pkg('oslotest') }}
 BuildRequires:  {{ py2pkg('paramiko') }}
 BuildRequires:  {{ py2pkg('passlib') }}
 BuildRequires:  {{ py2pkg('python-subunit') }}
+BuildRequires:  {{ py2pkg('requests-mock') }}
+BuildRequires:  {{ py2pkg('setuptools') }}
+BuildRequires:  {{ py2pkg('stestr') }}
 BuildRequires:  {{ py2pkg('tenacity') }}
-BuildRequires:  {{ py2pkg('testrepository') }}
 BuildRequires:  {{ py2pkg('testscenarios') }}
 BuildRequires:  {{ py2pkg('testtools') }}
 BuildRequires:  {{ py2pkg('python-zaqarclient') }}
@@ -34,12 +41,14 @@ Requires:       {{ py2pkg('GitPython') }}
 Requires:       {{ py2pkg('Jinja2') }}
 # FIXME(jpena): specifying a version below is apparently needed for RDO
 Requires:       {{ py2pkg('docker', ('>=', '2.0.0')) }}
+Requires:       {{ py2pkg('eventlet') }}
 Requires:       {{ py2pkg('python-glanceclient') }}
 Requires:       {{ py2pkg('python-heatclient') }}
 Requires:       {{ py2pkg('python-ironic-inspector-client') }}
 Requires:       {{ py2pkg('python-ironicclient') }}
 Requires:       {{ py2pkg('keystoneauth1') }}
 Requires:       {{ py2pkg('python-keystoneclient') }}
+Requires:       {{ py2pkg('metalsmith') }}
 Requires:       {{ py2pkg('mistral-lib') }}
 Requires:       {{ py2pkg('python-mistralclient') }}
 Requires:       {{ py2pkg('netaddr') }}
@@ -78,7 +87,8 @@ This package installs the TripleO tools for developers and CI that typically
 don't fit in a product.
 
 %prep
-%autosetup -n %{sname}-%{version}
+%autosetup -n {{ pypi_name }}-%{version}
+%py_req_cleanup
 sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
@@ -93,7 +103,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 
 
 %check
-%{__python2} setup.py testr
+%{__python2} -m stestr.cli run
 
 %files
 %doc README.rst ChangeLog
@@ -102,7 +112,6 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %{python2_sitelib}/*.egg-info
 %dir %{_prefix}/lib/heat
 %{_prefix}/lib/heat/undercloud_heat_plugins
-%{_bindir}/create_freeipa_enroll_envfile.py
 %{_bindir}/run-validation
 %{_bindir}/upload-puppet-modules
 %{_bindir}/upload-swift-artifacts
@@ -112,7 +121,8 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %{_bindir}/bootstrap_host_only_exec
 %{_bindir}/bootstrap_host_only_eval
 %{_bindir}/tripleo-container-image-prepare
-%{_datadir}/%{sname}
+%{_bindir}/tripleo-deploy-openshift
+%{_datadir}/tripleo-common
 %{_datadir}/ansible
 
 %files doc
