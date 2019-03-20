@@ -1,0 +1,108 @@
+{% set pypi_name = 'os-ken' %}
+{% set upstream_version = upstream_version('0.3.1') %}
+{% set rpm_release = '0' %}
+{% set source = url_pypi() %}
+Name:           {{ py2name('os-ken') }}
+Epoch:          {{ epoch('os-ken') }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
+Summary:        A component-based software defined networking framework in OpenStack
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+URL:            https://launchpad.net/{{ pypi_name }}
+Source0:        {{ source }}
+# https://review.openstack.org/644801
+Patch0:         0001-Fix-import-for-oskenbgp.patch
+# https://git.openstack.org/cgit/openstack/os-ken/commit/?id=f57d8b3b7199c1c2b48e98aaa85112f071751bdb
+Patch1:         0001-Remove-requirements-unit-tests-module.patch
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('Routes', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('WebOb', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('eventlet', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('lxml', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('msgpack', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('ncclient', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('netaddr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('nose', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.config', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('ovs', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('six', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('tinyrpc', py_versions=['py2', 'py3']) }}
+Requires:       {{ py2pkg('Routes') }}
+Requires:       {{ py2pkg('WebOb') }}
+Requires:       {{ py2pkg('eventlet') }}
+Requires:       {{ py2pkg('msgpack') }}
+Requires:       {{ py2pkg('netaddr') }}
+Requires:       {{ py2pkg('oslo.config') }}
+Requires:       {{ py2pkg('ovs') }}
+Requires:       {{ py2pkg('pbr') }}
+Requires:       {{ py2pkg('six') }}
+Requires:       {{ py2pkg('tinyrpc') }}
+BuildArch:      noarch
+%if 0%{?suse_version}
+Requires(post): update-alternatives
+Requires(postun): update-alternatives
+%else
+# on RDO, update-alternatives is in chkconfig
+Requires(post): chkconfig
+Requires(postun): chkconfig
+%endif
+%python_subpackages
+
+%description
+A component-based software defined networking framework in OpenStack.
+This is a fork of the Ryu library tailored for OpenStack Neutron.
+
+%package -n python-osken-doc
+Summary:        A component-based software defined networking framework in OpenStack - Documentation
+Group:          Documentation/HTML
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
+
+%description -n python-osken-doc
+A component-based software defined networking framework in OpenStack.
+This is a fork of the Ryu library tailored for OpenStack Neutron.
+
+This package contains the documentation.
+
+%prep
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
+%py_req_cleanup
+
+%build
+%{python_build}
+PBR_VERSION=%{version} sphinx-build -b html doc/source doc/build/html
+rm -rf doc/build/html/.{doctrees,buildinfo}
+
+%install
+%{python_install}
+%python_clone -a %{buildroot}%{_bindir}/osken
+%python_clone -a %{buildroot}%{_bindir}/osken-manager
+
+%post
+%{python_install_alternative osken osken-manager}
+
+%postun
+%python_uninstall_alternative osken
+
+%check
+%python_expand PYTHON=python%{$python_version} ./run_tests.sh -N -P
+
+%files %{python_files}
+%doc README.rst ChangeLog
+%license LICENSE
+%{python_sitelib}/os_ken*
+%{python_sitelib}/*.egg-info
+%python_alternative %{_bindir}/osken
+%python_alternative %{_bindir}/osken-manager
+
+%files -n python-osken-doc
+%doc doc/build/html
+%license LICENSE
+
+%changelog

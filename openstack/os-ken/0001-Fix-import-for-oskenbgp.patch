@@ -1,0 +1,83 @@
+From 6287e1b531341c44ea6d4fd2187f2ab4a4fbf030 Mon Sep 17 00:00:00 2001
+From: Thomas Bechtold <tbechtold@suse.com>
+Date: Wed, 20 Mar 2019 10:35:28 +0100
+Subject: [PATCH] Fix import for oskenbgp
+
+Running the tests in distro build env fails currently with:
+
+Failed to import test module: os_ken.tests.integrated.bgp.test_ip6_basic
+Traceback (most recent call last):
+  File "/usr/lib/python2.7/site-packages/unittest2/loader.py", line 456, in _find_test_path
+    module = self._get_module_from_name(name)
+  File "/usr/lib/python2.7/site-packages/unittest2/loader.py", line 395, in _get_module_from_name
+    __import__(name)
+  File "os_ken/tests/integrated/bgp/test_ip6_basic.py", line 22, in <module>
+    from . import base_ip6 as base
+  File "os_ken/tests/integrated/bgp/base_ip6.py", line 24, in <module>
+    from os_ken.tests.integrated.common import os_kenbgp
+ImportError: cannot import name os_kenbgp
+
+The filename is os_ken/tests/integrated/common/oskenbgp.py so import
+the correct module.
+
+Change-Id: Ie10da6df1a13e19d0ba20b4fa2c4c61125152f58
+---
+ os_ken/tests/integrated/bgp/base.py     | 8 ++++----
+ os_ken/tests/integrated/bgp/base_ip6.py | 8 ++++----
+ 2 files changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/os_ken/tests/integrated/bgp/base.py b/os_ken/tests/integrated/bgp/base.py
+index 1ab2c398..73e0bda5 100644
+--- a/os_ken/tests/integrated/bgp/base.py
++++ b/os_ken/tests/integrated/bgp/base.py
+@@ -21,7 +21,7 @@ import sys
+ import unittest
+ 
+ from os_ken.tests.integrated.common import docker_base as ctn_base
+-from os_ken.tests.integrated.common import os_kenbgp
++from os_ken.tests.integrated.common import oskenbgp
+ from os_ken.tests.integrated.common import quagga
+ 
+ 
+@@ -48,9 +48,9 @@ class BgpSpeakerTestBase(unittest.TestCase):
+         cls.q_img = 'osrg/quagga'
+         cls.images.append(cls.q_img)
+ 
+-        cls.r1 = os_kenbgp.OSKenBGPContainer(name='r1', asn=64512,
+-                                        router_id='192.168.0.1',
+-                                        ctn_image_name=cls.r_img)
++        cls.r1 = oskenbgp.OSKenBGPContainer(name='r1', asn=64512,
++                                            router_id='192.168.0.1',
++                                            ctn_image_name=cls.r_img)
+         cls.containers.append(cls.r1)
+         cls.r1.add_route('10.10.0.0/28')
+         cls.r1.run(wait=True)
+diff --git a/os_ken/tests/integrated/bgp/base_ip6.py b/os_ken/tests/integrated/bgp/base_ip6.py
+index 0038d1ae..668a3acb 100644
+--- a/os_ken/tests/integrated/bgp/base_ip6.py
++++ b/os_ken/tests/integrated/bgp/base_ip6.py
+@@ -21,7 +21,7 @@ import sys
+ import unittest
+ 
+ from os_ken.tests.integrated.common import docker_base as ctn_base
+-from os_ken.tests.integrated.common import os_kenbgp
++from os_ken.tests.integrated.common import oskenbgp
+ from os_ken.tests.integrated.common import quagga
+ 
+ 
+@@ -48,9 +48,9 @@ class BgpSpeakerTestBase(unittest.TestCase):
+         cls.q_img = 'osrg/quagga'
+         cls.images.append(cls.q_img)
+ 
+-        cls.r1 = os_kenbgp.OSKenBGPContainer(name='r1', asn=64512,
+-                                        router_id='192.168.0.1',
+-                                        ctn_image_name=cls.r_img)
++        cls.r1 = oskenbgp.OSKenBGPContainer(name='r1', asn=64512,
++                                            router_id='192.168.0.1',
++                                            ctn_image_name=cls.r_img)
+         cls.containers.append(cls.r1)
+         cls.r1.add_route('fc00:10::/64', route_info={'rf': 'ipv6'})
+         cls.r1.run(wait=True)
+-- 
+2.21.0
+
