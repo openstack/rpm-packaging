@@ -1,0 +1,61 @@
+{% set pypi_name = 'octavia-lib' %}
+{% set upstream_version = upstream_version('1.1.1') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
+Summary:        A library to support Octavia provider drivers.
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+URL:            https://git.openstack.org/cgit/openstack/octavia-lib
+Source0:        {{ source }}
+# https://review.openstack.org/644874
+Patch0:         0001-Do-not-install-README.rst-and-LICENSE.patch
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.i18n', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.log', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.serialization', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.utils', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
+Requires:       {{ py2pkg('oslo.i18n') }}
+Requires:       {{ py2pkg('oslo.log') }}
+Requires:       {{ py2pkg('oslo.serialization') }}
+Requires:       {{ py2pkg('pbr') }}
+Requires:       {{ py2pkg('six') }}
+BuildArch:      noarch
+%python_subpackages
+
+%description
+A library to support Octavia provider drivers.
+
+This python module provides a python library for Octavia provider driver
+developers.
+
+%prep
+%autosetup -p1 -n octavia-lib-%{version}
+%py_req_cleanup
+
+%build
+%{python_build}
+
+%install
+%{python_install}
+
+%check
+%{python_expand export PYTHONPATH=.
+$python  -m stestr.cli run
+}
+
+%files %{python_files}
+%license LICENSE
+%doc ChangeLog README.rst
+%{python_sitelib}/octavia_lib
+%{python_sitelib}/octavia_lib*egg-info
+
+%changelog

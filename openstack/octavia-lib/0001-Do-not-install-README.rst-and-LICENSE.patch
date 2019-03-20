@@ -1,0 +1,28 @@
+From c9ae679d648c8bd3883e3e52f16323530a4a6e11 Mon Sep 17 00:00:00 2001
+From: Thomas Bechtold <tbechtold@suse.com>
+Date: Wed, 20 Mar 2019 15:20:28 +0100
+Subject: [PATCH] Do not install README.rst and LICENSE
+
+Both files are already in the sdist tarball. There is no need to
+install the files into (possibly) wrong locations for different distros.
+
+Change-Id: I0c6e985d08acb96043b4cbb59fe964f5cd67480a
+---
+ setup.cfg | 4 ----
+ 1 file changed, 4 deletions(-)
+
+Index: octavia-lib-1.1.1/setup.cfg
+===================================================================
+--- octavia-lib-1.1.1.orig/setup.cfg
++++ octavia-lib-1.1.1/setup.cfg
+@@ -25,10 +25,6 @@ classifier =
+ [files]
+ packages = 
+ 	octavia_lib
+-data_files = 
+-	share/octavia-lib =
+-	LICENSE
+-	README.rst
+ 
+ [wheel]
+ universal = 1
