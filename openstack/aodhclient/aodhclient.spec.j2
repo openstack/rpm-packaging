@@ -10,7 +10,6 @@ Source0:        https://files.pythonhosted.org/packages/source/a/%{sname}/%{snam
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('cliff') }}
 BuildRequires:  {{ py2pkg('keystoneauth1') }}
-BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 BuildRequires:  {{ py2pkg('oslo.serialization') }}
 BuildRequires:  {{ py2pkg('oslo.utils') }}
 BuildRequires:  {{ py2pkg('oslotest') }}
@@ -41,7 +40,7 @@ provides a Python API (the aodhclient module) and a command-line tool.
 Summary:        Documentation for OpenStack Aodh API Client
 Group:          Documentation/HTML
 BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 
 %description      doc
 This is a client library for Aodh built on the Aodh API. It

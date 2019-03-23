@@ -20,7 +20,6 @@ BuildRequires:  {{ py2pkg('oslo.db') }}
 BuildRequires:  {{ py2pkg('oslo.i18n') }}
 BuildRequires:  {{ py2pkg('oslo.log') }}
 BuildRequires:  {{ py2pkg('oslo.middleware') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
 BuildRequires:  {{ py2pkg('oslotest') }}
 BuildRequires:  {{ py2pkg('six') }}
 BuildRequires:  {{ py2pkg('stestr') }}
@@ -55,8 +54,7 @@ and handling ``local_link_information`` field of Neutron port.
 Summary:        Generic Switch ML2 Neutron Driver Doc
 Group:          Documentation/HTML
 BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('openstackdocstheme') }}
-BuildRequires:  {{ py2pkg('reno') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
 
 %description doc
 Documentation for OpenStack Generic Switch ML2 Neutron Driver.
