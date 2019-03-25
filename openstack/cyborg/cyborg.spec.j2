@@ -15,31 +15,27 @@ Source0:        {{ source|basename }}
 BuildRequires:  fdupes
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('Tempest') }}
-BuildRequires:  {{ py2pkg('WSME') }}
 BuildRequires:  {{ py2pkg('coverage') }}
 BuildRequires:  {{ py2pkg('ddt') }}
 BuildRequires:  {{ py2pkg('eventlet') }}
 BuildRequires:  {{ py2pkg('fixtures') }}
 BuildRequires:  {{ py2pkg('jsonpatch') }}
-BuildRequires:  {{ py2pkg('keystonemiddleware') }}
-BuildRequires:  {{ py2pkg('mock') }}
-BuildRequires:  {{ py2pkg('oslo.config')}}
-BuildRequires:  {{ py2pkg('oslo.context') }}
-BuildRequires:  {{ py2pkg('oslo.db') }}
-BuildRequires:  {{ py2pkg('oslo.i18n') }}
-BuildRequires:  {{ py2pkg('oslo.log') }}
-BuildRequires:  {{ py2pkg('oslo.policy') }}
-BuildRequires:  {{ py2pkg('oslo.versionedobjects') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
-BuildRequires:  {{ py2pkg('oslotest') }}
-BuildRequires:  {{ py2pkg('pecan') }}
-BuildRequires:  {{ py2pkg('psutil') }}
-BuildRequires:  {{ py2pkg('reno') }}
-BuildRequires:  {{ py2pkg('six') }}
-BuildRequires:  {{ py2pkg('testrepository') }}
-BuildRequires:  {{ py2pkg('testresources') }}
-BuildRequires:  {{ py2pkg('testscenarios') }}
-BuildRequires:  {{ py2pkg('testtools') }}
+BuildRequires:  {{ py2pkg('WSME', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('keystoneauth1', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('keystonemiddleware', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.config', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.context', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.db', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.i18n', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.log', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.policy', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.versionedobjects', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslosphinx', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pecan', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('psutil', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('six', py_versions=['py2', 'py3']) }}
 Requires:       python-{{ pypi_name }} = %{version}-%{release}
 BuildArch:      noarch
 %if 0%{?suse_version}
@@ -69,6 +65,7 @@ Requires:       {{ py2pkg('WSME') }}
 Requires:       {{ py2pkg('alembic') }}
 Requires:       {{ py2pkg('eventlet') }}
 Requires:       {{ py2pkg('jsonpatch') }}
+Requires:       {{ py2pkg('keystoneauth1') }}
 Requires:       {{ py2pkg('keystonemiddleware') }}
 Requires:       {{ py2pkg('oslo.concurrency') }}
 Requires:       {{ py2pkg('oslo.config')}}
@@ -100,6 +97,7 @@ Summary:        Documentation for OpenStack Backup Service
 Group:          Documentation/HTML
 BuildRequires:  fdupes
 BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 BuildRequires:  {{ py2pkg('os-api-ref') }}
 BuildRequires:  {{ py2pkg('oslosphinx') }}
 BuildRequires:  {{ py2pkg('sphinxcontrib-pecanwsme ') }}
