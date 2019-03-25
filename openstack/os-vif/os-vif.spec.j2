@@ -12,25 +12,25 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        https://files.pythonhosted.org/packages/source/o/os-vif/os_vif-%{version}.tar.gz
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('devel') }}
-BuildRequires:  {{ py2pkg('netaddr') }}
-BuildRequires:  {{ py2pkg('oslo.concurrency') }}
-BuildRequires:  {{ py2pkg('oslo.config') }}
-BuildRequires:  {{ py2pkg('oslo.i18n') }}
-BuildRequires:  {{ py2pkg('oslo.log') }}
-BuildRequires:  {{ py2pkg('oslo.privsep') }}
-BuildRequires:  {{ py2pkg('oslo.versionedobjects') }}
-BuildRequires:  {{ py2pkg('oslotest') }}
-BuildRequires:  {{ py2pkg('ovsdbapp') }}
-BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('pyroute2') }}
-BuildRequires:  {{ py2pkg('python-subunit') }}
-BuildRequires:  {{ py2pkg('six') }}
-BuildRequires:  {{ py2pkg('stestr') }}
-BuildRequires:  {{ py2pkg('stevedore') }}
-BuildRequires:  {{ py2pkg('testrepository') }}
-BuildRequires:  {{ py2pkg('testscenarios') }}
-BuildRequires:  {{ py2pkg('testtools') }}
+BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('netaddr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.concurrency', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.config', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.i18n', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.log', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.privsep', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.versionedobjects', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('ovsdbapp', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pyroute2', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('python-subunit', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('six', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('stevedore', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('debtcollector') }}
 Requires:       {{ py2pkg('netaddr') }}
 Requires:       {{ py2pkg('oslo.concurrency') }}
@@ -45,6 +45,7 @@ Requires:       {{ py2pkg('pyroute2') }}
 Requires:       {{ py2pkg('six') }}
 Requires:       {{ py2pkg('stevedore') }}
 BuildArch:      noarch
+%python_subpackages
 
 %description
 A library for plugging and unplugging virtual interfaces in OpenStack.
@@ -52,13 +53,13 @@ Features:
 * A base VIF plugin class that supplies a plug() and unplug() interface
 * Versioned objects that represent a virtual interface and its components
 
-%package doc
+%package -n python-os-vif-doc
 Summary:        Documentation for a library for plugging and unplugging virtual interfaces in OpenStack
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 BuildRequires:  {{ py2pkg('reno') }}
 
-%description doc
+%description -n python-os-vif-doc
 Documentation for a library for plugging and unplugging virtual interfaces
 in OpenStack.
 
@@ -67,10 +68,10 @@ in OpenStack.
 %py_req_cleanup
 
 %build
-%{py2_build}
+%{python_build}
 
 %install
-%{py2_install}
+%{python_install}
 
 # generate html docs
 PBR_VERSION={{ upstream_version }} sphinx-build -b html doc/source doc/build/html
@@ -78,18 +79,19 @@ PBR_VERSION={{ upstream_version }} sphinx-build -b html doc/source doc/build/htm
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %check
-stestr --test-path="os_vif/tests/unit" run
+export OS_TEST_PATH="os_vif/tests/unit"
+%python_exec -m stestr.cli run
 
-%files
+%files %{python_files}
 %license LICENSE
 %doc README.rst ChangeLog
-%{python2_sitelib}/os_vif
-%{python2_sitelib}/vif_plug_ovs
-%{python2_sitelib}/vif_plug_linux_bridge
-%{python2_sitelib}/vif_plug_noop
-%{python2_sitelib}/*.egg-info
+%{python_sitelib}/os_vif
+%{python_sitelib}/vif_plug_ovs
+%{python_sitelib}/vif_plug_linux_bridge
+%{python_sitelib}/vif_plug_noop
+%{python_sitelib}/*.egg-info
 
-%files doc
+%files -n python-os-vif-doc
 %license LICENSE
 %doc doc/build/html
 
