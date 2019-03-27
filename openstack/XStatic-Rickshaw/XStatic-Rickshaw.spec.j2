@@ -1,14 +1,18 @@
+{% set pypi_name = 'XStatic-Rickshaw' %}
+{% set upstream_version = upstream_version('1.5.0.0') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
 %global sname XStatic-Rickshaw
-Name:           {{ py2name('XStatic-Rickshaw') }}
-Version:        1.5.0.0
-Release:        0
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
 Summary:        Rickshaw %{version} (XStatic packaging standard)
 License:        {{ license('MIT') }}
 Group:          Development/Languages/Python
 URL:            https://git.openstack.org/cgit/openstack/xstatic-rickshaw/
-Source0:        https://files.pythonhosted.org/packages/source/X/%{sname}/%{sname}-%{version}.tar.gz
+Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('setuptools') }}
 Requires:       {{ py2pkg('XStatic') }}
 BuildArch:      noarch
@@ -17,7 +21,7 @@ BuildArch:      noarch
 Rickshaw JavaScript library packaged for setuptools (easy_install) / pip.
 
 %prep
-%autosetup -n %{sname}-%{version}
+%autosetup -n %{sname}-{{ upstream_version }}
 %py_req_cleanup
 
 %build
@@ -29,7 +33,7 @@ Rickshaw JavaScript library packaged for setuptools (easy_install) / pip.
 %files
 %doc README.txt
 %{python2_sitelib}/xstatic
-%{python2_sitelib}/XStatic_Rickshaw-%{version}-py?.?.egg-info
-%{python2_sitelib}/XStatic_Rickshaw-%{version}-py?.?-nspkg.pth
+%{python2_sitelib}/XStatic_Rickshaw-*-py?.?.egg-info
+%{python2_sitelib}/XStatic_Rickshaw-*-py?.?-nspkg.pth
 
 %changelog

@@ -1,14 +1,18 @@
+{% set pypi_name = 'XStatic-angular-ui-router' %}
+{% set upstream_version = upstream_version('0.3.1.2') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
 %global sname XStatic-angular-ui-router
-Name:           {{ py2name('XStatic-angular-ui-router') }}
-Version:        0.3.1.2
-Release:        0
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
 Summary:        angular-ui-router %{version} (XStatic packaging standard)
 License:        {{ license('MIT') }}
 Group:          Development/Languages/Python
 URL:            https://git.openstack.org/cgit/openstack/{sname}/
-Source0:        https://files.pythonhosted.org/packages/source/X/%{sname}/%{sname}-%{version}.tar.gz
+Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('setuptools') }}
 Requires:       {{ py2pkg('XStatic') }}
 BuildArch:      noarch
@@ -17,7 +21,7 @@ BuildArch:      noarch
 angular-ui-router javascript library packaged for setuptools (easy_install) / pip.
 
 %prep
-%autosetup -n %{sname}-%{version}
+%autosetup -n %{sname}-{{ upstream_version }}
 sed -i 's/    setup_requires/#   setup_requires/' setup.py
 sed -i 's/    version=.*/    version="0.3.1.2",/' setup.py
 %py_req_cleanup

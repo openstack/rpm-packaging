@@ -1,14 +1,18 @@
+{% set pypi_name = 'XStatic-JQuery.Bootstrap.Wizard' %}
+{% set upstream_version = upstream_version('1.0.0.1') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
 %global sname XStatic-JQuery.Bootstrap.Wizard
-Name:           {{ py2name('XStatic-JQuery.Bootstrap.Wizard') }}
-Version:        1.0.0.1
-Release:        0
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
 Summary:        JQuery.Bootstrap.Wizard %{version} (XStatic packaging standard)
 License:        {{ license('MIT') }}
 Group:          Development/Languages/Python
 URL:            https://git.openstack.org/cgit/openstack/xstatic-jquery.bootstrap.wizard
-Source0:        https://files.pythonhosted.org/packages/source/X/%{sname}/%{sname}-%{version}.tar.gz
+Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('setuptools') }}
 Requires:       {{ py2pkg('XStatic') }}
 BuildArch:      noarch
@@ -17,7 +21,7 @@ BuildArch:      noarch
 JQuery.Bootstrap.Wizard JavaScript library packaged for setuptools (easy_install) / pip.
 
 %prep
-%autosetup -n %{sname}-%{version}
+%autosetup -n %{sname}-{{ upstream_version }}
 %py_req_cleanup
 
 %build
@@ -29,7 +33,7 @@ JQuery.Bootstrap.Wizard JavaScript library packaged for setuptools (easy_install
 %files
 %doc README.txt
 %{python2_sitelib}/xstatic
-%{python2_sitelib}/XStatic_JQuery.Bootstrap.Wizard-%{version}-py?.?.egg-info
-%{python2_sitelib}/XStatic_JQuery.Bootstrap.Wizard-%{version}-py?.?-nspkg.pth
+%{python2_sitelib}/XStatic_JQuery.Bootstrap.Wizard-*-py?.?.egg-info
+%{python2_sitelib}/XStatic_JQuery.Bootstrap.Wizard-*-py?.?-nspkg.pth
 
 %changelog
