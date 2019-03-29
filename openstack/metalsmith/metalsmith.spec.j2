@@ -1,0 +1,103 @@
+{% set pypi_name = 'metalsmith' %}
+{% set upstream_version = upstream_version('0.11.0') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
+Summary:        Bare metal provisioner using Ironic
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+URL:            https://launchpad.net/{{ pypi_name }}
+Source0:        {{ source }}
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('openstacksdk', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('setuptools', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('six', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
+Requires:       genisoimage
+Requires:       {{ py2pkg('openstacksdk') }}
+Requires:       {{ py2pkg('pbr') }}
+Requires:       {{ py2pkg('requests') }}
+Requires:       {{ py2pkg('six') }}
+BuildArch:      noarch
+%if 0%{?suse_version}
+Requires(post): update-alternatives
+Requires(postun): update-alternatives
+%else
+# on RDO, update-alternatives is in chkconfig
+Requires(post): chkconfig
+Requires(postun): chkconfig
+%endif
+%python_subpackages
+
+%description
+Simple Python library and CLI tool to provision bare metal machines using
+OpenStack Ironic.
+
+%package -n {{ py2name() }}-doc
+Summary:        Documentation for Metalsmith
+Group:          Documentation/HTML
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('sphinxcontrib-apidoc') }}
+
+%description -n {{ py2name() }}-doc
+Documentation for Metalsmith
+
+%package -n ansible-role-{{ py2name() }}-deployment
+Summary:        Ansible role for Metalsmith deployment
+Requires:       ansible
+Requires:       {{ py2pkg('metalsmith') }}
+
+%description -n ansible-role-{{ py2name() }}-deployment
+Ansible role for Metalsmith deployment
+
+%prep
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
+%py_req_cleanup
+
+%build
+%{python_build}
+
+# generate html docs
+PBR_VERSION={{ upstream_version }} sphinx-build -b html doc/source doc/build/html
+# remove the sphinx-build leftovers
+rm -rf doc/build/html/.{doctrees,buildinfo}
+
+%install
+%{python_install}
+%python_clone -a %{buildroot}%{_bindir}/metalsmith
+
+%post
+%{python_install_alternative metalsmith}
+
+%postun
+%python_uninstall_alternative metalsmith
+
+
+%check
+%python_exec -m stestr.cli run
+
+%files %{python_files}
+%license LICENSE
+%python_alternative %{_bindir}/metalsmith
+%{python_sitelib}/metalsmith
+%{python_sitelib}/*.egg-info
+
+%files -n {{ py2name() }}-doc
+%license LICENSE
+%doc doc/build/html README.rst
+
+%files -n ansible-role-{{ py2name() }}-deployment
+%license LICENSE
+%doc roles/metalsmith_deployment/README.rst
+%{_datadir}/ansible
+%{_datadir}/ansible/roles
+%{_datadir}/ansible/roles/metalsmith_deployment
+%exclude %{_datadir}/ansible/roles/metalsmith_deployment/README.rst
+
+%changelog
