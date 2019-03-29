@@ -79,7 +79,7 @@ don't fit in a product.
 
 %prep
 %autosetup -n %{sname}-%{version}
-sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
+%py_req_cleanup
 
 %build
 %{py2_build}
