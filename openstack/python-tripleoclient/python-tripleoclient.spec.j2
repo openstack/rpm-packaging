@@ -3,7 +3,7 @@
 %global rdo 1
 %endif
 Name:           {{ py2name('python-tripleoclient') }}
-Version:        11.1.0
+Version:        11.4.0
 Release:        0
 Summary:        OpenstackClient plugin for tripleoclient
 License:        {{ license('Apache-2.0') }}
@@ -12,6 +12,7 @@ URL:            https://launchpad.net/%{sname}
 Source0:        https://files.pythonhosted.org/packages/source/p/%{sname}/%{sname}-%{version}.tar.gz
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('cliff') }}
+BuildRequires:  {{ py2pkg('cryptography') }}
 BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('fixtures') }}
 BuildRequires:  {{ py2pkg('python-heatclient') }}
@@ -22,20 +23,23 @@ BuildRequires:  {{ py2pkg('python-openstackclient') }}
 BuildRequires:  {{ py2pkg('passlib') }}
 BuildRequires:  {{ py2pkg('psutil') }}
 BuildRequires:  {{ py2pkg('requests-mock') }}
-BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('stestr') }}
 BuildRequires:  {{ py2pkg('testscenarios') }}
 BuildRequires:  {{ py2pkg('testtools') }}
 BuildRequires:  {{ py2pkg('tripleo-common') }}
 BuildRequires:  {{ py2pkg('python-zaqarclient') }}
 Requires:       {{ py2pkg('Babel') }}
 Requires:       {{ py2pkg('cliff') }}
+Requires:       {{ py2pkg('cryptography') }}
 Requires:       {{ py2pkg('python-heatclient') }}
 Requires:       {{ py2pkg('ipaddress') }}
 Requires:       {{ py2pkg('python-ironic-inspector-client') }}
 Requires:       {{ py2pkg('python-ironicclient') }}
 Requires:       {{ py2pkg('python-mistralclient') }}
 Requires:       {{ py2pkg('python-openstackclient') }}
+Requires:       {{ py2pkg('osc-lib') }}
 Requires:       {{ py2pkg('passlib') }}
+Requires:       {{ py2pkg('pbr') }}
 Requires:       {{ py2pkg('psutil') }}
 Requires:       {{ py2pkg('simplejson') }}
 Requires:       {{ py2pkg('six') }}
@@ -80,7 +84,7 @@ install -p -D -m 644 doc/build/man/python-tripleoclient.1 %{buildroot}%{_mandir}
 
 
 %check
-%{__python2} setup.py testr
+%{__python2} -m stestr.cli run
 
 %files
 %doc README.rst
