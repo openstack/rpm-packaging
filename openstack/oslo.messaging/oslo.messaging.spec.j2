@@ -108,9 +108,9 @@ rm -f oslo_messaging/tests/drivers/test_amqp_driver.py
 %{python_build}
 
 # generate html docs
-%{__python2} setup.py build_sphinx
+PBR_VERSION=%{version} sphinx-build -b html doc/source doc/build/html
 # remove the sphinx-build leftovers
-rm -rf build/sphinx/html/.{doctrees,buildinfo}
+rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
 %{python_install}
@@ -134,6 +134,6 @@ rm -rf build/sphinx/html/.{doctrees,buildinfo}
 
 %files -n {{ py2name() }}-doc
 %license LICENSE
-%doc build/sphinx/html
+%doc doc/build/html
 
 %changelog
