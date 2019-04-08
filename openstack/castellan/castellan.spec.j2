@@ -45,7 +45,7 @@ Generic Key Manager interface for OpenStack.
 Summary:        Documentation for castellan
 Group:          Documentation/HTML
 BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('openstackdocstheme') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme', py_versions=['py2', 'py3']) }}
 
 %description -n python-castellan-doc
 Castellan is a generic Key Manager interface for OpenStack.
@@ -58,7 +58,7 @@ This package contains the documentation
 %build
 %{python_build}
 # generate html docs
-%{__python2} setup.py build_sphinx
+PBR_VERSION=%{version} sphinx-build -b html doc/source doc/build/html
 # remove the sphinx-build leftovers
 rm -rf html/.{doctrees,buildinfo}
 

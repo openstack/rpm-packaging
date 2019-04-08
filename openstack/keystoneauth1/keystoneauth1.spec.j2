@@ -48,7 +48,7 @@ Tools for authenticating to an OpenStack-based cloud. These tools include:
 %package -n python-keystoneauth1-doc
 Summary:        Documentation for OpenStack authenticating tools
 BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('openstackdocstheme') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme', py_versions=['py2', 'py3']) }}
 
 %description -n python-keystoneauth1-doc
 Documentation for OpenStack authenticating tools.
@@ -67,7 +67,7 @@ echo "intersphinx_mapping = {}" >> doc/source/conf.py
 %{python_install}
 
 # generate html docs
-%{__python2} setup.py build_sphinx
+PBR_VERSION=%{version} sphinx-build -b html doc/source doc/build/html
 # remove the sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
