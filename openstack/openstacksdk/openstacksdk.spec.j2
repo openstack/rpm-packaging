@@ -67,7 +67,13 @@ Requires:       {{ py2pkg('ipaddress') }}
 %if 0%{?suse_version}
 Requires(post): update-alternatives
 Requires(postun): update-alternatives
+%if 0%{?sle_version} >= 150000
+Requires:       mkisofs
 %else
+Requires:       genisoimage
+%endif
+%else
+Requires:       genisoimage
 # on RDO, update-alternatives is in chkconfig
 Requires(post): chkconfig
 Requires(postun): chkconfig
