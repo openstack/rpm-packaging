@@ -13,17 +13,21 @@ URL:            https://launchpad.net/vmware-nsxlib
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('neutron-lib') }}
+BuildRequires:  {{ py2pkg('decorator', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('eventlet', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('os-testr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('oslo.log', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.service', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('pyOpenSSL', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('requests-mock', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('tenacity', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testresources', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
+Requires:       {{ py2pkg('decorator') }}
 Requires:       {{ py2pkg('eventlet') }}
 Requires:       {{ py2pkg('netaddr') }}
 Requires:       {{ py2pkg('neutron-lib') }}
@@ -74,9 +78,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %fdupes %{buildroot}%{python_sitelib}
 
 %check
-%{python_expand rm -rf .testrepository
-ostestr
-}
+%python_exec -m stestr.cli run
 
 %files %{python_files}
 %defattr(-,root,root,-)
