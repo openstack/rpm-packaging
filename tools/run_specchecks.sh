@@ -2,7 +2,10 @@
 
 set -e
 
+# 1st positional arg is the working dir
 basedir=${1:-$PWD}
+# 2nd positional arg is the find -name parameter
+FIND_STR=${2:-*}
 
 WORKSPACE=${WORKSPACE:-$basedir}
 
@@ -12,7 +15,8 @@ thome=$(mktemp -d)
 cat openstack/openstack-macros/macros.openstack-singlespec > $thome/.rpmmacros
 
 failed=0
-for spec in $WORKSPACE/logs/suse/*.spec ; do
+for spec in `find $WORKSPACE/logs/suse/ -name "${FIND_STR}.spec" -type f -print` ; do
+    echo "Checking $spec"
     egrep -q '^Source:' $spec && {
         echo "$spec should not have Source: lines. Please use Source0: instead."
         failed=1

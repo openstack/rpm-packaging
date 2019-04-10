@@ -2,7 +2,10 @@
 
 set -e
 
+# 1st positional arg is the working dir
 basedir=${1:-$PWD}
+# 2nd positional arg is the find -name parameter
+FIND_STR=${2:-*}
 
 WORKSPACE=${WORKSPACE:-$basedir}
 # tempfile to store the spec-cleaner diff for all specs
@@ -14,7 +17,8 @@ echo "run spec-cleaner over specfiles from $WORKSPACE/logs/"
 count=0
 # TODO(toabctl): also run spec-cleaner with non-SUSE specs
 # but the current problem is that the license check works for SUSE only
-for spec in $WORKSPACE/logs/suse/*.spec ; do
+for spec in `find $WORKSPACE/logs/suse/ -name "${FIND_STR}.spec" -type f -print` ; do
+    echo "spec-cleaner checking $spec"
     # NOTE(toabctl):spec-cleaner can not ignore epochs currently
     sed -i '/^Epoch:.*/d' $spec
     # NOTE(jpena): spec-cleaner wants python2/python3 instead of

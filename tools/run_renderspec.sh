@@ -2,7 +2,11 @@
 
 set -eux
 
+# 1st positional arg is the working dir
 basedir=${1:-$PWD}
+# 2nd positional arg is the find -name parameter
+FIND_STR=${2:-*}
+
 specdir=${basedir}/openstack/
 
 WORKSPACE=${WORKSPACE:-$basedir}
@@ -19,7 +23,7 @@ done
 count=0
 echo "run renderspec over specfiles from ${specdir}"
 for specstyle in $specstyles; do
-    find ${specdir} -name '*.spec.j2' -type f -print0 | \
+    find ${specdir} -name "${FIND_STR}.spec.j2" -type f -print0 | \
         xargs -n 1 -0 -P 0 -I __SPEC__ bash -c "
             set -e
             skip='--skip-pyversion py3'
