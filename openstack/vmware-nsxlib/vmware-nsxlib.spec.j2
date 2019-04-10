@@ -81,7 +81,6 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %python_exec -m stestr.cli run
 
 %files %{python_files}
-%defattr(-,root,root,-)
 %license LICENSE
 %{python_sitelib}/vmware_nsxlib
 %{python_sitelib}/*.egg-info

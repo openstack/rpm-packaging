@@ -197,7 +197,6 @@ stestr run
 %dir %attr(0750, freezer, freezer) %{_localstatedir}/log/freezer
 
 %files -n python-{{ pypi_name }}
-%defattr(-,root,root,-)
 %doc README.rst
 %license LICENSE
 %{python2_sitelib}/freezer*

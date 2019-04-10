@@ -156,7 +156,6 @@ if [ $1 -eq 0 ] ; then
 fi
 
 %files
-%defattr(-, root, root)
 %{_bindir}/monasca-api
 %{_bindir}/monasca-api-wsgi
 %{_bindir}/monasca-api-wsgi.py
@@ -177,7 +176,6 @@ fi
 %config(noreplace) %attr(0640, root, monasca) %{apache_site_dir}/%{component}.conf.sample
 
 %files -n python-%{component}
-%defattr(-, root, root,-)
 %license LICENSE
 %doc README.rst ChangeLog
 %{python2_sitelib}/monasca_api

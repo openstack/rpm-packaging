@@ -333,7 +333,6 @@ OS_TEST_PATH=./glance/tests/unit PYTHONPATH=. stestr-3 run
 %{_bindir}/glance-status
 
 %files -n python3-glance
-%defattr(-,root,root,-)
 %license LICENSE
 %{python3_sitelib}/{{ pypi_name }}*
 %exclude %{python3_sitelib}/glance/tests
@@ -349,7 +348,6 @@ OS_TEST_PATH=./glance/tests/unit PYTHONPATH=. stestr-3 run
 %endif
 
 %files api
-%defattr(-,root,root,-)
 %{_unitdir}/openstack-glance-api.service
 %{_bindir}/{{ pypi_name }}-api
 %{_bindir}/{{ pypi_name }}-wsgi-api

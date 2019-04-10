@@ -224,7 +224,6 @@ install -p -D -m 644 watcher/api/app.wsgi %{buildroot}%{wsgi_dir}
 %dir %attr(0750, root, watcher) %{_sysconfdir}/{{ pypi_name }}/{{ pypi_name }}.conf.d/
 
 %files -n python3-{{ pypi_name}}
-%defattr(-,root,root,-)
 %license LICENSE
 %doc AUTHORS README.rst
 %{python3_sitelib}/{{ pypi_name }}/
@@ -232,7 +231,6 @@ install -p -D -m 644 watcher/api/app.wsgi %{buildroot}%{wsgi_dir}
 
 %if 0%{?with_doc}
 %files -n {{ py2name() }}-doc
-%defattr(-,root,root,-)
 %license LICENSE
 %doc doc/build/html
 %endif

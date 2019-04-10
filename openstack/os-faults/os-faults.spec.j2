@@ -106,7 +106,6 @@ export PATH=$PATH:%{buildroot}%{_bindir}
 py.test -vvvv --durations=10 "os_faults/tests/unit"
 
 %files
-%defattr(-,root,root,-)
 %doc README.rst ChangeLog
 %license LICENSE
 %{_bindir}/os-inject-fault
@@ -114,7 +113,6 @@ py.test -vvvv --durations=10 "os_faults/tests/unit"
 %{python2_sitelib}/os_faults*
 
 %files doc
-%defattr(-,root,root,-)
 %if ! 0%{?rdo}
 %doc doc/build/html
 %endif

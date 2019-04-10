@@ -435,7 +435,6 @@ mkdir -p %{buildroot}%{_localstatedir}/cache/ceilometer
 %systemd_postun_with_restart %{openstack_ceilometer_name}-agent-notification.service
 
 %files
-%defattr(-,root,root)
 %license LICENSE
 %doc README.rst
 %{_bindir}/ceilometer-upgrade
@@ -462,42 +461,35 @@ mkdir -p %{buildroot}%{_localstatedir}/cache/ceilometer
 %_tmpfilesdir/%{openstack_ceilometer_name}.conf
 
 %files -n python-{{ pypi_name }}
-%defattr(-,root,root,-)
 %{python_sitelib}/%{ceilometer_name}/
 %{python_sitelib}/%{ceilometer_name}-*.egg-info
 # Part of test subpackage (except the tempest tests)
 %exclude %{python_sitelib}/%{ceilometer_name}/tests/unit/
 
 %files polling
-%defattr(-,root,root,-)
 %{_unitdir}/%{openstack_ceilometer_name}-polling.service
 %{_sbindir}/rc%{openstack_ceilometer_name}-polling
 %{_bindir}/%{ceilometer_name}-polling
 
 %files agent-central
-%defattr(-,root,root,-)
 %{_unitdir}/%{openstack_ceilometer_name}-agent-central.service
 %{_sbindir}/rc%{openstack_ceilometer_name}-agent-central
 
 %files agent-compute
-%defattr(-,root,root,-)
 %{_unitdir}/%{openstack_ceilometer_name}-agent-compute.service
 %{_sbindir}/rc%{openstack_ceilometer_name}-agent-compute
 %{_datadir}/polkit-1/rules.d/11-%{openstack_ceilometer_name}.rules
 
 %files agent-ipmi
-%defattr(-,root,root,-)
 %{_unitdir}/%{openstack_ceilometer_name}-agent-ipmi.service
 %{_sbindir}/rc%{openstack_ceilometer_name}-agent-ipmi
 
 %files agent-notification
-%defattr(-,root,root,-)
 %{_unitdir}/%{openstack_ceilometer_name}-agent-notification.service
 %{_sbindir}/rc%{openstack_ceilometer_name}-agent-notification
 %{_bindir}/%{ceilometer_name}-agent-notification
 
 %files test
-%defattr(-,root,root)
 %{python_sitelib}/%{ceilometer_name}/tests/unit/
 
 %{_localstatedir}/lib/%{name}-test/

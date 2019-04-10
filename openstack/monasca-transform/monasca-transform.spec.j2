@@ -166,7 +166,6 @@ python2 -m stestr.cli run
 %dir %attr(0750, %{username}, %{groupname}) %{_var}/log/monasca/transform
 
 %files -n python-{{ pypi_name }}
-%defattr(-, root, root,-)
 %license LICENSE
 %{python2_sitelib}/monasca_transform
 %{python2_sitelib}/*.egg-info

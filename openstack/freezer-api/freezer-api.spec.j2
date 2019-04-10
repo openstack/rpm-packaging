@@ -151,7 +151,6 @@ OS_PATH_TEST=./freezer_api/tests/unit python setup.py test
 %dir %attr(0750, freezer, freezer) %{_localstatedir}/log/freezer
 
 %files -n python-{{ pypi_name }}
-%defattr(-,root,root,-)
 %doc README.rst
 %license LICENSE
 %{python2_sitelib}/freezer_api/
