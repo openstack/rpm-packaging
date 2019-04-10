@@ -13,6 +13,8 @@ URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
 # https://review.openstack.org/#/c/651119/
 Patch0:         0001-add-python-3.7-unit-test-job.patch
+# https://review.openstack.org/#/c/651193/
+Patch1:         0001-baremetal-Add-support-for-mkisofs-and-xorrisofs-for-.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('PyYAML', py_versions=['py2', 'py3']) }}
