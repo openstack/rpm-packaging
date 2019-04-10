@@ -1,2 +1,2 @@
 [DEFAULT]
-log_dir= /var/log/keystone
+log_dir=/var/log/keystone

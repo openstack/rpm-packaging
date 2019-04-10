@@ -50,6 +50,7 @@ BuildRequires:  {{ py2pkg('testresources', py_versions=['py3']) }}
 BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py3']) }}
 BuildRequires:  {{ py2pkg('testtools', py_versions=['py3']) }}
 BuildRequires:  which
+Requires:       logrotate
 Requires:       python3-{{ pypi_name }} = %{epoch}:%{version}-%{release}
 BuildArch:      noarch
 %if 0%{?suse_version}
@@ -74,10 +75,7 @@ Requires:       {{ py2pkg('python-ldap', py_versions=['py3']) }}
 Requires:       {{ py2pkg('Babel', py_versions=['py3']) }}
 Requires:       {{ py2pkg('Flask', py_versions=['py3']) }}
 Requires:       {{ py2pkg('Flask-RESTful', py_versions=['py3']) }}
-Requires:       {{ py2pkg('Paste', py_versions=['py3']) }}
-Requires:       {{ py2pkg('PasteDeploy', py_versions=['py3']) }}
-Requires:       {{ py2pkg('PyMySQL', py_versions=['py3']) }}
-Requires:       {{ py2pkg('Routes', py_versions=['py3']) }}
+Requires:       {{ py2pkg('PyJWT', py_versions=['py3']) }}
 Requires:       {{ py2pkg('SQLAlchemy', py_versions=['py3']) }}
 Requires:       {{ py2pkg('WebOb', py_versions=['py3']) }}
 Requires:       {{ py2pkg('bcrypt', py_versions=['py3']) }}
@@ -100,6 +98,7 @@ Requires:       {{ py2pkg('oslo.messaging', py_versions=['py3']) }}
 Requires:       {{ py2pkg('oslo.middleware', py_versions=['py3']) }}
 Requires:       {{ py2pkg('oslo.policy', py_versions=['py3']) }}
 Requires:       {{ py2pkg('oslo.serialization', py_versions=['py3']) }}
+Requires:       {{ py2pkg('oslo.upgradecheck', py_versions=['py3']) }}
 Requires:       {{ py2pkg('oslo.utils', py_versions=['py3']) }}
 Requires:       {{ py2pkg('osprofiler', py_versions=['py3']) }}
 Requires:       {{ py2pkg('passlib', py_versions=['py3']) }}
@@ -107,6 +106,8 @@ Requires:       {{ py2pkg('pbr', py_versions=['py3']) }}
 Requires:       {{ py2pkg('pycadf', py_versions=['py3']) }}
 Requires:       {{ py2pkg('pysaml2', py_versions=['py3']) }}
 Requires:       {{ py2pkg('python-memcached', py_versions=['py3']) }}
+Requires:       {{ py2pkg('pytz', py_versions=['py3']) }}
+Requires:       {{ py2pkg('scrypt', py_versions=['py3']) }}
 Requires:       {{ py2pkg('six', py_versions=['py3']) }}
 Requires:       {{ py2pkg('sqlalchemy-migrate', py_versions=['py3']) }}
 Requires:       {{ py2pkg('stevedore', py_versions=['py3']) }}
@@ -130,7 +131,6 @@ This package contains the Keystone test files.
 %package doc
 Summary:        Documentation for OpenStack Identity Service
 Group:          Documentation/HTML
-BuildRequires:  {{ py2pkg('PasteDeploy') }}
 BuildRequires:  {{ py2pkg('Routes') }}
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('cryptography') }}
@@ -186,8 +186,7 @@ oslopolicy-sample-generator --config-file config-generator/keystone-policy-gener
 %{py3_install}
 install -d -m 755 %{buildroot}%{_sysconfdir}/keystone
 install -d -m 755 %{buildroot}%{_sysconfdir}/sysctl.d
-install -d -m 750 %{buildroot}%{_localstatedir}/{lib,log}/keystone
-install -d -m 750 %{buildroot}%{_localstatedir}/cache/keystone
+install -d -m 750 %{buildroot}%{_localstatedir}/{lib,log,cache}/keystone
 install -d -m 755 %{buildroot}%{_sysconfdir}/keystone/keystone.conf.d/
 # default dir for fernet tokens
 install -d -m 750 %{buildroot}%{_sysconfdir}/keystone/credential-keys/
