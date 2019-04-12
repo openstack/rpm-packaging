@@ -1,0 +1,7 @@
+[DEFAULT]
+log_dir = /var/log/nova
+state_path = /var/lib/nova
+bindir = /usr/bin/
+
+[oslo_concurrency]
+lock_path = /run/nova

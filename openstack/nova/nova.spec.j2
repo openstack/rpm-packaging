@@ -12,27 +12,30 @@ Summary:        OpenStack Compute (nova)
 License:        {{ license('Apache-2.0') }}
 URL:            https://launchpad.net/nova
 Source0:        {{ source|basename }}
-Source1:        nova-dist.conf
+Source1:        openstack-nova.defaultconf
 Source3:        nova.logrotate
 Source4:        nova-polkit.pkla
 Source6:        nova-polkit.rules
 Source7:        nova-sudoers
 Source8:        unittests.blacklist
-Source10:       openstack-nova-api.service
+Source9:        nova.modules
+Source10:       nova.modprobe
+Source11:       openstack-nova-api.service
 Source12:       openstack-nova-compute.service
 Source13:       openstack-nova-network.service
 Source14:       openstack-nova-scheduler.service
 Source15:       openstack-nova-xvpvncproxy.service
 Source16:       openstack-nova-console.service
 Source17:       openstack-nova-consoleauth.service
-Source18:       openstack-nova-metadata-api.service
+Source18:       openstack-nova-api-metadata.service
 Source19:       openstack-nova-conductor.service
 Source20:       openstack-nova-cells.service
 Source21:       openstack-nova-spicehtml5proxy.service
 Source22:       openstack-nova-novncproxy.service
 Source23:       openstack-nova-serialproxy.service
-Source24:       openstack-nova-os-compute-api.service
-Source25:       wsgi-nova-placement-api.conf
+Source24:       openstack-nova-api-os-compute.service
+Source26:       wsgi-nova-placement-api.conf
+Source27:       nova.tmpfiles
 BuildRequires:  fdupes
 BuildRequires:  intltool
 BuildRequires:  openstack-macros
@@ -323,6 +326,24 @@ standard hardware configurations and seven major hypervisors.
 This package contains the Nova services providing
 console access services to Virtual Machines.
 
+%package consoleauth
+Summary:        OpenStack Nova consoleauth access services
+Group:          Applications/System
+Requires:       %{name} = %{epoch}:%{version}-%{release}
+
+%description consoleauth
+OpenStack Compute (codename Nova) is open source software designed to
+provision and manage large networks of virtual machines, creating a
+redundant and scalable cloud computing platform. It gives you the
+software, control panels, and APIs required to orchestrate a cloud,
+including running instances, managing networks, and controlling access
+through users and projects. OpenStack Compute strives to be both
+hardware and hypervisor agnostic, currently supporting a variety of
+standard hardware configurations and seven major hypervisors.
+
+This package contains the Nova services providing
+consoleauth access services to Virtual Machines.
+
 %package network
 Summary:        OpenStack Nova Network control service
 Group:          Applications/System
@@ -363,6 +384,25 @@ hardware and hypervisor agnostic, currently supporting a variety of
 standard hardware configurations and seven major hypervisors.
 
 This package contains the Nova noVNC Proxy service that can proxy
+VNC traffic over browser websockets connections.
+
+%package xvpvncproxy
+Summary:        OpenStack Nova XVP VNC proxy service
+Group:          Applications/System
+Requires:       %{name} = %{epoch}:%{version}-%{release}
+Requires:       novnc
+
+%description xvpvncproxy
+OpenStack Compute (codename Nova) is open source software designed to
+provision and manage large networks of virtual machines, creating a
+redundant and scalable cloud computing platform. It gives you the
+software, control panels, and APIs required to orchestrate a cloud,
+including running instances, managing networks, and controlling access
+through users and projects. OpenStack Compute strives to be both
+hardware and hypervisor agnostic, currently supporting a variety of
+standard hardware configurations and seven major hypervisors.
+
+This package contains the Nova VNC Proxy service that can proxy
 VNC traffic over browser websockets connections.
 
 %package scheduler
@@ -489,35 +529,40 @@ install -p -D -m 644 build/sphinx/man/*.1 %{buildroot}%{_mandir}/man1/
 
 # Setup directories
 install -d -m 750 %{buildroot}%{_localstatedir}/lib/nova
+install -d -m 750 %{buildroot}%{_localstatedir}/lib/nova/images
 install -d -m 750 %{buildroot}%{_localstatedir}/lib/nova/buckets
 install -d -m 750 %{buildroot}%{_localstatedir}/lib/nova/instances
 install -d -m 750 %{buildroot}%{_localstatedir}/lib/nova/keys
 install -d -m 750 %{buildroot}%{_localstatedir}/lib/nova/networks
 install -d -m 750 %{buildroot}%{_localstatedir}/lib/nova/tmp
 install -d -m 750 %{buildroot}%{_localstatedir}/log/nova
+install -d -m 700 %{buildroot}%{_rundir}/nova
+
+# systemd tmpfiles
+install -D -m 644 %{SOURCE27} %{buildroot}/%_tmpfilesdir/%name.conf
 
 # WSGI apache config for nova-placement-api
 %if 0%{?rdo}
 # adjust paths to WSGI scripts
-sed -i 's#/local/bin#/bin#' %{SOURCE25}
-sed -i 's#apache2#httpd#' %{SOURCE25}
+sed -i 's#/local/bin#/bin#' %{SOURCE26}
+sed -i 's#apache2#httpd#' %{SOURCE26}
 %endif
 # Install apache configuration files
 install -d -m 755 %{buildroot}%{apache_site_dir}
-install -p -D -m 644 %{SOURCE25}  %{buildroot}%{_datarootdir}/nova/wsgi-nova-placement-api.conf
-install -p -D -m 644 %{SOURCE25}  %{buildroot}%{apache_site_dir}/nova-placement-api.conf
-
+install -p -D -m 644 %{SOURCE26}  %{buildroot}%{_datarootdir}/nova/wsgi-nova-placement-api.conf
+install -p -D -m 644 %{SOURCE26}  %{buildroot}%{apache_site_dir}/nova-placement-api.conf
 
 # Install config files
 install -d -m 755 %{buildroot}%{_sysconfdir}/nova
 install -d -m 755 %{buildroot}%{_sysconfdir}/nova/nova.conf.d
-install -p -D -m 640 %{SOURCE1} %{buildroot}%{_datarootdir}/nova/nova-dist.conf
+install -p -D -m 640 %{SOURCE1} %{buildroot}%{_sysconfdir}/nova/nova.conf.d/010-nova.conf
 install -p -D -m 640 etc/nova/api-paste.ini %{buildroot}%{_sysconfdir}/nova/api-paste.ini
 install -p -D -m 640 etc/nova/cells.json %{buildroot}%{_sysconfdir}/nova/cells.json
 install -p -D -m 640 etc/nova/logging_sample.conf %{buildroot}%{_sysconfdir}/nova/logging.conf
 install -p -D -m 640 etc/nova/nova.conf.sample  %{buildroot}%{_sysconfdir}/nova/nova.conf
 install -p -D -m 640 etc/nova/policy.yaml.sample %{buildroot}%{_sysconfdir}/nova/policy.yaml
 install -p -D -m 640 etc/nova/rootwrap.conf %{buildroot}%{_sysconfdir}/nova/rootwrap.conf
+
 # delete installed conf files in usr/etc
 rm -rf %{buildroot}%{_prefix}%{_sysconfdir}/
 
@@ -528,39 +573,63 @@ vendor = %{?dist}
 product = OpenStack Nova
 package = %{release}
 EOF
-# Install completion, logrotate and policykit
+
+# install logrotate
 install -p -D -m 644 %{SOURCE3} %{buildroot}%{_sysconfdir}/logrotate.d/%{name}
+
+# install completion
 install -p -D -m 644 tools/nova-manage.bash_completion %{buildroot}%{_sysconfdir}/bash_completion.d/openstack-nova-manage.sh
+
+# install polkit
 %if 0%{?rdo}
 install -d -m 755 %{buildroot}%{_sysconfdir}/polkit-1/localauthority/50-local.d
 install -p -D -m 644 %{SOURCE4} %{buildroot}%{_sysconfdir}/polkit-1/localauthority/50-local.d/50-nova.pkla
 %endif
-install -d -m 755 %{buildroot}%{_sysconfdir}/polkit-1/rules.d
-install -p -D -m 644 %{SOURCE6} %{buildroot}%{_sysconfdir}/polkit-1/rules.d/50-nova.rules
-# Install sudoers
-install -p -D -m 440 %{SOURCE7} %{buildroot}%{_sysconfdir}/sudoers.d/%{name}
-# Install initscripts for Nova services
-install -p -D -m 755 %{SOURCE10} %{buildroot}%{_unitdir}/openstack-nova-api.service
-install -p -D -m 755 %{SOURCE12} %{buildroot}%{_unitdir}/openstack-nova-compute.service
-install -p -D -m 755 %{SOURCE13} %{buildroot}%{_unitdir}/openstack-nova-network.service
-install -p -D -m 755 %{SOURCE14} %{buildroot}%{_unitdir}/openstack-nova-scheduler.service
-install -p -D -m 755 %{SOURCE15} %{buildroot}%{_unitdir}/openstack-nova-xvpvncproxy.service
-install -p -D -m 755 %{SOURCE16} %{buildroot}%{_unitdir}/openstack-nova-console.service
-install -p -D -m 755 %{SOURCE17} %{buildroot}%{_unitdir}/openstack-nova-consoleauth.service
-install -p -D -m 755 %{SOURCE18} %{buildroot}%{_unitdir}/openstack-nova-metadata-api.service
-install -p -D -m 755 %{SOURCE19} %{buildroot}%{_unitdir}/openstack-nova-conductor.service
-install -p -D -m 755 %{SOURCE20} %{buildroot}%{_unitdir}/openstack-nova-cells.service
-install -p -D -m 755 %{SOURCE21} %{buildroot}%{_unitdir}/openstack-nova-spicehtml5proxy.service
-install -p -D -m 755 %{SOURCE22} %{buildroot}%{_unitdir}/openstack-nova-novncproxy.service
-install -p -D -m 755 %{SOURCE23} %{buildroot}%{_unitdir}/openstack-nova-serialproxy.service
-install -p -D -m 755 %{SOURCE24} %{buildroot}%{_unitdir}/openstack-nova-os-compute-api.service
+install -D -m 644 %{SOURCE6} %{buildroot}%{_datadir}/polkit-1/rules.d/10-openstack-nova-compute.rules
 
-# Install rootwrap files in /usr/share/nova/rootwrap
-mkdir -p %{buildroot}%{_datarootdir}/nova/rootwrap/
-install -p -D -m 644 etc/nova/rootwrap.d/* %{buildroot}%{_datarootdir}/nova/rootwrap/
+# install modules/modprobe
+install -D -m 644 %{SOURCE9} %{buildroot}%{_libexecdir}/modules-load.d/openstack-nova-compute.conf
+install -D -m 644 %{SOURCE10} %{buildroot}%{_sysconfdir}/modprobe.d/openstack-nova-compute
+
+# install sudoers
+install -p -D -m 440 %{SOURCE7} %{buildroot}%{_sysconfdir}/sudoers.d/%{name}
+
+# install systemd service files
+install -p -D -m 755 %{SOURCE11} %{buildroot}%{_unitdir}/%{name}-api.service
+install -p -D -m 755 %{SOURCE12} %{buildroot}%{_unitdir}/%{name}-compute.service
+install -p -D -m 755 %{SOURCE13} %{buildroot}%{_unitdir}/%{name}-network.service
+install -p -D -m 755 %{SOURCE14} %{buildroot}%{_unitdir}/%{name}-scheduler.service
+install -p -D -m 755 %{SOURCE15} %{buildroot}%{_unitdir}/%{name}-xvpvncproxy.service
+install -p -D -m 755 %{SOURCE16} %{buildroot}%{_unitdir}/%{name}-console.service
+install -p -D -m 755 %{SOURCE17} %{buildroot}%{_unitdir}/%{name}-consoleauth.service
+install -p -D -m 755 %{SOURCE18} %{buildroot}%{_unitdir}/%{name}-api-metadata.service
+install -p -D -m 755 %{SOURCE19} %{buildroot}%{_unitdir}/%{name}-conductor.service
+install -p -D -m 755 %{SOURCE20} %{buildroot}%{_unitdir}/%{name}-cells.service
+install -p -D -m 755 %{SOURCE21} %{buildroot}%{_unitdir}/%{name}-spicehtml5proxy.service
+install -p -D -m 755 %{SOURCE22} %{buildroot}%{_unitdir}/%{name}-novncproxy.service
+install -p -D -m 755 %{SOURCE23} %{buildroot}%{_unitdir}/%{name}-serialproxy.service
+install -p -D -m 755 %{SOURCE24} %{buildroot}%{_unitdir}/%{name}-api-os-compute.service
+
+# install symlinks on SUSE
+%if 0%{?suse_version}
+mkdir -p %{buildroot}%{_sbindir}
+ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-api
+ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-compute
+ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-network
+ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-scheduler
+ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-xvpvncproxy
+ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-console
+ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-consoleauth
+ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-api-metadata
+ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-conductor
+ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-cells
+ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-spicehtml5proxy
+ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-novncproxy
+ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-serialproxy
+ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-api-os-compute
+%endif
+
 cp -a etc/nova/rootwrap.d/ %{buildroot}%{_sysconfdir}/nova/
-# Install pid directory
-install -d -m 750 %{buildroot}%{_rundir}/nova
 %fdupes %{buildroot}/%{python2_sitelib}
 
 %if 0%{?with_tests}
@@ -580,12 +649,15 @@ testr run --load-list=list
 %pre
 %openstack_pre_user_group_create nova nova -s /bin/bash
 
+%post
+%tmpfiles_create %{_tmpfilesdir}/%{name}.conf
+
 %pre compute
 usermod -a -G qemu nova
 
 #POST actions
 %post api
-%systemd_post %{name}-api.service %{name}-metadata-api.service %{name}-os-compute-api.service
+%systemd_post %{name}-api.service %{name}-api-metadata.service %{name}-api-os-compute.service
 
 %post placement-api
 %systemd_post %{apache_name}.service
@@ -603,13 +675,19 @@ usermod -a -G qemu nova
 %systemd_post %{name}-conductor.service
 
 %post console
-%systemd_post %{name}-console.service %{name}-consoleauth.service %{name}-xvpvncproxy.service
+%systemd_post %{name}-console.service
+
+%post consoleauth
+%systemd_post %{name}-consoleauth.service
 
 %post network
 %systemd_post %{name}-network.service
 
 %post novncproxy
 %systemd_post %{name}-novncproxy.service
+
+%post xvpvncproxy
+%systemd_post %{name}-xvpvncproxy.service
 
 %post scheduler
 %systemd_post %{name}-scheduler.service
@@ -622,7 +700,7 @@ usermod -a -G qemu nova
 
 #PREUN actions
 %preun api
-%systemd_preun %{name}-api.service %{name}-metadata-api.service %{name}-os-compute-api.service
+%systemd_preun %{name}-api.service %{name}-api-metadata.service %{name}-api-os-compute.service
 
 %preun cells
 %systemd_preun %{name}-cells.service
@@ -637,13 +715,19 @@ usermod -a -G qemu nova
 %systemd_preun %{name}-conductor.service
 
 %preun console
-%systemd_preun %{name}-console.service %{name}-consoleauth.service %{name}-xvpvncproxy.service
+%systemd_preun %{name}-console.service
+
+%preun consoleauth
+%systemd_preun %{name}-consoleauth.service
 
 %preun network
 %systemd_preun %{name}-network.service
 
 %preun novncproxy
 %systemd_preun %{name}-novncproxy.service
+
+%preun xvpvncproxy
+%systemd_preun %{name}-xvpvncproxy.service
 
 %preun scheduler
 %systemd_preun %{name}-scheduler.service
@@ -656,7 +740,7 @@ usermod -a -G qemu nova
 
 #POSTUN actions
 %postun api
-%systemd_postun_with_restart %{name}-api.service %{name}-metadata-api.service %{name}-os-compute-api.service
+%systemd_postun_with_restart %{name}-api.service %{name}-api-metadata.service %{name}-api-os-compute.service
 
 %postun placement-api
 %systemd_postun_with_restart %{apache_name}.service
@@ -674,13 +758,19 @@ usermod -a -G qemu nova
 %systemd_postun_with_restart %{name}-conductor.service
 
 %postun console
-%systemd_postun_with_restart %{name}-console.service %{name}-consoleauth.service %{name}-xvpvncproxy.service
+%systemd_postun_with_restart %{name}-console.service
+
+%postun consoleauth
+%systemd_postun_with_restart %{name}-consoleauth.service
 
 %postun network
 %systemd_postun_with_restart %{name}-network.service
 
 %postun novncproxy
 %systemd_postun_with_restart %{name}-novncproxy.service
+
+%postun xvpvncproxy
+%systemd_postun_with_restart %{name}-xvpvncproxy.service
 
 %postun scheduler
 %systemd_postun_with_restart %{name}-scheduler.service
@@ -695,9 +785,6 @@ usermod -a -G qemu nova
 %defattr(-,root,root,-)
 %license LICENSE
 %doc README.rst
-%dir %{_datarootdir}/nova/
-%dir %{_datarootdir}/nova/rootwrap
-%attr(-, root, nova) %{_datarootdir}/nova/nova-dist.conf
 %dir %{_sysconfdir}/nova
 %dir %{_sysconfdir}/nova/rootwrap.d
 %dir %{_localstatedir}/lib/nova
@@ -707,9 +794,10 @@ usermod -a -G qemu nova
 %dir %{_localstatedir}/lib/nova/networks
 %dir %{_localstatedir}/lib/nova/tmp
 %dir %attr(0750, nova, root) %{_localstatedir}/log/nova
-%dir %attr(0750, nova, root) %{_rundir}/nova
 %{_sysconfdir}/bash_completion.d/openstack-nova-manage.sh
 %{_sysconfdir}/nova/release
+%_tmpfilesdir/%name.conf
+%dir %{_sysconfdir}/nova/nova.conf.d/
 %config(noreplace) %{_sysconfdir}/logrotate.d/%{name}
 %config(noreplace) %{_sysconfdir}/sudoers.d/%{name}
 %config(noreplace) %attr(-, root, nova) %{_sysconfdir}/nova/api-paste.ini
@@ -717,6 +805,7 @@ usermod -a -G qemu nova
 %config(noreplace) %attr(-, root, nova) %{_sysconfdir}/nova/nova.conf
 %config(noreplace) %attr(-, root, nova) %{_sysconfdir}/nova/policy.yaml
 %config(noreplace) %attr(-, root, nova) %{_sysconfdir}/nova/rootwrap.conf
+%config(noreplace) %attr(0640, root, nova) %{_sysconfdir}/nova/nova.conf.d/010-nova.conf
 %{_bindir}/nova-manage
 %{_bindir}/nova-policy
 %{_bindir}/nova-rootwrap
@@ -732,14 +821,25 @@ usermod -a -G qemu nova
 %files api
 %license LICENSE
 %config %{_sysconfdir}/nova/rootwrap.d/api-metadata.filters
-%{_bindir}/nova-api*
+%{_bindir}/nova-api-wsgi
 %{_bindir}/nova-metadata-wsgi
-%{_unitdir}/%{name}-*api.service
-%{_datarootdir}/nova/rootwrap/api-metadata.filters
+%{_bindir}/nova-api
+%{_bindir}/nova-api-metadata
+%{_bindir}/nova-api-os-compute
+%{_unitdir}/%{name}-api.service
+%{_unitdir}/%{name}-api-metadata.service
+%{_unitdir}/%{name}-api-os-compute.service
+%if 0%{?suse_version}
+%{_sbindir}/rc%{name}-api-metadata
+%{_sbindir}/rc%{name}-api
+%{_sbindir}/rc%{name}-api-os-compute
+%endif
 
 %files placement-api
 %license LICENSE
 %{_bindir}/nova-placement-api
+%dir %{apache_site_dir}
+%dir %{_datarootdir}/nova/
 %{apache_site_dir}/nova-placement-api.conf
 %{_datarootdir}/nova/wsgi-nova-placement-api.conf
 
@@ -748,29 +848,48 @@ usermod -a -G qemu nova
 %config(noreplace) %attr(-, root, nova) %{_sysconfdir}/nova/cells.json
 %{_bindir}/nova-cells
 %{_unitdir}/%{name}-cells.service
+%if 0%{?suse_version}
+%{_sbindir}/rc%{name}-cells
+%endif
 
 %files compute
 %license LICENSE
 %{_bindir}/nova-compute
-%{_unitdir}/%{name}-compute.service
-%{_datarootdir}/nova/rootwrap/compute.filters
 %config %{_sysconfdir}/nova/rootwrap.d/compute.filters
 %if 0%{?rdo}
 %config(noreplace) %{_sysconfdir}/polkit-1/localauthority/50-local.d/50-nova.pkla
 %endif
-%config(noreplace) %{_sysconfdir}/polkit-1/rules.d/50-nova.rules
+%{_datadir}/polkit-1/rules.d/10-openstack-nova-compute.rules
+%{_libexecdir}/modules-load.d/openstack-nova-compute.conf
+%{_sysconfdir}/modprobe.d/openstack-nova-compute
+%{_unitdir}/%{name}-compute.service
+%if 0%{?suse_version}
+%{_sbindir}/rc%{name}-compute
+%endif
 
 %files conductor
 %license LICENSE
 %{_bindir}/nova-conductor
 %{_unitdir}/%{name}-conductor.service
+%if 0%{?suse_version}
+%{_sbindir}/rc%{name}-conductor
+%endif
 
 %files console
 %license LICENSE
-%{_bindir}/nova-console*
-%{_bindir}/nova-xvpvncproxy
-%{_unitdir}/%{name}-console*.service
-%{_unitdir}/%{name}-xvpvncproxy.service
+%{_bindir}/nova-console
+%{_unitdir}/%{name}-console.service
+%if 0%{?suse_version}
+%{_sbindir}/rc%{name}-console
+%endif
+
+%files consoleauth
+%license LICENSE
+%{_bindir}/nova-consoleauth
+%{_unitdir}/%{name}-consoleauth.service
+%if 0%{?suse_version}
+%{_sbindir}/rc%{name}-consoleauth
+%endif
 
 %files network
 %license LICENSE
@@ -778,27 +897,49 @@ usermod -a -G qemu nova
 %{_bindir}/nova-network
 %{_bindir}/nova-dhcpbridge
 %{_unitdir}/%{name}-network.service
-%{_datarootdir}/nova/rootwrap/network.filters
+%if 0%{?suse_version}
+%{_sbindir}/rc%{name}-network
+%endif
 
 %files novncproxy
 %license LICENSE
 %{_bindir}/nova-novncproxy
 %{_unitdir}/%{name}-novncproxy.service
+%if 0%{?suse_version}
+%{_sbindir}/rc%{name}-novncproxy
+%endif
+
+%files xvpvncproxy
+%license LICENSE
+%{_bindir}/nova-xvpvncproxy
+%{_unitdir}/%{name}-xvpvncproxy.service
+%if 0%{?suse_version}
+%{_sbindir}/rc%{name}-xvpvncproxy
+%endif
 
 %files scheduler
 %license LICENSE
 %{_bindir}/nova-scheduler
 %{_unitdir}/%{name}-scheduler.service
+%if 0%{?suse_version}
+%{_sbindir}/rc%{name}-scheduler
+%endif
 
 %files spicehtml5proxy
 %license LICENSE
 %{_bindir}/nova-spicehtml5proxy
 %{_unitdir}/%{name}-spicehtml5proxy.service
+%if 0%{?suse_version}
+%{_sbindir}/rc%{name}-spicehtml5proxy
+%endif
 
 %files serialproxy
 %license LICENSE
 %{_bindir}/nova-serialproxy
 %{_unitdir}/%{name}-serialproxy.service
+%if 0%{?suse_version}
+%{_sbindir}/rc%{name}-serialproxy
+%endif
 
 %if 0%{?with_doc}
 %files doc
