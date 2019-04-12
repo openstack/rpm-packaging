@@ -21,6 +21,8 @@ Source3:        openstack-cinder-scheduler.service
 Source4:        openstack-cinder-volume.service
 Source5:        openstack-cinder-backup.service
 Source6:        %{service}-sudoers
+Source7:        %{service}.tmpfiles
+Source50:       openstack-cinder.README.config
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('PyMySQL') }}
 BuildRequires:  {{ py2pkg('SQLAlchemy') }}
@@ -93,7 +95,7 @@ access block storage volumes for use by Virtual Machine instances.
 
 %package -n     python-{{ pypi_name }}
 Summary:        OpenStack Volume Python libraries
-Group:          Applications/System
+Group:          Development/Languages/Python
 Requires:       {{ py2pkg('Paste') }}
 Requires:       {{ py2pkg('PasteDeploy') }}
 Requires:       {{ py2pkg('PrettyTable') }}
@@ -241,57 +243,58 @@ PBR_VERSION={{ upstream_version }} sphinx-build -b html doc/source doc/build/htm
 rm -rf doc/build/html/.{doctrees,buildinfo}
 %endif
 # generate the sample config files
-PYTHONPATH=. oslo-config-generator --config-file tools/config/cinder-config-generator.conf
-
+PYTHONPATH=. oslo-config-generator --config-file tools/config/cinder-config-generator.conf --output-file etc/cinder/cinder.conf
+# generate the sample policy
+PYTHONPATH=. oslopolicy-sample-generator --config-file=tools/config/cinder-policy-generator.conf --output etc/cinder/policy.json
 
 %install
 %{py2_install}
 
-
 # Setup directories
-install -d -m 755 %{buildroot}%{_localstatedir}/lib/%{service}
-install -d -m 755 %{buildroot}%{_localstatedir}/lib/%{service}/tmp
-install -d -m 755 %{buildroot}%{_localstatedir}/log/%{service}
-
-# Install config files
+install -d -m 750 %{buildroot}%{_localstatedir}/{lib,log,cache}/%{service}
 install -d -m 755 %{buildroot}%{_sysconfdir}/%{service}
-install -d -m 755 %{buildroot}%{_sysconfdir}/%{service}/volumes
-install -p -D -m 640 etc/%{service}/rootwrap.conf %{buildroot}%{_sysconfdir}/%{service}/rootwrap.conf
-install -p -D -m 640 etc/%{service}/api-paste.ini %{buildroot}%{_sysconfdir}/%{service}/api-paste.ini
-install -p -D -m 640 etc/%{service}/%{service}.conf.sample %{buildroot}%{_sysconfdir}/%{service}/%{service}.conf
+install -d -m 755 %{buildroot}%{_sysconfdir}/%{service}/%{service}.conf.d
+install -d -m 755 %{buildroot}%{_sysconfdir}/%{service}/%{service}-volume.conf.d
 
-# Install initscripts for services
+# install tmpfiles
+install -D -m 644 %{SOURCE7} %{buildroot}/%_tmpfilesdir/%name.conf
+
+# install config files
+install -d -m 755 %{buildroot}%{_sysconfdir}/%{service}
+install -p -D -m 644 etc/%{service}/{cinder.conf,api-paste.ini,policy.json,rootwrap.conf} %{buildroot}%{_sysconfdir}/%{service}/
+cp -a etc/cinder/rootwrap.d/ %{buildroot}%{_sysconfdir}/%{service}/
+install -p -D -m 640 %{SOURCE50} %{buildroot}%{_sysconfdir}/%{service}/README.config
+
+# install systemd service files
 install -p -D -m 644 %{SOURCE2} %{buildroot}%{_unitdir}/openstack-%{service}-api.service
 install -p -D -m 644 %{SOURCE3} %{buildroot}%{_unitdir}/openstack-%{service}-scheduler.service
 install -p -D -m 644 %{SOURCE4} %{buildroot}%{_unitdir}/openstack-%{service}-volume.service
 install -p -D -m 644 %{SOURCE5} %{buildroot}%{_unitdir}/openstack-%{service}-backup.service
 
+# install symlinks on SUSE
+%if 0%{?suse_version}
+mkdir -p %{buildroot}%{_sbindir}
+ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-api
+ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-scheduler
+ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-volume
+ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-backup
+%endif
+
 # Install sudoers
-install -p -D -m 440 %{SOURCE6} %{buildroot}%{_sysconfdir}/sudoers.d/%{service}
+install -p -D -m 440 %{SOURCE6} %{buildroot}%{_sysconfdir}/sudoers.d/openstack-cinder
 
 # Install logrotate
 install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/openstack-%{service}
 
-# Install pid directory
-install -d -m 755 %{buildroot}%{_rundir}/%{service}
-
-# Install rootwrap files in /usr/share/cinder/rootwrap
-mkdir -p %{buildroot}%{_datarootdir}/%{service}/rootwrap/
-install -p -D -m 644 etc/%{service}/rootwrap.d/* %{buildroot}%{_datarootdir}/%{service}/rootwrap/
-
-# Symlinks to rootwrap config files
-mkdir -p %{buildroot}%{_sysconfdir}/%{service}/rootwrap.d
-for filter in %{_sysconfdir}/rootwrap.d/os-brick.filters; do
-ln -s $filter %{buildroot}%{_sysconfdir}/%{service}/rootwrap.d/
-done
-
 # Remove duplicate config files under /usr/etc/
 rm -rf %{buildroot}%{_prefix}/%{_sysconfdir}
-
 
 %pre
 %openstack_pre_user_group_create cinder cinder /sbin/nologin
 exit 0
+
+%post
+%tmpfiles_create %{_tmpfilesdir}/%{name}.conf
 
 %check
 stestr run
@@ -333,23 +336,21 @@ stestr run
 %postun backup
 %systemd_postun_with_restart %{name}-backup.service
 
-
 %files
 %license LICENSE
 %dir %attr(0750, root, cinder) %{_sysconfdir}/{{ pypi_name }}
+%dir %attr(0750, root, cinder) %{_sysconfdir}/{{ pypi_name }}/{{ pypi_name }}.conf.d/
+%{_sysconfdir}/%{service}/README.config
 %config(noreplace) %attr(-, root, %{service}) %{_sysconfdir}/%{service}/%{service}.conf
 %config(noreplace) %attr(-, root, %{service}) %{_sysconfdir}/%{service}/api-paste.ini
 %config(noreplace) %attr(-, root, %{service}) %{_sysconfdir}/%{service}/rootwrap.conf
 %config(noreplace) %{_sysconfdir}/logrotate.d/openstack-%{service}
-%config(noreplace) %{_sysconfdir}/sudoers.d/%{service}
-%{_sysconfdir}/%{service}/rootwrap.d/
+%config(noreplace) %{_sysconfdir}/sudoers.d/openstack-%{service}
+%config(noreplace) %{_sysconfdir}/%{service}/policy.json
+%_tmpfilesdir/%name.conf
+%dir %attr(0750, %{service}, root) %{_sysconfdir}/%{service}/rootwrap.d/
 %dir %attr(0750, %{service}, root) %{_localstatedir}/log/%{service}
-%dir %attr(0755, %{service}, root) %{_rundir}/%{service}
-%dir %attr(0755, %{service}, root) %{_sysconfdir}/%{service}/volumes
-%{_datarootdir}/%{service}
-%defattr(-, %{service}, %{service}, -)
 %dir %{_localstatedir}/lib/%{service}
-%dir %{_localstatedir}/lib//%{service}/tmp
 %{_bindir}/{{ pypi_name }}-manage
 %{_bindir}/{{ pypi_name }}-rootwrap
 %{_bindir}/{{ pypi_name }}-rtstool
@@ -357,7 +358,6 @@ stestr run
 %{_bindir}/{{ pypi_name }}-status
 
 %files -n python-cinder
-%defattr(-,root,root,-)
 %license LICENSE
 %{python_sitelib}/{{ pypi_name }}*
 
@@ -368,25 +368,39 @@ stestr run
 %endif
 
 %files api
-%defattr(-,root,root,-)
-%{_unitdir}/openstack-cinder-api.service
+%license LICENSE
 %{_bindir}/{{ pypi_name }}-api
 %{_bindir}/{{ pypi_name }}-wsgi
+%{_unitdir}/openstack-cinder-api.service
+%if 0%{?suse_version}
+%{_sbindir}/rc%{name}-api
+%endif
 
 %files scheduler
-%defattr(-,root,root,-)
-%{_unitdir}/openstack-cinder-scheduler.service
+%license LICENSE
 %{_bindir}/{{ pypi_name }}-scheduler
+%{_unitdir}/openstack-cinder-scheduler.service
+%if 0%{?suse_version}
+%{_sbindir}/rc%{name}-scheduler
+%endif
 
 %files volume
-%defattr(-,root,root,-)
-%{_unitdir}/openstack-cinder-volume.service
+%license LICENSE
+%dir %{_sysconfdir}/%{service}/%{service}-volume.conf.d/
+%config %{_sysconfdir}/%{service}/rootwrap.d/volume.filters
 %{_bindir}/{{ pypi_name }}-volume
+%{_unitdir}/openstack-cinder-volume.service
+%if 0%{?suse_version}
+%{_sbindir}/rc%{name}-volume
+%endif
 
 %files backup
-%defattr(-,root,root,-)
-%{_unitdir}/openstack-cinder-backup.service
+%license LICENSE
 %{_bindir}/{{ pypi_name }}-backup
+%{_unitdir}/openstack-cinder-backup.service
+%if 0%{?suse_version}
+%{_sbindir}/rc%{name}-backup
+%endif
 
 %changelog
 
