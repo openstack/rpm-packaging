@@ -159,6 +159,8 @@ rm -rf %{buildroot}%{_prefix}%{_sysconfdir}/
 %tmpfiles_create %{_tmpfilesdir}/masakari.conf
 
 %check
+# we don't want to check hacking rules
+rm masakari/tests/unit/test_hacking.py
 %{__python2} -m stestr.cli run
 
 %post api
