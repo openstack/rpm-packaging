@@ -21,8 +21,7 @@ BuildRequires:  {{ py2pkg('osc-lib', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('oslo.log', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('oslo.utils', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('python-subunit', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testresources', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
@@ -89,14 +88,12 @@ install -p -D -m 644 tools/zun.bash_completion %{buildroot}%{_sysconfdir}/bash_c
 %python_uninstall_alternative zun
 
 %check
-%{python_expand rm -rf .testrepository
 export OS_TEST_PATH=./zunclient/tests/unit/
 # we dont want to depend on Tempest so remove the relevant tests
 rm -f zunclient/tests/unit/test_shell.py
 rm -f zunclient/tests/unit/test_functional_utils.py
 rm -rf zunclient/tests/functional
-$python setup.py testr
-}
+%python_exec -m stestr.cli run
 
 %files %{python_files}
 %doc README.rst

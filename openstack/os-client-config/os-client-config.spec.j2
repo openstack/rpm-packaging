@@ -26,7 +26,7 @@ BuildRequires:  {{ py2pkg('python-keystoneclient') }}
 BuildRequires:  {{ py2pkg('mock') }}
 BuildRequires:  {{ py2pkg('oslotest') }}
 BuildRequires:  {{ py2pkg('python-subunit') }}
-BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('stestr') }}
 BuildRequires:  {{ py2pkg('testscenarios') }}
 BuildRequires:  {{ py2pkg('testtools') }}
 %endif
@@ -71,7 +71,7 @@ rm -rf html/.{doctrees,buildinfo}
 %if %{with test}
 %check
 export PYTHONPATH="%{python2_sitearch}:%{python2_sitelib}:%{buildroot}%{python2_sitelib}"
-testr init && testr run
+python2 -m stestr.cli run
 %endif
 
 %files %{python_files}

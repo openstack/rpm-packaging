@@ -69,11 +69,8 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %{python_install}
 
 %check
-%{python_expand rm -rf .testrepository
-# set this so that the variable can be passed to a subprocess.call
 export PYTHONPATH=`pwd`
 %python_exec -m stestr.cli run
-}
 
 %files %{python_files}
 %license LICENSE

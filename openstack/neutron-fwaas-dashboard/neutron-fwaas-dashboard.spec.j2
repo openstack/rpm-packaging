@@ -28,7 +28,6 @@ BuildRequires:  {{ py3('openstackdocstheme') }}
 BuildRequires:  {{ py3('pbr') }}
 BuildRequires:  {{ py3('python-subunit') }}
 BuildRequires:  {{ py3('reno') }}
-BuildRequires:  {{ py3('testrepository') }}
 BuildRequires:  {{ py3('testscenarios') }}
 BuildRequires:  {{ py3('testtools') }}
 Requires:       {{ py3('horizon-plugin-neutron-fwaas-ui') }} = %{version}
@@ -37,13 +36,13 @@ BuildArch:      noarch
 %description
 OpenStack Neutron FWaaS management plugin for Horizon.
 
-%package -n    {{ py2pkg('horizon-plugin-neutron-fwaas-ui') }}
+%package -n    {{ py3('horizon-plugin-neutron-fwaas-ui') }}
 Summary:       Neutron FWaaS Management Plugin for Horizon - Python module
 Requires:      {{ py3('Django') }}
 Requires:      {{ py3('python-neutronclient') }}
 Requires:      {{ py3('pbr') }}
 
-%description -n {{ py2pkg('horizon-plugin-neutron-fwaas-ui') }}
+%description -n {{ py3('horizon-plugin-neutron-fwaas-ui') }}
 OpenStack Neutron FWaaS management plugin for Horizon.
 
 This package contains the core Python module of the neutron-fwaas-ui.
@@ -57,7 +56,6 @@ Requires:      {{ py3('mox3') }}
 Requires:      {{ py3('openstackdocstheme') }}
 Requires:      {{ py3('python-subunit') }}
 Requires:      {{ py3('reno') }}
-Requires:      {{ py3('testrepository') }}
 Requires:      {{ py3('testscenarios') }}
 Requires:      {{ py3('testtools') }}
 
@@ -101,7 +99,7 @@ su %{apache_user} -s /bin/sh -c "python3 %{http_dashboard_dir}/manage.py collect
 %{http_dashboard_dir}/openstack_dashboard/enabled/*.py*
 %{http_dashboard_dir}/openstack_dashboard/conf/neutron-fwaas-policy.json
 
-%files -n {{ py2pkg('horizon-plugin-neutron-fwaas-ui') }}
+%files -n {{ py3('horizon-plugin-neutron-fwaas-ui') }}
 %doc README.rst
 %license LICENSE
 %{python3_sitelib}/neutron_fwaas_dashboard/

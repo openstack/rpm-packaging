@@ -1,5 +1,5 @@
 {% set pypi_name = 'cliff' %}
-{% set upstream_version = upstream_version('2.15.0') %}
+{% set upstream_version = upstream_version('2.16.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -14,13 +14,13 @@ Source0:        {{ source }}
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('PrettyTable', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('PyYAML', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('cmd2', py_versions=['py2']) }}
+BuildRequires:  {{ py2pkg('cmd2', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('python-subunit', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('setuptools', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('stevedore', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('unicodecsv', py_versions=['py2']) }}
@@ -44,7 +44,8 @@ other extensions.
 %package -n python-cliff-doc
 Summary:        %{summary} - Documentation
 Group:          Documentation/HTML
-BuildRequires:  {{ py2pkg('Sphinx', py_versions=['py2']) }}
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
 Provides:       %{python_module cliff-doc = %{version}}
 
 %description -n python-cliff-doc
@@ -61,16 +62,14 @@ This package contains documentation files for %{name}.
 
 %build
 %python_build
-%{__python2} setup.py build_sphinx
+PBR_VERSION={{ upstream_version }} PYTHONPATH=. %sphinx_build -b html doc/source doc/build/html
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
 %python_install
 
 %check
-%{python_expand rm -rf .testrepository
-$python setup.py test
-}
+%python_exec -m stestr.cli run
 
 %files %{python_files}
 %license LICENSE
