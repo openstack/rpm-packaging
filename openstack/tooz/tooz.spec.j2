@@ -36,7 +36,6 @@ BuildRequires:  {{ py2pkg('tenacity', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('voluptuous', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('Babel') }}
-Requires:       {{ py2pkg('enum34') }}
 Requires:       {{ py2pkg('fasteners') }}
 Requires:       {{ py2pkg('futurist') }}
 Requires:       {{ py2pkg('iso8601') }}
@@ -49,6 +48,7 @@ Requires:       {{ py2pkg('tenacity') }}
 Requires:       {{ py2pkg('voluptuous') }}
 BuildArch:      noarch
 %ifpython2
+Requires:       {{ py2pkg('enum34') }}
 Requires:       {{ py2pkg('futures') }}
 %endif
 %python_subpackages
