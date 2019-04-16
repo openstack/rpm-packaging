@@ -252,7 +252,6 @@ PYTHONPATH=. oslopolicy-sample-generator --config-file=tools/config/cinder-polic
 
 # Setup directories
 install -d -m 750 %{buildroot}%{_localstatedir}/{lib,log,cache}/%{service}
-install -d -m 700 %{buildroot}%{_rundir}/%{service}
 install -d -m 755 %{buildroot}%{_sysconfdir}/%{service}
 install -d -m 755 %{buildroot}%{_sysconfdir}/%{service}/%{service}.conf.d
 install -d -m 755 %{buildroot}%{_sysconfdir}/%{service}/%{service}-volume.conf.d
@@ -351,7 +350,6 @@ stestr run
 %_tmpfilesdir/%name.conf
 %dir %attr(0750, %{service}, root) %{_sysconfdir}/%{service}/rootwrap.d/
 %dir %attr(0750, %{service}, root) %{_localstatedir}/log/%{service}
-%dir %attr(0755, %{service}, root) %{_rundir}/%{service}
 %dir %{_localstatedir}/lib/%{service}
 %{_bindir}/{{ pypi_name }}-manage
 %{_bindir}/{{ pypi_name }}-rootwrap
