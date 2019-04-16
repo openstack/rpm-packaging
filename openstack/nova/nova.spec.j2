@@ -29,7 +29,6 @@ Source16:       openstack-nova-console.service
 Source17:       openstack-nova-consoleauth.service
 Source18:       openstack-nova-api-metadata.service
 Source19:       openstack-nova-conductor.service
-Source20:       openstack-nova-cells.service
 Source21:       openstack-nova-spicehtml5proxy.service
 Source22:       openstack-nova-novncproxy.service
 Source23:       openstack-nova-serialproxy.service
@@ -223,24 +222,6 @@ Requires:       %{name} = %{epoch}:%{version}-%{release}
 
 %description placement-api
 This package contains the OpenStack Nova Placement API.
-
-%package cells
-Summary:        OpenStack Nova Cells service
-Group:          Applications/System
-Requires:       %{name} = %{epoch}:%{version}-%{release}
-
-%description cells
-OpenStack Compute (codename Nova) is open source software designed to
-provision and manage large networks of virtual machines, creating a
-redundant and scalable cloud computing platform. It gives you the
-software, control panels, and APIs required to orchestrate a cloud,
-including running instances, managing networks, and controlling access
-through users and projects. OpenStack Compute strives to be both
-hardware and hypervisor agnostic, currently supporting a variety of
-standard hardware configurations and seven major hypervisors.
-
-This package contains the Nova Cells service providing additional
-scaling and (geographic) distribution for compute services.
 
 %package cert
 Summary:        OpenStack Nova certificate management service
@@ -557,7 +538,6 @@ install -d -m 755 %{buildroot}%{_sysconfdir}/nova
 install -d -m 755 %{buildroot}%{_sysconfdir}/nova/nova.conf.d
 install -p -D -m 640 %{SOURCE1} %{buildroot}%{_sysconfdir}/nova/nova.conf.d/010-nova.conf
 install -p -D -m 640 etc/nova/api-paste.ini %{buildroot}%{_sysconfdir}/nova/api-paste.ini
-install -p -D -m 640 etc/nova/cells.json %{buildroot}%{_sysconfdir}/nova/cells.json
 install -p -D -m 640 etc/nova/logging_sample.conf %{buildroot}%{_sysconfdir}/nova/logging.conf
 install -p -D -m 640 etc/nova/nova.conf.sample  %{buildroot}%{_sysconfdir}/nova/nova.conf
 install -p -D -m 640 etc/nova/policy.yaml.sample %{buildroot}%{_sysconfdir}/nova/policy.yaml
@@ -604,7 +584,6 @@ install -p -D -m 755 %{SOURCE16} %{buildroot}%{_unitdir}/%{name}-console.service
 install -p -D -m 755 %{SOURCE17} %{buildroot}%{_unitdir}/%{name}-consoleauth.service
 install -p -D -m 755 %{SOURCE18} %{buildroot}%{_unitdir}/%{name}-api-metadata.service
 install -p -D -m 755 %{SOURCE19} %{buildroot}%{_unitdir}/%{name}-conductor.service
-install -p -D -m 755 %{SOURCE20} %{buildroot}%{_unitdir}/%{name}-cells.service
 install -p -D -m 755 %{SOURCE21} %{buildroot}%{_unitdir}/%{name}-spicehtml5proxy.service
 install -p -D -m 755 %{SOURCE22} %{buildroot}%{_unitdir}/%{name}-novncproxy.service
 install -p -D -m 755 %{SOURCE23} %{buildroot}%{_unitdir}/%{name}-serialproxy.service
@@ -622,7 +601,6 @@ ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-console
 ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-consoleauth
 ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-api-metadata
 ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-conductor
-ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-cells
 ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-spicehtml5proxy
 ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-novncproxy
 ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-serialproxy
@@ -662,9 +640,6 @@ usermod -a -G qemu nova
 %post placement-api
 %systemd_post %{apache_name}.service
 
-%post cells
-%systemd_post %{name}-cells.service
-
 %post cert
 %systemd_post %{name}-cert.service
 
@@ -701,9 +676,6 @@ usermod -a -G qemu nova
 #PREUN actions
 %preun api
 %systemd_preun %{name}-api.service %{name}-api-metadata.service %{name}-api-os-compute.service
-
-%preun cells
-%systemd_preun %{name}-cells.service
 
 %preun cert
 %systemd_preun %{name}-cert.service
@@ -744,9 +716,6 @@ usermod -a -G qemu nova
 
 %postun placement-api
 %systemd_postun_with_restart %{apache_name}.service
-
-%postun cells
-%systemd_postun_with_restart %{name}-cells.service
 
 %postun cert
 %systemd_postun_with_restart %{name}-cert.service
@@ -842,15 +811,6 @@ usermod -a -G qemu nova
 %dir %{_datarootdir}/nova/
 %{apache_site_dir}/nova-placement-api.conf
 %{_datarootdir}/nova/wsgi-nova-placement-api.conf
-
-%files cells
-%license LICENSE
-%config(noreplace) %attr(-, root, nova) %{_sysconfdir}/nova/cells.json
-%{_bindir}/nova-cells
-%{_unitdir}/%{name}-cells.service
-%if 0%{?suse_version}
-%{_sbindir}/rc%{name}-cells
-%endif
 
 %files compute
 %license LICENSE
