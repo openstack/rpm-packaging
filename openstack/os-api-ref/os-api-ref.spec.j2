@@ -1,5 +1,5 @@
 {% set pypi_name = 'os-api-ref' %}
-{% set upstream_version = upstream_version('1.6.0') %}
+{% set upstream_version = upstream_version('1.6.1') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -11,8 +11,6 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://launchpad.net/%{sname}
 Source0:        {{ source }}
-# https://review.openstack.org/#/c/630146/
-Patch1:         0001-Fix-microversion-test-handle-different-HTML-renderin.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('PyYAML', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('Sphinx', py_versions=['py2', 'py3']) }}
@@ -20,14 +18,15 @@ BuildRequires:  {{ py2pkg('beautifulsoup4', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('openstackdocstheme', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('python-subunit', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('six', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('sphinx-testing', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('PyYAML') }}
 Requires:       {{ py2pkg('Sphinx') }}
 Requires:       {{ py2pkg('openstackdocstheme') }}
 Requires:       {{ py2pkg('pbr') }}
+Requires:       {{ py2pkg('six') }}
 BuildArch:      noarch
 %python_subpackages
 
