@@ -44,9 +44,9 @@ task: 5759
  create mode 100644 devstack/files/cassandra/monasca_schema.cql
  create mode 100644 monasca_api/conf/cassandra.py
 
-Index: monasca-api-2.2.1.dev9/devstack/files/cassandra/cassandra_schema.cql
+Index: monasca-api-2.2.1.dev26/devstack/files/cassandra/cassandra_schema.cql
 ===================================================================
---- monasca-api-2.2.1.dev9.orig/devstack/files/cassandra/cassandra_schema.cql
+--- monasca-api-2.2.1.dev26.orig/devstack/files/cassandra/cassandra_schema.cql
 +++ /dev/null
 @@ -1,46 +0,0 @@
 -drop table if exists monasca.metric_map;
@@ -95,10 +95,10 @@ Index: monasca-api-2.2.1.dev9/devstack/files/cassandra/cassandra_schema.cql
 -primary key ((tenant_id), alarm_id, time_stamp)
 -);
 -
-Index: monasca-api-2.2.1.dev9/devstack/files/cassandra/monasca_schema.cql
+Index: monasca-api-2.2.1.dev26/devstack/files/cassandra/monasca_schema.cql
 ===================================================================
 --- /dev/null
-+++ monasca-api-2.2.1.dev9/devstack/files/cassandra/monasca_schema.cql
++++ monasca-api-2.2.1.dev26/devstack/files/cassandra/monasca_schema.cql
 @@ -0,0 +1,93 @@
 +// (C) Copyright 2017 SUSE LLC
 +//
@@ -193,10 +193,10 @@ Index: monasca-api-2.2.1.dev9/devstack/files/cassandra/monasca_schema.cql
 +    primary key ((tenant_id, alarm_id), time_stamp)
 +);
 +
-Index: monasca-api-2.2.1.dev9/devstack/files/monasca-persister/persister.yml
+Index: monasca-api-2.2.1.dev26/devstack/files/monasca-persister/persister.yml
 ===================================================================
---- monasca-api-2.2.1.dev9.orig/devstack/files/monasca-persister/persister.yml
-+++ monasca-api-2.2.1.dev9/devstack/files/monasca-persister/persister.yml
+--- monasca-api-2.2.1.dev26.orig/devstack/files/monasca-persister/persister.yml
++++ monasca-api-2.2.1.dev26/devstack/files/monasca-persister/persister.yml
 @@ -1,5 +1,6 @@
  #
  # (C) Copyright 2015 Hewlett Packard Enterprise Development Company LP
@@ -282,10 +282,10 @@ Index: monasca-api-2.2.1.dev9/devstack/files/monasca-persister/persister.yml
  verticaMetricRepoConfig:
    maxCacheSize: 2000000
  
-Index: monasca-api-2.2.1.dev9/devstack/lib/persister.sh
+Index: monasca-api-2.2.1.dev26/devstack/lib/persister.sh
 ===================================================================
---- monasca-api-2.2.1.dev9.orig/devstack/lib/persister.sh
-+++ monasca-api-2.2.1.dev9/devstack/lib/persister.sh
+--- monasca-api-2.2.1.dev26.orig/devstack/lib/persister.sh
++++ monasca-api-2.2.1.dev26/devstack/lib/persister.sh
 @@ -1,7 +1,8 @@
  #!/bin/bash
  
@@ -380,10 +380,10 @@ Index: monasca-api-2.2.1.dev9/devstack/lib/persister.sh
      " -i ${MONASCA_PERSISTER_CONF}
  
      ln -sf ${MONASCA_PERSISTER_CONF} ${MONASCA_PERSISTER_GATE_CONFIG}
-Index: monasca-api-2.2.1.dev9/devstack/plugin.sh
+Index: monasca-api-2.2.1.dev26/devstack/plugin.sh
 ===================================================================
---- monasca-api-2.2.1.dev9.orig/devstack/plugin.sh
-+++ monasca-api-2.2.1.dev9/devstack/plugin.sh
+--- monasca-api-2.2.1.dev26.orig/devstack/plugin.sh
++++ monasca-api-2.2.1.dev26/devstack/plugin.sh
 @@ -1,6 +1,7 @@
  #
  # (C) Copyright 2015-2017 Hewlett Packard Enterprise Development LP
@@ -460,10 +460,10 @@ Index: monasca-api-2.2.1.dev9/devstack/plugin.sh
          iniset "$MONASCA_API_CONF" influxdb ip_address $SERVICE_HOST
          iniset "$MONASCA_API_CONF" influxdb port 8086
          iniset "$MONASCA_API_CONF" kafka uri "$SERVICE_HOST:9092"
-Index: monasca-api-2.2.1.dev9/devstack/settings
+Index: monasca-api-2.2.1.dev26/devstack/settings
 ===================================================================
---- monasca-api-2.2.1.dev9.orig/devstack/settings
-+++ monasca-api-2.2.1.dev9/devstack/settings
+--- monasca-api-2.2.1.dev26.orig/devstack/settings
++++ monasca-api-2.2.1.dev26/devstack/settings
 @@ -97,7 +97,7 @@ INFLUXDB_PYTHON_VERSION=${INFLUXDB_PYTHO
  # INFLUXDB_VERSION=${INFLUXDB_VERSION:-0.9.5}
  
@@ -473,10 +473,10 @@ Index: monasca-api-2.2.1.dev9/devstack/settings
  # Kafka deb consists of the version of scala plus the version of kafka
  BASE_KAFKA_VERSION=${BASE_KAFKA_VERSION:-0.10.2.2}
  SCALA_VERSION=${SCALA_VERSION:-2.11}
-Index: monasca-api-2.2.1.dev9/docs/monasca-api-spec.md
+Index: monasca-api-2.2.1.dev26/docs/monasca-api-spec.md
 ===================================================================
---- monasca-api-2.2.1.dev9.orig/docs/monasca-api-spec.md
-+++ monasca-api-2.2.1.dev9/docs/monasca-api-spec.md
+--- monasca-api-2.2.1.dev26.orig/docs/monasca-api-spec.md
++++ monasca-api-2.2.1.dev26/docs/monasca-api-spec.md
 @@ -771,7 +771,7 @@ If no limit is specified in the request
  
  
@@ -486,15 +486,14 @@ Index: monasca-api-2.2.1.dev9/docs/monasca-api-spec.md
  
  For example, an integer offset would look like this:
  
-@@ -808,13 +808,17 @@ A dimension value offset would look as f
- ```
+@@ -809,12 +809,16 @@ A dimension value offset would look as f
  offset=dimensionValue2
  
-+```
+ ```
 +A combinational offset with hexdecimal id would look as follows:
 +```
 +offset=01ce0acc66131296c8a17294f39aee44ea8963ec_2104-01-01T00:00:01Z
- ```
++```
  
 -Different resources use different offset types because of the internal implementation of different resources depends on different types of mechanisms for indexing and identifying resources. The type and form of the offsets for each resource can be determined by referring to the examples in each resource section below.
 +Different resources use different offset types because of the internal implementation of different resources depends on different types of mechanisms for indexing and identifying resources. For example, the offset in measurement resources contains both ID and timestamp. The type and form of the offsets for each resource can be determined by referring to the examples in each resource section below.
@@ -522,10 +521,10 @@ Index: monasca-api-2.2.1.dev9/docs/monasca-api-spec.md
              "name": "http_status",
              "dimensions": {
                  "url": "http://localhost:8774/v2.0",
-Index: monasca-api-2.2.1.dev9/monasca_api/common/repositories/cassandra/metrics_repository.py
+Index: monasca-api-2.2.1.dev26/monasca_api/common/repositories/cassandra/metrics_repository.py
 ===================================================================
---- monasca-api-2.2.1.dev9.orig/monasca_api/common/repositories/cassandra/metrics_repository.py
-+++ monasca-api-2.2.1.dev9/monasca_api/common/repositories/cassandra/metrics_repository.py
+--- monasca-api-2.2.1.dev26.orig/monasca_api/common/repositories/cassandra/metrics_repository.py
++++ monasca-api-2.2.1.dev26/monasca_api/common/repositories/cassandra/metrics_repository.py
 @@ -1,4 +1,5 @@
  # (C) Copyright 2015,2016 Hewlett Packard Enterprise Development Company LP
 +# (C) Copyright 2017 SUSE LLC
@@ -564,6 +563,10 @@ Index: monasca-api-2.2.1.dev9/monasca_api/common/repositories/cassandra/metrics_
  
 -class MetricsRepository(metrics_repository.AbstractMetricsRepository):
 -    def __init__(self):
+-
+-        try:
+-
+-            self.conf = cfg.CONF
 +MEASUREMENT_LIST_CQL = ('select time_stamp, value, value_meta '
 +                        'from measurements where %s %s %s %s')
 +METRIC_ID_EQ = 'metric_id = %s'
@@ -571,8 +574,7 @@ Index: monasca-api-2.2.1.dev9/monasca_api/common/repositories/cassandra/metrics_
 +OFFSET_TIME_GT = "and time_stamp > %s"
 +START_TIME_GE = "and time_stamp >= %s"
 +END_TIME_LE = "and time_stamp <= %s"
- 
--        try:
++
 +METRIC_LIST_CQL = ('select metric_name, dimensions, metric_id '
 +                   'from metrics where %s %s %s %s %s %s %s %s %s %s')
 +REGION_EQ = 'region = %s'
@@ -583,153 +585,154 @@ Index: monasca-api-2.2.1.dev9/monasca_api/common/repositories/cassandra/metrics_
 +CREATED_TIME_LE = "and created_at <= %s"
 +UPDATED_TIME_GE = "and updated_at >= %s"
 +DIMENSIONS_GT = 'and dimensions > %s'
- 
--            self.conf = cfg.CONF
++
 +DIMENSION_VALUE_BY_METRIC_CQL = ('select dimension_value as value from metrics_dimensions '
 +                                 'where region = ? and tenant_id = ? and metric_name = ? '
 +                                 'and dimension_name = ? group by dimension_value')
- 
--            self._cassandra_cluster = Cluster(
--                self.conf.cassandra.cluster_ip_addresses.split(','))
++
 +DIMENSION_VALUE_CQL = ('select value from dimensions '
 +                       'where region = ? and tenant_id = ? and name = ? '
 +                       'group by value order by value')
- 
--            self.cassandra_session = self._cassandra_cluster.connect(
--                self.conf.cassandra.keyspace)
++
 +DIMENSION_NAME_BY_METRIC_CQL = ('select dimension_name as name from metrics_dimensions where '
 +                                'region = ? and tenant_id = ? and metric_name = ? '
 +                                'group by dimension_name order by dimension_name')
- 
--        except Exception as ex:
--            LOG.exception(ex)
--            raise exceptions.RepositoryException(ex)
++
 +DIMENSION_NAME_CQL = ('select name from dimensions where region = ? and tenant_id = ? '
 +                      'group by name allow filtering')
- 
--    def list_metrics(self, tenant_id, region, name, dimensions, offset,
--                     limit, start_timestamp=None, end_timestamp=None,
--                     include_metric_hash=False):
++
 +METRIC_NAME_BY_DIMENSION_CQL = ('select metric_name from dimensions_metrics where region = ? and '
 +                                'tenant_id = ? and dimension_name = ? and dimension_value = ? '
 +                                'group by metric_name order by metric_name')
- 
--        or_dimensions = []
--        sub_dimensions = {}
++
 +METRIC_NAME_BY_DIMENSION_OFFSET_CQL = ('select metric_name from dimensions_metrics where region = ? and '
 +                                       'tenant_id = ? and dimension_name = ? and dimension_value = ? and '
 +                                       'metric_name >= ?'
 +                                       'group by metric_name order by metric_name')
++
++METRIC_NAME_CQL = ('select distinct region, tenant_id, metric_name from metrics_dimensions '
++                   'where region = ? and tenant_id = ? allow filtering')
++
++METRIC_NAME_OFFSET_CQL = ('select distinct region, tenant_id, metric_name from metrics_dimensions '
++                          'where region = ? and tenant_id = ? and metric_name >= ? allow filtering')
++
++METRIC_BY_ID_CQL = ('select region, tenant_id, metric_name, dimensions from measurements '
++                    'where metric_id = ? limit 1')
++
++Metric = namedtuple('metric', 'id name dimensions')
+ 
+-            self._cassandra_cluster = Cluster(
+-                self.conf.cassandra.cluster_ip_addresses.split(','))
++ALARM_HISTORY_CQL = ('select tenant_id, alarm_id, time_stamp, metric, new_state, old_state, reason, reason_data, '
++                     'sub_alarms from alarm_state_history where %s %s %s %s %s')
+ 
+-            self.cassandra_session = self._cassandra_cluster.connect(
+-                self.conf.cassandra.keyspace)
++ALARM_ID_EQ = 'and alarm_id = %s'
+ 
+-        except Exception as ex:
+-            LOG.exception(ex)
+-            raise exceptions.RepositoryException(ex)
++ALARM_ID_IN = 'and alarm_id in %s'
+ 
+-    def list_metrics(self, tenant_id, region, name, dimensions, offset,
+-                     limit, start_timestamp=None, end_timestamp=None,
+-                     include_metric_hash=False):
++ALARM_TENANT_ID_EQ = 'tenant_id = %s'
+ 
+-        or_dimensions = []
+-        sub_dimensions = {}
  
 -        if dimensions:
 -            for key, value in dimensions.iteritems():
 -                if not value:
 -                    sub_dimensions[key] = value
-+METRIC_NAME_CQL = ('select distinct region, tenant_id, metric_name from metrics_dimensions '
-+                   'where region = ? and tenant_id = ? allow filtering')
- 
--                elif '|' in value:
-+METRIC_NAME_OFFSET_CQL = ('select distinct region, tenant_id, metric_name from metrics_dimensions '
-+                          'where region = ? and tenant_id = ? and metric_name >= ? allow filtering')
- 
--                    def f(val):
--                        return {key: val}
-+METRIC_BY_ID_CQL = ('select region, tenant_id, metric_name, dimensions from measurements '
-+                    'where metric_id = ? limit 1')
- 
--                    or_dimensions.append(list(map(f, value.split('|'))))
-+Metric = namedtuple('metric', 'id name dimensions')
- 
--                else:
--                    sub_dimensions[key] = value
-+ALARM_HISTORY_CQL = ('select tenant_id, alarm_id, time_stamp, metric, new_state, old_state, reason, reason_data, '
-+                     'sub_alarms from alarm_state_history where %s %s %s %s %s')
- 
--            if or_dimensions:
--                or_dims_list = list(itertools.product(*or_dimensions))
--                metrics_list = []
-+ALARM_ID_EQ = 'and alarm_id = %s'
- 
--                for or_dims_tuple in or_dims_list:
--                    extracted_dimensions = sub_dimensions.copy()
-+ALARM_ID_IN = 'and alarm_id in %s'
- 
--                    for dims in iter(or_dims_tuple):
--                        for k, v in dims.iteritems():
--                            extracted_dimensions[k] = v
-+ALARM_TENANT_ID_EQ = 'tenant_id = %s'
- 
--                    metrics = self._list_metrics(tenant_id, region, name,
--                                                 extracted_dimensions, offset,
--                                                 limit, start_timestamp,
--                                                 end_timestamp,
--                                                 include_metric_hash)
--                    metrics_list += metrics
- 
--                return sorted(metrics_list, key=lambda metric: metric['id'])
 +class MetricsRepository(metrics_repository.AbstractMetricsRepository):
 +    def __init__(self):
  
--        return self._list_metrics(tenant_id, region, name, dimensions,
--                                  offset, limit, start_timestamp,
--                                  end_timestamp, include_metric_hash)
+-                elif '|' in value:
 +        try:
 +            self.conf = cfg.CONF
 +            LOG.info('conf is: %s' % self.conf)
 +            self.cluster = Cluster(self.conf.cassandra.contact_points)
 +            self.session = self.cluster.connect(self.conf.cassandra.keyspace)
  
+-                    def f(val):
+-                        return {key: val}
++            self.dim_val_by_metric_stmt = self.session.prepare(DIMENSION_VALUE_BY_METRIC_CQL)
+ 
+-                    or_dimensions.append(list(map(f, value.split('|'))))
++            self.dim_val_stmt = self.session.prepare(DIMENSION_VALUE_CQL)
+ 
+-                else:
+-                    sub_dimensions[key] = value
++            self.dim_name_by_metric_stmt = self.session.prepare(DIMENSION_NAME_BY_METRIC_CQL)
+ 
+-            if or_dimensions:
+-                or_dims_list = list(itertools.product(*or_dimensions))
+-                metrics_list = []
+-
+-                for or_dims_tuple in or_dims_list:
+-                    extracted_dimensions = sub_dimensions.copy()
+-
+-                    for dims in iter(or_dims_tuple):
+-                        for k, v in dims.iteritems():
+-                            extracted_dimensions[k] = v
+-
+-                    metrics = self._list_metrics(tenant_id, region, name,
+-                                                 extracted_dimensions, offset,
+-                                                 limit, start_timestamp,
+-                                                 end_timestamp,
+-                                                 include_metric_hash)
+-                    metrics_list += metrics
+-
+-                return sorted(metrics_list, key=lambda metric: metric['id'])
+-
+-        return self._list_metrics(tenant_id, region, name, dimensions,
+-                                  offset, limit, start_timestamp,
+-                                  end_timestamp, include_metric_hash)
+-
 -    def _list_metrics(self, tenant_id, region, name, dimensions, offset,
 -                      limit, start_timestamp=None, end_timestamp=None,
 -                      include_metric_hash=False):
-+            self.dim_val_by_metric_stmt = self.session.prepare(DIMENSION_VALUE_BY_METRIC_CQL)
++            self.dim_name_stmt = self.session.prepare(DIMENSION_NAME_CQL)
  
 -        try:
-+            self.dim_val_stmt = self.session.prepare(DIMENSION_VALUE_CQL)
++            self.metric_name_by_dimension_stmt = self.session.prepare(METRIC_NAME_BY_DIMENSION_CQL)
  
 -            select_stmt = """
 -              select tenant_id, region, metric_hash, metric_map
 -              from metric_map
 -              where tenant_id = %s and region = %s
 -              """
-+            self.dim_name_by_metric_stmt = self.session.prepare(DIMENSION_NAME_BY_METRIC_CQL)
- 
--            parms = [tenant_id.encode('utf8'), region.encode('utf8')]
-+            self.dim_name_stmt = self.session.prepare(DIMENSION_NAME_CQL)
- 
--            name_clause = self._build_name_clause(name, parms)
-+            self.metric_name_by_dimension_stmt = self.session.prepare(METRIC_NAME_BY_DIMENSION_CQL)
- 
--            dimension_clause = self._build_dimensions_clause(dimensions, parms)
 +            self.metric_name_by_dimension_offset_stmt = self.session.prepare(METRIC_NAME_BY_DIMENSION_OFFSET_CQL)
  
--            select_stmt += name_clause + dimension_clause
+-            parms = [tenant_id.encode('utf8'), region.encode('utf8')]
 +            self.metric_name_stmt = self.session.prepare(METRIC_NAME_CQL)
  
--            if offset:
--                select_stmt += ' and metric_hash > %s '
--                parms.append(bytearray(offset.decode('hex')))
+-            name_clause = self._build_name_clause(name, parms)
 +            self.metric_name_offset_stmt = self.session.prepare(METRIC_NAME_OFFSET_CQL)
  
--            if limit:
--                select_stmt += ' limit %s '
--                parms.append(limit + 1)
+-            dimension_clause = self._build_dimensions_clause(dimensions, parms)
 +            self.metric_by_id_stmt = self.session.prepare(METRIC_BY_ID_CQL)
  
--            select_stmt += ' allow filtering '
+-            select_stmt += name_clause + dimension_clause
 +        except Exception as ex:
 +            LOG.exception(ex)
 +            raise exceptions.RepositoryException(ex)
  
--            json_metric_list = []
+-            if offset:
+-                select_stmt += ' and metric_hash > %s '
+-                parms.append(bytearray(offset.decode('hex')))
 +        self.epoch = datetime.utcfromtimestamp(0)
  
--            stmt = SimpleStatement(select_stmt,
--                                   fetch_size=2147483647)
+-            if limit:
+-                select_stmt += ' limit %s '
+-                parms.append(limit + 1)
 +    def list_dimension_values(self, tenant_id, region, metric_name,
 +                              dimension_name):
  
--            rows = self.cassandra_session.execute(stmt, parms)
+-            select_stmt += ' allow filtering '
 +        try:
 +            if metric_name:
 +                rows = self.session.execute(
@@ -740,34 +743,35 @@ Index: monasca-api-2.2.1.dev9/monasca_api/common/repositories/cassandra/metrics_
 +                    self.dim_val_stmt,
 +                    [region, tenant_id, dimension_name])
  
--            if not rows:
--                return json_metric_list
+-            json_metric_list = []
 +        except Exception as ex:
 +            LOG.exception(ex)
 +            raise exceptions.RepositoryException(ex)
  
--            for (tenant_id, region, metric_hash, metric_map) in rows:
+-            stmt = SimpleStatement(select_stmt,
+-                                   fetch_size=2147483647)
 +        json_dim_value_list = []
  
--                metric = {}
+-            rows = self.cassandra_session.execute(stmt, parms)
 +        if not rows:
 +            return json_dim_value_list
  
--                dimensions = {}
+-            if not rows:
+-                return json_metric_list
 +        for row in rows:
 +            json_dim_value_list.append({u'dimension_value': row.value})
  
--                if include_metric_hash:
--                    metric[u'metric_hash'] = metric_hash
+-            for (tenant_id, region, metric_hash, metric_map) in rows:
 +        json_dim_value_list.sort(key=lambda x: x[u'dimension_value'])
  
--                for name, value in metric_map.iteritems():
+-                metric = {}
 +        return json_dim_value_list
  
--                    if name == '__name__':
+-                dimensions = {}
 +    def list_dimension_names(self, tenant_id, region, metric_name):
  
--                        name = urllib.unquote_plus(value)
+-                if include_metric_hash:
+-                    metric[u'metric_hash'] = metric_hash
 +        try:
 +            if metric_name:
 +                rows = self.session.execute(
@@ -780,31 +784,30 @@ Index: monasca-api-2.2.1.dev9/monasca_api/common/repositories/cassandra/metrics_
 +                    [region, tenant_id])
 +                ordered = False
  
--                        metric[u'name'] = name
+-                for name, value in metric_map.iteritems():
 +        except Exception as ex:
 +            LOG.exception(ex)
 +            raise exceptions.RepositoryException(ex)
  
--                    else:
+-                    if name == '__name__':
 +        if not rows:
 +            return []
  
--                        name = urllib.unquote_plus(name)
+-                        name = urllib.unquote_plus(value)
 +        json_dim_name_list = [{u'dimension_name': row.name} for row in rows]
  
--                        value = urllib.unquote_plus(value)
+-                        metric[u'name'] = name
 +        if not ordered:
 +            json_dim_name_list.sort(key=lambda x: x[u'dimension_name'])
  
--                        dimensions[name] = value
+-                    else:
 +        return json_dim_name_list
  
--                metric[u'dimensions'] = dimensions
+-                        name = urllib.unquote_plus(name)
 +    def list_metrics(self, tenant_id, region, name, dimensions, offset, limit, start_time=None,
 +                     end_time=None):
  
--                try:
--                    metric[u'id'] = binascii.hexlify(bytearray(metric_hash))
+-                        value = urllib.unquote_plus(value)
 +        offset_name = None
 +        offset_dimensions = []
 +        names = []
@@ -812,10 +815,7 @@ Index: monasca-api-2.2.1.dev9/monasca_api/common/repositories/cassandra/metrics_
 +        offset_futures = []
 +        non_offset_futures = []
  
--                except TypeError as terr:
--                    LOG.exception("metric_hash missing, using None as "
--                                  "metric[id]. ({})".format(terr))
--                    metric[u'id'] = None
+-                        dimensions[name] = value
 +        try:
 +            if offset:
 +                offset_metric = self._get_metric_by_id(offset)
@@ -830,11 +830,12 @@ Index: monasca-api-2.2.1.dev9/monasca_api/common/repositories/cassandra/metrics_
 +            else:
 +                names.append(name)
  
--                json_metric_list.append(metric)
+-                metric[u'dimensions'] = dimensions
 +            if not names:
 +                return metric_list
  
--            return json_metric_list
+-                try:
+-                    metric[u'id'] = binascii.hexlify(bytearray(metric_hash))
 +            for name in names:
 +                if name == offset_name:
 +                    futures = self._list_metrics_by_name(tenant_id, region, name, dimensions, offset_dimensions,
@@ -847,10 +848,7 @@ Index: monasca-api-2.2.1.dev9/monasca_api/common/repositories/cassandra/metrics_
 +                    non_offset_futures.extend(
 +                        self._list_metrics_by_name(tenant_id, region, name, dimensions, None, limit,
 +                                                   start_time=None, end_time=None))
- 
--        except Exception as ex:
--            LOG.exception(ex)
--            raise exceptions.RepositoryException(ex)
++
 +            # manually filter out metrics by the offset dimension
 +            for future in offset_futures:
 +                rows = future.result()
@@ -858,29 +856,24 @@ Index: monasca-api-2.2.1.dev9/monasca_api/common/repositories/cassandra/metrics_
 +                    if offset_dimensions >= row.dimensions:
 +                        continue
  
--    def _build_dimensions_clause(self, dimensions, parms):
+-                except TypeError as terr:
+-                    LOG.exception("metric_hash missing, using None as "
+-                                  "metric[id]. ({})".format(terr))
+-                    metric[u'id'] = None
 +                    metric_list.append(self._process_metric_row(row))
  
--        dimension_clause = ''
--        if dimensions:
+-                json_metric_list.append(metric)
 +            for future in non_offset_futures:
 +                metric_list.extend((self._process_metric_row(row) for row in future.result()))
  
--            for name, value in dimensions.iteritems():
--                if not value:
--                    dimension_clause += ' and metric_map contains key %s '
+-            return json_metric_list
 +            return metric_list
  
--                    parms.append(urllib.quote_plus(name).encode('utf8'))
--                else:
--                    dimension_clause += ' and metric_map[%s] = %s '
-+        except Exception as ex:
-+            LOG.exception(ex)
-+            raise exceptions.RepositoryException(ex)
+         except Exception as ex:
+             LOG.exception(ex)
+             raise exceptions.RepositoryException(ex)
  
--                    parms.append(urllib.quote_plus(name).encode('utf8'))
--                    parms.append(urllib.quote_plus(value).encode('utf8'))
--        return dimension_clause
+-    def _build_dimensions_clause(self, dimensions, parms):
 +    @staticmethod
 +    def _process_metric_row(row):
 +        dim_map = {}
@@ -900,95 +893,111 @@ Index: monasca-api-2.2.1.dev9/monasca_api/common/repositories/cassandra/metrics_
 +        metric = {'id': binascii.hexlify(bytearray(row.metric_id)),
 +                  'name': row.metric_name,
 +                  'dimensions': dim_map}
-+
+ 
+-        dimension_clause = ''
+-        if dimensions:
 +        return metric
-+
+ 
+-            for name, value in dimensions.iteritems():
+-                if not value:
+-                    dimension_clause += ' and metric_map contains key %s '
 +    def _list_metrics_by_name(self, tenant_id, region, name, dimensions, dimension_offset, limit, start_time=None,
 +                              end_time=None):
  
--    def _build_name_clause(self, name, parms):
+-                    parms.append(urllib.quote_plus(name).encode('utf8'))
+-                else:
+-                    dimension_clause += ' and metric_map[%s] = %s '
 +        or_dimensions = []
 +        sub_dimensions = {}
 +        futures = []
  
--        name_clause = ''
--        if name:
--            name_clause = ' and metric_map[%s] = %s '
+-                    parms.append(urllib.quote_plus(name).encode('utf8'))
+-                    parms.append(urllib.quote_plus(value).encode('utf8'))
+-        return dimension_clause
 +        if not dimensions:
 +            query = self._build_metrics_by_name_query(tenant_id, region, name, dimensions, None, start_time,
 +                                                      end_time, dimension_offset, limit)
 +            futures.append(self.session.execute_async(query[0], query[1]))
 +            return futures
  
--            parms.append(urllib.quote_plus('__name__').encode('utf8'))
--            parms.append(urllib.quote_plus(name).encode('utf8'))
+-    def _build_name_clause(self, name, parms):
 +        wildcard_dimensions = []
 +        for dim_name, dim_value in dimensions.items():
 +            if not dim_value:
 +                wildcard_dimensions.append(dim_name)
  
--        return name_clause
+-        name_clause = ''
+-        if name:
+-            name_clause = ' and metric_map[%s] = %s '
 +            elif '|' in dim_value:
  
--    def _build_select_metric_map_query(self, tenant_id, region, parms):
+-            parms.append(urllib.quote_plus('__name__').encode('utf8'))
+-            parms.append(urllib.quote_plus(name).encode('utf8'))
 +                def f(val):
 +                    return {dim_name: val}
+ 
+-        return name_clause
++                or_dimensions.append(list(map(f, sorted(dim_value.split('|')))))
+ 
+-    def _build_select_metric_map_query(self, tenant_id, region, parms):
++            else:
++                sub_dimensions[dim_name] = dim_value
  
 -        select_stmt = """
 -          select metric_map
 -          from metric_map
 -          where tenant_id = %s and region = %s
 -          """
-+                or_dimensions.append(list(map(f, sorted(dim_value.split('|')))))
- 
--        parms.append(tenant_id.encode('utf8'))
--        parms.append(region.encode('utf8'))
-+            else:
-+                sub_dimensions[dim_name] = dim_value
- 
--        return select_stmt
 +        if or_dimensions:
 +            or_dims_list = list(itertools.product(*or_dimensions))
  
--    def measurement_list(self, tenant_id, region, name, dimensions,
--                         start_timestamp, end_timestamp, offset,
--                         limit, merge_metrics_flag):
+-        parms.append(tenant_id.encode('utf8'))
+-        parms.append(region.encode('utf8'))
 +            for or_dims_tuple in or_dims_list:
 +                extracted_dimensions = sub_dimensions.copy()
  
--        try:
+-        return select_stmt
 +                for dims in iter(or_dims_tuple):
 +                    for k, v in dims.iteritems():
 +                        extracted_dimensions[k] = v
  
--            json_measurement_list = []
+-    def measurement_list(self, tenant_id, region, name, dimensions,
+-                         start_timestamp, end_timestamp, offset,
+-                         limit, merge_metrics_flag):
 +                query = self._build_metrics_by_name_query(tenant_id, region, name, extracted_dimensions,
 +                                                          wildcard_dimensions, start_time,
 +                                                          end_time, dimension_offset, limit)
  
--            rows = self._get_measurements(tenant_id, region, name, dimensions,
--                                          start_timestamp, end_timestamp,
--                                          offset, limit, merge_metrics_flag)
+-        try:
 +                futures.append(self.session.execute_async(query[0], query[1]))
  
--            if not rows:
--                return json_measurement_list
+-            json_measurement_list = []
 +        else:
 +            query = self._build_metrics_by_name_query(tenant_id, region, name, sub_dimensions, wildcard_dimensions,
 +                                                      start_time,
 +                                                      end_time, dimension_offset, limit)
 +            futures.append(self.session.execute_async(query[0], query[1]))
  
+-            rows = self._get_measurements(tenant_id, region, name, dimensions,
+-                                          start_timestamp, end_timestamp,
+-                                          offset, limit, merge_metrics_flag)
++        return futures
+ 
+-            if not rows:
+-                return json_measurement_list
++    def _get_metric_by_id(self, metric_id):
+ 
 -            if not merge_metrics_flag:
 -                dimensions = self._get_dimensions(tenant_id, region, name, dimensions)
-+        return futures
++        rows = self.session.execute(self.metric_by_id_stmt, [bytearray.fromhex(metric_id)])
  
 -            measurements_list = (
 -                [[self._isotime_msec(time_stamp),
 -                  value,
 -                  rest_utils.from_json(value_meta) if value_meta else {}]
 -                 for (time_stamp, value, value_meta) in rows])
-+    def _get_metric_by_id(self, metric_id):
++        if rows:
++            return Metric(id=metric_id, name=rows[0].metric_name, dimensions=rows[0].dimensions)
  
 -            measurement = {u'name': name,
 -                           # The last date in the measurements list.
@@ -996,37 +1005,34 @@ Index: monasca-api-2.2.1.dev9/monasca_api/common/repositories/cassandra/metrics_
 -                           u'dimensions': dimensions,
 -                           u'columns': [u'timestamp', u'value', u'value_meta'],
 -                           u'measurements': measurements_list}
-+        rows = self.session.execute(self.metric_by_id_stmt, [bytearray.fromhex(metric_id)])
- 
--            json_measurement_list.append(measurement)
-+        if rows:
-+            return Metric(id=metric_id, name=rows[0].metric_name, dimensions=rows[0].dimensions)
- 
--            return json_measurement_list
 +        return None
  
--        except exceptions.RepositoryException as ex:
--            LOG.exception(ex)
--            raise ex
+-            json_measurement_list.append(measurement)
 +    def _build_metrics_by_name_query(self, tenant_id, region, name, dimensions, wildcard_dimensions, start_time,
 +                                     end_time, dim_offset,
 +                                     limit):
  
--        except Exception as ex:
--            LOG.exception(ex)
--            raise exceptions.RepositoryException(ex)
+-            return json_measurement_list
 +        conditions = [REGION_EQ, TENANT_EQ]
 +        params = [region, tenant_id.encode('utf8')]
  
--    def _get_measurements(self, tenant_id, region, name, dimensions,
--                          start_timestamp, end_timestamp, offset, limit,
--                          merge_metrics_flag):
+-        except exceptions.RepositoryException as ex:
+-            LOG.exception(ex)
+-            raise ex
+-
+-        except Exception as ex:
+-            LOG.exception(ex)
+-            raise exceptions.RepositoryException(ex)
 +        if name:
 +            conditions.append(METRIC_NAME_EQ)
 +            params.append(name)
 +        else:
 +            conditions.append('')
  
+-    def _get_measurements(self, tenant_id, region, name, dimensions,
+-                          start_timestamp, end_timestamp, offset, limit,
+-                          merge_metrics_flag):
+-
 -        metric_list = self.list_metrics(tenant_id, region, name,
 -                                        dimensions, None, None,
 -                                        start_timestamp, end_timestamp,
@@ -1330,19 +1336,6 @@ Index: monasca-api-2.2.1.dev9/monasca_api/common/repositories/cassandra/metrics_
 -    def metrics_statistics(self, tenant_id, region, name, dimensions,
 -                           start_timestamp, end_timestamp, statistics,
 -                           period, offset, limit, merge_metrics_flag):
--
--        try:
--
--            if not period:
--                period = 300
--            period = int(period)
--
--            if offset:
--                if '_' in offset:
--                    tmp = datetime.strptime(str(offset).split('_')[1], "%Y-%m-%dT%H:%M:%SZ")
--                    tmp = tmp + timedelta(seconds=int(period))
--                    # Leave out any ID as cassandra doesn't understand it
--                    offset = tmp.isoformat()
 +    def _query_merge_measurements(self, metrics, dimensions, start_timestamp, end_timestamp,
 +                                  offset_timestamp, limit):
 +        results = []
@@ -1375,9 +1368,7 @@ Index: monasca-api-2.2.1.dev9/monasca_api/common/repositories/cassandra/metrics_
 +                if limit:
 +                    fetch_size = min(self.session.default_fetch_size,
 +                                     max(1000, limit / min(index, 4)))
-                 else:
--                    tmp = datetime.strptime(offset, "%Y-%m-%dT%H:%M:%SZ")
--                    offset = tmp + timedelta(seconds=int(period))
++                else:
 +                    fetch_size = self.session.default_fetch_size
 +                query = self._build_measurement_query(metric['id'],
 +                                                      start_timestamp,
@@ -1411,14 +1402,13 @@ Index: monasca-api-2.2.1.dev9/monasca_api/common/repositories/cassandra/metrics_
 +                                'dimensions': result[0]['dimensions']})
 +            if limit and count >= limit:
 +                break
-+
+ 
+-        try:
 +        return count, series_list
  
--            rows = self._get_measurements(tenant_id, region, name, dimensions,
--                                          start_timestamp, end_timestamp,
--                                          offset, limit, merge_metrics_flag)
--
--            json_statistics_list = []
+-            if not period:
+-                period = 300
+-            period = int(period)
 +    @staticmethod
 +    def _build_measurement_query(metric_id, start_timestamp,
 +                                 end_timestamp, offset_timestamp,
@@ -1435,26 +1425,38 @@ Index: monasca-api-2.2.1.dev9/monasca_api/common/repositories/cassandra/metrics_
 +        else:
 +            conditions.append('')
  
--            if not rows:
--                return json_statistics_list
+-            if offset:
+-                if '_' in offset:
+-                    tmp = datetime.strptime(str(offset).split('_')[1], "%Y-%m-%dT%H:%M:%SZ")
+-                    tmp = tmp + timedelta(seconds=int(period))
+-                    # Leave out any ID as cassandra doesn't understand it
+-                    offset = tmp.isoformat()
+-                else:
+-                    tmp = datetime.strptime(offset, "%Y-%m-%dT%H:%M:%SZ")
+-                    offset = tmp + timedelta(seconds=int(period))
 +        if end_timestamp:
 +            conditions.append(END_TIME_LE)
 +            params.append(int(end_timestamp * 1000))
 +        else:
 +            conditions.append('')
- 
--            requested_statistics = [stat.lower() for stat in statistics]
++
 +        if limit:
 +            conditions.append(LIMIT_CLAUSE)
 +            params.append(limit)
 +        else:
 +            conditions.append('')
-+
+ 
+-            rows = self._get_measurements(tenant_id, region, name, dimensions,
+-                                          start_timestamp, end_timestamp,
+-                                          offset, limit, merge_metrics_flag)
 +        return SimpleStatement(MEASUREMENT_LIST_CQL % tuple(conditions), fetch_size=fetch_size), params
-+
+ 
+-            json_statistics_list = []
 +    def _merge_series(self, series, dimensions, limit):
 +        series_list = []
-+
+ 
+-            if not rows:
+-                return json_statistics_list
 +        if not series:
 +            return series_list
 +
@@ -1470,9 +1472,11 @@ Index: monasca-api-2.2.1.dev9/monasca_api/common/repositories/cassandra/metrics_
 +                                  rest_utils.from_json(row.value_meta) if row.value_meta else {}])
 +            else:
 +                num_series -= 1
-+
+ 
+-            requested_statistics = [stat.lower() for stat in statistics]
 +        top_batch.sort(key=lambda m: m[1], reverse=True)
-+
+ 
+-            columns = [u'timestamp']
 +        count = 0
 +        while (not limit or count < limit) and top_batch:
 +            measurements.append([self._isotime_msec(top_batch[num_series - 1][1]),
@@ -1485,28 +1489,33 @@ Index: monasca-api-2.2.1.dev9/monasca_api/common/repositories/cassandra/metrics_
 +                                             row.time_stamp,
 +                                             row.value,
 +                                             rest_utils.from_json(row.value_meta) if row.value_meta else {}]
-+
+ 
+-            if 'avg' in requested_statistics:
+-                columns.append(u'avg')
 +                top_batch.sort(key=lambda m: m[1], reverse=True)
 +            else:
 +                num_series -= 1
 +                top_batch.pop()
  
--            columns = [u'timestamp']
+-            if 'min' in requested_statistics:
+-                columns.append(u'min')
 +        series_list.append({'name': series[0][0]['name'],
 +                            'id': series[0][0]['id'],
 +                            'columns': ['timestamp', 'value', 'value_meta'],
 +                            'measurements': measurements,
 +                            'dimensions': dimensions})
  
--            if 'avg' in requested_statistics:
--                columns.append(u'avg')
+-            if 'max' in requested_statistics:
+-                columns.append(u'max')
 +        return count, series_list
  
--            if 'min' in requested_statistics:
--                columns.append(u'min')
+-            if 'count' in requested_statistics:
+-                columns.append(u'count')
 +    @staticmethod
 +    def _group_metrics(metrics, group_by, search_by):
-+
+ 
+-            if 'sum' in requested_statistics:
+-                columns.append(u'sum')
 +        grouped_metrics = {}
 +        for metric in metrics:
 +            key = ''
@@ -1517,39 +1526,6 @@ Index: monasca-api-2.2.1.dev9/monasca_api/common/repositories/cassandra/metrics_
 +                if value != '_':
 +                    display_dimensions[name] = value
 +                key = key + '='.join((urllib.quote_plus(name), urllib.quote_plus(value))) + '&'
-+
-+            metric['dimensions'] = display_dimensions
-+
-+            if key in grouped_metrics:
-+                grouped_metrics[key].append(metric)
-+            else:
-+                grouped_metrics[key] = [metric]
- 
--            if 'max' in requested_statistics:
--                columns.append(u'max')
-+        grouped_metrics = grouped_metrics.items()
-+        grouped_metrics.sort(key=lambda k: k[0])
-+        return [x[1] for x in grouped_metrics]
- 
--            if 'count' in requested_statistics:
--                columns.append(u'count')
-+    @staticmethod
-+    def _isotime_msec(timestamp):
-+        """Stringify datetime in ISO 8601 format + millisecond.
-+        """
-+        st = timestamp.isoformat()
-+        if '.' in st:
-+            st = st[:23] + 'Z'
-+        else:
-+            st += '.000Z'
-+        return st.decode('utf8')
- 
--            if 'sum' in requested_statistics:
--                columns.append(u'sum')
-+    def metrics_statistics(self, tenant_id, region, name, dimensions,
-+                           start_timestamp, end_timestamp, statistics,
-+                           period, offset, limit, merge_metrics_flag,
-+                           group_by):
  
 -            first_row = rows[0]
 -            stats_count = 0
@@ -1557,15 +1533,13 @@ Index: monasca-api-2.2.1.dev9/monasca_api/common/repositories/cassandra/metrics_
 -            stats_max = first_row.value
 -            stats_min = first_row.value
 -            start_period = first_row.time_stamp
-+        if not period:
-+            period = 300
-+        else:
-+            period = int(period)
++            metric['dimensions'] = display_dimensions
  
 -            stats_list = []
-+        series_list = self.measurement_list(tenant_id, region, name, dimensions,
-+                                            start_timestamp, end_timestamp,
-+                                            offset, None, merge_metrics_flag, group_by)
++            if key in grouped_metrics:
++                grouped_metrics[key].append(metric)
++            else:
++                grouped_metrics[key] = [metric]
  
 -            start_datetime = datetime.utcfromtimestamp(start_timestamp)
 -            if offset and offset > start_datetime:
@@ -1582,57 +1556,74 @@ Index: monasca-api-2.2.1.dev9/monasca_api/common/repositories/cassandra/metrics_
 -                    stat.append(0)
 -                tmp_start_period += timedelta(seconds=period)
 -                stats_list.append(stat)
-+        json_statistics_list = []
++        grouped_metrics = grouped_metrics.items()
++        grouped_metrics.sort(key=lambda k: k[0])
++        return [x[1] for x in grouped_metrics]
++
++    @staticmethod
++    def _isotime_msec(timestamp):
++        """Stringify datetime in ISO 8601 format + millisecond.
++        """
++        st = timestamp.isoformat()
++        if '.' in st:
++            st = st[:23] + 'Z'
++        else:
++            st += '.000Z'
++        return st.decode('utf8')
  
 -            for (time_stamp, value, value_meta) in rows:
-+        if not series_list:
-+            return json_statistics_list
++    def metrics_statistics(self, tenant_id, region, name, dimensions,
++                           start_timestamp, end_timestamp, statistics,
++                           period, offset, limit, merge_metrics_flag,
++                           group_by):
  
 -                if (time_stamp - start_period).seconds >= period:
-+        statistics = [stat.lower() for stat in statistics]
++        if not period:
++            period = 300
++        else:
++            period = int(period)
  
 -                    stat = [
 -                        start_period.strftime('%Y-%m-%dT%H:%M:%SZ').decode(
 -                            'utf8')]
-+        columns = [u'timestamp']
++        series_list = self.measurement_list(tenant_id, region, name, dimensions,
++                                            start_timestamp, end_timestamp,
++                                            offset, None, merge_metrics_flag, group_by)
  
 -                    if 'avg' in requested_statistics:
 -                        stat.append(stats_sum / stats_count)
-+        columns.extend([x for x in ['avg', 'min', 'max', 'count', 'sum'] if x in statistics])
++        json_statistics_list = []
  
 -                    if 'min' in requested_statistics:
 -                        stat.append(stats_min)
++        if not series_list:
++            return json_statistics_list
+ 
+-                        stats_min = value
++        statistics = [stat.lower() for stat in statistics]
+ 
+-                    if 'max' in requested_statistics:
+-                        stat.append(stats_max)
++        columns = [u'timestamp']
+ 
+-                        stats_max = value
++        columns.extend([x for x in ['avg', 'min', 'max', 'count', 'sum'] if x in statistics])
+ 
+-                    if 'count' in requested_statistics:
+-                        stat.append(stats_count)
 +        start_time = datetime.utcfromtimestamp(start_timestamp)
 +        if end_timestamp:
 +            end_time = datetime.utcfromtimestamp(end_timestamp)
 +        else:
 +            end_time = datetime.utcnow()
  
--                        stats_min = value
-+        for series in series_list:
- 
--                    if 'max' in requested_statistics:
--                        stat.append(stats_max)
-+            if limit <= 0:
-+                break
- 
--                        stats_max = value
-+            measurements = series['measurements']
- 
--                    if 'count' in requested_statistics:
--                        stat.append(stats_count)
-+            if not measurements:
-+                continue
- 
 -                    if 'sum' in requested_statistics:
 -                        stat.append(stats_sum)
-+            first_measure = measurements[0]
-+            first_measure_start_time = MetricsRepository._parse_time_string(first_measure[0])
++        for series in series_list:
  
 -                    stats_list.append(stat)
-+            # skip blank intervals at the beginning, finds the start time of stat period that is not empty
-+            stat_start_time = start_time + timedelta(
-+                seconds=((first_measure_start_time - start_time).seconds / period) * period)
++            if limit <= 0:
++                break
  
 -                    tmp_start_period = start_period + timedelta(seconds=period)
 -                    while time_stamp > tmp_start_period:
@@ -1644,35 +1635,64 @@ Index: monasca-api-2.2.1.dev9/monasca_api/common/repositories/cassandra/metrics_
 -                            stat.append(0)
 -                        tmp_start_period += timedelta(seconds=period)
 -                        stats_list.append(stat)
+-
+-                    start_period = time_stamp
+-
+-                    stats_sum = 0
+-                    stats_count = 0
+-
+-                stats_count += 1
+-                stats_sum += value
+-
+-                if 'min' in requested_statistics:
++            measurements = series['measurements']
+ 
+-                    if value < stats_min:
+-                        stats_min = value
++            if not measurements:
++                continue
+ 
+-                if 'max' in requested_statistics:
++            first_measure = measurements[0]
++            first_measure_start_time = MetricsRepository._parse_time_string(first_measure[0])
+ 
+-                    if value > stats_max:
+-                        stats_max = value
++            # skip blank intervals at the beginning, finds the start time of stat period that is not empty
++            stat_start_time = start_time + timedelta(
++                seconds=((first_measure_start_time - start_time).seconds / period) * period)
+ 
+-            if stats_count:
 +            stats_list = []
 +            stats_count = 0
 +            stats_sum = 0
 +            stats_min = stats_max = first_measure[1]
- 
--                    start_period = time_stamp
++
 +            for measurement in series['measurements']:
  
--                    stats_sum = 0
--                    stats_count = 0
+-                stat = [start_period.strftime('%Y-%m-%dT%H:%M:%SZ').decode(
+-                    'utf8')]
 +                time_stamp = MetricsRepository._parse_time_string(measurement[0])
 +                value = measurement[1]
  
--                stats_count += 1
--                stats_sum += value
+-                if 'avg' in requested_statistics:
+-                    stat.append(stats_sum / stats_count)
 +                if (time_stamp - stat_start_time).seconds >= period:
  
 -                if 'min' in requested_statistics:
+-                    stat.append(stats_min)
 +                    stat = MetricsRepository._create_stat(statistics, stat_start_time, stats_count,
 +                                                          stats_sum, stats_min, stats_max)
  
--                    if value < stats_min:
--                        stats_min = value
+-                if 'max' in requested_statistics:
+-                    stat.append(stats_max)
 +                    stats_list.append(stat)
 +                    limit -= 1
 +                    if limit <= 0:
 +                        break
  
--                if 'max' in requested_statistics:
+-                if 'count' in requested_statistics:
+-                    stat.append(stats_count)
 +                    # initialize the new stat period
 +                    stats_sum = value
 +                    stats_count = 1
@@ -1680,55 +1700,19 @@ Index: monasca-api-2.2.1.dev9/monasca_api/common/repositories/cassandra/metrics_
 +                    stats_max = value
 +                    stat_start_time += timedelta(seconds=period)
  
--                    if value > stats_max:
--                        stats_max = value
+-                if 'sum' in requested_statistics:
+-                    stat.append(stats_sum)
 +                else:
 +                    stats_min = min(stats_min, value)
 +                    stats_max = max(stats_max, value)
 +                    stats_count += 1
 +                    stats_sum += value
  
-             if stats_count:
++            if stats_count:
 +                stat = MetricsRepository._create_stat(statistics, stat_start_time, stats_count, stats_sum,
 +                                                      stats_min, stats_max)
-+                stats_list.append(stat)
+                 stats_list.append(stat)
 +                limit -= 1
- 
--                stat = [start_period.strftime('%Y-%m-%dT%H:%M:%SZ').decode(
--                    'utf8')]
-+            stats_end_time = stat_start_time + timedelta(seconds=period) - timedelta(milliseconds=1)
-+            if stats_end_time > end_time:
-+                stats_end_time = end_time
- 
--                if 'avg' in requested_statistics:
--                    stat.append(stats_sum / stats_count)
-+            statistic = {u'name': name.decode('utf8'),
-+                         u'id': series['id'],
-+                         u'dimensions': series['dimensions'],
-+                         u'columns': columns,
-+                         u'statistics': stats_list,
-+                         u'end_time': self._isotime_msec(stats_end_time)}
- 
--                if 'min' in requested_statistics:
--                    stat.append(stats_min)
-+            json_statistics_list.append(statistic)
- 
--                if 'max' in requested_statistics:
--                    stat.append(stats_max)
-+        return json_statistics_list
- 
--                if 'count' in requested_statistics:
--                    stat.append(stats_count)
-+    @staticmethod
-+    def _create_stat(statistics, timestamp, stat_count=None, stat_sum=None, stat_min=None, stat_max=None):
- 
--                if 'sum' in requested_statistics:
--                    stat.append(stats_sum)
-+        stat = [MetricsRepository._isotime_msec(timestamp)]
- 
--                stats_list.append(stat)
-+        if not stat_count:
-+            stat.extend([0] * len(statistics))
  
 -                if end_timestamp:
 -                    time_stamp = datetime.utcfromtimestamp(end_timestamp)
@@ -1744,36 +1728,56 @@ Index: monasca-api-2.2.1.dev9/monasca_api/common/repositories/cassandra/metrics_
 -                        stat.append(0)
 -                    tmp_start_period += timedelta(seconds=period)
 -                    stats_list.append(stat)
-+        else:
-+            if 'avg' in statistics:
-+                stat.append(stat_sum / stat_count)
++            stats_end_time = stat_start_time + timedelta(seconds=period) - timedelta(milliseconds=1)
++            if stats_end_time > end_time:
++                stats_end_time = end_time
  
--            statistic = {u'name': name.decode('utf8'),
+             statistic = {u'name': name.decode('utf8'),
 -                         # The last date in the stats list.
 -                         u'id': stats_list[-1][0],
 -                         u'dimensions': dimensions,
--                         u'columns': columns,
++                         u'id': series['id'],
++                         u'dimensions': series['dimensions'],
+                          u'columns': columns,
 -                         u'statistics': stats_list}
-+            if 'min' in statistics:
-+                stat.append(stat_min)
++                         u'statistics': stats_list,
++                         u'end_time': self._isotime_msec(stats_end_time)}
  
--            json_statistics_list.append(statistic)
-+            if 'max' in statistics:
-+                stat.append(stat_max)
+             json_statistics_list.append(statistic)
  
 -            return json_statistics_list
-+            if 'count' in statistics:
-+                stat.append(stat_count)
++        return json_statistics_list
  
 -        except exceptions.RepositoryException as ex:
 -            LOG.exception(ex)
 -            raise ex
-+            if 'sum' in statistics:
-+                stat.append(stat_sum)
++    @staticmethod
++    def _create_stat(statistics, timestamp, stat_count=None, stat_sum=None, stat_min=None, stat_max=None):
  
 -        except Exception as ex:
 -            LOG.exception(ex)
 -            raise exceptions.RepositoryException(ex)
++        stat = [MetricsRepository._isotime_msec(timestamp)]
++
++        if not stat_count:
++            stat.extend([0] * len(statistics))
++
++        else:
++            if 'avg' in statistics:
++                stat.append(stat_sum / stat_count)
++
++            if 'min' in statistics:
++                stat.append(stat_min)
++
++            if 'max' in statistics:
++                stat.append(stat_max)
++
++            if 'count' in statistics:
++                stat.append(stat_count)
++
++            if 'sum' in statistics:
++                stat.append(stat_sum)
++
 +        return stat
 +
 +    @staticmethod
@@ -1902,7 +1906,8 @@ Index: monasca-api-2.2.1.dev9/monasca_api/common/repositories/cassandra/metrics_
 -    def list_dimension_values(self, tenant_id, region, metric_name,
 -                              dimension_name):
 -
--        try:
++    def check_status():
+         try:
 -
 -            parms = []
 -
@@ -1942,14 +1947,18 @@ Index: monasca-api-2.2.1.dev9/monasca_api/common/repositories/cassandra/metrics_
 -
 -            return sorted(json_dim_value_list)
 -
--        except Exception as ex:
++            cluster = Cluster(
++                CONF.cassandra.contact_points
++            )
++            session = cluster.connect(CONF.cassandra.keyspace)
++            session.shutdown()
+         except Exception as ex:
 -            LOG.exception(ex)
 -            raise exceptions.RepositoryException(ex)
 -
 -    def list_dimension_names(self, tenant_id, region, metric_name):
 -
-+    def check_status():
-         try:
+-        try:
 -
 -            parms = []
 -
@@ -1979,21 +1988,16 @@ Index: monasca-api-2.2.1.dev9/monasca_api/common/repositories/cassandra/metrics_
 -
 -            return sorted(json_dim_name_list)
 -
-+            cluster = Cluster(
-+                CONF.cassandra.contact_points
-+            )
-+            session = cluster.connect(CONF.cassandra.keyspace)
-+            session.shutdown()
-         except Exception as ex:
+-        except Exception as ex:
 -            LOG.exception(ex)
 -            raise exceptions.RepositoryException(ex)
 +            LOG.exception(str(ex))
 +            return False, str(ex)
 +        return True, 'OK'
-Index: monasca-api-2.2.1.dev9/monasca_api/common/repositories/influxdb/metrics_repository.py
+Index: monasca-api-2.2.1.dev26/monasca_api/common/repositories/influxdb/metrics_repository.py
 ===================================================================
---- monasca-api-2.2.1.dev9.orig/monasca_api/common/repositories/influxdb/metrics_repository.py
-+++ monasca-api-2.2.1.dev9/monasca_api/common/repositories/influxdb/metrics_repository.py
+--- monasca-api-2.2.1.dev26.orig/monasca_api/common/repositories/influxdb/metrics_repository.py
++++ monasca-api-2.2.1.dev26/monasca_api/common/repositories/influxdb/metrics_repository.py
 @@ -554,13 +554,21 @@ class MetricsRepository(metrics_reposito
  
          json_measurement_list = []
@@ -2028,10 +2032,10 @@ Index: monasca-api-2.2.1.dev9/monasca_api/common/repositories/influxdb/metrics_r
              index = offset_id
  
              for serie in result.raw['series']:
-Index: monasca-api-2.2.1.dev9/monasca_api/conf/cassandra.py
+Index: monasca-api-2.2.1.dev26/monasca_api/conf/cassandra.py
 ===================================================================
 --- /dev/null
-+++ monasca-api-2.2.1.dev9/monasca_api/conf/cassandra.py
++++ monasca-api-2.2.1.dev26/monasca_api/conf/cassandra.py
 @@ -0,0 +1,43 @@
 +# Copyright 2014 IBM Corp.
 +# Copyright 2016-2017 FUJITSU LIMITED
@@ -2076,10 +2080,10 @@ Index: monasca-api-2.2.1.dev9/monasca_api/conf/cassandra.py
 +
 +def list_opts():
 +    return cassandra_group, cassandra_opts
-Index: monasca-api-2.2.1.dev9/monasca_api/healthcheck/metrics_db_check.py
+Index: monasca-api-2.2.1.dev26/monasca_api/healthcheck/metrics_db_check.py
 ===================================================================
---- monasca-api-2.2.1.dev9.orig/monasca_api/healthcheck/metrics_db_check.py
-+++ monasca-api-2.2.1.dev9/monasca_api/healthcheck/metrics_db_check.py
+--- monasca-api-2.2.1.dev26.orig/monasca_api/healthcheck/metrics_db_check.py
++++ monasca-api-2.2.1.dev26/monasca_api/healthcheck/metrics_db_check.py
 @@ -87,9 +87,7 @@ class MetricsDbCheck(base.BaseHealthChec
          if self._cluster is None:
              return False, "Cassandra driver not imported"
@@ -2091,10 +2095,10 @@ Index: monasca-api-2.2.1.dev9/monasca_api/healthcheck/metrics_db_check.py
              session = cassandra.connect(CONF.cassandra.keyspace)
              session.shutdown()
          except Exception as ex:
-Index: monasca-api-2.2.1.dev9/monasca_api/tests/test_metrics_db_health_check.py
+Index: monasca-api-2.2.1.dev26/monasca_api/tests/test_metrics_db_health_check.py
 ===================================================================
---- monasca-api-2.2.1.dev9.orig/monasca_api/tests/test_metrics_db_health_check.py
-+++ monasca-api-2.2.1.dev9/monasca_api/tests/test_metrics_db_health_check.py
+--- monasca-api-2.2.1.dev26.orig/monasca_api/tests/test_metrics_db_health_check.py
++++ monasca-api-2.2.1.dev26/monasca_api/tests/test_metrics_db_health_check.py
 @@ -29,7 +29,7 @@ CONF = cfg.CONF
  
  class TestMetricsDbHealthCheck(base.BaseTestCase):
@@ -2137,10 +2141,10 @@ Index: monasca-api-2.2.1.dev9/monasca_api/tests/test_metrics_db_health_check.py
  
 +        self.assertEqual("OK", result.message)
          self.assertTrue(result.healthy)
-Index: monasca-api-2.2.1.dev9/monasca_api/tests/test_repositories.py
+Index: monasca-api-2.2.1.dev26/monasca_api/tests/test_repositories.py
 ===================================================================
---- monasca-api-2.2.1.dev9.orig/monasca_api/tests/test_repositories.py
-+++ monasca-api-2.2.1.dev9/monasca_api/tests/test_repositories.py
+--- monasca-api-2.2.1.dev26.orig/monasca_api/tests/test_repositories.py
++++ monasca-api-2.2.1.dev26/monasca_api/tests/test_repositories.py
 @@ -1,5 +1,7 @@
  # Copyright 2015 Cray Inc. All Rights Reserved.
  # (C) Copyright 2016-2017 Hewlett Packard Enterprise Development LP
@@ -2149,12 +2153,8 @@ Index: monasca-api-2.2.1.dev9/monasca_api/tests/test_repositories.py
  #
  # Licensed under the Apache License, Version 2.0 (the "License"); you may
  # not use this file except in compliance with the License. You may obtain
-@@ -189,26 +191,34 @@ class TestRepoMetricsCassandra(testtools
-     def setUp(self):
-         super(TestRepoMetricsCassandra, self).setUp()
-+        # self.conf_default(contact_points='127.0.0.1',
-+        #                  group='cassandra')
-+
+@@ -191,24 +193,27 @@ class TestRepoMetricsCassandra(testtools
+ 
          self._fixture_config = self.useFixture(
              fixture_config.Config(cfg.CONF))
 -        self._fixture_config.config(cluster_ip_addresses='127.0.0.1',
@@ -2194,7 +2194,7 @@ Index: monasca-api-2.2.1.dev9/monasca_api/tests/test_repositories.py
  
          repo = cassandra_repo.MetricsRepository()
  
-@@ -234,21 +244,26 @@ class TestRepoMetricsCassandra(testtools
+@@ -234,21 +239,26 @@ class TestRepoMetricsCassandra(testtools
                  u'hosttype': u'native'
              }}], result)
  
@@ -2235,7 +2235,7 @@ Index: monasca-api-2.2.1.dev9/monasca_api/tests/test_repositories.py
  
          repo = cassandra_repo.MetricsRepository()
  
-@@ -276,27 +291,19 @@ class TestRepoMetricsCassandra(testtools.TestCase):
+@@ -276,27 +286,19 @@ class TestRepoMetricsCassandra(testtools
  
      @patch("monasca_api.common.repositories.cassandra.metrics_repository.Cluster.connect")
      def test_list_metric_names(self, cassandra_connect_mock):
@@ -2273,7 +2273,7 @@ Index: monasca-api-2.2.1.dev9/monasca_api/tests/test_repositories.py
          ]
  
          repo = cassandra_repo.MetricsRepository()
-@@ -320,30 +327,31 @@ class TestRepoMetricsCassandra(testtools
+@@ -320,30 +322,31 @@ class TestRepoMetricsCassandra(testtools
  
      @patch("monasca_api.common.repositories.cassandra.metrics_repository.Cluster.connect")
      def test_measurement_list(self, cassandra_connect_mock):
@@ -2323,7 +2323,7 @@ Index: monasca-api-2.2.1.dev9/monasca_api/tests/test_repositories.py
              ]
          ]
  
-@@ -356,42 +364,47 @@ class TestRepoMetricsCassandra(testtools
+@@ -356,42 +359,47 @@ class TestRepoMetricsCassandra(testtools
              start_timestamp=1,
              end_timestamp=2,
              offset=None,
@@ -2393,7 +2393,7 @@ Index: monasca-api-2.2.1.dev9/monasca_api/tests/test_repositories.py
              [
                  Measurement(self._convert_time_string("2016-05-19T11:58:24Z"), 95.0, '{}'),
                  Measurement(self._convert_time_string("2016-05-19T11:58:25Z"), 97.0, '{}'),
-@@ -418,28 +431,33 @@ class TestRepoMetricsCassandra(testtools
+@@ -418,28 +426,33 @@ class TestRepoMetricsCassandra(testtools
              period=300,
              offset=None,
              limit=1,
@@ -2434,7 +2434,7 @@ Index: monasca-api-2.2.1.dev9/monasca_api/tests/test_repositories.py
                           self._convert_time_string("2016-05-19T11:58:27Z"),
                           """[{
                               "dimensions": {"hostname": "devstack", "service": "monitoring"},
-@@ -470,18 +488,19 @@ class TestRepoMetricsCassandra(testtools
+@@ -470,18 +483,19 @@ class TestRepoMetricsCassandra(testtools
                                       }
                                   }
                               }
@@ -2459,10 +2459,10 @@ Index: monasca-api-2.2.1.dev9/monasca_api/tests/test_repositories.py
                  u'new_state': u'OK',
                  u'old_state': u'UNDETERMINED',
                  u'reason_data': u'{}',
-Index: monasca-api-2.2.1.dev9/monasca_api/v2/reference/__init__.py
+Index: monasca-api-2.2.1.dev26/monasca_api/v2/reference/__init__.py
 ===================================================================
---- monasca-api-2.2.1.dev9.orig/monasca_api/v2/reference/__init__.py
-+++ monasca-api-2.2.1.dev9/monasca_api/v2/reference/__init__.py
+--- monasca-api-2.2.1.dev26.orig/monasca_api/v2/reference/__init__.py
++++ monasca-api-2.2.1.dev26/monasca_api/v2/reference/__init__.py
 @@ -142,7 +142,7 @@ influxdb_group = cfg.OptGroup(name='infl
  cfg.CONF.register_group(influxdb_group)
  cfg.CONF.register_opts(influxdb_opts, influxdb_group)
@@ -2472,10 +2472,10 @@ Index: monasca-api-2.2.1.dev9/monasca_api/v2/reference/__init__.py
  
  cassandra_group = cfg.OptGroup(name='cassandra', title='cassandra')
  cfg.CONF.register_group(cassandra_group)
-Index: monasca-api-2.2.1.dev9/monasca_api/v2/reference/helpers.py
+Index: monasca-api-2.2.1.dev26/monasca_api/v2/reference/helpers.py
 ===================================================================
---- monasca-api-2.2.1.dev9.orig/monasca_api/v2/reference/helpers.py
-+++ monasca-api-2.2.1.dev9/monasca_api/v2/reference/helpers.py
+--- monasca-api-2.2.1.dev26.orig/monasca_api/v2/reference/helpers.py
++++ monasca-api-2.2.1.dev26/monasca_api/v2/reference/helpers.py
 @@ -1,5 +1,6 @@
  # Copyright 2015 Cray Inc. All Rights Reserved.
  # (C) Copyright 2014,2016-2017 Hewlett Packard Enterprise Development LP
@@ -2521,10 +2521,10 @@ Index: monasca-api-2.2.1.dev9/monasca_api/v2/reference/helpers.py
                  statistic_elements.append(statistic)
  
          resource[u'elements'] = statistic_elements
-Index: monasca-api-2.2.1.dev9/monasca_tempest_tests/tests/api/helpers.py
+Index: monasca-api-2.2.1.dev26/monasca_tempest_tests/tests/api/helpers.py
 ===================================================================
---- monasca-api-2.2.1.dev9.orig/monasca_tempest_tests/tests/api/helpers.py
-+++ monasca-api-2.2.1.dev9/monasca_tempest_tests/tests/api/helpers.py
+--- monasca-api-2.2.1.dev26.orig/monasca_tempest_tests/tests/api/helpers.py
++++ monasca-api-2.2.1.dev26/monasca_tempest_tests/tests/api/helpers.py
 @@ -1,4 +1,5 @@
  # (C) Copyright 2015 Hewlett Packard Enterprise Development Company LP
 +# (C) Copyright SUSE LLC
@@ -2589,10 +2589,10 @@ Index: monasca-api-2.2.1.dev9/monasca_tempest_tests/tests/api/helpers.py
 +            expected_elements[i]['id'] = str(i)
  
      return expected_elements
-Index: monasca-api-2.2.1.dev9/monasca_tempest_tests/tests/api/test_dimensions.py
+Index: monasca-api-2.2.1.dev26/monasca_tempest_tests/tests/api/test_dimensions.py
 ===================================================================
---- monasca-api-2.2.1.dev9.orig/monasca_tempest_tests/tests/api/test_dimensions.py
-+++ monasca-api-2.2.1.dev9/monasca_tempest_tests/tests/api/test_dimensions.py
+--- monasca-api-2.2.1.dev26.orig/monasca_tempest_tests/tests/api/test_dimensions.py
++++ monasca-api-2.2.1.dev26/monasca_tempest_tests/tests/api/test_dimensions.py
 @@ -1,4 +1,5 @@
  # (C) Copyright 2016 Hewlett Packard Enterprise Development LP
 +# (C) Copyright 2017 SUSE LLC
@@ -2615,10 +2615,10 @@ Index: monasca-api-2.2.1.dev9/monasca_tempest_tests/tests/api/test_dimensions.py
                  return
              time.sleep(constants.RETRY_WAIT_SECS)
  
-Index: monasca-api-2.2.1.dev9/monasca_tempest_tests/tests/api/test_statistics.py
+Index: monasca-api-2.2.1.dev26/monasca_tempest_tests/tests/api/test_statistics.py
 ===================================================================
---- monasca-api-2.2.1.dev9.orig/monasca_tempest_tests/tests/api/test_statistics.py
-+++ monasca-api-2.2.1.dev9/monasca_tempest_tests/tests/api/test_statistics.py
+--- monasca-api-2.2.1.dev26.orig/monasca_tempest_tests/tests/api/test_statistics.py
++++ monasca-api-2.2.1.dev26/monasca_tempest_tests/tests/api/test_statistics.py
 @@ -1,4 +1,5 @@
  # (C) Copyright 2015-2016 Hewlett Packard Enterprise Development LP
 +# (C) Copyright 2017 SUSE LLC

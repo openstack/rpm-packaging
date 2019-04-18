@@ -21,11 +21,11 @@ task: 6191
  monasca_api/v2/reference/__init__.py               | 23 ++++++++++++++++++++--
  6 files changed, 68 insertions(+), 7 deletions(-)
 
-Index: monasca-api-2.2.1.dev9/AUTHORS
+Index: monasca-api-2.2.1.dev26/AUTHORS
 ===================================================================
---- monasca-api-2.2.1.dev9.orig/AUTHORS
-+++ monasca-api-2.2.1.dev9/AUTHORS
-@@ -64,6 +64,8 @@ Roland Hochmuth <roland.hochmuth@hp.com>
+--- monasca-api-2.2.1.dev26.orig/AUTHORS
++++ monasca-api-2.2.1.dev26/AUTHORS
+@@ -66,6 +66,8 @@ Roland Hochmuth <roland.hochmuth@hp.com>
  Ryan Bak <ryan.bak@twcable.com>
  Ryan Brandt <ryan.brandt@hp.com>
  SamKirsch10 <sam.kirsch@hp.com>
@@ -34,7 +34,7 @@ Index: monasca-api-2.2.1.dev9/AUTHORS
  Shinya Kawabata <s-kawabata@wx.jp.nec.com>
  Srinivas Sakhamuri <srini.openstack@gmail.com>
  Stefano Canepa <stefano.canepa@hp.com>
-@@ -89,6 +91,7 @@ gecong1973 <ge.cong@zte.com.cn>
+@@ -93,6 +95,7 @@ gecong1973 <ge.cong@zte.com.cn>
  haali1 <haneef.ali@hp.com>
  henriquetruta <henrique@lsd.ufcg.edu.br>
  hochmuth <roland.hochmuth@hp.com>
@@ -42,10 +42,10 @@ Index: monasca-api-2.2.1.dev9/AUTHORS
  ji-xuepeng <ji.xuepeng@zte.com.cn>
  kaiyan-sheng <kaiyan.sheng@hp.com>
  liu-sheng <liusheng@huawei.com>
-Index: monasca-api-2.2.1.dev9/devstack/files/monasca-persister/persister.yml
+Index: monasca-api-2.2.1.dev26/devstack/files/monasca-persister/persister.yml
 ===================================================================
---- monasca-api-2.2.1.dev9.orig/devstack/files/monasca-persister/persister.yml
-+++ monasca-api-2.2.1.dev9/devstack/files/monasca-persister/persister.yml
+--- monasca-api-2.2.1.dev26.orig/devstack/files/monasca-persister/persister.yml
++++ monasca-api-2.2.1.dev26/devstack/files/monasca-persister/persister.yml
 @@ -64,8 +64,8 @@ cassandraDbConfiguration:
    contactPoints:
      - %CASSANDRADB_HOST%
@@ -57,10 +57,10 @@ Index: monasca-api-2.2.1.dev9/devstack/files/monasca-persister/persister.yml
    keyspace: monasca
    localDataCenter: datacenter1
    maxConnections: 5
-Index: monasca-api-2.2.1.dev9/monasca_api/common/repositories/cassandra/metrics_repository.py
+Index: monasca-api-2.2.1.dev26/monasca_api/common/repositories/cassandra/metrics_repository.py
 ===================================================================
---- monasca-api-2.2.1.dev9.orig/monasca_api/common/repositories/cassandra/metrics_repository.py
-+++ monasca-api-2.2.1.dev9/monasca_api/common/repositories/cassandra/metrics_repository.py
+--- monasca-api-2.2.1.dev26.orig/monasca_api/common/repositories/cassandra/metrics_repository.py
++++ monasca-api-2.2.1.dev26/monasca_api/common/repositories/cassandra/metrics_repository.py
 @@ -1,5 +1,5 @@
  # (C) Copyright 2015,2016 Hewlett Packard Enterprise Development Company LP
 -# (C) Copyright 2017 SUSE LLC
@@ -91,10 +91,10 @@ Index: monasca-api-2.2.1.dev9/monasca_api/common/repositories/cassandra/metrics_
              self.session = self.cluster.connect(self.conf.cassandra.keyspace)
  
              self.dim_val_by_metric_stmt = self.session.prepare(DIMENSION_VALUE_BY_METRIC_CQL)
-Index: monasca-api-2.2.1.dev9/monasca_api/conf/cassandra.py
+Index: monasca-api-2.2.1.dev26/monasca_api/conf/cassandra.py
 ===================================================================
---- monasca-api-2.2.1.dev9.orig/monasca_api/conf/cassandra.py
-+++ monasca-api-2.2.1.dev9/monasca_api/conf/cassandra.py
+--- monasca-api-2.2.1.dev26.orig/monasca_api/conf/cassandra.py
++++ monasca-api-2.2.1.dev26/monasca_api/conf/cassandra.py
 @@ -1,7 +1,7 @@
  # Copyright 2014 IBM Corp.
  # Copyright 2016-2017 FUJITSU LIMITED
@@ -119,10 +119,10 @@ Index: monasca-api-2.2.1.dev9/monasca_api/conf/cassandra.py
  ''')
  ]
  
-Index: monasca-api-2.2.1.dev9/monasca_api/tests/test_repositories.py
+Index: monasca-api-2.2.1.dev26/monasca_api/tests/test_repositories.py
 ===================================================================
---- monasca-api-2.2.1.dev9.orig/monasca_api/tests/test_repositories.py
-+++ monasca-api-2.2.1.dev9/monasca_api/tests/test_repositories.py
+--- monasca-api-2.2.1.dev26.orig/monasca_api/tests/test_repositories.py
++++ monasca-api-2.2.1.dev26/monasca_api/tests/test_repositories.py
 @@ -20,6 +20,8 @@ from collections import namedtuple
  from datetime import datetime
  import unittest
@@ -132,7 +132,7 @@ Index: monasca-api-2.2.1.dev9/monasca_api/tests/test_repositories.py
  from mock import patch
  
  import monasca_api.common.repositories.cassandra.metrics_repository as cassandra_repo
-@@ -201,7 +203,26 @@ class TestRepoMetricsCassandra(testtools
+@@ -195,7 +197,26 @@ class TestRepoMetricsCassandra(testtools
          self._fixture_config.config(contact_points='127.0.0.1',
                                      group='cassandra')
  
@@ -160,10 +160,10 @@ Index: monasca-api-2.2.1.dev9/monasca_api/tests/test_repositories.py
      def test_list_metrics(self, cassandra_connect_mock):
          cassandra_session_mock = cassandra_connect_mock.return_value
          cassandra_future_mock = cassandra_session_mock.execute_async.return_value
-Index: monasca-api-2.2.1.dev9/monasca_api/v2/reference/__init__.py
+Index: monasca-api-2.2.1.dev26/monasca_api/v2/reference/__init__.py
 ===================================================================
---- monasca-api-2.2.1.dev9.orig/monasca_api/v2/reference/__init__.py
-+++ monasca-api-2.2.1.dev9/monasca_api/v2/reference/__init__.py
+--- monasca-api-2.2.1.dev26.orig/monasca_api/v2/reference/__init__.py
++++ monasca-api-2.2.1.dev26/monasca_api/v2/reference/__init__.py
 @@ -18,7 +18,6 @@ from oslo_config import cfg
  from oslo_config import types
  from oslo_db import options
