@@ -246,7 +246,6 @@ Group:          Applications/System
 Requires:       %{name} = %{epoch}:%{version}-%{release}
 Requires:       bridge-utils
 Requires:       curl
-Requires:       genisoimage
 Requires:       ipmitool
 Requires:       iptables
 Requires:       iscsi-initiator-utils
@@ -258,6 +257,11 @@ Requires:       {{ py2pkg('libguestfs') }}
 Requires:       {{ py2pkg('libvirt-python') }}
 Requires:       rsync
 Requires(pre):  qemu-kvm
+%if 0%{?suse_version} && 0%{?sle_version} >= 150000
+Requires:       mkisofs
+%else
+Requires:       genisoimage
+%endif
 
 %description compute
 OpenStack Compute (codename Nova) is open source software designed to
