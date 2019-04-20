@@ -36,7 +36,7 @@ Developers wishing to work on the RPM packaging for OpenStack
 project should always base their work on the latest code,
 available from the master GIT repository at:
 
-   https://git.openstack.org/cgit/openstack/rpm-packaging
+   https://opendev.org/openstack/rpm-packaging
 
 Developers should also join the discussion on the mailing list,
 at:
