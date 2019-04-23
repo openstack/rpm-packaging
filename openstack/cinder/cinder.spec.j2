@@ -205,9 +205,14 @@ access block storage volumes for use by Virtual Machine instances.
 This package contains the %{name} scheduler server.
 
 %package volume
-Summary:        OpenStack Volume service (Cinder) - Vlume
+Summary:        OpenStack Volume service (Cinder) - Volume
 Group:          Development/Languages/Python
 Requires:       %{name} = %{epoch}:%{version}-%{release}
+%if 0%{?suse_version}
+Requires:       nfs-client
+%else
+Requires:       nfs-utils
+%endif
 
 %description volume
 OpenStack Volume (codename Cinder) provides services to manage and
