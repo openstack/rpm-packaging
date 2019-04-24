@@ -65,7 +65,7 @@ echo "intersphinx_mapping = {}" >> doc/source/conf.py
 %{python_build}
 
 # Build HTML docs and man page
-%{__python2} setup.py build_sphinx
+PBR_VERSION=%{version} sphinx-build -b html doc/source doc/build/html
 
 %install
 %{python_install}
