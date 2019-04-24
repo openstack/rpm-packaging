@@ -1,11 +1,13 @@
 /var/log/keystone/*.log {
-    weekly
-    dateext
-    rotate 10
-    size 1M
-    missingok
     compress
-    notifempty
-    su keystone keystone
+    copytruncate
+    dateext
     minsize 100k
+    missingok
+    notifempty
+    rotate 10
+    sharedscripts
+    size 1M
+    su keystone keystone
+    weekly
 }
