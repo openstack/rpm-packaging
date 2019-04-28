@@ -1,0 +1,56 @@
+From 448807a706954729b645683f398ab182f21a6398 Mon Sep 17 00:00:00 2001
+From: Ben Nemec <bnemec@redhat.com>
+Date: Thu, 2 May 2019 17:00:42 +0000
+Subject: [PATCH] Explicitly set default_flow_style to False
+
+In PyYAML 5.1 they changed this default in the library. Because
+we weren't explicitly setting it, this broke our unit tests.
+Since default_flow_style=False is usually what you want (hence why
+PyYAML changed it), let's set it explicitly.
+
+Also note that this was already being set for dump, but not for
+dumps. This is also more consistent.
+
+Change-Id: I3f7dfce5ceb5d3b802878c410406994cbb0988b6
+---
+ oslo_serialization/tests/test_yamlutils.py | 10 ++++++----
+ oslo_serialization/yamlutils.py            |  2 +-
+ 2 files changed, 7 insertions(+), 5 deletions(-)
+
+diff --git a/oslo_serialization/tests/test_yamlutils.py b/oslo_serialization/tests/test_yamlutils.py
+index 817ae8c..4ba72b3 100644
+--- a/oslo_serialization/tests/test_yamlutils.py
++++ b/oslo_serialization/tests/test_yamlutils.py
+@@ -55,10 +55,12 @@ class BehaviorTestCase(base.BaseTestCase):
+         ]
+         dumped = yaml.dumps(payload)
+         expected = textwrap.dedent('''\
+-            - {foo: bar}
+-            - {list: null}
+-            - [one, two]
+-            - {check: yaml, in: test}
++            - foo: bar
++            - list: null
++            - - one
++              - two
++            - check: yaml
++              in: test
+         ''')
+         self.assertEqual(dumped, expected)
+ 
+diff --git a/oslo_serialization/yamlutils.py b/oslo_serialization/yamlutils.py
+index 921b74e..6d6be40 100644
+--- a/oslo_serialization/yamlutils.py
++++ b/oslo_serialization/yamlutils.py
+@@ -67,7 +67,7 @@ def dumps(obj, is_safe=True):
+             yaml_dumper = yaml.CSafeDumper
+         else:
+             yaml_dumper = yaml.SafeDumper
+-    return yaml.dump(obj, Dumper=yaml_dumper)
++    return yaml.dump(obj, default_flow_style=False, Dumper=yaml_dumper)
+ 
+ 
+ def dump(obj, fp, is_safe=True):
+-- 
+2.21.0
+
