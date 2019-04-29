@@ -16,6 +16,7 @@ Source0:        {{ source }}
 Source1:        mistral-api.service
 Source2:        mistral-engine.service
 Source3:        mistral-executor.service
+Source7:        mistral.tmpfiles
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('PyJWT') }}
 BuildRequires:  {{ py2pkg('aodhclient') }}
@@ -228,9 +229,12 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %install
 %{py2_install}
 
-mkdir -p %{buildroot}%{_sysconfdir}/mistral/
-mkdir -p %{buildroot}%{_localstatedir}/log/mistral
-mkdir -p %{buildroot}%{_rundir}/mistral
+install -d -m 755 %{buildroot}%{_sysconfdir}/mistral/
+install -d -m 750 %{buildroot}%{_localstatedir}/log/mistral
+
+# install tmpfiles
+install -D -m 644 %{SOURCE7} %{buildroot}/%_tmpfilesdir/%name.conf
+
 #systemd unitfiles
 install -p -D -m 644 %SOURCE1 %{buildroot}%{_unitdir}/openstack-mistral-api.service
 install -p -D -m 644 %SOURCE2 %{buildroot}%{_unitdir}/openstack-mistral-engine.service
@@ -245,7 +249,12 @@ chmod +x %{buildroot}%{_bindir}/mistral*
 %openstack_pre_user_group_create mistral mistral
 
 %check
+# we dont want hacking/pep8 tests
+rm -r mistral/tests/unit/hacking/
 %{__python2} -m stestr.cli run
+
+%post
+%tmpfiles_create %{_tmpfilesdir}/%{name}.conf
 
 %post api
 %systemd_post openstack-mistral-api.service
@@ -282,7 +291,7 @@ chmod +x %{buildroot}%{_bindir}/mistral*
 %dir %{_sysconfdir}/mistral
 %config(noreplace) %attr(-, mistral, mistral) %{_sysconfdir}/mistral/*
 %{_bindir}/mistral-*
-%dir %attr(750, mistral, mistral) %{_rundir}/mistral
+%_tmpfilesdir/%name.conf
 %dir %attr(750, mistral, mistral) %{_localstatedir}/log/mistral
 
 %files doc
