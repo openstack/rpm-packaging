@@ -33,7 +33,6 @@ Source21:       openstack-nova-spicehtml5proxy.service
 Source22:       openstack-nova-novncproxy.service
 Source23:       openstack-nova-serialproxy.service
 Source24:       openstack-nova-api-os-compute.service
-Source26:       wsgi-nova-placement-api.conf
 Source27:       nova.tmpfiles
 BuildRequires:  fdupes
 BuildRequires:  intltool
@@ -203,25 +202,6 @@ hardware and hypervisor agnostic, currently supporting a variety of
 standard hardware configurations and seven major hypervisors.
 
 This package contains the Nova services providing programmatic access.
-
-%package placement-api
-%if 0%{?suse_version}
-%define apache_name         apache2
-%define apache_site_dir     %{_sysconfdir}/%{apache_name}/vhosts.d/
-BuildRequires:  apache2-mod_wsgi
-Requires:       apache2-mod_wsgi
-%else
-%define apache_name         httpd
-%define apache_site_dir     %{_sysconfdir}/%{apache_name}/conf.d/
-BuildRequires:  mod_wsgi
-Requires:       mod_wsgi
-%endif
-Summary:        OpenStack Nova - Placement API service
-Group:          Applications/System
-Requires:       %{name} = %{epoch}:%{version}-%{release}
-
-%description placement-api
-This package contains the OpenStack Nova Placement API.
 
 %package cert
 Summary:        OpenStack Nova certificate management service
@@ -526,17 +506,6 @@ install -d -m 700 %{buildroot}%{_rundir}/nova
 # systemd tmpfiles
 install -D -m 644 %{SOURCE27} %{buildroot}/%_tmpfilesdir/%name.conf
 
-# WSGI apache config for nova-placement-api
-%if 0%{?rdo}
-# adjust paths to WSGI scripts
-sed -i 's#/local/bin#/bin#' %{SOURCE26}
-sed -i 's#apache2#httpd#' %{SOURCE26}
-%endif
-# Install apache configuration files
-install -d -m 755 %{buildroot}%{apache_site_dir}
-install -p -D -m 644 %{SOURCE26}  %{buildroot}%{_datarootdir}/nova/wsgi-nova-placement-api.conf
-install -p -D -m 644 %{SOURCE26}  %{buildroot}%{apache_site_dir}/nova-placement-api.conf
-
 # Install config files
 install -d -m 755 %{buildroot}%{_sysconfdir}/nova
 install -d -m 755 %{buildroot}%{_sysconfdir}/nova/nova.conf.d
@@ -641,9 +610,6 @@ usermod -a -G qemu nova
 %post api
 %systemd_post %{name}-api.service %{name}-api-metadata.service %{name}-api-os-compute.service
 
-%post placement-api
-%systemd_post %{apache_name}.service
-
 %post cert
 %systemd_post %{name}-cert.service
 
@@ -717,9 +683,6 @@ usermod -a -G qemu nova
 #POSTUN actions
 %postun api
 %systemd_postun_with_restart %{name}-api.service %{name}-api-metadata.service %{name}-api-os-compute.service
-
-%postun placement-api
-%systemd_postun_with_restart %{apache_name}.service
 
 %postun cert
 %systemd_postun_with_restart %{name}-cert.service
@@ -807,14 +770,6 @@ usermod -a -G qemu nova
 %{_sbindir}/rc%{name}-api
 %{_sbindir}/rc%{name}-api-os-compute
 %endif
-
-%files placement-api
-%license LICENSE
-%{_bindir}/nova-placement-api
-%dir %{apache_site_dir}
-%dir %{_datarootdir}/nova/
-%{apache_site_dir}/nova-placement-api.conf
-%{_datarootdir}/nova/wsgi-nova-placement-api.conf
 
 %files compute
 %license LICENSE
