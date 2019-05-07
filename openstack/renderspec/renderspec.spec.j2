@@ -63,21 +63,18 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
 %{python_install}
-%python_clone -a %{buildroot}%{_bindir}/{{ pypi_name }}
 
 %check
 %python_exec -m stestr.cli run
 
-%post
-%{python_install_alternative {{ pypi_name }} }
-
-%postun
-%python_uninstall_alternative {{ pypi_name }}
-
 %files %{python_files}
 %license LICENSE
 %doc README.rst ChangeLog
-%python_alternative %{_bindir}/{{ pypi_name }}
+%if 0%{?suse_version}
+%python3_only %{_bindir}/{{ pypi_name }}
+%else
+%{_bindir}/{{ pypi_name }}
+%endif
 %{python_sitelib}/{{ pypi_name }}
 %{python_sitelib}/*.egg-info
 
