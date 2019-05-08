@@ -1,0 +1,25 @@
+# OpenStack placement-api Apache2 example configuration
+
+Listen 8780
+
+<Directory /srv/www/openstack-placement-api/>
+    Options FollowSymLinks MultiViews
+    AllowOverride None
+    Require all granted
+</Directory>
+
+<VirtualHost *:8780>
+    WSGIScriptAlias / /srv/www/openstack-placement-api/app.wsgi
+    WSGIDaemonProcess openstack-placement-api processes=2 threads=1 user=placement group=placement
+    WSGIProcessGroup openstack-placement-api
+    ErrorLog /var/log/placement/placement-api.log
+    CustomLog /var/log/placement/placement-api.log combined
+
+</VirtualHost>
+
+Alias /placement /srv/www/openstack-placement-api/app.wsgi
+<Location /placement>
+    SetHandler wsgi-script
+    Options +ExecCGI
+    WSGIProcessGroup openstack-placement-api
+</Location>

@@ -1,0 +1,11 @@
+
+/var/log/placement/*.log {
+    compress
+    rotate 15
+    size 1M
+    dateext
+    missingok
+    notifempty
+    su placement placement
+    sharedscripts
+}
