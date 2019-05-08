@@ -1,29 +1,34 @@
-Name:           {{ py2name('microversion_parse') }}
-Version:        0.2.1
-Release:        0
+{% set pypi_name = 'microversion_parse' %}
+{% set upstream_version = upstream_version('0.2.1') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
 Summary:        OpenStack microversion header parser
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
-URL:            http://www.openstack.org/
-Source0:        https://files.pythonhosted.org/packages/source/m/microversion_parse/microversion_parse-%{version}.tar.gz
+URL:            https://www.openstack.org/
+Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('WebOb') }}
-BuildRequires:  {{ py2pkg('gabbi') }}
-BuildRequires:  {{ py2pkg('setuptools') }}
-BuildRequires:  {{ py2pkg('stestr') }}
-BuildRequires:  {{ py2pkg('testrepository') }}
-BuildRequires:  {{ py2pkg('testtools') }}
+BuildRequires:  {{ py2pkg('WebOb', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('gabbi', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('setuptools', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
 BuildArch:      noarch
+%python_subpackages
 
 %description
 A simple parser for OpenStack microversion headers.
 
-%package doc
+%package -n {{ py2name() }}-doc
 Summary:        Documentation for OpenStack Microversion headers
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('oslosphinx') }}
 
-%description doc
+%description -n {{ py2name() }}-doc
 This package contains thedocumentation for OpenStack microversion
 headers parsing library.
 
@@ -32,26 +37,26 @@ headers parsing library.
 %py_req_cleanup
 
 %build
-%{py2_build}
+%python_build
 
 # generate html docs
-%{__python2} setup.py build_sphinx
+PBR_VERSION=%{version} sphinx-build -b html doc/source doc/build/html
 # remove the sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
-%{py2_install}
+%python_install
 
 %check
-stestr run
+%python_exec -m stestr.cli run
 
-%files
+%files %{python_files}
 %license LICENSE
 %doc ChangeLog README.rst
 %{python2_sitelib}/microversion_parse
 %{python2_sitelib}/microversion_parse*egg-info
 
-%files doc
+%files -n {{ py2name() }}-doc
 %license LICENSE
 %doc doc/build/html
 
