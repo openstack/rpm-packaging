@@ -1,5 +1,5 @@
 {% set pypi_name = 'reno' %}
-{% set upstream_version = upstream_version('2.11.2') %}
+{% set upstream_version = upstream_version('2.11.3') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -16,10 +16,11 @@ BuildRequires:  {{ py2pkg('PyYAML', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('Sphinx', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('docutils', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('dulwich', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('openstackdocstheme', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('setuptools', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('PyYAML') }}
@@ -48,6 +49,8 @@ repository and then building documentation from them.
 
 %prep
 %autosetup -p1 -n {{ pypi_name}}-{{ upstream_version }}
+# we dont need hacking
+sed -i '/^hacking.*/d' test-requirements.txt
 %py_req_cleanup
 
 %build
@@ -64,11 +67,9 @@ repository and then building documentation from them.
 %python_uninstall_alternative reno
 
 %check
-%{python_expand rm -rf .testrepository
 rm -rf .git
 git init .
-$python setup.py test
-}
+%python_exec -m stestr.cli run
 
 %files %{python_files}
 %license LICENSE
