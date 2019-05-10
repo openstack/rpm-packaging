@@ -1,0 +1,14 @@
+[Unit]
+Description=OpenStack Watcher Decision Engine
+After=syslog.target network.target
+
+[Service]
+Type=notify
+User=watcher
+Group=watcher
+ExecStart=/usr/bin/watcher-decision-engine
+Restart=on-failure
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target
