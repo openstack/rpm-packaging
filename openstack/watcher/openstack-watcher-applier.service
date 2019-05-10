@@ -1,0 +1,14 @@
+[Unit]
+Description=OpenStack Watcher Applier
+After=syslog.target network.target
+
+[Service]
+Type=notify
+User=watcher
+Group=watcher
+ExecStart=/usr/bin/watcher-applier
+Restart=on-failure
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target

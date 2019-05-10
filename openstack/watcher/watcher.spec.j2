@@ -22,6 +22,9 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source|basename }}
+Source1:        openstack-watcher-applier.service
+Source2:        openstack-watcher-decision-engine.service
+Source3:        openstack-watcher-api.service
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('microversion_parse') }}
 BuildRequires:  {{ py2pkg('os-api-ref') }}
@@ -79,6 +82,9 @@ Requires:       apache2-mod_wsgi
 BuildRequires:  mod_wsgi
 BuildRequires:  systemd
 Requires:       mod_wsgi
+Requires(post): systemd
+Requires(postun): systemd
+Requires(preun): systemd
 %endif
 
 %description
@@ -135,6 +141,30 @@ operating costs, increased system performance via intelligent virtual machine
 migration, increased energy efficiency and more!
 
 This package contains the Watcher Python library.
+
+%package decision-engine
+Summary:        OpenStack Watcher - Decision-Engine
+Group:          System/Management
+Requires:       %{name} = %{epoch}:%{version}-%{release}
+
+%description decision-engine
+This package contains the OpenStack Watcher decision-engine.
+
+%package applier
+Summary:        OpenStack Watcher - Applier
+Group:          System/Management
+Requires:       %{name} = %{epoch}:%{version}-%{release}
+
+%description applier
+This package contains the OpenStack Watcher Applier.
+
+%package api
+Summary:        OpenStack Watcher - Api
+Group:          System/Management
+Requires:       %{name} = %{epoch}:%{version}-%{release}
+
+%description api
+This package contains the OpenStack Watcher Api.
 
 %if 0%{?with_doc}
 %package -n {{ py2name() }}-doc
@@ -204,20 +234,49 @@ install -p -D -m 644 devstack/files/apache-watcher-api.template %{buildroot}%{ap
 install -d -m 755 %{buildroot}%{wsgi_dir}
 install -p -D -m 644 watcher/api/app.wsgi %{buildroot}%{wsgi_dir}
 
+# Install service file
+install -p -D -m 755 %{SOURCE1} %{buildroot}%{_unitdir}/openstack-watcher-applier.service
+install -p -D -m 755 %{SOURCE2} %{buildroot}%{_unitdir}/openstack-watcher-decision-engine.service
+install -p -D -m 755 %{SOURCE3} %{buildroot}%{_unitdir}/openstack-watcher-api.service
+
 %pre
 %openstack_pre_user_group_create watcher watcher /sbin/nologin
 
+%post decision-engine
+%systemd_post openstack-watcher-decision-engine.service
+
+%preun decision-engine
+%systemd_preun openstack-watcher-decision-engine.service
+
+%postun decision-engine
+%systemd_postun_with_restart openstack-watcher-decision-engine.service
+
+%post applier
+%systemd_post openstack-watcher-applier.service
+
+%preun applier
+%systemd_preun openstack-watcher-applier.service
+
+%postun applier
+%systemd_postun_with_restart openstack-watcher-applier.service
+
+%post api
+%systemd_post openstack-watcher-api.service
+
+%preun api
+%systemd_preun openstack-watcher-api.service
+
+%postun api
+%systemd_postun_with_restart openstack-watcher-api.service
+
 %files
-%{_bindir}/{{ pypi_name }}-api
-%{_bindir}/{{ pypi_name }}-applier
 %{_bindir}/{{ pypi_name }}-db-manage
-%{_bindir}/{{ pypi_name }}-decision-engine
 %{_bindir}/{{ pypi_name }}-sync
 %{_bindir}/{{ pypi_name }}-status
 %dir %attr(0770, root, %{apache_group}) %{wsgi_dir}
 %attr(0770, root, %{apache_group}) %{wsgi_dir}/app.wsgi
 %attr(0770, root, %{apache_group}) %{apache_conf_dir}/{{ pypi_name }}.conf.sample
-%dir %config(noreplace) %attr(0640, root, watcher) %{_sysconfdir}/{{ pypi_name }}
+%dir %config(noreplace) %attr(0750, root, watcher) %{_sysconfdir}/{{ pypi_name }}
 %config(noreplace) %attr(0640, root, watcher) %{_sysconfdir}/{{ pypi_name }}/policy.yaml.sample
 %config(noreplace) %attr(0640, root, watcher) %{_sysconfdir}/{{ pypi_name }}/{{ pypi_name }}.conf.sample
 %dir %attr(0750, root, watcher) %{_sysconfdir}/{{ pypi_name }}/{{ pypi_name }}.conf.d/
@@ -228,6 +287,21 @@ install -p -D -m 644 watcher/api/app.wsgi %{buildroot}%{wsgi_dir}
 %doc AUTHORS README.rst
 %{python2_sitelib}/{{ pypi_name }}/
 %{python2_sitelib}/python_{{ pypi_name }}-*.egg-info
+
+%files decision-engine
+%defattr(-,root,root,-)
+%{_bindir}/{{ pypi_name }}-decision-engine
+%{_unitdir}/openstack-watcher-decision-engine.service
+
+%files applier
+%defattr(-,root,root,-)
+%{_bindir}/{{ pypi_name }}-applier
+%{_unitdir}/openstack-watcher-applier.service
+
+%files api
+%defattr(-,root,root,-)
+%{_bindir}/{{ pypi_name }}-api
+%{_unitdir}/openstack-watcher-api.service
 
 %if 0%{?with_doc}
 %files -n {{ py2name() }}-doc
