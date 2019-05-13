@@ -1,5 +1,5 @@
 {% set pypi_name = 'python-ironicclient' %}
-{% set upstream_version = upstream_version('2.5.1') %}
+{% set upstream_version = upstream_version('2.5.2') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -11,7 +11,6 @@ License:        {{ license('Apache-2.0')}}
 Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
-Patch0:         0001-pass-endpoint-interface-to-http-client.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('Babel', py_versions=['py2', 'py3']) }}
