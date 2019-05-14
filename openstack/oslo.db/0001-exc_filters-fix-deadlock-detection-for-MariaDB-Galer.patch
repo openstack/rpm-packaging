@@ -1,0 +1,54 @@
+From 30787bb61706f353b312917d87a784cdf1d0ee75 Mon Sep 17 00:00:00 2001
+From: Pierre-Samuel Le Stang <pierre-samuel.le-stang@corp.ovh.com>
+Date: Fri, 8 Feb 2019 16:46:21 +0100
+Subject: [PATCH] exc_filters: fix deadlock detection for MariaDB/Galera
+ cluster
+
+MariasDB/Galera cluster server produces an error like:
+
+(1213, u'Deadlock: wsrep aborted transaction')
+
+which is currently not detected properly and, thus, not retried.
+
+Change-Id: Ifb4a81d50e490e734e12986e51efd6bd3c339c31
+Signed-off-by: Pierre-Samuel Le Stang <pierre-samuel.le-stang@corp.ovh.com>
+(cherry picked from commit ae227eb3b9adb430cf6aa5a4f46f846e964fff91)
+(cherry picked from commit c114b932dbc7a2fe446b57bd08308fa85007c59f)
+---
+ oslo_db/sqlalchemy/exc_filters.py            | 2 ++
+ oslo_db/tests/sqlalchemy/test_exc_filters.py | 6 ++++++
+ 2 files changed, 8 insertions(+)
+
+diff --git a/oslo_db/sqlalchemy/exc_filters.py b/oslo_db/sqlalchemy/exc_filters.py
+index 9803343..b617a77 100644
+--- a/oslo_db/sqlalchemy/exc_filters.py
++++ b/oslo_db/sqlalchemy/exc_filters.py
+@@ -63,6 +63,8 @@ def filters(dbname, exception_type, regex):
+ @filters("mysql", sqla_exc.InternalError, r"^.*\b1213\b.*Deadlock found.*")
+ @filters("mysql", sqla_exc.InternalError,
+          r"^.*\b1213\b.*detected deadlock/conflict.*")
++@filters("mysql", sqla_exc.InternalError,
++         r"^.*\b1213\b.*Deadlock: wsrep aborted.*")
+ @filters("postgresql", sqla_exc.OperationalError, r"^.*deadlock detected.*")
+ @filters("postgresql", sqla_exc.DBAPIError, r"^.*deadlock detected.*")
+ @filters("ibm_db_sa", sqla_exc.DBAPIError, r"^.*SQL0911N.*")
+diff --git a/oslo_db/tests/sqlalchemy/test_exc_filters.py b/oslo_db/tests/sqlalchemy/test_exc_filters.py
+index ce148db..d75c233 100644
+--- a/oslo_db/tests/sqlalchemy/test_exc_filters.py
++++ b/oslo_db/tests/sqlalchemy/test_exc_filters.py
+@@ -995,6 +995,12 @@ class TestDeadlock(TestsExceptionFilter):
+             orig_exception_cls=self.InternalError
+         )
+ 
++        self._run_deadlock_detect_test(
++            "mysql",
++            "(1213, 'Deadlock: wsrep aborted transaction')",
++            orig_exception_cls=self.InternalError
++        )
++
+     def test_mysql_pymysql_galera_deadlock(self):
+         self._run_deadlock_detect_test(
+             "mysql",
+-- 
+2.21.0
+
