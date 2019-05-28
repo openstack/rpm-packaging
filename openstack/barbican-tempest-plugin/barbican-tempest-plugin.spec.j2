@@ -16,6 +16,8 @@ License:       {{ license('Apache-2.0') }}
 Group:         Development/Languages/Python
 URL:           https://git.openstack.org/cgit/openstack/{{ pypi_name }}
 Source0:       {{ source|basename }}
+# https://review.opendev.org/649670
+Patch0:        0001-Add-option-to-toggle-validation-of-signed-image.patch
 BuildRequires: openstack-macros
 BuildRequires: {{ py2pkg('devel') }}
 BuildRequires: {{ py2pkg('pbr') }}
@@ -41,7 +43,7 @@ It contains the documentation for the barbican tempest tests.
 %endif
 
 %prep
-%autosetup -n %{sname}-{{ upstream_version }}
+%autosetup -p1 -n %{sname}-{{ upstream_version }}
 
 # Let's handle dependencies ourseleves
 %py_req_cleanup

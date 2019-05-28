@@ -1,0 +1,78 @@
+From 2bcdb96facccd121dd88e4965c5561534a8e7b7f Mon Sep 17 00:00:00 2001
+From: Colleen Murphy <colleen@gazlene.net>
+Date: Wed, 3 Apr 2019 09:27:05 -0700
+Subject: [PATCH] Add option to toggle validation of signed image
+
+Without this patch, if the barbican tempest plugin is installed in an
+environment running with `[glance]/verify_glance_signatures] set to
+false in nova.conf, which is the default value, the test will fail.
+Enabling glance signature verification unconditionally in order to
+support this test is not realistic, as it then prevents users from
+booting from unsigned images which may not always be desired. This patch
+adds a configuration option to allow for disabling the
+`test_signed_image_upload_boot_failure` test, so that we can still run
+the majority of the plugin tests for a standard environment with default
+nova configuration. The new option defaults to `True`, meaning assume
+that nova's configuration has been overrridden to enforce image
+verification, which allows the barbican CI to run as normal with no
+configuration changes, but it allows operators to explicitly disable the
+test as needed.
+
+Change-Id: Ibb5c06ce2773e0ee13bda97717e8e18e77e0be7c
+(cherry picked from commit 62ec85c79f8e487f9ef12ff771070a1e7f1a818e)
+---
+ barbican_tempest_plugin/config.py                            | 11 +++++++++++
+ barbican_tempest_plugin/plugin.py                            |  2 ++
+ barbican_tempest_plugin/tests/scenario/test_image_signing.py |  4 ++++
+ 3 files changed, 17 insertions(+)
+
+diff --git a/barbican_tempest_plugin/config.py b/barbican_tempest_plugin/config.py
+index eae7a17..0c4a2ac 100644
+--- a/barbican_tempest_plugin/config.py
++++ b/barbican_tempest_plugin/config.py
+@@ -43,3 +43,14 @@ EphemeralStorageEncryptionGroup = [
+                default=256,
+                help="The key size used to encrypt ephemeral storage."),
+ ]
++
++image_signature_verification_group = cfg.OptGroup(
++    name="image_signature_verification",
++    title="Image Signature Verification Options")
++
++ImageSignatureVerificationGroup = [
++    cfg.BoolOpt('enforced',
++                default=True,
++                help="Does the test environment enforce glance image "
++                     "verification?"),
++]
+diff --git a/barbican_tempest_plugin/plugin.py b/barbican_tempest_plugin/plugin.py
+index a586eb0..1914ecb 100644
+--- a/barbican_tempest_plugin/plugin.py
++++ b/barbican_tempest_plugin/plugin.py
+@@ -37,6 +37,8 @@ class BarbicanTempestPlugin(plugins.TempestPlugin):
+         conf.register_group(project_config.ephemeral_storage_encryption_group)
+         conf.register_opts(project_config.EphemeralStorageEncryptionGroup,
+                            project_config.ephemeral_storage_encryption_group)
++        conf.register_opts(project_config.ImageSignatureVerificationGroup,
++                           project_config.image_signature_verification_group)
+ 
+     def get_opt_lists(self):
+         return [('service_available', [project_config.service_option])]
+diff --git a/barbican_tempest_plugin/tests/scenario/test_image_signing.py b/barbican_tempest_plugin/tests/scenario/test_image_signing.py
+index 794d33e..191b613 100644
+--- a/barbican_tempest_plugin/tests/scenario/test_image_signing.py
++++ b/barbican_tempest_plugin/tests/scenario/test_image_signing.py
+@@ -70,6 +70,10 @@ class ImageSigningTest(barbican_manager.BarbicanScenarioTest):
+             * Attempt to boot the incorrectly signed image
+             * Confirm an exception is thrown
+         """
++        if not CONF.image_signature_verification.enforced:
++            raise self.skipException("Image signature verification is not "
++                                     "enforced in this environment")
++
+         img_uuid = self.sign_and_upload_image()
+ 
+         LOG.debug("Modifying image signature to be incorrect")
+-- 
+2.16.4
+
