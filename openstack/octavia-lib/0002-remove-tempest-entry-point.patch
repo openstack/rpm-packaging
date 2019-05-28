@@ -1,0 +1,25 @@
+diff -ruN octavia-3.1.1.dev5/octavia.egg-info/entry_points.txt octavia-3.1.1.dev5.new/octavia.egg-info/entry_points.txt
+--- ./octavia.egg-info/entry_points.txt	2019-05-14 03:56:52.000000000 +0200
++++ ./octavia.egg-info/entry_points.txt	2019-05-28 12:35:04.088462256 +0200
+@@ -72,9 +72,6 @@
+ [oslo.policy.policies]
+ octavia = octavia.policies:list_rules
+ 
+-[tempest.test_plugins]
+-octavia = octavia.tests.tempest.plugin:OctaviaTempestPlugin
+-
+ [wsgi_scripts]
+ octavia-wsgi = octavia.api.app:setup_app
+ 
+diff -ruN octavia-3.1.1.dev5/setup.cfg octavia-3.1.1.dev5.new/setup.cfg
+--- ./setup.cfg	2019-05-14 03:56:52.000000000 +0200
++++ ./setup.cfg	2019-05-28 12:35:51.780839403 +0200
+@@ -96,8 +96,6 @@
+ 	hot_plug_plugin = octavia.controller.worker.controller_worker:ControllerWorker
+ oslo.config.opts = 
+ 	octavia = octavia.opts:list_opts
+-tempest.test_plugins = 
+-	octavia = octavia.tests.tempest.plugin:OctaviaTempestPlugin
+ oslo.policy.policies = 
+ 	octavia = octavia.policies:list_rules
+ oslo.policy.enforcer = 

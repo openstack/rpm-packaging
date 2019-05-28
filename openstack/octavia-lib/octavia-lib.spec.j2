@@ -13,6 +13,7 @@ URL:            https://git.openstack.org/cgit/openstack/octavia-lib
 Source0:        {{ source }}
 # https://review.openstack.org/644874
 Patch0:         0001-Do-not-install-README.rst-and-LICENSE.patch
+Patch1:         0002-remove-tempest-entry-point.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
