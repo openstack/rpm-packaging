@@ -16,6 +16,7 @@ Source1:        openstack-monasca-persister.service
 Source2:        openstack-monasca-persister.logrotate
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('elasticsearch') }}
+BuildRequires:  {{ py2pkg('influxdb') }}
 BuildRequires:  {{ py2pkg('mock') }}
 BuildRequires:  {{ py2pkg('monasca-common') }}
 BuildRequires:  {{ py2pkg('nose') }}

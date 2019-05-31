@@ -78,6 +78,7 @@ BuildRequires:  {{ py2pkg('oslo.messaging') }}
 BuildRequires:  {{ py2pkg('oslo.policy') }}
 BuildRequires:  {{ py2pkg('oslo.reports') }}
 BuildRequires:  {{ py2pkg('oslo.serialization') }}
+BuildRequires:  {{ py2pkg('oslo.upgradecheck') }}
 BuildRequires:  {{ py2pkg('oslo.utils') }}
 BuildRequires:  {{ py2pkg('oslo.vmware') }}
 BuildRequires:  {{ py2pkg('pbr') }}
@@ -154,6 +155,7 @@ Requires:       {{ py2pkg('oslo.policy') }}
 Requires:       {{ py2pkg('oslo.reports') }}
 Requires:       {{ py2pkg('oslo.rootwrap') }}
 Requires:       {{ py2pkg('oslo.serialization') }}
+Requires:       {{ py2pkg('oslo.upgradecheck') }}
 Requires:       {{ py2pkg('oslo.utils') }}
 Requires:       {{ py2pkg('oslo.vmware') }}
 Requires:       {{ py2pkg('pecan') }}
@@ -437,6 +439,7 @@ mkdir -p %{buildroot}%{_localstatedir}/cache/ceilometer
 %{_bindir}/ceilometer-upgrade
 %{_bindir}/ceilometer-send-sample
 %{_bindir}/ceilometer-rootwrap
+%{_bindir}/ceilometer-status
 %dir %{_sysconfdir}/%{ceilometer_name}
 %dir %{_sysconfdir}/%{ceilometer_name}/%{ceilometer_name}.conf.d/
 %{_sysconfdir}/%{ceilometer_name}/README.config
