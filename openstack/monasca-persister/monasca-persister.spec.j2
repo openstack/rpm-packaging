@@ -15,6 +15,7 @@ Source0:        {{ source|basename }}
 Source1:        openstack-monasca-persister.service
 Source2:        openstack-monasca-persister.logrotate
 BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('cassandra-driver') }}
 BuildRequires:  {{ py2pkg('elasticsearch') }}
 BuildRequires:  {{ py2pkg('influxdb') }}
 BuildRequires:  {{ py2pkg('mock') }}
