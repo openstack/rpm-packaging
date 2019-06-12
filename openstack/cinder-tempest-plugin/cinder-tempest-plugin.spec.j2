@@ -3,12 +3,11 @@
 {% set upstream_version = upstream_version() %}
 {% set rpm_release = '1' %}
 
-%global sname cinder_tempest_plugin
 %global with_doc 0
 %global common_desc \
 This package contains Tempest tests to cover the cinder project. \
 Additionally it provides a plugin to automatically load these tests into Tempest.
-Name:          {{ py2pkg('cinder-tempest-plugin') }}
+Name:          {{ py2name() }}
 Version:       {{ py2rpmversion() }}
 Release:       {{ py2rpmrelease() }}
 Summary:       Tempest plugin for the cinder project
@@ -41,7 +40,7 @@ It contains the documentation for the cinder tempest tests.
 %endif
 
 %prep
-%autosetup -n cinder_tempest_plugin-{{ upstream_version }}
+%autosetup -n {{ pypi_name }}-{{ upstream_version }}
 
 # Let's handle dependencies ourseleves
 %py_req_cleanup
