@@ -1,5 +1,5 @@
 {% set pypi_name = 'renderspec' %}
-{% set upstream_version = upstream_version('1.10.0') %}
+{% set upstream_version = upstream_version('1.11.1') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -15,6 +15,7 @@ BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('Jinja2', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('ddt', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('packaging', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('pymod2pkg', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
@@ -42,7 +43,7 @@ and follow their policies and processes.
 %package -n {{ py2name() }}-doc
 Summary:        Documentation for the renderspec utility
 BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
 Requires:       %{name} = %{version}
 
 %description -n {{ py2name() }}-doc
