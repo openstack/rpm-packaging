@@ -16,6 +16,10 @@ License:       {{ license('Apache-2.0') }}
 Group:         Development/Languages/Python
 URL:           https://git.openstack.org/cgit/openstack/{{ pypi_name }}
 Source0:       {{ source|basename }}
+# https://review.opendev.org/662255
+Patch0:        0001-Fix-CIFS-access-for-non-multitenant-setup.patch
+# https://review.opendev.org/664434
+Patch1:        0002-Skip-read-only-test-for-CIFS.patch
 BuildRequires: openstack-macros
 BuildRequires: {{ py2pkg('pbr') }}
 BuildRequires: {{ py2pkg('setuptools') }}
@@ -39,7 +43,7 @@ It contains the documentation for the manila tempest tests.
 %endif
 
 %prep
-%autosetup -n %{sname}-{{ upstream_version }}
+%autosetup -p1 -n %{sname}-{{ upstream_version }}
 
 # Let's handle dependencies ourseleves
 %py_req_cleanup
