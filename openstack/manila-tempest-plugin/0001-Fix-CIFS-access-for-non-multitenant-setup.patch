@@ -1,0 +1,51 @@
+From 78f6a580abb7b9a333d38159b1c8143b72ff5c1e Mon Sep 17 00:00:00 2001
+From: Colleen Murphy <colleen@gazlene.net>
+Date: Mon, 10 Jun 2019 11:11:40 -0700
+Subject: [PATCH 1/2] Fix CIFS access for non-multitenant setup
+
+In the case that multitenancy_enabled is false, the CIFS tests fail,
+first because the auxiliary access function returns None, which means
+the access object cannot be used by the caller, and second because if a
+floating IP address isn't chosen explicitly as the share point, the
+server's fixed IP may be chosen which is not in the same segment as the
+share server, which means the share will not be accessible. This patch
+fixes both issues by making the auxiliary access granting function
+consistent for both NFS and CIFS and differentiating instead on
+multitenancy_enabled.
+
+Change-Id: Id6a44ea8c6b88d121983566dbb176f48e470094f
+(cherry picked from commit 2e4f3489f6f4c0f8853b3fdc4c6efb89e2789d98)
+---
+ manila_tempest_tests/tests/scenario/manager_share.py | 9 ++-------
+ 1 file changed, 2 insertions(+), 7 deletions(-)
+
+diff --git a/manila_tempest_tests/tests/scenario/manager_share.py b/manila_tempest_tests/tests/scenario/manager_share.py
+index a80400e..bf4f0d8 100644
+--- a/manila_tempest_tests/tests/scenario/manager_share.py
++++ b/manila_tempest_tests/tests/scenario/manager_share.py
+@@ -277,11 +277,7 @@ class ShareScenarioTest(manager.NetworkScenarioTest):
+     def provide_access_to_auxiliary_instance(self, instance, share=None,
+                                              snapshot=None, access_level='rw'):
+         share = share or self.share
+-        if self.protocol.lower() == 'cifs':
+-            self.allow_access_ip(
+-                share['id'], instance=instance, cleanup=False,
+-                snapshot=snapshot, access_level=access_level)
+-        elif not CONF.share.multitenancy_enabled:
++        if not CONF.share.multitenancy_enabled:
+             if self.ipv6_enabled:
+                 server_ip = self._get_ipv6_server_ip(instance)
+             else:
+@@ -292,8 +288,7 @@ class ShareScenarioTest(manager.NetworkScenarioTest):
+                 share['id'], ip=server_ip,
+                 instance=instance, cleanup=False, snapshot=snapshot,
+                 access_level=access_level)
+-        elif (CONF.share.multitenancy_enabled and
+-              self.protocol.lower() == 'nfs'):
++        else:
+             return self.allow_access_ip(
+                 share['id'], instance=instance, cleanup=False,
+                 snapshot=snapshot, access_level=access_level)
+-- 
+2.21.0
+

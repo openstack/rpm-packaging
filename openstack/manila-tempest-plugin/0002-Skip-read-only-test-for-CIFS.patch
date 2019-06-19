@@ -1,0 +1,41 @@
+From e426599a70a96b60a62d680095901b4aff6c8708 Mon Sep 17 00:00:00 2001
+From: Colleen Murphy <colleen@gazlene.net>
+Date: Fri, 7 Jun 2019 15:00:48 -0700
+Subject: [PATCH 2/2] Skip read-only test for CIFS
+
+When using the CIFS protocol and trying to share a share by IP, the
+share fails to instantiate and the manila service produces this error:
+
+  InvalidShareAccessLevel: Invalid or unsupported share access level: ro.
+
+There are no Manila Share backends that support CIFS shares with read
+only access when authenticating with IP addresses[1]. This patch causes
+the test to be skipped in such a case.
+
+[1] https://docs.openstack.org/manila/latest/admin/share_back_ends_feature_support_mapping.html#mapping-of-share-drivers-and-share-access-rules-support
+
+Change-Id: Ic30eaf3c2b7f75eb4bc62159faceb6bd30d7e03b
+(cherry picked from commit f38c4c365590f4246fee0e5fffde6db55fa51ae6)
+---
+ manila_tempest_tests/tests/scenario/test_share_basic_ops.py | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/manila_tempest_tests/tests/scenario/test_share_basic_ops.py b/manila_tempest_tests/tests/scenario/test_share_basic_ops.py
+index 32fd735..de14af0 100644
+--- a/manila_tempest_tests/tests/scenario/test_share_basic_ops.py
++++ b/manila_tempest_tests/tests/scenario/test_share_basic_ops.py
+@@ -127,6 +127,11 @@ class ShareBasicOpsBase(manager.ShareScenarioTest):
+     @tc.attr(base.TAG_NEGATIVE, base.TAG_BACKEND)
+     def test_write_with_ro_access(self):
+         '''Test if an instance with ro access can write on the share.'''
++        if self.protocol.upper() == 'CIFS':
++            msg = ("Skipped for CIFS protocol because RO access is not "
++                   "supported for shares by IP.")
++            raise self.skipException(msg)
++
+         test_data = "Some test data to write"
+ 
+         instance = self.boot_instance(wait_until="BUILD")
+-- 
+2.21.0
+
