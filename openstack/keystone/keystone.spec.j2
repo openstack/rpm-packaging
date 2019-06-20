@@ -131,31 +131,31 @@ This package contains the Keystone test files.
 %package doc
 Summary:        Documentation for OpenStack Identity Service
 Group:          Documentation/HTML
-BuildRequires:  {{ py2pkg('Routes') }}
-BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('cryptography') }}
-BuildRequires:  {{ py2pkg('dogpile.cache') }}
-BuildRequires:  {{ py2pkg('jsonschema') }}
-BuildRequires:  {{ py2pkg('keystonemiddleware') }}
-BuildRequires:  {{ py2pkg('ldappool') }}
-BuildRequires:  {{ py2pkg('msgpack') }}
-BuildRequires:  {{ py2pkg('oauthlib') }}
-BuildRequires:  {{ py2pkg('openstackdocstheme') }}
-BuildRequires:  {{ py2pkg('oslo.concurrency') }}
-BuildRequires:  {{ py2pkg('oslo.db') }}
-BuildRequires:  {{ py2pkg('oslo.i18n') }}
-BuildRequires:  {{ py2pkg('oslo.log') }}
-BuildRequires:  {{ py2pkg('oslo.messaging') }}
-BuildRequires:  {{ py2pkg('oslo.middleware') }}
-BuildRequires:  {{ py2pkg('oslo.policy') }}
-BuildRequires:  {{ py2pkg('osprofiler') }}
-BuildRequires:  {{ py2pkg('passlib') }}
-BuildRequires:  {{ py2pkg('pysaml2') }}
-BuildRequires:  {{ py2pkg('python-memcached') }}
-BuildRequires:  {{ py2pkg('sphinx-feature-classification') }}
-BuildRequires:  {{ py2pkg('sphinxcontrib-apidoc') }}
-BuildRequires:  {{ py2pkg('sphinxcontrib-blockdiag') }}
-BuildRequires:  {{ py2pkg('sphinxcontrib-seqdiag ') }}
+BuildRequires:  {{ py2pkg('Routes', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('Sphinx', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('cryptography', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('dogpile.cache', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('jsonschema', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('keystonemiddleware', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('ldappool', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('msgpack', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('oauthlib', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('openstackdocstheme', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('oslo.concurrency', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('oslo.db', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('oslo.i18n', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('oslo.log', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('oslo.messaging', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('oslo.middleware', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('oslo.policy', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('osprofiler', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('passlib', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('pysaml2', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('python-memcached', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('sphinx-feature-classification', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('sphinxcontrib-apidoc', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('sphinxcontrib-blockdiag', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('sphinxcontrib-seqdiag', py_versions=['py3']) }}
 
 %description doc
 OpenStack Keystone documentaion.
@@ -175,7 +175,7 @@ sed -i 's#apache2#httpd#' httpd/wsgi-keystone.conf
 
 %build
 %{py3_build}
-PYTHONPATH=. PBR_VERSION={{ upstream_version }} sphinx-build -b html doc/source doc/build/html
+PYTHONPATH=. PBR_VERSION={{ upstream_version }} %sphinx_build -b html doc/source doc/build/html
 # remove the Sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 # config file generation
@@ -256,7 +256,6 @@ stestr-3 run --black-regex keystone.tests.unit.test_policy.GeneratePolicyFileTes
 %{_sysconfdir}/sysctl.d/openstack-keystone.conf
 
 %files -n python3-keystone
-%defattr(-,root,root,-)
 %doc README.rst
 %license LICENSE
 %{python3_sitelib}/keystone*
