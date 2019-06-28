@@ -38,59 +38,56 @@ BuildRequires:  fdupes
 BuildRequires:  intltool
 BuildRequires:  openstack-macros
 BuildRequires:  polkit
-BuildRequires:  {{ py2pkg('PyMySQL') }}
-BuildRequires:  {{ py2pkg('python-barbicanclient') }}
-BuildRequires:  {{ py2pkg('python-cinderclient') }}
-BuildRequires:  {{ py2pkg('cursive') }}
-BuildRequires:  {{ py2pkg('ddt') }}
-BuildRequires:  {{ py2pkg('fixtures') }}
-BuildRequires:  {{ py2pkg('python-glanceclient') }}
-BuildRequires:  {{ py2pkg('python-ironicclient') }}
-BuildRequires:  {{ py2pkg('python-keystoneclient') }}
-BuildRequires:  {{ py2pkg('microversion_parse') }}
-BuildRequires:  {{ py2pkg('mock') }}
-BuildRequires:  {{ py2pkg('mox3') }}
-BuildRequires:  {{ py2pkg('python-neutronclient') }}
-BuildRequires:  {{ py2pkg('python-novaclient') }}
-BuildRequires:  {{ py2pkg('os-api-ref') }}
-BuildRequires:  {{ py2pkg('os-brick') }}
-BuildRequires:  {{ py2pkg('os-resource-classes') }}
-BuildRequires:  {{ py2pkg('os-service-types') }}
-BuildRequires:  {{ py2pkg('os-vif') }}
-BuildRequires:  {{ py2pkg('os-win') }}
-BuildRequires:  {{ py2pkg('oslo.cache') }}
-BuildRequires:  {{ py2pkg('oslo.concurrency') }}
-BuildRequires:  {{ py2pkg('oslo.config') }}
-BuildRequires:  {{ py2pkg('oslo.context') }}
-BuildRequires:  {{ py2pkg('oslo.db') }}
-BuildRequires:  {{ py2pkg('oslo.i18n') }}
-BuildRequires:  {{ py2pkg('oslo.log') }}
-BuildRequires:  {{ py2pkg('oslo.messaging') }}
-BuildRequires:  {{ py2pkg('oslo.middleware') }}
-BuildRequires:  {{ py2pkg('oslo.policy') }}
-BuildRequires:  {{ py2pkg('oslo.privsep') }}
-BuildRequires:  {{ py2pkg('oslo.reports') }}
-BuildRequires:  {{ py2pkg('oslo.rootwrap') }}
-BuildRequires:  {{ py2pkg('oslo.serialization') }}
-BuildRequires:  {{ py2pkg('oslo.service') }}
-BuildRequires:  {{ py2pkg('oslo.utils') }}
-BuildRequires:  {{ py2pkg('oslo.versionedobjects') }}
-BuildRequires:  {{ py2pkg('oslo.vmware') }}
-BuildRequires:  {{ py2pkg('oslotest') }}
-BuildRequires:  {{ py2pkg('osprofiler') }}
-BuildRequires:  {{ py2pkg('psycopg2') }}
-BuildRequires:  {{ py2pkg('python-subunit') }}
-BuildRequires:  {{ py2pkg('requests-mock') }}
-BuildRequires:  {{ py2pkg('sphinx-feature-classification') }}
-BuildRequires:  {{ py2pkg('sphinxcontrib-actdiag') }}
-BuildRequires:  {{ py2pkg('sphinxcontrib-seqdiag') }}
-BuildRequires:  {{ py2pkg('testrepository') }}
-BuildRequires:  {{ py2pkg('testresources') }}
-BuildRequires:  {{ py2pkg('testscenarios') }}
-BuildRequires:  {{ py2pkg('testtools') }}
+BuildRequires:  {{ py2pkg('PyMySQL', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('python-barbicanclient', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('python-cinderclient', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('cursive', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('ddt', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('fixtures', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('python-glanceclient', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('python-ironicclient', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('python-keystoneclient', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('microversion_parse', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('mock', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('mox3', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('python-neutronclient', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('python-novaclient', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('os-api-ref', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('os-brick', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('os-resource-classes', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('os-service-types', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('os-vif', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('os-win', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('oslo.cache', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('oslo.concurrency', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('oslo.config', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('oslo.context', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('oslo.db', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('oslo.i18n', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('oslo.log', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('oslo.messaging', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('oslo.middleware', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('oslo.policy', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('oslo.privsep', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('oslo.reports', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('oslo.rootwrap', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('oslo.serialization', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('oslo.service', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('oslo.utils', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('oslo.versionedobjects', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('oslo.vmware', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('oslotest', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('osprofiler', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('psycopg2', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('python-subunit', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('requests-mock', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('testrepository', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('testresources', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('testtools', py_versions=['py3']) }}
 BuildRequires:  sudo
 Requires:       logrotate
-Requires:       python-{{ pypi_name }} = %{epoch}:%{version}-%{release}
+Requires:       python3-{{ pypi_name }} = %{epoch}:%{version}-%{release}
 BuildArch:      noarch
 %if 0%{?suse_version}
 BuildRequires:  systemd-rpm-macros
@@ -114,7 +111,7 @@ through users and projects. OpenStack Compute strives to be both
 hardware and hypervisor agnostic, currently supporting a variety of
 standard hardware configurations and seven major hypervisors.
 
-%package -n     python-{{ pypi_name }}
+%package -n python3-{{ pypi_name }}
 Summary:        Nova Python library
 Group:          Applications/System
 # Require openssh for ssh-keygen
@@ -179,7 +176,7 @@ Requires:       {{ py2pkg('stevedore') }}
 Requires:       {{ py2pkg('websockify') }}
 Requires:       sudo
 
-%description -n python-{{ pypi_name }}
+%description -n python3-{{ pypi_name }}
 OpenStack Compute (codename Nova) is open source software designed to
 provision and manage large networks of virtual machines, creating a
 redundant and scalable cloud computing platform.
@@ -430,35 +427,38 @@ spice HTML5 console access service to Virtual Machines.
 Summary:        Documentation for OpenStack Compute
 Group:          Documentation/HTML
 BuildRequires:  graphviz
-BuildRequires:  {{ py2pkg('Babel') }}
-BuildRequires:  {{ py2pkg('Paste') }}
-BuildRequires:  {{ py2pkg('PasteDeploy') }}
-BuildRequires:  {{ py2pkg('PrettyTable') }}
-BuildRequires:  {{ py2pkg('Routes') }}
-BuildRequires:  {{ py2pkg('SQLAlchemy') }}
-BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('WebOb') }}
-BuildRequires:  {{ py2pkg('castellan') }}
-BuildRequires:  {{ py2pkg('cryptography') }}
-BuildRequires:  {{ py2pkg('decorator') }}
-BuildRequires:  {{ py2pkg('greenlet') }}
-BuildRequires:  {{ py2pkg('iso8601') }}
-BuildRequires:  {{ py2pkg('jinja2') }}
-BuildRequires:  {{ py2pkg('jsonschema') }}
-BuildRequires:  {{ py2pkg('keystonemiddleware') }}
-BuildRequires:  {{ py2pkg('lxml') }}
-BuildRequires:  {{ py2pkg('netifaces') }}
-BuildRequires:  {{ py2pkg('openstackdocstheme') }}
-BuildRequires:  {{ py2pkg('os-resource-classes') }}
-BuildRequires:  {{ py2pkg('paramiko') }}
-BuildRequires:  {{ py2pkg('psutil') }}
-BuildRequires:  {{ py2pkg('python-memcached') }}
-BuildRequires:  {{ py2pkg('reno') }}
-BuildRequires:  {{ py2pkg('requests') }}
-BuildRequires:  {{ py2pkg('rfc3986') }}
-BuildRequires:  {{ py2pkg('sqlalchemy-migrate') }}
-BuildRequires:  {{ py2pkg('stevedore') }}
-BuildRequires:  {{ py2pkg('websockify') }}
+BuildRequires:  {{ py2pkg('Babel', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('Jinja2', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('Paste', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('PasteDeploy', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('PrettyTable', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('Routes', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('SQLAlchemy', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('Sphinx', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('WebOb', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('castellan', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('cryptography', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('decorator', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('greenlet', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('iso8601', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('jsonschema', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('keystonemiddleware', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('lxml', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('netifaces', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('openstackdocstheme', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('os-resource-classes', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('paramiko', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('psutil', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('python-memcached', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('reno', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('requests', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('rfc3986', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('sphinx-feature-classification', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('sphinxcontrib-actdiag', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('sphinxcontrib-seqdiag', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('sqlalchemy-migrate', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('stevedore', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('websockify', py_versions=['py3']) }}
 
 %description doc
 OpenStack Compute (codename Nova) is open source software designed to
@@ -475,22 +475,30 @@ find . \( -name .gitignore -o -name .placeholder \) -delete
 find nova -name \*.py -exec sed -i '/\/usr\/bin\/env python/{d;q}' {} +
 
 %build
-%{py2_build}
+%{py3_build}
 %if 0%{?with_doc}
-%{__python2} setup.py build_sphinx --builder=html,man
+%if 0%{?rdo}
+PYTHONPATH=.  PBR_VERSION={{ upstream_version }} sphinx-build-3 -b html doc/source doc/build/html
+PYTHONPATH=.  PBR_VERSION={{ upstream_version }} sphinx-build-3 -b man doc/source doc/build/man
+%else
+PYTHONPATH=.  PBR_VERSION={{ upstream_version }} sphinx-build -b html doc/source doc/build/html
+PYTHONPATH=.  PBR_VERSION={{ upstream_version }} sphinx-build -b man doc/source doc/build/man
+%endif
 # remove the sphinx-build leftovers
-rm -rf build/sphinx/html/.{doctrees,buildinfo}
-%fdupes build/sphinx/html/
+rm -rf doc/build/html/.{doctrees,buildinfo}
+rm -rf doc/build/man/.{doctrees,buildinfo}
+%fdupes doc/build/html/
+%fdupes doc/build/man/
 %endif
 # config file generation
 PYTHONPATH=. oslo-config-generator --config-file=etc/nova/nova-config-generator.conf
 PYTHONPATH=. oslopolicy-sample-generator --config-file=etc/nova/nova-policy-generator.conf
 
 %install
-%{py2_install}
+%{py3_install}
 # man pages
 mkdir -p %{buildroot}%{_mandir}/man1
-install -p -D -m 644 build/sphinx/man/*.1 %{buildroot}%{_mandir}/man1/
+install -p -D -m 644 doc/build/man/*.1 %{buildroot}%{_mandir}/man1/
 
 # Setup directories
 install -d -m 750 %{buildroot}%{_localstatedir}/lib/nova
@@ -581,7 +589,7 @@ ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-api-os-compute
 %endif
 
 cp -a etc/nova/rootwrap.d/ %{buildroot}%{_sysconfdir}/nova/
-%fdupes %{buildroot}/%{python2_sitelib}
+%fdupes %{buildroot}/%{python3_sitelib}
 
 %if 0%{?with_tests}
 %check
@@ -718,8 +726,6 @@ usermod -a -G qemu nova
 %systemd_postun_with_restart %{name}-serialproxy.service
 
 %files
-%defattr(-,root,root,-)
-%license LICENSE
 %doc README.rst
 %dir %{_sysconfdir}/nova
 %dir %{_sysconfdir}/nova/rootwrap.d
@@ -749,10 +755,10 @@ usermod -a -G qemu nova
 %{_bindir}/nova-status
 %{_mandir}/man1/nova*.1.gz
 
-%files -n python-nova
+%files -n python3-nova
 %license LICENSE
-%{python2_sitelib}/nova/
-%{python2_sitelib}/nova-*.egg-info
+%{python3_sitelib}/nova/
+%{python3_sitelib}/nova-*.egg-info
 
 %files api
 %license LICENSE
@@ -863,7 +869,7 @@ usermod -a -G qemu nova
 %if 0%{?with_doc}
 %files doc
 %license LICENSE
-%doc build/sphinx/html
+%doc doc/build/html
 %endif
 
 %changelog
