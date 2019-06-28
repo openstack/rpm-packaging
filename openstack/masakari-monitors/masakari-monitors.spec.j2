@@ -3,8 +3,6 @@
 {% set upstream_version = upstream_version() %}
 {% set rpm_release = '1' %}
 
-%global sname {{ pypi_name }}
-%global python_pkg python-%{sname}
 Name:           {{ py2name('masakari-monitors') }}
 Version:        {{ py2rpmversion() }}
 Release:        {{ py2rpmrelease() }}
@@ -63,7 +61,6 @@ Monitors for the Masakari service for Virtual Machine
 High Availability (VMHA) service in OpenStack.
 
 System package - %{name}
-Python package - %{python_pkg}
 
 %package        doc
 Summary:        Documentation for OpenStack Masakari Service
@@ -87,7 +84,7 @@ High Availability (VMHA) service in OpenStack.
 
 This package contains the documentation.
 
-%package -n     %{python_pkg}
+%package -n     python-{{ pypi_name }}
 Summary:        masakari-monitors Python libraries
 Requires:       {{ py2pkg('Babel') }}
 Requires:       {{ py2pkg('iso8601') }}
@@ -115,7 +112,7 @@ Requires:       {{ py2pkg('six') }}
 Requires:       {{ py2pkg('stevedore') }}
 Requires:       {{ py2pkg('taskflow') }}
 
-%description -n python-%{sname}
+%description -n python-{{ pypi_name }}
 Masakari is a service providing high availability for VMs in OpenStack.
 
 This package contains the Python libraries for the monitoring components.
@@ -155,7 +152,7 @@ running in order for the compute plane to be functional and highly
 available.
 
 %prep
-%autosetup -n %{sname}-{{upstream_version}}
+%autosetup -n {{ pypi_name }}-{{upstream_version}}
 %py_req_cleanup
 
 %build
@@ -173,11 +170,6 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 
 mkdir -p %{buildroot}%{_sysconfdir}/masakarimonitors/
 mkdir -p %{buildroot}%{_localstatedir}/log/masakari-monitors
-
-# These are broken (hard-coded references to /usr/local/lib/python2.7)
-# and provide nothing which can't be handled better by systemd,
-# so we'll use systemd services instead.
-rm %{buildroot}%{_bindir}/masakari-{host,process}monitor.sh*
 
 #systemd unitfiles
 install -p -D -m 644 %SOURCE1 %{buildroot}%{_unitdir}/openstack-masakari-hostmonitor.service
@@ -264,7 +256,7 @@ testr run
 %license LICENSE
 %doc doc/build/html
 
-%files -n %{python_pkg}
+%files -n python-{{ pypi_name }}
 %license LICENSE
 %{python2_sitelib}/masakari*
 
