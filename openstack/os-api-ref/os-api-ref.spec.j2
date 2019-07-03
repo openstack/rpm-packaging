@@ -13,6 +13,8 @@ URL:            https://launchpad.net/%{sname}
 Source0:        {{ source }}
 # https://review.openstack.org/#/c/630146/
 Patch1:         0001-Fix-microversion-test-handle-different-HTML-renderin.patch
+Patch2:         0001-Add-support-for-Sphinx-2.0.patch
+Patch3:         0001-Add-support-for-Sphinx-v2.1.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('PyYAML', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('Sphinx', py_versions=['py2', 'py3']) }}
