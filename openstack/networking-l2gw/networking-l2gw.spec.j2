@@ -1,0 +1,187 @@
+{% set pypi_name = 'networking-l2gw' %}
+{% set source = fetch_source('https://tarballs.openstack.org/networking-l2gw/networking-l2gw-stable-rocky.tar.gz') %}
+{% set upstream_version = upstream_version() %}
+{% set rpm_release = '0' %}
+
+%global sname networking_l2gw
+%global agname openstack-neutron-l2gw-agent
+%global common_desc \
+This project proposes a Neutron API extension that can be used to express and \
+manage L2 Gateway components. In the simplest terms L2 Gateways are meant to \
+bridge two or more networks together to make them look as a single L2 broadcast \
+domain.
+%bcond_without docs
+%bcond_without test
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
+Epoch:          {{ epoch('{{ pypi_name }}') }}
+Summary:        L2 Gateway service for Neutron
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+URL:            https://launchpad.net/{{ pypi_name }}
+Source0:        {{ source|basename }}
+Source1:        %{agname}.service
+BuildRequires:  fdupes
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('pbr') }}
+Requires:       {{ py2pkg('neutron') }}
+Requires:       python-{{ pypi_name }} = %{version}-%{release}
+Requires:       {{ py2pkg('pbr') }}
+BuildArch:      noarch
+%if 0%{?suse_version}
+BuildRequires:  systemd-rpm-macros
+%{?systemd_requires}
+%else
+BuildRequires:  systemd
+Requires(post): systemd
+Requires(postun): systemd
+Requires(preun): systemd
+%endif
+%if %{with test}
+BuildRequires:  {{ py2pkg('neutron') }}
+BuildRequires:  {{ py2pkg('mock') }}
+BuildRequires:  {{ py2pkg('oslotest') }}
+BuildRequires:  {{ py2pkg('python-subunit') }}
+BuildRequires:  {{ py2pkg('requests-mock') }}
+BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('testscenarios') }}
+BuildRequires:  {{ py2pkg('testtools') }}
+%endif
+
+%description
+%{common_desc}
+
+%package -n python-{{ pypi_name }}
+Summary:        L2 Gateway service for Neutron - python libraries
+Requires:       {{ py2pkg('Babel') }}
+Requires:       {{ py2pkg('neutron-lib') }}
+Requires:       {{ py2pkg('python-neutronclient') }}
+Requires:       {{ py2pkg('ovsdbapp') }}
+Requires:       {{ py2pkg('pbr') }}
+
+%description -n python-{{ pypi_name }}
+%{common_desc}
+
+This package contains the python libraries.
+
+%if %{with docs}
+%package doc
+Summary:        L2 Gateway service for Neutron - Documentation
+Group:          Documentation/HTML
+BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('openstackdocstheme') }}
+BuildRequires:  {{ py2pkg('oslosphinx') }}
+
+%description doc
+%{common_desc}
+
+This package contains the documentation.
+%endif
+
+%package -n %{agname}
+Summary:    Neutron L2 Gateway Agent
+Requires:   %{name} = %{epoch}:%{version}-%{release}
+
+%description -n %{agname}
+%{common_desc}
+
+This package constains the L2 Gateway agent.
+
+%if %{with test}
+%package -n python-{{ pypi_name }}-tests
+Summary:    L2 Gateway service for neutron - Tests
+Requires:   {{ py2pkg('mock') }}
+Requires:   {{ py2pkg('oslotest') }}
+Requires:   {{ py2pkg('python-subunit') }}
+Requires:   {{ py2pkg('requests-mock') }}
+Requires:   {{ py2pkg('testrepository') }}
+Requires:   {{ py2pkg('testresources') }}
+Requires:   {{ py2pkg('testscenarios') }}
+Requires:   {{ py2pkg('testtools') }}
+
+%description -n python-{{ pypi_name }}-tests
+%{common_desc}
+
+This package contains the set of tests for L2 Gateway Neutron service.
+%endif
+
+%prep
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
+%py_req_cleanup
+
+# Remove bundled egg-info
+rm -rf %{pypi_name}.egg-info
+
+%build
+%py2_build
+
+%if %{with docs}
+PBR_VERSION={{ upstream_version }} sphinx-build -b html doc/source doc/build/html
+# remove the sphinx-build leftovers
+rm -rf doc/build/html/.{doctrees,buildinfo}
+%fdupes doc/build/html/
+%endif
+
+%install
+%py2_install
+
+# remove duplicates
+%python_expand %fdupes %{buildroot}%{$python_sitelib}
+
+install -p -D -m 640 etc/l2gateway_agent.ini %{buildroot}%{_sysconfdir}/neutron/l2gateway_agent.ini
+install -p -D -m 640 etc/l2gw_plugin.ini %{buildroot}%{_sysconfdir}/neutron/l2gw_plugin.ini
+
+# Install systemd units
+install -p -D -m 755 %{SOURCE1} %{buildroot}%{_unitdir}/%{agname}.service
+
+# Remove duplicate config files under /usr/etc/
+rm -rf %{buildroot}%{_prefix}/%{_sysconfdir}
+
+%if %{with test}
+%check
+rm -rf .testrepository
+%endif
+
+%post -n %{agname}
+%systemd_post %{agname}.service
+
+%preun -n %{agname}
+%systemd_preun %{agname}.service
+
+%postun -n %{agname}
+%systemd_postun_with_restart %{agname}.service
+
+%files
+%doc README.rst
+%license LICENSE
+%dir %{_sysconfdir}/neutron
+%config(noreplace) %attr(-, root, neutron) %{_sysconfdir}/neutron/l2gw_plugin.ini
+
+%files -n python-{{ pypi_name }}
+%license LICENSE
+%{python_sitelib}/%{sname}
+%{python_sitelib}/%{sname}-*.egg-info
+%if %{with test}
+%exclude %{python_sitelib}/%{sname}/tests
+%endif
+
+%if %{with docs}
+%files doc
+%license LICENSE
+%doc doc/build/html
+%endif
+
+%if %{with test}
+%files -n python-{{ pypi_name }}-tests
+%license LICENSE
+%{python_sitelib}/%{sname}/tests
+%endif
+
+%files -n %{agname}
+%license LICENSE
+%config(noreplace) %attr(-, root, neutron) %{_sysconfdir}/neutron/l2gateway_agent.ini
+%{_bindir}/neutron-l2gateway-agent
+%{_unitdir}/%{agname}.service
+
+%changelog
