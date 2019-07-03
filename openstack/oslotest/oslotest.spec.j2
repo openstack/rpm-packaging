@@ -11,6 +11,7 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://launchpad.net/oslotest
 Source0:        {{ source }}
+Patch0:         0001-Stop-testing-mock-functionality.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('debtcollector', py_versions=['py2', 'py3']) }}
@@ -48,7 +49,7 @@ The Oslo Test framework provides common fixtures, support for debugging, and
 better support for mocking results.
 
 %prep
-%autosetup -n oslotest-%{version}
+%autosetup -p1 -n oslotest-%{version}
 %py_req_cleanup
 
 %build
