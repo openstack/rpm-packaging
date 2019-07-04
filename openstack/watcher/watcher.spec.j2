@@ -209,6 +209,7 @@ install -p -D -m 644 watcher/api/app.wsgi %{buildroot}%{wsgi_dir}
 
 %files
 %{_bindir}/{{ pypi_name }}-api
+%{_bindir}/{{ pypi_name }}-api-wsgi
 %{_bindir}/{{ pypi_name }}-applier
 %{_bindir}/{{ pypi_name }}-db-manage
 %{_bindir}/{{ pypi_name }}-decision-engine
