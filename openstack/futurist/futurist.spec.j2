@@ -47,6 +47,8 @@ Useful additions to futures, from the future.
 
 # generate html docs
 PBR_VERSION={{ upstream_version }} sphinx-build -b html doc/source doc/build/html
+# remove the sphinx-build leftovers
+rm -r doc/build/html/.{doctrees,buildinfo}
 
 %install
 %{python_install}
