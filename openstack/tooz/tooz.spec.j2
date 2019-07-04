@@ -1,5 +1,5 @@
 {% set pypi_name = 'tooz' %}
-{% set upstream_version = upstream_version('1.64.2') %}
+{% set upstream_version = upstream_version('1.65.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -15,7 +15,7 @@ Group:          Development/Languages/Python
 URL:            https://docs.openstack.org/developer/tooz/
 Source0:        {{ source }}
 # https://review.openstack.org/#/c/640695/
-Patch1:         0001-Remove-grpcio-from-requirements.txt.patch
+Patch1:         0001-Move-grpcio-from-requirements.txt-to-extras.patch
 BuildRequires:  memcached
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('enum34', py_versions=['py2']) }}
