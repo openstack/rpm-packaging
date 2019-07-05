@@ -1,5 +1,5 @@
 {% set pypi_name = 'octavia-lib' %}
-{% set upstream_version = upstream_version('1.1.1') %}
+{% set upstream_version = upstream_version('1.2.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -11,8 +11,6 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://git.openstack.org/cgit/openstack/octavia-lib
 Source0:        {{ source }}
-# https://review.openstack.org/644874
-Patch0:         0001-Do-not-install-README.rst-and-LICENSE.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
