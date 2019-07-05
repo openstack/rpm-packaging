@@ -1,6 +1,6 @@
 %global with_doc 1
 %global sname neutron
-{% set upstream_version = '14.0.0.0b3' %}
+{% set upstream_version = '14.0.2' %}
 {% set rpm_release = '1' %}
 %if 0%{?rhel} || 0%{?fedora}
 %global rdo 1
@@ -235,6 +235,7 @@ Summary:        Documentation for OpenStack Networking Service
 Group:          Documentation/HTML
 BuildRequires:  {{ py2pkg('Sphinx') }}
 BuildRequires:  {{ py2pkg('openstackdocstheme') }}
+BuildRequires:  {{ py2pkg('tenacity') }}
 
 %description doc
 OpenStack Neutron documentaion.
@@ -253,7 +254,7 @@ sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %if 0%{?with_doc}
 # generate html docs
-PBR_VERSION={{ upstream_version }} sphinx-build -b html doc/source doc/build/html
+PYTHONPATH=$PWD PBR_VERSION={{ upstream_version }} sphinx-build -b html doc/source doc/build/html
 # remove the Sphinx-build leftovers
 rm -rf html/.{doctrees,buildinfo}
 %endif
