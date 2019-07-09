@@ -1,5 +1,5 @@
 {% set pypi_name = 'oslo.config' %}
-{% set upstream_version = upstream_version('6.10.0') %}
+{% set upstream_version = upstream_version('6.11.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -26,8 +26,8 @@ BuildRequires:  {{ py2pkg('requests', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('requests-mock', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('rfc3986', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('six', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('stevedore', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('PyYAML') }}
@@ -64,8 +64,9 @@ parsing library from the Oslo project.
 
 %package -n python-oslo.config-doc
 Summary:       Documentation for OpenStack common configuration library
-BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('openstackdocstheme') }}
+BuildRequires:  {{ py2pkg('Sphinx', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('openstackdocstheme', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('sphinxcontrib-apidoc', py_versions=['py2', 'py3']) }}
 
 %description -n python-oslo.config-doc
 Documentation for the oslo-config library.
@@ -96,9 +97,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %check
 # Requires oslo.log which we can't depend on for build cycle reasons
 rm -v oslo_config/tests/test_cfg.py
-%{python_expand rm -rf .testrepository
-$python setup.py testr
-}
+%python_exec -m stestr.cli run
 
 %files %{python_files}
 %license LICENSE
