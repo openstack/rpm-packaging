@@ -29,22 +29,45 @@ Source13:       neutron-server.defaultconf
 Source14:       neutron-server.README.config
 Source15:       neutron-enable-bridge-firewall.sh
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('Tempest') }}
-BuildRequires:  {{ py2pkg('PyMySQL') }}
-BuildRequires:  {{ py2pkg('WebTest') }}
-BuildRequires:  {{ py2pkg('ddt') }}
-BuildRequires:  {{ py2pkg('devel') }}
-BuildRequires:  {{ py2pkg('fixtures') }}
-BuildRequires:  {{ py2pkg('mock') }}
-BuildRequires:  {{ py2pkg('oslotest') }}
-BuildRequires:  {{ py2pkg('python-subunit') }}
-BuildRequires:  {{ py2pkg('reno') }}
-BuildRequires:  {{ py2pkg('testrepository') }}
-BuildRequires:  {{ py2pkg('testresources') }}
-BuildRequires:  {{ py2pkg('testtools') }}
+BuildRequires:  {{ py3('PyMySQL') }}
+BuildRequires:  {{ py3('WebTest') }}
+BuildRequires:  {{ py3('ddt') }}
+BuildRequires:  {{ py3('devel') }}
+BuildRequires:  {{ py3('fixtures') }}
+BuildRequires:  {{ py3('httplib2') }}
+BuildRequires:  {{ py3('keystoneauth1') }}
+BuildRequires:  {{ py3('keystonemiddleware') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('neutron-lib') }}
+# TODO
+# BuildRequires:  {{ py3('python-designateclient') }}
+BuildRequires:  {{ py3('python-neutronclient') }}
+BuildRequires:  {{ py3('python-novaclient') }}
+BuildRequires:  {{ py3('os-ken') }}
+BuildRequires:  {{ py3('os-xenapi') }}
+BuildRequires:  {{ py3('oslo.cache') }}
+BuildRequires:  {{ py3('oslo.privsep') }}
+BuildRequires:  {{ py3('oslo.reports') }}
+BuildRequires:  {{ py3('oslo.rootwrap') }}
+BuildRequires:  {{ py3('oslo.versionedobjects') }}
+BuildRequires:  {{ py3('oslotest') }}
+BuildRequires:  {{ py3('osprofiler') }}
+BuildRequires:  {{ py3('ovs') }}
+BuildRequires:  {{ py3('ovsdbapp') }}
+BuildRequires:  {{ py3('pecan') }}
+BuildRequires:  {{ py3('pyroute2') }}
+BuildRequires:  {{ py3('python-subunit') }}
+BuildRequires:  {{ py3('reno') }}
+# BuildRequires:  {{ py3('Tempest') }}
+BuildRequires:  {{ py3('testrepository') }}
+BuildRequires:  {{ py3('testresources') }}
+BuildRequires:  {{ py3('testtools') }}
 BuildRequires:  sudo
-Requires:       python-%{sname} = %{epoch}:%{version}-%{release}
+Requires:       python3-%{sname} = %{epoch}:%{version}-%{release}
 Requires:       sudo
+Provides:       {{ py2name('neutron') }}-dhcp-agent = %{version}-%{release}
+Provides:       {{ py2name('neutron') }}-l3-agent = %{version}-%{release}
+Provides:       {{ py2name('neutron') }}-metadata-agent = %{version}-%{release}
 BuildArch:      noarch
 %if 0%{?suse_version}
 BuildRequires:  systemd-rpm-macros
@@ -61,80 +84,59 @@ Neutron is a virtual network service for Openstack.
 
 This package contains the base supporting files.
 
-%package -n     python-%{sname}
+%package -n python3-%{sname}
 Summary:        Neutron Python libraries
 Group:          Applications/System
-BuildRequires:  {{ py2pkg('python-designateclient') }}
-BuildRequires:  {{ py2pkg('httplib2') }}
-BuildRequires:  {{ py2pkg('keystoneauth1') }}
-BuildRequires:  {{ py2pkg('keystonemiddleware') }}
-BuildRequires:  {{ py2pkg('neutron-lib') }}
-BuildRequires:  {{ py2pkg('python-neutronclient') }}
-BuildRequires:  {{ py2pkg('python-novaclient') }}
-BuildRequires:  {{ py2pkg('os-ken') }}
-BuildRequires:  {{ py2pkg('os-xenapi') }}
-BuildRequires:  {{ py2pkg('oslo.cache') }}
-BuildRequires:  {{ py2pkg('oslo.privsep') }}
-BuildRequires:  {{ py2pkg('oslo.reports') }}
-BuildRequires:  {{ py2pkg('oslo.rootwrap') }}
-BuildRequires:  {{ py2pkg('oslo.versionedobjects') }}
-BuildRequires:  {{ py2pkg('osprofiler') }}
-BuildRequires:  {{ py2pkg('ovs') }}
-BuildRequires:  {{ py2pkg('ovsdbapp') }}
-BuildRequires:  {{ py2pkg('pecan') }}
-BuildRequires:  {{ py2pkg('pyroute2') }}
-BuildRequires:  {{ py2pkg('weakrefmethod') }}
-Requires:       {{ py2pkg('Jinja2') }}
-Requires:       {{ py2pkg('Paste') }}
-Requires:       {{ py2pkg('PasteDeploy') }}
-Requires:       {{ py2pkg('Routes') }}
-Requires:       {{ py2pkg('SQLAlchemy') }}
-Requires:       {{ py2pkg('WebOb') }}
-Requires:       {{ py2pkg('alembic') }}
-Requires:       {{ py2pkg('debtcollector') }}
-Requires:       {{ py2pkg('python-designateclient') }}
-Requires:       {{ py2pkg('eventlet') }}
-Requires:       {{ py2pkg('httplib2') }}
-Requires:       {{ py2pkg('keystoneauth1') }}
-Requires:       {{ py2pkg('keystonemiddleware') }}
-Requires:       {{ py2pkg('netaddr') }}
-Requires:       {{ py2pkg('netifaces') }}
-Requires:       {{ py2pkg('neutron-lib') }}
-Requires:       {{ py2pkg('python-neutronclient') }}
-Requires:       {{ py2pkg('python-novaclient') }}
-Requires:       {{ py2pkg('os-ken') }}
-Requires:       {{ py2pkg('os-xenapi') }}
-Requires:       {{ py2pkg('oslo.cache') }}
-Requires:       {{ py2pkg('oslo.concurrency') }}
-Requires:       {{ py2pkg('oslo.config') }}
-Requires:       {{ py2pkg('oslo.context') }}
-Requires:       {{ py2pkg('oslo.db') }}
-Requires:       {{ py2pkg('oslo.i18n') }}
-Requires:       {{ py2pkg('oslo.log') }}
-Requires:       {{ py2pkg('oslo.messaging') }}
-Requires:       {{ py2pkg('oslo.middleware') }}
-Requires:       {{ py2pkg('oslo.policy') }}
-Requires:       {{ py2pkg('oslo.privsep') }}
-Requires:       {{ py2pkg('oslo.reports') }}
-Requires:       {{ py2pkg('oslo.rootwrap') }}
-Requires:       {{ py2pkg('oslo.serialization') }}
-Requires:       {{ py2pkg('oslo.service') }}
-Requires:       {{ py2pkg('oslo.utils') }}
-Requires:       {{ py2pkg('oslo.versionedobjects') }}
-Requires:       {{ py2pkg('osprofiler') }}
-Requires:       {{ py2pkg('ovs') }}
-Requires:       {{ py2pkg('ovsdbapp') }}
-Requires:       {{ py2pkg('pbr') }}
-Requires:       {{ py2pkg('pecan') }}
-Requires:       {{ py2pkg('psutil') }}
-Requires:       {{ py2pkg('pyroute2') }}
-Requires:       {{ py2pkg('requests') }}
-Requires:       {{ py2pkg('six') }}
-Requires:       {{ py2pkg('stevedore') }}
-Requires:       {{ py2pkg('tenacity') }}
-Requires:       {{ py2pkg('weakrefmethod') }}
+Requires:       {{ py3('Jinja2') }}
+Requires:       {{ py3('Paste') }}
+Requires:       {{ py3('PasteDeploy') }}
+Requires:       {{ py3('Routes') }}
+Requires:       {{ py3('SQLAlchemy') }}
+Requires:       {{ py3('WebOb') }}
+Requires:       {{ py3('alembic') }}
+Requires:       {{ py3('debtcollector') }}
+Requires:       {{ py3('python-designateclient') }}
+Requires:       {{ py3('eventlet') }}
+Requires:       {{ py3('httplib2') }}
+Requires:       {{ py3('keystoneauth1') }}
+Requires:       {{ py3('keystonemiddleware') }}
+Requires:       {{ py3('netaddr') }}
+Requires:       {{ py3('netifaces') }}
+Requires:       {{ py3('neutron-lib') }}
+Requires:       {{ py3('python-neutronclient') }}
+Requires:       {{ py3('python-novaclient') }}
+Requires:       {{ py3('os-ken') }}
+Requires:       {{ py3('os-xenapi') }}
+Requires:       {{ py3('oslo.cache') }}
+Requires:       {{ py3('oslo.concurrency') }}
+Requires:       {{ py3('oslo.config') }}
+Requires:       {{ py3('oslo.context') }}
+Requires:       {{ py3('oslo.db') }}
+Requires:       {{ py3('oslo.i18n') }}
+Requires:       {{ py3('oslo.log') }}
+Requires:       {{ py3('oslo.messaging') }}
+Requires:       {{ py3('oslo.middleware') }}
+Requires:       {{ py3('oslo.policy') }}
+Requires:       {{ py3('oslo.privsep') }}
+Requires:       {{ py3('oslo.reports') }}
+Requires:       {{ py3('oslo.rootwrap') }}
+Requires:       {{ py3('oslo.serialization') }}
+Requires:       {{ py3('oslo.service') }}
+Requires:       {{ py3('oslo.utils') }}
+Requires:       {{ py3('oslo.versionedobjects') }}
+Requires:       {{ py3('osprofiler') }}
+Requires:       {{ py3('ovs') }}
+Requires:       {{ py3('ovsdbapp') }}
+Requires:       {{ py3('pbr') }}
+Requires:       {{ py3('pecan') }}
+Requires:       {{ py3('psutil') }}
+Requires:       {{ py3('pyroute2') }}
+Requires:       {{ py3('requests') }}
+Requires:       {{ py3('six') }}
+Requires:       {{ py3('stevedore') }}
+Requires:       {{ py3('tenacity') }}
 
-%description -n   python-%{sname}
+%description -n   python3-%{sname}
 Neutron is a virtual network service for Openstack.
 
 This package contains the Neutron Python library.
@@ -233,9 +235,9 @@ SR-IOV network cards.
 %package doc
 Summary:        Documentation for OpenStack Networking Service
 Group:          Documentation/HTML
-BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('openstackdocstheme') }}
-BuildRequires:  {{ py2pkg('tenacity') }}
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
+BuildRequires:  {{ py3('tenacity') }}
 
 %description doc
 OpenStack Neutron documentaion.
@@ -250,11 +252,11 @@ This package contains the documentation
 sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
-%py2_build
+%py3_build
 
 %if 0%{?with_doc}
 # generate html docs
-PYTHONPATH=$PWD PBR_VERSION={{ upstream_version }} sphinx-build -b html doc/source doc/build/html
+PYTHONPATH=$PWD PBR_VERSION={{ upstream_version }} %sphinx_build --keep-going -b html doc/source doc/build/html
 # remove the Sphinx-build leftovers
 rm -rf html/.{doctrees,buildinfo}
 %endif
@@ -269,7 +271,7 @@ do
 done
 
 %install
-%py2_install
+%py3_install
 
 # Move rootwrap files to proper location
 install -d -m 755 %{buildroot}%{_datarootdir}/%{sname}/rootwrap
@@ -473,11 +475,10 @@ rm neutron/tests/unit/hacking/test_checks.py
 %{_unitdir}/neutron-server.service
 %dir %{_sysconfdir}/%{sname}/server.conf.d
 
-%files -n python-%{sname}
-%defattr(-,root,root,-)
+%files -n python3-%{sname}
 %license LICENSE
-%{python2_sitelib}/%{sname}
-%{python2_sitelib}/%{sname}-*.egg-info
+%{python3_sitelib}/%{sname}
+%{python3_sitelib}/%{sname}-*.egg-info
 
 %if 0%{?with_doc}
 %files doc
