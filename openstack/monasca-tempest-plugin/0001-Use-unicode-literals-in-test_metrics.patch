@@ -1,0 +1,409 @@
+From ffd53171589cff0575666e072cd1b62c323c7ce7 Mon Sep 17 00:00:00 2001
+From: Witek Bedyk <witold.bedyk@suse.com>
+Date: Fri, 7 Jun 2019 14:07:24 +0200
+Subject: [PATCH] Use unicode literals in test_metrics
+
+The change unifies the usage of text string literals in the package and
+declares them as unicode. It simplifies comparing test values with
+actual results across Python 2 and 3 deployments. It also fixes the bug
+described in the user story.
+
+Change-Id: I87c38faf41f7c1bff72d45d238a6f38751fad483
+Story: 2005841
+Task: 33613
+---
+ monasca_tempest_tests/tests/api/test_metrics.py | 157 ++++++++++++------------
+ 1 file changed, 76 insertions(+), 81 deletions(-)
+
+diff --git a/monasca_tempest_tests/tests/api/test_metrics.py b/monasca_tempest_tests/tests/api/test_metrics.py
+index 6c1c43c..c1b1812 100644
+--- a/monasca_tempest_tests/tests/api/test_metrics.py
++++ b/monasca_tempest_tests/tests/api/test_metrics.py
+@@ -18,7 +18,6 @@
+ import time
+ 
+ from six.moves import urllib_parse as urlparse
+-from six import PY3
+ from six import text_type
+ 
+ from tempest.lib.common.utils import data_utils
+@@ -34,15 +33,15 @@ class TestMetrics(base.BaseMonascaTest):
+ 
+     @decorators.attr(type=["gate", "smoke"])
+     def test_create_metric(self):
+-        name = data_utils.rand_name('name')
+-        key = data_utils.rand_name('key')
+-        value = data_utils.rand_name('value')
++        name = data_utils.rand_name(u'name')
++        key = data_utils.rand_name(u'key')
++        value = data_utils.rand_name(u'value')
+         timestamp = int(round(time.time() * 1000))
+         time_iso = helpers.timestamp_to_iso(timestamp)
+         end_timestamp = int(round((time.time() + 3600 * 24) * 1000))
+         end_time_iso = helpers.timestamp_to_iso(end_timestamp)
+-        value_meta_key = data_utils.rand_name('value_meta_key')
+-        value_meta_value = data_utils.rand_name('value_meta_value')
++        value_meta_key = data_utils.rand_name(u'value_meta_key')
++        value_meta_value = data_utils.rand_name(u'value_meta_value')
+         metric = helpers.create_metric(name=name,
+                                        dimensions={key: value},
+                                        timestamp=timestamp,
+@@ -61,7 +60,7 @@ class TestMetrics(base.BaseMonascaTest):
+             elements = response_body['elements']
+             for element in elements:
+                 # check if metric is there and dimension info already available
+-                if (str(element['name']) == name and len(element['dimensions']) > 0):
++                if element['name'] == name and len(element['dimensions']) > 0:
+                     self._verify_list_measurements_element(element, key, value)
+                     measurement = element['measurements'][0]
+                     self._verify_list_measurements_measurement(
+@@ -77,20 +76,15 @@ class TestMetrics(base.BaseMonascaTest):
+ 
+     @decorators.attr(type='gate')
+     def test_create_metric_with_multibyte_character(self):
+-        name = data_utils.rand_name('ｎａｍｅ') if PY3 \
+-            else data_utils.rand_name('ｎａｍｅ').decode('utf8')
+-        key = data_utils.rand_name('ｋｅｙ') if PY3 \
+-            else data_utils.rand_name('ｋｅｙ').decode('utf8')
+-        value = data_utils.rand_name('ｖａｌｕｅ') if PY3 \
+-            else data_utils.rand_name('ｖａｌｕｅ').decode('utf8')
++        name = data_utils.rand_name(u'ｎａｍｅ')
++        key = data_utils.rand_name(u'ｋｅｙ')
++        value = data_utils.rand_name(u'ｖａｌｕｅ')
+         timestamp = int(round(time.time() * 1000))
+         time_iso = helpers.timestamp_to_iso(timestamp)
+         end_timestamp = int(round((time.time() + 3600 * 24) * 1000))
+         end_time_iso = helpers.timestamp_to_iso(end_timestamp)
+-        value_meta_key = data_utils.rand_name('value_meta_ｋｅｙ') if PY3 \
+-            else data_utils.rand_name('value_meta_ｋｅｙ').decode('utf8')
+-        value_meta_value = data_utils.rand_name('value_meta_ｖａｌｕｅ') if PY3 \
+-            else data_utils.rand_name('value_meta_ｖａｌｕｅ').decode('utf8')
++        value_meta_key = data_utils.rand_name(u'value_meta_ｋｅｙ')
++        value_meta_value = data_utils.rand_name(u'value_meta_ｖａｌｕｅ')
+         metric = helpers.create_metric(name=name,
+                                        dimensions={key: value},
+                                        timestamp=timestamp,
+@@ -124,17 +118,17 @@ class TestMetrics(base.BaseMonascaTest):
+ 
+     @decorators.attr(type='gate')
+     def test_create_metrics(self):
+-        name = data_utils.rand_name('name')
+-        key = data_utils.rand_name('key')
+-        value = data_utils.rand_name('value')
++        name = data_utils.rand_name(u'name')
++        key = data_utils.rand_name(u'key')
++        value = data_utils.rand_name(u'value')
+         timestamp = int(round(time.time() * 1000))
+         time_iso = helpers.timestamp_to_iso(timestamp)
+         end_timestamp = int(round(timestamp + 3600 * 24 * 1000))
+         end_time_iso = helpers.timestamp_to_iso(end_timestamp)
+-        value_meta_key1 = data_utils.rand_name('meta_key')
+-        value_meta_value1 = data_utils.rand_name('meta_value')
+-        value_meta_key2 = data_utils.rand_name('value_meta_key')
+-        value_meta_value2 = data_utils.rand_name('value_meta_value')
++        value_meta_key1 = data_utils.rand_name(u'meta_key')
++        value_meta_value1 = data_utils.rand_name(u'meta_value')
++        value_meta_key2 = data_utils.rand_name(u'value_meta_key')
++        value_meta_value2 = data_utils.rand_name(u'value_meta_value')
+         metrics = [
+             helpers.create_metric(name=name,
+                                   dimensions={key: value},
+@@ -161,8 +155,8 @@ class TestMetrics(base.BaseMonascaTest):
+             self.assertEqual(200, resp.status)
+             elements = response_body['elements']
+             for element in elements:
+-                if str(element['name']) == name \
+-                        and len(element['measurements']) == 2:
++                if (element['name'] == name and
++                        len(element['measurements']) == 2):
+                     self._verify_list_measurements_element(element, key, value)
+                     first_measurement = element['measurements'][0]
+                     second_measurement = element['measurements'][1]
+@@ -200,9 +194,9 @@ class TestMetrics(base.BaseMonascaTest):
+     @decorators.attr(type='gate')
+     @decorators.attr(type=['negative'])
+     def test_create_metric_with_empty_value_in_dimensions(self):
+-        name = data_utils.rand_name('name')
++        name = data_utils.rand_name(u'name')
+         metric = helpers.create_metric(name=name,
+-                                       dimensions={'key': ''})
++                                       dimensions={u'key': ''})
+         self.assertRaises(exceptions.UnprocessableEntity,
+                           self.monasca_client.create_metrics,
+                           metric)
+@@ -210,22 +204,22 @@ class TestMetrics(base.BaseMonascaTest):
+     @decorators.attr(type='gate')
+     @decorators.attr(type=['negative'])
+     def test_create_metric_with_empty_key_in_dimensions(self):
+-        name = data_utils.rand_name('name')
++        name = data_utils.rand_name(u'name')
+         metric = helpers.create_metric(name=name,
+-                                       dimensions={'': 'value'})
++                                       dimensions={'': u'value'})
+         self.assertRaises(exceptions.UnprocessableEntity,
+                           self.monasca_client.create_metrics,
+                           metric)
+ 
+     @decorators.attr(type='gate')
+     def test_create_metric_with_no_dimensions(self):
+-        name = data_utils.rand_name('name')
++        name = data_utils.rand_name(u'name')
+         timestamp = int(round(time.time() * 1000))
+         time_iso = helpers.timestamp_to_iso(timestamp)
+         end_timestamp = int(round(timestamp + 3600 * 24 * 1000))
+         end_time_iso = helpers.timestamp_to_iso(end_timestamp)
+-        value_meta_key = data_utils.rand_name('value_meta_key')
+-        value_meta_value = data_utils.rand_name('value_meta_value')
++        value_meta_key = data_utils.rand_name(u'value_meta_key')
++        value_meta_value = data_utils.rand_name(u'value_meta_value')
+         metric = helpers.create_metric(name=name,
+                                        dimensions=None,
+                                        timestamp=timestamp,
+@@ -242,7 +236,7 @@ class TestMetrics(base.BaseMonascaTest):
+             self.assertEqual(200, resp.status)
+             elements = response_body['elements']
+             for element in elements:
+-                if str(element['name']) == name:
++                if element['name'] == name:
+                     self._verify_list_measurements_element(
+                         element, test_key=None, test_value=None)
+                     if len(element['measurements']) > 0:
+@@ -261,9 +255,9 @@ class TestMetrics(base.BaseMonascaTest):
+ 
+     @decorators.attr(type='gate')
+     def test_create_metric_with_colon_in_dimension_value(self):
+-        name = data_utils.rand_name('name')
+-        key = 'url'
+-        value = 'http://localhost:8070/v2.0'
++        name = data_utils.rand_name(u'name')
++        key = u'url'
++        value = u'http://localhost:8070/v2.0'
+         timestamp = int(round(time.time() * 1000))
+         time_iso = helpers.timestamp_to_iso(timestamp)
+         end_timestamp = int(round((time.time() + 3600 * 24) * 1000))
+@@ -281,7 +275,7 @@ class TestMetrics(base.BaseMonascaTest):
+             self.assertEqual(200, resp.status)
+             elements = response_body['elements']
+             for element in elements:
+-                if str(element['name']) == name:
++                if element['name'] == name:
+                     self._verify_list_measurements_element(element, key, value)
+                     measurement = element['measurements'][0]
+                     self._verify_list_measurements_measurement(
+@@ -317,7 +311,7 @@ class TestMetrics(base.BaseMonascaTest):
+     @decorators.attr(type='gate')
+     @decorators.attr(type=['negative'])
+     def test_create_metric_with_name_exceeds_max_length(self):
+-        long_name = "x" * (constants.MAX_METRIC_NAME_LENGTH + 1)
++        long_name = u"x" * (constants.MAX_METRIC_NAME_LENGTH + 1)
+         metric = helpers.create_metric(long_name)
+         self.assertRaises(exceptions.UnprocessableEntity,
+                           self.monasca_client.create_metrics,
+@@ -336,12 +330,13 @@ class TestMetrics(base.BaseMonascaTest):
+     @decorators.attr(type=['negative'])
+     def test_create_metric_with_invalid_chars_in_dimensions(self):
+         for invalid_char in constants.INVALID_DIMENSION_CHARS:
+-            metric = helpers.create_metric('name-1', {'key-1': invalid_char})
++            metric = helpers.create_metric(u'name-1', {u'key-1': invalid_char})
+             self.assertRaises(exceptions.UnprocessableEntity,
+                               self.monasca_client.create_metrics,
+                               metric)
+         for invalid_char in constants.INVALID_DIMENSION_CHARS:
+-            metric = helpers.create_metric('name-1', {invalid_char: 'value-1'})
++            metric = helpers.create_metric(u'name-1',
++                                           {invalid_char: u'value-1'})
+             self.assertRaises(exceptions.UnprocessableEntity,
+                               self.monasca_client.create_metrics,
+                               metric)
+@@ -349,8 +344,8 @@ class TestMetrics(base.BaseMonascaTest):
+     @decorators.attr(type='gate')
+     @decorators.attr(type=['negative'])
+     def test_create_metric_dimension_key_exceeds_max_length(self):
+-        long_key = "x" * (constants.MAX_DIMENSION_KEY_LENGTH + 1)
+-        metric = helpers.create_metric('name-1', {long_key: 'value-1'})
++        long_key = u"x" * (constants.MAX_DIMENSION_KEY_LENGTH + 1)
++        metric = helpers.create_metric(u'name-1', {long_key: u'value-1'})
+         self.assertRaises(exceptions.UnprocessableEntity,
+                           self.monasca_client.create_metrics,
+                           metric)
+@@ -358,8 +353,8 @@ class TestMetrics(base.BaseMonascaTest):
+     @decorators.attr(type='gate')
+     @decorators.attr(type=['negative'])
+     def test_create_metric_dimension_value_exceeds_max_length(self):
+-        long_value = "x" * (constants.MAX_DIMENSION_VALUE_LENGTH + 1)
+-        metric = helpers.create_metric('name-1', {'key-1': long_value})
++        long_value = u"x" * (constants.MAX_DIMENSION_VALUE_LENGTH + 1)
++        metric = helpers.create_metric(u'name-1', {u'key-1': long_value})
+         self.assertRaises(exceptions.UnprocessableEntity,
+                           self.monasca_client.create_metrics,
+                           metric)
+@@ -367,9 +362,9 @@ class TestMetrics(base.BaseMonascaTest):
+     @decorators.attr(type='gate')
+     @decorators.attr(type=['negative'])
+     def test_create_metric_with_value_meta_name_exceeds_max_length(self):
+-        long_value_meta_name = "x" * (constants.MAX_VALUE_META_NAME_LENGTH + 1)
+-        value_meta_dict = {long_value_meta_name: "value_meta_value"}
+-        metric = helpers.create_metric(name='name', value_meta=value_meta_dict)
++        long_value_meta_name = u"x" * (constants.MAX_VALUE_META_NAME_LENGTH + 1)
++        value_meta_dict = {long_value_meta_name: u"value_meta_value"}
++        metric = helpers.create_metric(name=u'name', value_meta=value_meta_dict)
+         self.assertRaises(exceptions.UnprocessableEntity,
+                           self.monasca_client.create_metrics,
+                           metric)
+@@ -377,10 +372,10 @@ class TestMetrics(base.BaseMonascaTest):
+     @decorators.attr(type='gate')
+     @decorators.attr(type=['negative'])
+     def test_create_metric_with_value_meta_exceeds_max_length(self):
+-        value_meta_name = "x"
+-        long_value_meta_value = "y" * constants.MAX_VALUE_META_TOTAL_LENGTH
++        value_meta_name = u"x"
++        long_value_meta_value = u"y" * constants.MAX_VALUE_META_TOTAL_LENGTH
+         value_meta_dict = {value_meta_name: long_value_meta_value}
+-        metric = helpers.create_metric(name='name', value_meta=value_meta_dict)
++        metric = helpers.create_metric(name=u'name', value_meta=value_meta_dict)
+         self.assertRaises(exceptions.UnprocessableEntity,
+                           self.monasca_client.create_metrics,
+                           metric)
+@@ -398,9 +393,9 @@ class TestMetrics(base.BaseMonascaTest):
+ 
+     @decorators.attr(type='gate')
+     def test_list_metrics_with_dimensions(self):
+-        name = data_utils.rand_name('name')
+-        key = data_utils.rand_name('key')
+-        value = data_utils.rand_name('value')
++        name = data_utils.rand_name(u'name')
++        key = data_utils.rand_name(u'key')
++        value = data_utils.rand_name(u'value')
+         metric = helpers.create_metric(name=name, dimensions={key: value})
+         resp, response_body = self.monasca_client.create_metrics(metric)
+         self.assertEqual(204, resp.status)
+@@ -410,7 +405,7 @@ class TestMetrics(base.BaseMonascaTest):
+             self.assertEqual(200, resp.status)
+             elements = response_body['elements']
+             for element in elements:
+-                if str(element['dimensions'][key]) == value:
++                if element['dimensions'][key] == value:
+                     self._verify_list_metrics_element(element, test_name=name)
+                     return
+             time.sleep(constants.RETRY_WAIT_SECS)
+@@ -465,9 +460,9 @@ class TestMetrics(base.BaseMonascaTest):
+ 
+     @decorators.attr(type='gate')
+     def test_list_metrics_with_name(self):
+-        name = data_utils.rand_name('name')
+-        key = data_utils.rand_name('key')
+-        value = data_utils.rand_name('value')
++        name = data_utils.rand_name(u'name')
++        key = data_utils.rand_name(u'key')
++        value = data_utils.rand_name(u'value')
+         metric = helpers.create_metric(name=name,
+                                        dimensions={key: value})
+         resp, response_body = self.monasca_client.create_metrics(metric)
+@@ -478,7 +473,7 @@ class TestMetrics(base.BaseMonascaTest):
+             self.assertEqual(200, resp.status)
+             elements = response_body['elements']
+             for element in elements:
+-                if str(element['name']) == name:
++                if element['name'] == name:
+                     self._verify_list_metrics_element(element, test_key=key,
+                                                       test_value=value)
+                     return
+@@ -492,11 +487,11 @@ class TestMetrics(base.BaseMonascaTest):
+ 
+     @decorators.attr(type='gate')
+     def test_list_metrics_with_project(self):
+-        name = data_utils.rand_name('name')
+-        key = data_utils.rand_name('key')
+-        value = data_utils.rand_name('value')
++        name = data_utils.rand_name(u'name')
++        key = data_utils.rand_name(u'key')
++        value = data_utils.rand_name(u'value')
+         project = self.projects_client.create_project(
+-            name=data_utils.rand_name('test_project'))['project']
++            name=data_utils.rand_name(u'test_project'))['project']
+         # Delete the project at the end of the test
+         self.addCleanup(self.projects_client.delete_project, project['id'])
+         metric = helpers.create_metric(name=name,
+@@ -510,7 +505,7 @@ class TestMetrics(base.BaseMonascaTest):
+             self.assertEqual(200, resp.status)
+             elements = response_body['elements']
+             for element in elements:
+-                if str(element['name']) == name:
++                if element['name'] == name:
+                     self._verify_list_metrics_element(element, test_key=key,
+                                                       test_value=value)
+                     return
+@@ -530,13 +525,13 @@ class TestMetrics(base.BaseMonascaTest):
+ 
+         metrics = [
+             helpers.create_metric(name=name, dimensions={
+-                key1: 'value-1', key2: 'value-1'}),
++                key1: u'value-1', key2: u'value-1'}),
+             helpers.create_metric(name=name, dimensions={
+-                key1: 'value-2', key2: 'value-2'}),
++                key1: u'value-2', key2: u'value-2'}),
+             helpers.create_metric(name=name, dimensions={
+-                key1: 'value-3', key2: 'value-3'}),
++                key1: u'value-3', key2: u'value-3'}),
+             helpers.create_metric(name=name, dimensions={
+-                key1: 'value-4', key2: 'value-4'})
++                key1: u'value-4', key2: u'value-4'})
+         ]
+         self.monasca_client.create_metrics(metrics)
+         query_param = '?name=' + name
+@@ -629,15 +624,15 @@ class TestMetrics(base.BaseMonascaTest):
+         self.assertEqual(set(element), set(['dimensions', 'id', 'name']))
+         self.assertTrue(str(element['id']) is not None)
+         if test_key is not None and test_value is not None:
+-            self.assertEqual(str(element['dimensions'][test_key]), test_value)
++            self.assertEqual(element['dimensions'][test_key], test_value)
+         if test_name is not None:
+-            self.assertEqual(str(element['name']), test_name)
++            self.assertEqual(element['name'], test_name)
+ 
+     @decorators.attr(type='gate')
+     def test_list_metrics_with_time_args(self):
+-        name = data_utils.rand_name('name')
+-        key = data_utils.rand_name('key')
+-        value_org = data_utils.rand_name('value')
++        name = data_utils.rand_name(u'name')
++        key = data_utils.rand_name(u'key')
++        value_org = data_utils.rand_name(u'value')
+ 
+         now = int(round(time.time() * 1000))
+         #
+@@ -661,7 +656,7 @@ class TestMetrics(base.BaseMonascaTest):
+                 dimensions = elements[0]
+                 dimension = dimensions['dimensions']
+                 value = dimension[text_type(key)]
+-                self.assertEqual(value_org, str(value))
++                self.assertEqual(value_org, value)
+                 break
+             else:
+                 time.sleep(constants.RETRY_WAIT_SECS)
+@@ -705,15 +700,15 @@ class TestMetrics(base.BaseMonascaTest):
+                 self.fail(error_msg)
+ 
+     def _create_metrics_with_different_dimensions(self, same_name=True):
+-        name1 = data_utils.rand_name('name1')
+-        name2 = name1 if same_name else data_utils.rand_name('name2')
+-        name3 = name1 if same_name else data_utils.rand_name('name3')
+-        key_service = data_utils.rand_name('service')
+-        values = [data_utils.rand_name('value1'),
+-                  data_utils.rand_name('value2')]
++        name1 = data_utils.rand_name(u'name1')
++        name2 = name1 if same_name else data_utils.rand_name(u'name2')
++        name3 = name1 if same_name else data_utils.rand_name(u'name3')
++        key_service = data_utils.rand_name(u'service')
++        values = [data_utils.rand_name(u'value1'),
++                  data_utils.rand_name(u'value2')]
+         metrics = [helpers.create_metric(name1, {key_service: values[0]}),
+                    helpers.create_metric(name2, {key_service: values[1]}),
+-                   helpers.create_metric(name3, {'key3': 'value3'})]
++                   helpers.create_metric(name3, {u'key3': u'value3'})]
+         resp, response_body = self.monasca_client.create_metrics(metrics)
+         self.assertEqual(204, resp.status)
+         return metrics, name1, key_service, values
+-- 
+2.16.4
+

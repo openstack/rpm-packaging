@@ -16,6 +16,8 @@ License:       {{ license('Apache-2.0') }}
 Group:         Development/Languages/Python
 URL:           https://git.openstack.org/cgit/openstack/{{ pypi_name }}
 Source0:       {{ source|basename }}
+# https://review.opendev.org/663927
+Patch1:        0001-Use-unicode-literals-in-test_metrics.patch
 BuildRequires: openstack-macros
 BuildRequires: {{ py2pkg('pbr') }}
 BuildRequires: {{ py2pkg('setuptools') }}
@@ -44,7 +46,7 @@ It contains the documentation for the monasca tempest tests.
 %endif
 
 %prep
-%autosetup -n {{ pypi_name }}-{{ upstream_version }}
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 
 # Let's handle dependencies ourseleves
 %py_req_cleanup
