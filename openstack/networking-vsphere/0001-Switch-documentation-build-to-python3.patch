@@ -1,0 +1,95 @@
+From f889b11c8dcea898dd3a0a7b55ba5b74600a53af Mon Sep 17 00:00:00 2001
+From: Dirk Mueller <dirk@dmllr.de>
+Date: Tue, 16 Jul 2019 23:00:46 +0200
+Subject: [PATCH] Switch documentation build to python3
+
+oslosphinx is not compatible with python 3/sphinx2, so we need
+to either switch to openstackdocstheme or remove oslosphinx.
+Also switch tox environments to use python 3 by default including
+docs and switch to sphinx-build.
+
+Change-Id: I76b9417d77241a9e8d8ac3c9bdaf4ebddae1e0ab
+---
+ doc/source/conf.py    |  1 -
+ test-requirements.txt |  1 -
+ tox.ini               | 11 +++++------
+ 3 files changed, 5 insertions(+), 8 deletions(-)
+
+diff --git a/doc/source/conf.py b/doc/source/conf.py
+index f0b0465..a2213a6 100755
+--- a/doc/source/conf.py
++++ b/doc/source/conf.py
+@@ -23,7 +23,6 @@ sys.path.insert(0, os.path.abspath('../..'))
+ extensions = [
+     'sphinx.ext.autodoc',
+     #'sphinx.ext.intersphinx',
+-    'oslosphinx'
+ ]
+ 
+ # autodoc generation is a bit aggressive and a nuisance when doing heavy
+diff --git a/test-requirements.txt b/test-requirements.txt
+index 34a038c..8aef4cf 100644
+--- a/test-requirements.txt
++++ b/test-requirements.txt
+@@ -9,7 +9,6 @@ mock>=2.0.0 # BSD
+ coverage!=4.4,>=4.0 # Apache-2.0
+ python-subunit>=1.0.0 # Apache-2.0/BSD
+ sphinx!=1.6.6,!=1.6.7,>=1.6.5 # BSD
+-oslosphinx>=4.7.0 # Apache-2.0
+ oslotest>=3.2.0 # Apache-2.0
+ stestr>=1.0.0 # Apache-2.0
+ 
+diff --git a/tox.ini b/tox.ini
+index 1844d70..28f91d0 100644
+--- a/tox.ini
++++ b/tox.ini
+@@ -4,6 +4,7 @@ minversion = 1.6
+ skipsdist = True
+ 
+ [testenv]
++basepython = python3
+ setenv = VIRTUAL_ENV={envdir}
+ passenv = TRACE_FAILONLY
+ usedevelop = True
+@@ -17,7 +18,6 @@ commands = stestr run {posargs}
+ # mode. To do this define the TRACE_FAILONLY environmental variable.
+ 
+ [testenv:scenario]
+-basepython = python3
+ setenv = OS_TEST_PATH=./networking_vsphere/tests/scenario
+ passenv = {[testenv]passenv} TEMPEST_CONFIG_DIR
+ # If you are running the tests locally you should set the env variable
+@@ -25,18 +25,18 @@ passenv = {[testenv]passenv} TEMPEST_CONFIG_DIR
+ 
+ [testenv:pep8]
+ commands = flake8
++### NOTE(dmllr): Remove after upgrading at a recent hacking/flake8
++basepython = python2
+ 
+ [testenv:venv]
+-basepython = python3
+ commands = {posargs}
+ 
+ [testenv:cover]
+-basepython = python3
+ commands = python setup.py testr --coverage --testr-args='{posargs}'
+ 
+ [testenv:docs]
+-basepython = python3
+-commands = python setup.py build_sphinx
++commands =
++    sphinx-build -W -b html doc/source doc/build/html
+ 
+ [flake8]
+ # E123 closing bracket does not match indentation of opening bracket's line
+@@ -59,7 +59,6 @@ import_exceptions = networking_vsphere._i18n
+ local-check-factory = neutron_lib.hacking.checks.factory
+ 
+ [testenv:lower-constraints]
+-basepython = python3
+ setenv = OS_TEST_TIMEOUT={env:OS_TEST_TIMEOUT:60}
+ deps = -c{toxinidir}/lower-constraints.txt
+        -r{toxinidir}/requirements.txt
+-- 
+2.22.0
+
