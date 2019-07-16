@@ -56,7 +56,7 @@ The Murano UI Horizon plugin adds Murano panel to the OpenStack dashboard.
 %py2_install
 
 install -m 0755 -d %{buildroot}%{http_dashboard_dir}/openstack_dashboard/enabled/
-cp -a muranodashboard/local/enabled/*.py %{buildroot}%{http_dashboard_dir}/openstack_dashboard/enabled/
+cp -a muranodashboard/local/enabled/*.py* %{buildroot}%{http_dashboard_dir}/openstack_dashboard/enabled/
 install -m 0755 -d %{buildroot}%{http_dashboard_dir}/openstack_dashboard/local/local_settings.d/
 cp -a muranodashboard/local/local_settings.d/_50_murano.py %{buildroot}%{http_dashboard_dir}/openstack_dashboard/local/local_settings.d/_50_murano.py.example
 install -m 0755 -d %{buildroot}%{http_dashboard_dir}/openstack_dashboard/conf/

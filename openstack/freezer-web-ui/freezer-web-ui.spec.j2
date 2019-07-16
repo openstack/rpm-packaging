@@ -45,7 +45,7 @@ The Freezer UI Horizon plugin adds Freezer panel to the OpenStack dashboard.
 %py2_install
 
 install -m 0755 -d %{buildroot}%{http_dashboard_dir}/openstack_dashboard/enabled/
-cp -a disaster_recovery/enabled/_50*.py %{buildroot}%{http_dashboard_dir}/openstack_dashboard/enabled/
+cp -a disaster_recovery/enabled/_50*.py* %{buildroot}%{http_dashboard_dir}/openstack_dashboard/enabled/
 
 %fdupes %{buildroot}%{python2_sitelib}
 %fdupes %{buildroot}%{http_dashboard_dir}

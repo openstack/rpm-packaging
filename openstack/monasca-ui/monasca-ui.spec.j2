@@ -65,7 +65,7 @@ panel's Alarms tab links to when generating drilldown links for alarms.
 
 install -m 0755 -d %{buildroot}%{http_dashboard_dir}/openstack_dashboard/enabled/
 install -m 0755 -d %{buildroot}%{http_dashboard_dir}/openstack_dashboard/conf/
-cp -a monitoring/enabled/_50_admin_add_monitoring_panel.py %{buildroot}%{http_dashboard_dir}/openstack_dashboard/enabled/
+cp -a monitoring/enabled/_50_admin_add_monitoring_panel.py* %{buildroot}%{http_dashboard_dir}/openstack_dashboard/enabled/
 cp -a monitoring/conf/monitoring_policy.json %{buildroot}%{http_dashboard_dir}/openstack_dashboard/conf/
 %if 0%{?suse_version}
 install -m 0755 -d %{buildroot}%{_datadir}/grafana/public/dashboards/

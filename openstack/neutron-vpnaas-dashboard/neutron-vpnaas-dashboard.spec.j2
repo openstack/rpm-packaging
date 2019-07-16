@@ -76,7 +76,7 @@ PYTHONPATH=%{http_dashboard_dir} python manage.py test neutron_vpnaas_dashboard 
 %py2_install
 
 install -m 0755 -d %{buildroot}%{http_dashboard_dir}/openstack_dashboard/enabled/
-cp -a neutron_vpnaas_dashboard/enabled/*.py %{buildroot}%{http_dashboard_dir}/openstack_dashboard/enabled/
+cp -a neutron_vpnaas_dashboard/enabled/*.py* %{buildroot}%{http_dashboard_dir}/openstack_dashboard/enabled/
 
 %fdupes %{buildroot}%{python2_sitelib}
 %fdupes %{buildroot}%{http_dashboard_dir}
