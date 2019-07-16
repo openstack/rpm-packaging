@@ -18,6 +18,8 @@ URL:           https://git.openstack.org/cgit/openstack/{{ pypi_name }}
 Source0:       {{ source|basename }}
 # https://review.openstack.org/#/c/634386/
 Patch1:        0001-Recognize-config-options-from-service_available.patch
+# https://review.opendev.org/663927
+Patch2:        0001-Use-unicode-literals-in-test_metrics.patch
 BuildRequires: openstack-macros
 BuildRequires: {{ py2pkg('devel') }}
 BuildRequires: {{ py2pkg('pbr') }}
