@@ -3,7 +3,6 @@
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
-%global oldpython python
 Name:           {{ py2name() }}
 Version:        {{ py2rpmversion() }}
 Release:        {{ py2rpmrelease() }}
@@ -13,56 +12,52 @@ Group:          Development/Languages/Python
 URL:            https://docs.openstack.org/developer/ironic-lib/
 Source0:        https://files.pythonhosted.org/packages/source/i/ironic-lib/ironic-lib-%{version}.tar.gz
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('setuptools', py_versions=['py2', 'py3']) }}
-Requires:       %{oldpython}-ironic-lib-common = %{version}-%{release}
-Requires:       {{ py2pkg('oslo.concurrency') }}
-Requires:       {{ py2pkg('oslo.config') }}
-Requires:       {{ py2pkg('oslo.i18n') }}
-Requires:       {{ py2pkg('oslo.log') }}
-Requires:       {{ py2pkg('oslo.serialization') }}
-Requires:       {{ py2pkg('oslo.service') }}
-Requires:       {{ py2pkg('oslo.utils') }}
-Requires:       {{ py2pkg('requests') }}
-Requires:       {{ py2pkg('six') }}
-Requires:       {{ py2pkg('zeroconf') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('oslo.concurrency') }}
+BuildRequires:  {{ py3('oslo.log') }}
+BuildRequires:  {{ py3('oslo.service') }}
+BuildRequires:  {{ py3('oslotest') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('setuptools') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('zeroconf') }}
+Requires:       {{ py3('eventlet') }}
+Requires:       {{ py3('oslo.concurrency') }}
+Requires:       {{ py3('oslo.config') }}
+Requires:       {{ py3('oslo.i18n') }}
+Requires:       {{ py3('oslo.log') }}
+Requires:       {{ py3('oslo.service') }}
+Requires:       {{ py3('oslo.utils') }}
+Requires:       {{ py3('requests') }}
+Requires:       {{ py3('six') }}
+Requires:       {{ py3('zeroconf') }}
 BuildArch:      noarch
-%python_subpackages
 
 %description
 A common library to be used **exclusively** by projects under the `Ironic
 governance <http://governance.openstack.org/reference/projects/ironic.html>`
-
-%package -n python-ironic-lib-common
-Summary:        Ironic Common Libraries
-Group:          Development/Languages/Python
-
-%description -n python-ironic-lib-common
-A common library to be used **exclusively** by projects under the `Ironic
-governance <http://governance.openstack.org/reference/projects/ironic.html>`
-
-This package contains the common files needed for all python versions
 
 %prep
 %autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
 
 %build
-%python_build
+%{py3_build}
+
+%check
+python3 -m stestr.cli run
 
 %install
-%python_install
+%{py3_install}
+
 install -p -m 755 -d %{buildroot}/%{_sysconfdir}/ironic/rootwrap.d
 install -p -m 640 etc/rootwrap.d/*.filters %{buildroot}/%{_sysconfdir}/ironic/rootwrap.d
 
-%files %{python_files}
+%files
 %license LICENSE
 %doc ChangeLog README.rst
-%{python_sitelib}/ironic_lib
-%{python_sitelib}/ironic_lib*egg-info
-
-%files -n python-ironic-lib-common
-%license LICENSE
+%{python3_sitelib}/ironic_lib
+%{python3_sitelib}/ironic_lib*egg-info
 %dir %{_sysconfdir}/ironic
 %{_sysconfdir}/ironic/rootwrap.d
 
