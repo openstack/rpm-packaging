@@ -1,0 +1,73 @@
+From 87661abc468475cdd6fe2b31050a9eb76ccf66aa Mon Sep 17 00:00:00 2001
+From: Guang Yee <guang.yee@suse.com>
+Date: Mon, 22 Jul 2019 15:15:00 -0700
+Subject: [PATCH] disable triggering version discovery in test_generator unit
+ tests
+
+Fixed unit.actions.openstack.test_generator.GeneratorTest.test_generator
+failure by avoid triggering version discovery as it needs to talk to
+Keystone server. Talking to a live Keystone server is not needed for
+this particular unit test.
+
+Change-Id: Ib2c72e89612c9b2b4bccd37cb797804ea40e0b1f
+Closes-Bug: 1837468
+---
+ .../unit/actions/openstack/test_generator.py  | 26 +++++++++++++++++++
+ .../notes/bug-1837468-94a8a2e4326ab1e5.yaml   |  8 ++++++
+ 2 files changed, 34 insertions(+)
+ create mode 100644 releasenotes/notes/bug-1837468-94a8a2e4326ab1e5.yaml
+
+diff --git a/mistral/tests/unit/actions/openstack/test_generator.py b/mistral/tests/unit/actions/openstack/test_generator.py
+index 294e20b9..e5f3e5c6 100644
+--- a/mistral/tests/unit/actions/openstack/test_generator.py
++++ b/mistral/tests/unit/actions/openstack/test_generator.py
+@@ -85,6 +85,32 @@ class GeneratorTest(base.BaseTest):
+         self.baremetal_patch.start()
+         self.addCleanup(self.baremetal_patch.stop)
+ 
++        # When {{ service }}_default_microversion is set, keystoneauth1
++        # will attempt to do version discovery by looking up the services
++        # in the Keystone service catalog and making sure the desire version
++        # is available. Prior to this patch
++        # https://review.opendev.org/#/c/587437/, clustering service does
++        # not set the default microversion. Therefore, there was no
++        # version discovery attempted during these tests. Now that the patch
++        # is included in the latest openstacksdk release, we need to
++        # disable version discovery by nullifying the CURRENT_API_VERSION
++        # in senlinclient in order the tests to pass. These are unit tests
++        # and does not need to talk to a real Keystone server.
++        self._senlin_api_version = None
++
++        def _reset_senlin_api_version():
++            if actions.senlinclient and hasattr(
++                    actions.senlinclient.plugin, 'CURRENT_API_VERSION'):
++                actions.senlinclient.CURRENT_API_VERSION = (
++                    self._senlin_api_version)
++
++        if actions.senlinclient and hasattr(
++                actions.senlinclient.plugin, 'CURRENT_API_VERSION'):
++            self._senlin_api_version = (
++                actions.senlinclient.plugin.CURRENT_API_VERSION)
++            actions.senlinclient.plugin.CURRENT_API_VERSION = None
++            self.addCleanup(_reset_senlin_api_version)
++
+     def test_generator(self):
+         for generator_cls in generator_factory.all_generators():
+             action_classes = generator_cls.create_actions()
+diff --git a/releasenotes/notes/bug-1837468-94a8a2e4326ab1e5.yaml b/releasenotes/notes/bug-1837468-94a8a2e4326ab1e5.yaml
+new file mode 100644
+index 00000000..9a7a51ce
+--- /dev/null
++++ b/releasenotes/notes/bug-1837468-94a8a2e4326ab1e5.yaml
+@@ -0,0 +1,8 @@
++---
++fixes:
++  - |
++    [`bug 1837468 <https://bugs.launchpad.net/keystone/+bug/1837468>`_]
++    Fixed unit.actions.openstack.test_generator.GeneratorTest.test_generator
++    failure by avoid triggering version discovery as it needs to talk to
++    Keystone server. Talking to a live Keystone server is not needed for
++    this particular unit test.
+-- 
+2.21.0
+
