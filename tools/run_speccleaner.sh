@@ -26,6 +26,16 @@ for spec in `find $WORKSPACE/logs/suse/ -name "${FIND_STR}.spec" -type f -print`
     # https://github.com/openSUSE/spec-cleaner/issues/173
     sed -i 's/%{__python2}/python2/g' $spec
     sed -i 's/%{__python3}/python3/g' $spec
+    # NOTE(jaicaa): spec-cleaner does not like py2 and py3 single
+    # line BuildRequires, pick py2:
+    # BuildRequires: python-X python3-X -> BuildRequires: python-X
+    # BuildRequires: python3-X python-X -> BuildRequires: python-X
+    # BuildRequires: python2-X python3-X -> BuildRequires: python2-X
+    # BuildRequires: python3-X python2-X -> BuildRequires: python2-X
+    sed -i 's/^\(BuildRequires:.*\)python-\(.*\b\).*python3-\2$/\1python-\2/g' $spec
+    sed -i 's/^\(BuildRequires:.*\)python3-\(.*\b\).*python-\2$/\1python-\2/g' $spec
+    sed -i 's/^\(BuildRequires:.*\)python2-\(.*\b\).*python3-\2$/\1python2-\2/g' $spec
+    sed -i 's/^\(BuildRequires:.*\)python3-\(.*\b\).*python2-\2$/\1python2-\2/g' $spec
     spec-cleaner -m -d --no-copyright --diff-prog "diff -uw" \
                  $spec > $tmpdir/`basename ${spec}`.cleaner.diff &
     let count+=1
