@@ -56,7 +56,7 @@ The Murano UI Horizon plugin adds Murano panel to the OpenStack dashboard.
 %py3_install
 
 install -m 0755 -d %{buildroot}%{http_dashboard_dir}/openstack_dashboard/enabled/
-cp -a muranodashboard/local/enabled/*.py %{buildroot}%{http_dashboard_dir}/openstack_dashboard/enabled/
+cp -a muranodashboard/local/enabled/*.py* %{buildroot}%{http_dashboard_dir}/openstack_dashboard/enabled/
 install -m 0755 -d %{buildroot}%{http_dashboard_dir}/openstack_dashboard/local/local_settings.d/
 cp -a muranodashboard/local/local_settings.d/_50_murano.py %{buildroot}%{http_dashboard_dir}/openstack_dashboard/local/local_settings.d/_50_murano.py.example
 install -m 0755 -d %{buildroot}%{http_dashboard_dir}/openstack_dashboard/conf/
@@ -74,7 +74,10 @@ su %{apache_user} -s /bin/sh -c "python3 %{http_dashboard_dir}/manage.py collect
 %files
 %doc ChangeLog CONTRIBUTING.rst README.rst
 %license LICENSE
-%{http_dashboard_dir}/openstack_dashboard/enabled/*.py*
+%{http_dashboard_dir}/openstack_dashboard/enabled/_5*.py*
+%{http_dashboard_dir}/openstack_dashboard/enabled/_6*.py*
+%{http_dashboard_dir}/openstack_dashboard/enabled/_7*.py*
+%{http_dashboard_dir}/openstack_dashboard/enabled/_8*.py*
 %{http_dashboard_dir}/openstack_dashboard/local/local_settings.d/_50_murano.py.example
 %{http_dashboard_dir}/openstack_dashboard/conf/murano_policy.json
 

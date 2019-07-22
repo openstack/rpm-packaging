@@ -76,7 +76,7 @@ PYTHONPATH=%{http_dashboard_dir} python3 manage.py test neutron_vpnaas_dashboard
 %{py3_install}
 
 install -m 0755 -d %{buildroot}%{http_dashboard_dir}/openstack_dashboard/enabled/
-cp -a neutron_vpnaas_dashboard/enabled/*.py %{buildroot}%{http_dashboard_dir}/openstack_dashboard/enabled/
+cp -a neutron_vpnaas_dashboard/enabled/_71*.py* %{buildroot}%{http_dashboard_dir}/openstack_dashboard/enabled/
 
 %fdupes %{buildroot}%{python3_sitelib}
 %fdupes %{buildroot}%{http_dashboard_dir}
@@ -90,7 +90,7 @@ su %{apache_user} -s /bin/sh -c "python3 %{http_dashboard_dir}/manage.py collect
 %files
 %doc ChangeLog CONTRIBUTING.rst README.rst
 %license LICENSE
-%{http_dashboard_dir}/openstack_dashboard/enabled/*.py*
+%{http_dashboard_dir}/openstack_dashboard/enabled/_71*.py*
 
 %files -n {{ py2pkg('horizon-plugin-neutron-vpnaas-ui') }}
 %doc README.rst
