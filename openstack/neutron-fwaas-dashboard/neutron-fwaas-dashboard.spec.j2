@@ -82,7 +82,7 @@ PYTHONPATH=%{http_dashboard_dir} python manage.py test neutron_fwaas_dashboard -
 %py2_install
 
 install -m 0755 -d %{buildroot}%{http_dashboard_dir}/openstack_dashboard/enabled/
-cp -a neutron_fwaas_dashboard/enabled/*.py* %{buildroot}%{http_dashboard_dir}/openstack_dashboard/enabled/
+cp -a neutron_fwaas_dashboard/enabled/_70*.py* %{buildroot}%{http_dashboard_dir}/openstack_dashboard/enabled/
 install -m 0755 -d %{buildroot}%{http_dashboard_dir}/openstack_dashboard/conf/
 cp -a etc/neutron-fwaas-policy.json %{buildroot}%{http_dashboard_dir}/openstack_dashboard/conf/
 
@@ -98,7 +98,7 @@ su %{apache_user} -s /bin/sh -c "python %{http_dashboard_dir}/manage.py collects
 %files
 %doc ChangeLog CONTRIBUTING.rst README.rst
 %license LICENSE
-%{http_dashboard_dir}/openstack_dashboard/enabled/*.py*
+%{http_dashboard_dir}/openstack_dashboard/enabled/_70*.py*
 %{http_dashboard_dir}/openstack_dashboard/conf/neutron-fwaas-policy.json
 
 %files -n {{ py2pkg('horizon-plugin-neutron-fwaas-ui') }}
