@@ -26,11 +26,7 @@ for specstyle in $specstyles; do
     find ${specdir} -name "${FIND_STR}.spec.j2" -type f -print0 | \
         xargs -n 1 -0 -P 0 -I __SPEC__ bash -c "
             set -e
-            skip='--skip-pyversion py3'
-            if grep -q '%package -n python3-' __SPEC__; then
-                skip=""
-            fi
             pkg_name=\$(pymod2pkg --dist $specstyle \$(basename __SPEC__ .spec.j2))
             renderspec --spec-style $specstyle __SPEC__ \
-                \$skip -o $WORKSPACE/logs/$specstyle/\$pkg_name.spec"
+                -o $WORKSPACE/logs/$specstyle/\$pkg_name.spec"
 done
