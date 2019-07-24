@@ -3,37 +3,37 @@
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
-%global sname XStatic-Bootstrap-Datepicker
 Name:           {{ py2name() }}
 Version:        {{ py2rpmversion() }}
 Release:        {{ py2rpmrelease() }}
 Summary:        Bootstrap-Datepicker %{version} (XStatic packaging standard)
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
-URL:            https://git.openstack.org/cgit/openstack/{sname}/
+URL:            https://opendev.org/openstack/XStatic-Bootstrap-Datepicker/
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('setuptools') }}
+BuildRequires:  {{ py2pkg('setuptools', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('XStatic') }}
 BuildArch:      noarch
+%python_subpackages
 
 %description
 Bootstrap-Datepicker javascript library packaged for setuptools (easy_install) / pip.
 
 %prep
-%autosetup -n %{sname}-{{ upstream_version }}
+%autosetup -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
 
 %build
-%{py2_build}
+%{python_build}
 
 %install
-%{py2_install}
+%{python_install}
 
-%files
+%files %{python_files}
 %doc README.txt
-%{python2_sitelib}/xstatic
-%{python2_sitelib}/XStatic_Bootstrap_Datepicker-*-py?.?.egg-info
-%{python2_sitelib}/XStatic_Bootstrap_Datepicker-*-py?.?-nspkg.pth
+%{python_sitelib}/xstatic
+%{python_sitelib}/XStatic_Bootstrap_Datepicker-*-py?.?.egg-info
+%{python_sitelib}/XStatic_Bootstrap_Datepicker-*-py?.?-nspkg.pth
 
 %changelog

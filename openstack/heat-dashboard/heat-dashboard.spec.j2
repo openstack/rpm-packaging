@@ -17,16 +17,16 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source|basename }}
 BuildRequires:  fdupes
-BuildRequires:  {{ py2pkg('horizon') }}
+BuildRequires:  {{ py3('horizon') }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('XStatic-Angular-UUID') }}
-BuildRequires:  {{ py2pkg('XStatic-Angular-Vis') }}
-BuildRequires:  {{ py2pkg('XStatic-FileSaver') }}
-BuildRequires:  {{ py2pkg('XStatic-JS-Yaml') }}
-BuildRequires:  {{ py2pkg('XStatic-Json2yaml') }}
-BuildRequires:  {{ py2pkg('python-heatclient') }}
-BuildRequires:  {{ py2pkg('mock') }}
-BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py3('XStatic-Angular-UUID') }}
+BuildRequires:  {{ py3('XStatic-Angular-Vis') }}
+BuildRequires:  {{ py3('XStatic-FileSaver') }}
+BuildRequires:  {{ py3('XStatic-JS-Yaml') }}
+BuildRequires:  {{ py3('XStatic-Json2yaml') }}
+BuildRequires:  {{ py3('python-heatclient') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('pbr') }}
 Requires:       {{ py2pkg('horizon-plugin-heat-ui') }} = %{version}
 BuildArch:      noarch
 
@@ -35,13 +35,13 @@ Heat dashboard is a horizon plugin for Heat.
 
 %package -n     {{ py2pkg('horizon-plugin-heat-ui') }}
 Summary:        Horizon plugin for heat - Python Module
-Requires:       {{ py2pkg('XStatic-Angular-UUID') }}
-Requires:       {{ py2pkg('XStatic-Angular-Vis') }}
-Requires:       {{ py2pkg('XStatic-FileSaver') }}
-Requires:       {{ py2pkg('XStatic-JS-Yaml') }}
-Requires:       {{ py2pkg('XStatic-Json2yaml') }}
-Requires:       {{ py2pkg('python-heatclient') }}
-Requires:       {{ py2pkg('pbr') }}
+Requires:       {{ py3('XStatic-Angular-UUID') }}
+Requires:       {{ py3('XStatic-Angular-Vis') }}
+Requires:       {{ py3('XStatic-FileSaver') }}
+Requires:       {{ py3('XStatic-JS-Yaml') }}
+Requires:       {{ py3('XStatic-Json2yaml') }}
+Requires:       {{ py3('python-heatclient') }}
+Requires:       {{ py3('pbr') }}
 
 %description -n {{ py2pkg('horizon-plugin-heat-ui') }}
 OpenStack Heat plugin for Horizon.
@@ -51,7 +51,6 @@ This package contains the core Python module of the heat-ui.
 %package test
 Summary:       Heat Management Plugin for Horizon - Testsuite
 Requires:      {{ py2pkg('mock') }}
-#Requires:      {{ py2pkg('nodeenv') }}
 Requires:      {{ py2pkg('testtools') }}
 
 %description test
@@ -63,14 +62,14 @@ It is used to verify the functionality of the Heat UI Plugin.
 %py_req_cleanup
 
 %build
-%py2_build
+%py3_build
 
 %check
 rm -r heat_dashboard/test/integration
-PYTHONPATH=%{http_dashboard_dir} python manage.py test heat_dashboard.test --settings=heat_dashboard.test.settings --exclude-tag=integration
+PYTHONPATH=%{http_dashboard_dir} python3 manage.py test heat_dashboard.test --settings=heat_dashboard.test.settings --exclude-tag=integration
 
 %install
-%py2_install
+%py3_install
 
 install -m 0755 -d %{buildroot}%{http_dashboard_dir}/openstack_dashboard/enabled/
 cp -a heat_dashboard/enabled/*.py %{buildroot}%{http_dashboard_dir}/openstack_dashboard/enabled/
@@ -78,14 +77,14 @@ install -m 0755 -d %{buildroot}%{http_dashboard_dir}/openstack_dashboard/local/l
 cp -a heat_dashboard/local_settings.d/_1699_orchestration_settings.py \
      %{buildroot}%{http_dashboard_dir}/openstack_dashboard/local/local_settings.d/_1699_orchestration_settings.py
 
-%fdupes %{buildroot}%{python2_sitelib}
+%fdupes %{buildroot}%{python3_sitelib}
 %fdupes %{buildroot}%{http_dashboard_dir}
 
 %post
-su %{apache_user} -s /bin/sh -c "python %{http_dashboard_dir}/manage.py collectstatic --noinput --clear > /dev/null"
+su %{apache_user} -s /bin/sh -c "python3 %{http_dashboard_dir}/manage.py collectstatic --noinput --clear > /dev/null"
 
 %postun
-su %{apache_user} -s /bin/sh -c "python %{http_dashboard_dir}/manage.py collectstatic --noinput --clear > /dev/null"
+su %{apache_user} -s /bin/sh -c "python3 %{http_dashboard_dir}/manage.py collectstatic --noinput --clear > /dev/null"
 
 %files
 %doc ChangeLog CONTRIBUTING.rst README.rst
@@ -96,11 +95,11 @@ su %{apache_user} -s /bin/sh -c "python %{http_dashboard_dir}/manage.py collects
 %files -n {{ py2pkg('horizon-plugin-heat-ui') }}
 %doc README.rst
 %license LICENSE
-%{python2_sitelib}/heat_dashboard/
-%{python2_sitelib}/heat_dashboard-*.egg-info
-%exclude %{python_sitelib}/heat_dashboard/test*
+%{python3_sitelib}/heat_dashboard/
+%{python3_sitelib}/heat_dashboard-*.egg-info
+%exclude %{python3_sitelib}/heat_dashboard/test*
 
 %files test
-%{python_sitelib}/heat_dashboard/test*
+%{python3_sitelib}/heat_dashboard/test*
 
 %changelog

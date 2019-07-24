@@ -23,62 +23,57 @@ Patch0:         0001-Do-not-set-COMPRESS_ENABLED-explicitly.patch
 BuildRequires:  fdupes
 BuildRequires:  gettext
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('Django') }}
-BuildRequires:  {{ py2pkg('Pint') }}
-BuildRequires:  {{ py2pkg('XStatic') }}
-BuildRequires:  {{ py2pkg('XStatic-Angular') }}
-BuildRequires:  {{ py2pkg('XStatic-Angular-Bootstrap') }}
-BuildRequires:  {{ py2pkg('XStatic-Angular-FileUpload') }}
-BuildRequires:  {{ py2pkg('XStatic-Angular-Gettext') }}
-BuildRequires:  {{ py2pkg('XStatic-Angular-Schema-Form') }}
-BuildRequires:  {{ py2pkg('XStatic-Angular-lrdragndrop') }}
-BuildRequires:  {{ py2pkg('XStatic-Bootstrap-Datepicker') }}
-BuildRequires:  {{ py2pkg('XStatic-Bootstrap-SCSS') }}
-BuildRequires:  {{ py2pkg('XStatic-D3') }}
-BuildRequires:  {{ py2pkg('XStatic-Font-Awesome') }}
-BuildRequires:  {{ py2pkg('XStatic-Hogan') }}
-BuildRequires:  {{ py2pkg('XStatic-JQuery-Migrate') }}
-BuildRequires:  {{ py2pkg('XStatic-JQuery.TableSorter') }}
-BuildRequires:  {{ py2pkg('XStatic-JQuery.quicksearch') }}
-BuildRequires:  {{ py2pkg('XStatic-JSEncrypt') }}
-BuildRequires:  {{ py2pkg('XStatic-Jasmine') }}
-BuildRequires:  {{ py2pkg('XStatic-Rickshaw') }}
-BuildRequires:  {{ py2pkg('XStatic-Spin') }}
-BuildRequires:  {{ py2pkg('XStatic-bootswatch') }}
-BuildRequires:  {{ py2pkg('XStatic-jQuery') }}
-BuildRequires:  {{ py2pkg('XStatic-jquery-ui') }}
-BuildRequires:  {{ py2pkg('XStatic-mdi') }}
-BuildRequires:  {{ py2pkg('XStatic-objectpath') }}
-BuildRequires:  {{ py2pkg('XStatic-roboto-fontface') }}
-BuildRequires:  {{ py2pkg('XStatic-smart-table') }}
-BuildRequires:  {{ py2pkg('XStatic-term.js') }}
-BuildRequires:  {{ py2pkg('XStatic-tv4') }}
-BuildRequires:  {{ py2pkg('python-cinderclient') }}
-BuildRequires:  {{ py2pkg('devel') }}
-BuildRequires:  {{ py2pkg('django-debreach') }}
-BuildRequires:  {{ py2pkg('django-nose') }}
-BuildRequires:  {{ py2pkg('django-pyscss') }}
-BuildRequires:  {{ py2pkg('django_compressor') }}
-BuildRequires:  {{ py2pkg('python-glanceclient') }}
-BuildRequires:  {{ py2pkg('python-heatclient') }}
-BuildRequires:  {{ py2pkg('python-keystoneclient') }}
-BuildRequires:  {{ py2pkg('mock') }}
-BuildRequires:  {{ py2pkg('mox3') }}
-BuildRequires:  {{ py2pkg('netaddr') }}
-BuildRequires:  {{ py2pkg('python-neutronclient') }}
-BuildRequires:  {{ py2pkg('nose') }}
-BuildRequires:  {{ py2pkg('nose-exclude') }}
-BuildRequires:  {{ py2pkg('nosexcover') }}
-BuildRequires:  {{ py2pkg('python-novaclient') }}
-BuildRequires:  {{ py2pkg('openstack.nose_plugin') }}
-BuildRequires:  {{ py2pkg('oslo.concurrency') }}
-BuildRequires:  {{ py2pkg('oslo.policy') }}
-BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('python-swiftclient') }}
-BuildRequires:  {{ py2pkg('testtools') }}
-BuildRequires:  {{ py2pkg('python-troveclient') }}
-Requires:       python-horizon = %{epoch}:%{version}-%{release}
-Requires:       python-openstack_auth = %{epoch}:%{version}-%{release}
+BuildRequires:  {{ py3('Django') }}
+BuildRequires:  {{ py3('Pint') }}
+BuildRequires:  {{ py3('XStatic') }}
+BuildRequires:  {{ py3('XStatic-Angular') }}
+BuildRequires:  {{ py3('XStatic-Angular-Bootstrap') }}
+BuildRequires:  {{ py3('XStatic-Angular-FileUpload') }}
+BuildRequires:  {{ py3('XStatic-Angular-Gettext') }}
+BuildRequires:  {{ py3('XStatic-Angular-Schema-Form') }}
+BuildRequires:  {{ py3('XStatic-Angular-lrdragndrop') }}
+BuildRequires:  {{ py3('XStatic-Bootstrap-Datepicker') }}
+BuildRequires:  {{ py3('XStatic-Bootstrap-SCSS') }}
+BuildRequires:  {{ py3('XStatic-D3') }}
+BuildRequires:  {{ py3('XStatic-Font-Awesome') }}
+BuildRequires:  {{ py3('XStatic-Hogan') }}
+BuildRequires:  {{ py3('XStatic-JQuery-Migrate') }}
+BuildRequires:  {{ py3('XStatic-JQuery.TableSorter') }}
+BuildRequires:  {{ py3('XStatic-JQuery.quicksearch') }}
+BuildRequires:  {{ py3('XStatic-JSEncrypt') }}
+BuildRequires:  {{ py3('XStatic-Jasmine') }}
+BuildRequires:  {{ py3('XStatic-Rickshaw') }}
+BuildRequires:  {{ py3('XStatic-Spin') }}
+BuildRequires:  {{ py3('XStatic-bootswatch') }}
+BuildRequires:  {{ py3('XStatic-jQuery') }}
+BuildRequires:  {{ py3('XStatic-jquery-ui') }}
+BuildRequires:  {{ py3('XStatic-mdi') }}
+BuildRequires:  {{ py3('XStatic-objectpath') }}
+BuildRequires:  {{ py3('XStatic-roboto-fontface') }}
+BuildRequires:  {{ py3('XStatic-smart-table') }}
+BuildRequires:  {{ py3('XStatic-term.js') }}
+BuildRequires:  {{ py3('XStatic-tv4') }}
+BuildRequires:  {{ py3('python-cinderclient') }}
+BuildRequires:  {{ py3('devel') }}
+BuildRequires:  {{ py3('django-debreach') }}
+BuildRequires:  {{ py3('django-pyscss') }}
+BuildRequires:  {{ py3('django_compressor') }}
+BuildRequires:  {{ py3('python-glanceclient') }}
+BuildRequires:  {{ py3('python-heatclient') }}
+BuildRequires:  {{ py3('python-keystoneclient') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('mox3') }}
+BuildRequires:  {{ py3('netaddr') }}
+BuildRequires:  {{ py3('python-neutronclient') }}
+BuildRequires:  {{ py3('python-novaclient') }}
+BuildRequires:  {{ py3('oslo.concurrency') }}
+BuildRequires:  {{ py3('oslo.policy') }}
+BuildRequires:  {{ py3('osprofiler') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('python-swiftclient') }}
+BuildRequires:  {{ py3('testtools') }}
+Requires:       python3-horizon = %{epoch}:%{version}-%{release}
+Requires:       python3-openstack_auth = %{epoch}:%{version}-%{release}
 Provides:       openstack-{{ pypi_name }} = %{version}-%{release}
 BuildArch:      noarch
 %if 0%{?suse_version}
@@ -115,78 +110,78 @@ The dashboard is just one way to interact with OpenStack resources.
 Developers can automate access or build tools to manage their resources
 using the native OpenStack API or the EC2 compatibility API.
 
-%package -n python-horizon
+%package -n python3-horizon
 Summary:        OpenStack Dashboard (Horizon) - Python Module
 Group:          Development/Languages/Python
-Requires:       {{ py2pkg('Babel') }}
-Requires:       {{ py2pkg('Django') }}
-Requires:       {{ py2pkg('Pint') }}
-Requires:       {{ py2pkg('PyYAML') }}
-Requires:       {{ py2pkg('XStatic') }}
-Requires:       {{ py2pkg('XStatic-Angular') }}
-Requires:       {{ py2pkg('XStatic-Angular-Bootstrap') }}
-Requires:       {{ py2pkg('XStatic-Angular-FileUpload') }}
-Requires:       {{ py2pkg('XStatic-Angular-Gettext') }}
-Requires:       {{ py2pkg('XStatic-Angular-Schema-Form') }}
-Requires:       {{ py2pkg('XStatic-Angular-lrdragndrop') }}
-Requires:       {{ py2pkg('XStatic-Bootstrap-Datepicker') }}
-Requires:       {{ py2pkg('XStatic-Bootstrap-SCSS') }}
-Requires:       {{ py2pkg('XStatic-D3') }}
-Requires:       {{ py2pkg('XStatic-Font-Awesome') }}
-Requires:       {{ py2pkg('XStatic-Hogan') }}
-Requires:       {{ py2pkg('XStatic-JQuery-Migrate') }}
-Requires:       {{ py2pkg('XStatic-JQuery.TableSorter') }}
-Requires:       {{ py2pkg('XStatic-JQuery.quicksearch') }}
-Requires:       {{ py2pkg('XStatic-JSEncrypt') }}
-Requires:       {{ py2pkg('XStatic-Jasmine') }}
-Requires:       {{ py2pkg('XStatic-Rickshaw') }}
-Requires:       {{ py2pkg('XStatic-Spin') }}
-Requires:       {{ py2pkg('XStatic-bootswatch') }}
-Requires:       {{ py2pkg('XStatic-jQuery') }}
-Requires:       {{ py2pkg('XStatic-jquery-ui') }}
-Requires:       {{ py2pkg('XStatic-mdi') }}
-Requires:       {{ py2pkg('XStatic-objectpath') }}
-Requires:       {{ py2pkg('XStatic-roboto-fontface') }}
-Requires:       {{ py2pkg('XStatic-smart-table') }}
-Requires:       {{ py2pkg('XStatic-term.js') }}
-Requires:       {{ py2pkg('XStatic-tv4') }}
-Requires:       {{ py2pkg('python-cinderclient') }}
-Requires:       {{ py2pkg('django-babel') }}
-Requires:       {{ py2pkg('django-debreach') }}
-Requires:       {{ py2pkg('django-pyscss') }}
-Requires:       {{ py2pkg('django_compressor') }}
-Requires:       {{ py2pkg('futurist') }}
-Requires:       {{ py2pkg('python-glanceclient') }}
-Requires:       {{ py2pkg('python-heatclient') }}
-Requires:       {{ py2pkg('httplib2') }}
-Requires:       {{ py2pkg('iso8601') }}
-Requires:       {{ py2pkg('python-keystoneclient') }}
-Requires:       {{ py2pkg('netaddr') }}
-Requires:       {{ py2pkg('python-neutronclient') }}
-Requires:       {{ py2pkg('python-novaclient') }}
-Requires:       {{ py2pkg('oslo.concurrency') }}
-Requires:       {{ py2pkg('oslo.config') }}
-Requires:       {{ py2pkg('oslo.i18n') }}
-Requires:       {{ py2pkg('oslo.policy') }}
-Requires:       {{ py2pkg('oslo.serialization') }}
-Requires:       {{ py2pkg('oslo.utils') }}
-Requires:       {{ py2pkg('osprofiler') }}
-Requires:       {{ py2pkg('pbr') }}
-Requires:       {{ py2pkg('pyScss') }}
-Requires:       {{ py2pkg('pytz') }}
-Requires:       {{ py2pkg('semantic_version') }}
-Requires:       {{ py2pkg('six') }}
-Requires:       {{ py2pkg('python-swiftclient') }}
+Requires:       {{ py3('Babel') }}
+Requires:       {{ py3('Django') }}
+Requires:       {{ py3('Pint') }}
+Requires:       {{ py3('PyYAML') }}
+Requires:       {{ py3('XStatic') }}
+Requires:       {{ py3('XStatic-Angular') }}
+Requires:       {{ py3('XStatic-Angular-Bootstrap') }}
+Requires:       {{ py3('XStatic-Angular-FileUpload') }}
+Requires:       {{ py3('XStatic-Angular-Gettext') }}
+Requires:       {{ py3('XStatic-Angular-Schema-Form') }}
+Requires:       {{ py3('XStatic-Angular-lrdragndrop') }}
+Requires:       {{ py3('XStatic-Bootstrap-Datepicker') }}
+Requires:       {{ py3('XStatic-Bootstrap-SCSS') }}
+Requires:       {{ py3('XStatic-D3') }}
+Requires:       {{ py3('XStatic-Font-Awesome') }}
+Requires:       {{ py3('XStatic-Hogan') }}
+Requires:       {{ py3('XStatic-JQuery-Migrate') }}
+Requires:       {{ py3('XStatic-JQuery.TableSorter') }}
+Requires:       {{ py3('XStatic-JQuery.quicksearch') }}
+Requires:       {{ py3('XStatic-JSEncrypt') }}
+Requires:       {{ py3('XStatic-Jasmine') }}
+Requires:       {{ py3('XStatic-Rickshaw') }}
+Requires:       {{ py3('XStatic-Spin') }}
+Requires:       {{ py3('XStatic-bootswatch') }}
+Requires:       {{ py3('XStatic-jQuery') }}
+Requires:       {{ py3('XStatic-jquery-ui') }}
+Requires:       {{ py3('XStatic-mdi') }}
+Requires:       {{ py3('XStatic-objectpath') }}
+Requires:       {{ py3('XStatic-roboto-fontface') }}
+Requires:       {{ py3('XStatic-smart-table') }}
+Requires:       {{ py3('XStatic-term.js') }}
+Requires:       {{ py3('XStatic-tv4') }}
+Requires:       {{ py3('python-cinderclient') }}
+Requires:       {{ py3('django-babel') }}
+Requires:       {{ py3('django-debreach') }}
+Requires:       {{ py3('django-pyscss') }}
+Requires:       {{ py3('django_compressor') }}
+Requires:       {{ py3('futurist') }}
+Requires:       {{ py3('python-glanceclient') }}
+Requires:       {{ py3('python-heatclient') }}
+Requires:       {{ py3('httplib2') }}
+Requires:       {{ py3('iso8601') }}
+Requires:       {{ py3('python-keystoneclient') }}
+Requires:       {{ py3('netaddr') }}
+Requires:       {{ py3('python-neutronclient') }}
+Requires:       {{ py3('python-novaclient') }}
+Requires:       {{ py3('oslo.concurrency') }}
+Requires:       {{ py3('oslo.config') }}
+Requires:       {{ py3('oslo.i18n') }}
+Requires:       {{ py3('oslo.policy') }}
+Requires:       {{ py3('oslo.serialization') }}
+Requires:       {{ py3('oslo.utils') }}
+Requires:       {{ py3('osprofiler') }}
+Requires:       {{ py3('pbr') }}
+Requires:       {{ py3('pyScss') }}
+Requires:       {{ py3('pytz') }}
+Requires:       {{ py3('semantic_version') }}
+Requires:       {{ py3('six') }}
+Requires:       {{ py3('python-swiftclient') }}
 
-%description -n python-horizon
+%description -n python3-horizon
 The Python module horizon is the core component of the OpenStack
 dashboard.
 
-%package -n python-openstack_auth
+%package -n python3-openstack_auth
 Summary:        OpenStack Auth (Horizon) - Python Module
 Group:          Development/Languages/Python
 
-%description -n python-openstack_auth
+%description -n python3-openstack_auth
 The Python module OpenStack Auth provides Authentication mechanism
 for the OpenStack Dashboard (Horizon).
 
@@ -197,26 +192,26 @@ for the OpenStack Dashboard (Horizon).
 %build
 # compile mo files before build
 pushd horizon
-python ../manage.py compilemessages
+python3 ../manage.py compilemessages
 popd
 pushd openstack_dashboard
-python ../manage.py compilemessages
+python3 ../manage.py compilemessages
 popd
-%{py2_build}
+%{py3_build}
 
 %check
 rm horizon/test/unit/hacking/test_checks.py
-python manage.py test horizon --settings=horizon.test.settings
+python3 manage.py test horizon --settings=horizon.test.settings
 # TODO
-# python manage.py test openstack_dashboard --settings=openstack_dashboard.test.settings --exclude-dir=openstack_dashboard/test/integration_tests
+# python3 manage.py test openstack_dashboard --settings=openstack_dashboard.test.settings --exclude-dir=openstack_dashboard/test/integration_tests
 
 
 %install
-%{py2_install}
+%{py3_install}
 
 # Move openstack_dashboard files
 install -d -m 755 %{buildroot}%{http_dashboard_dir}
-mv %{buildroot}%{python2_sitelib}/openstack_dashboard/ %{buildroot}%{http_dashboard_dir}
+mv %{buildroot}%{python3_sitelib}/openstack_dashboard/ %{buildroot}%{http_dashboard_dir}
 install -m 755 manage.py %{buildroot}%{http_dashboard_dir}/manage.py
 
 # Create a local_settings.py
@@ -226,17 +221,16 @@ mv %{buildroot}%{http_dashboard_dir}/openstack_dashboard/local/local_settings.py
 install -m 0755 -d %{buildroot}%{http_dashboard_dir}/static
 install -m 0755 -d %{buildroot}%{http_dashboard_dir}/media
 pushd %{buildroot}%{http_dashboard_dir}
-PYTHONPATH=%{buildroot}%{python2_sitelib} python manage.py collectstatic --noinput
+PYTHONPATH=%{buildroot}%{python3_sitelib} python3 manage.py collectstatic --noinput
 popd
 
 # cleanup after manage.py run
-rm %{buildroot}%{http_dashboard_dir}/openstack_dashboard/local/local_settings.pyc
-rm %{buildroot}%{http_dashboard_dir}/openstack_dashboard/local/.secret_key_store
-rm %{buildroot}%{http_dashboard_dir}/openstack_dashboard/local/*secret_key_store*
+rm -v %{buildroot}%{http_dashboard_dir}/openstack_dashboard/local/.secret_key_store
+rm -v %{buildroot}%{http_dashboard_dir}/openstack_dashboard/local/*secret_key_store*
 
 # Remove duplicate files
 %if 0%{?suse_version}
-%fdupes %{buildroot}%{python2_sitelib}
+%fdupes %{buildroot}%{python3_sitelib}
 %fdupes %{buildroot}%{http_dashboard_dir}
 %endif
 rm -f %{buildroot}%{http_dashboard_dir}/openstack_dashboard/.eslintrc
@@ -253,13 +247,13 @@ install -D -m 644 %{SOURCE2} %{buildroot}%{apache_conf_dir}/openstack-dashboard.
 %attr(0770, root, %{apache_group}) %{http_dashboard_dir}/media/
 %{apache_conf_dir}/openstack-dashboard.conf.sample
 
-%files -n python-horizon
+%files -n python3-horizon
 %license LICENSE
-%{python2_sitelib}/horizon
-%{python2_sitelib}/horizon-*.egg-info
+%{python3_sitelib}/horizon
+%{python3_sitelib}/horizon-*.egg-info
 
-%files -n python-openstack_auth
+%files -n python3-openstack_auth
 %license LICENSE
-%{python2_sitelib}/openstack_auth
+%{python3_sitelib}/openstack_auth
 
 %changelog

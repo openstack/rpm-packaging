@@ -17,18 +17,18 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/neutron-vpnaas-dashboard
 Source0:        {{ source|basename }}
 BuildRequires:  fdupes
-BuildRequires:  {{ py2pkg('horizon') }}
+BuildRequires:  {{ py3('horizon') }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('django-nose') }}
-BuildRequires:  {{ py2pkg('mock') }}
-BuildRequires:  {{ py2pkg('mox3') }}
-BuildRequires:  {{ py2pkg('openstackdocstheme') }}
-BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('python-subunit') }}
-BuildRequires:  {{ py2pkg('reno') }}
-BuildRequires:  {{ py2pkg('testrepository') }}
-BuildRequires:  {{ py2pkg('testscenarios') }}
-BuildRequires:  {{ py2pkg('testtools') }}
+BuildRequires:  {{ py3('django-nose') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('mox3') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('python-subunit') }}
+BuildRequires:  {{ py3('reno') }}
+BuildRequires:  {{ py3('testrepository') }}
+BuildRequires:  {{ py3('testscenarios') }}
+BuildRequires:  {{ py3('testtools') }}
 Requires:       {{ py2pkg('horizon-plugin-neutron-vpnaas-ui') }} = %{version}
 BuildArch:      noarch
 
@@ -37,9 +37,9 @@ OpenStack Neutron VPNaaS management plugin for Horizon.
 
 %package -n    {{ py2pkg('horizon-plugin-neutron-vpnaas-ui') }}
 Summary:       Neutron VPNaaS Management Plugin for Horizon - Python module
-Requires:      {{ py2pkg('Django') }}
-Requires:      {{ py2pkg('python-neutronclient') }}
-Requires:      {{ py2pkg('pbr') }}
+Requires:      {{ py3('Django') }}
+Requires:      {{ py3('python-neutronclient') }}
+Requires:      {{ py3('pbr') }}
 
 %description -n {{ py2pkg('horizon-plugin-neutron-vpnaas-ui') }}
 OpenStack Neutron VPNaaS management plugin for Horizon.
@@ -48,15 +48,15 @@ This package contains the core Python module of the neutron-vpnaas-ui.
 
 %package test
 Summary:       Neutron VPNaaS Management Plugin for Horizon - Testsuite
-Requires:      {{ py2pkg('django-nose') }}
-Requires:      {{ py2pkg('mock') }}
-Requires:      {{ py2pkg('mox3') }}
-Requires:      {{ py2pkg('openstackdocstheme') }}
-Requires:      {{ py2pkg('python-subunit') }}
-Requires:      {{ py2pkg('reno') }}
-Requires:      {{ py2pkg('testrepository') }}
-Requires:      {{ py2pkg('testscenarios') }}
-Requires:      {{ py2pkg('testtools') }}
+Requires:      {{ py3('django-nose') }}
+Requires:      {{ py3('mock') }}
+Requires:      {{ py3('mox3') }}
+Requires:      {{ py3('openstackdocstheme') }}
+Requires:      {{ py3('python-subunit') }}
+Requires:      {{ py3('reno') }}
+Requires:      {{ py3('testrepository') }}
+Requires:      {{ py3('testscenarios') }}
+Requires:      {{ py3('testtools') }}
 
 %description test
 OpenStack Neutron VPNaaS management plugin for Horizon.
@@ -67,25 +67,25 @@ It is used to verify the functionality of the Neutron VPNaaS UI Plugin.
 %py_req_cleanup
 
 %build
-%py2_build
+%{py3_build}
 
 %check
-PYTHONPATH=%{http_dashboard_dir} python manage.py test neutron_vpnaas_dashboard --settings=neutron_vpnaas_dashboard.test.settings
+PYTHONPATH=%{http_dashboard_dir} python3 manage.py test neutron_vpnaas_dashboard --settings=neutron_vpnaas_dashboard.test.settings
 
 %install
-%py2_install
+%{py3_install}
 
 install -m 0755 -d %{buildroot}%{http_dashboard_dir}/openstack_dashboard/enabled/
 cp -a neutron_vpnaas_dashboard/enabled/*.py %{buildroot}%{http_dashboard_dir}/openstack_dashboard/enabled/
 
-%fdupes %{buildroot}%{python2_sitelib}
+%fdupes %{buildroot}%{python3_sitelib}
 %fdupes %{buildroot}%{http_dashboard_dir}
 
 %post
-su %{apache_user} -s /bin/sh -c "python %{http_dashboard_dir}/manage.py collectstatic --noinput --clear > /dev/null"
+su %{apache_user} -s /bin/sh -c "python3 %{http_dashboard_dir}/manage.py collectstatic --noinput --clear > /dev/null"
 
 %postun
-su %{apache_user} -s /bin/sh -c "python %{http_dashboard_dir}/manage.py collectstatic --noinput --clear > /dev/null"
+su %{apache_user} -s /bin/sh -c "python3 %{http_dashboard_dir}/manage.py collectstatic --noinput --clear > /dev/null"
 
 %files
 %doc ChangeLog CONTRIBUTING.rst README.rst
@@ -95,11 +95,11 @@ su %{apache_user} -s /bin/sh -c "python %{http_dashboard_dir}/manage.py collects
 %files -n {{ py2pkg('horizon-plugin-neutron-vpnaas-ui') }}
 %doc README.rst
 %license LICENSE
-%{python2_sitelib}/neutron_vpnaas_dashboard/
-%{python2_sitelib}/neutron_vpnaas_dashboard-*.egg-info
-%exclude %{python_sitelib}/neutron_vpnaas_dashboard/test*
+%{python3_sitelib}/neutron_vpnaas_dashboard/
+%{python3_sitelib}/neutron_vpnaas_dashboard-*.egg-info
+%exclude %{python3_sitelib}/neutron_vpnaas_dashboard/test*
 
 %files test
-%{python_sitelib}/neutron_vpnaas_dashboard/test*
+%{python3_sitelib}/neutron_vpnaas_dashboard/test*
 
 %changelog

@@ -1,34 +1,39 @@
-%global sname XStatic-Spin
-Name:           {{ py2name('XStatic-Spin') }}
-Version:        1.2.5.2
-Release:        0
+{% set pypi_name = 'XStatic-Spin' %}
+{% set upstream_version = upstream_version('1.2.5.2') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
 Summary:        Spin %{version} (XStatic packaging standard)
 License:        {{ license('MIT') }}
 Group:          Development/Languages/Python
-URL:            https://git.openstack.org/cgit/openstack/xstatic-spin/
-Source0:        https://files.pythonhosted.org/packages/source/X/%{sname}/%{sname}-%{version}.tar.gz
+URL:            https://opendev.org/openstack/xstatic-spin/
+Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('setuptools') }}
+BuildRequires:  {{ py2pkg('setuptools', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('XStatic') }}
 BuildArch:      noarch
+%python_subpackages
 
 %description
 Spin JavaScript library packaged for setuptools (easy_install) / pip.
 
 %prep
-%autosetup -n %{sname}-%{version}
+%autosetup -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
 
 %build
-%{py2_build}
+%{python_build}
 
 %install
-%{py2_install}
+%{python_install}
 
-%files
+%files %{python_files}
 %doc README.txt
-%{python2_sitelib}/xstatic
-%{python2_sitelib}/XStatic_Spin-%{version}-py?.?.egg-info
-%{python2_sitelib}/XStatic_Spin-%{version}-py?.?-nspkg.pth
+%{python_sitelib}/xstatic
+%{python_sitelib}/XStatic_Spin-%{version}-py?.?.egg-info
+%{python_sitelib}/XStatic_Spin-%{version}-py?.?-nspkg.pth
 
 %changelog

@@ -17,9 +17,9 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/freezer
 Source0:        {{ source|basename }}
 BuildRequires:  fdupes
-BuildRequires:  {{ py2pkg('horizon') }}
+BuildRequires:  {{ py3('horizon') }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('python-freezerclient') }}
+BuildRequires:  {{ py3('python-freezerclient') }}
 Requires:       {{ py2pkg('horizon-plugin-freezer-ui') }} = %{version}
 BuildArch:      noarch
 
@@ -28,8 +28,8 @@ The Freezer UI Horizon plugin adds Freezer panel to the OpenStack dashboard.
 
 %package -n    {{ py2pkg('horizon-plugin-freezer-ui') }}
 Summary:       The Freezer Web UI - Python module
-Requires:      {{ py2pkg('Django') }}
-Requires:      {{ py2pkg('python-freezerclient') }}
+Requires:      {{ py3('Django') }}
+Requires:      {{ py3('python-freezerclient') }}
 
 %description -n {{ py2pkg('horizon-plugin-freezer-ui') }}
 The Freezer UI Horizon plugin adds Freezer panel to the OpenStack dashboard.
@@ -39,10 +39,10 @@ The Freezer UI Horizon plugin adds Freezer panel to the OpenStack dashboard.
 %py_req_cleanup
 
 %build
-%py2_build
+%py3_build
 
 %install
-%py2_install
+%py3_install
 
 install -m 0755 -d %{buildroot}%{http_dashboard_dir}/openstack_dashboard/enabled/
 cp -a disaster_recovery/enabled/_50*.py %{buildroot}%{http_dashboard_dir}/openstack_dashboard/enabled/
@@ -51,10 +51,10 @@ cp -a disaster_recovery/enabled/_50*.py %{buildroot}%{http_dashboard_dir}/openst
 %fdupes %{buildroot}%{http_dashboard_dir}
 
 %post
-su %{apache_user} -s /bin/sh -c "python %{http_dashboard_dir}/manage.py collectstatic --noinput --clear > /dev/null"
+su %{apache_user} -s /bin/sh -c "python3 %{http_dashboard_dir}/manage.py collectstatic --noinput --clear > /dev/null"
 
 %postun
-su %{apache_user} -s /bin/sh -c "python %{http_dashboard_dir}/manage.py collectstatic --noinput --clear > /dev/null"
+su %{apache_user} -s /bin/sh -c "python3 %{http_dashboard_dir}/manage.py collectstatic --noinput --clear > /dev/null"
 
 %files
 %doc ChangeLog README.rst
@@ -64,7 +64,7 @@ su %{apache_user} -s /bin/sh -c "python %{http_dashboard_dir}/manage.py collects
 %files -n {{ py2pkg('horizon-plugin-freezer-ui') }}
 %doc README.rst
 %license LICENSE
-%{python2_sitelib}/disaster_recovery
-%{python2_sitelib}/freezer_web_ui-*.egg-info
+%{python3_sitelib}/disaster_recovery
+%{python3_sitelib}/freezer_web_ui-*.egg-info
 
 %changelog

@@ -17,10 +17,10 @@ Group:          Development/Languages/Python
 URL:            https://wiki.openstack.org/wiki/Karbor
 Source0:        {{ source|basename }}
 BuildRequires:  fdupes
-BuildRequires:  {{ py2pkg('horizon') }}
+BuildRequires:  {{ py3('horizon') }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('python-karborclient') }}
-BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py3('python-karborclient') }}
+BuildRequires:  {{ py3('pbr') }}
 Requires:       {{ py2pkg('horizon-plugin-karbor-ui') }} = %{version}
 BuildArch:      noarch
 
@@ -29,14 +29,14 @@ The Karbor UI Horizon plugin adds Karbor panel to the OpenStack dashboard.
 
 %package -n    {{ py2pkg('horizon-plugin-karbor-ui') }}
 Summary:       The Karbor Dashboard - Python module
-Requires:      {{ py2pkg('Babel') }}
-Requires:      {{ py2pkg('Django') }}
-Requires:      {{ py2pkg('PyYAML') }}
-Requires:      {{ py2pkg('django-babel') }}
-Requires:      {{ py2pkg('django-pyscss') }}
-Requires:      {{ py2pkg('django_compressor') }}
-Requires:      {{ py2pkg('python-karborclient') }}
-Requires:      {{ py2pkg('pbr') }}
+Requires:      {{ py3('Babel') }}
+Requires:      {{ py3('Django') }}
+Requires:      {{ py3('PyYAML') }}
+Requires:      {{ py3('django-babel') }}
+Requires:      {{ py3('django-pyscss') }}
+Requires:      {{ py3('django_compressor') }}
+Requires:      {{ py3('python-karborclient') }}
+Requires:      {{ py3('pbr') }}
 
 %description -n {{ py2pkg('horizon-plugin-karbor-ui') }}
 The Karbor UI Horizon plugin adds Karbor panel to the OpenStack dashboard.
@@ -46,22 +46,22 @@ The Karbor UI Horizon plugin adds Karbor panel to the OpenStack dashboard.
 %py_req_cleanup
 
 %build
-%py2_build
+%{py3_build}
 
 %install
-%py2_install
+%{py3_install}
 
 install -m 0755 -d %{buildroot}%{http_dashboard_dir}/openstack_dashboard/enabled/
 cp -a karbor_dashboard/enabled/_60*.py %{buildroot}%{http_dashboard_dir}/openstack_dashboard/enabled/
 
-%fdupes %{buildroot}%{python2_sitelib}
+%fdupes %{buildroot}%{python3_sitelib}
 %fdupes %{buildroot}%{http_dashboard_dir}
 
 %post
-su %{apache_user} -s /bin/sh -c "python %{http_dashboard_dir}/manage.py collectstatic --noinput --clear > /dev/null"
+su %{apache_user} -s /bin/sh -c "python3 %{http_dashboard_dir}/manage.py collectstatic --noinput --clear > /dev/null"
 
 %postun
-su %{apache_user} -s /bin/sh -c "python %{http_dashboard_dir}/manage.py collectstatic --noinput --clear > /dev/null"
+su %{apache_user} -s /bin/sh -c "python3 %{http_dashboard_dir}/manage.py collectstatic --noinput --clear > /dev/null"
 
 %files
 %doc ChangeLog CONTRIBUTING.rst README.rst
@@ -71,7 +71,7 @@ su %{apache_user} -s /bin/sh -c "python %{http_dashboard_dir}/manage.py collects
 %files -n {{ py2pkg('horizon-plugin-karbor-ui') }}
 %doc README.rst
 %license LICENSE
-%{python2_sitelib}/karbor_dashboard
-%{python2_sitelib}/karbor_dashboard-*.egg-info
+%{python3_sitelib}/karbor_dashboard
+%{python3_sitelib}/karbor_dashboard-*.egg-info
 
 %changelog

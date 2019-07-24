@@ -30,17 +30,17 @@ The Murano UI Horizon plugin adds Murano panel to the OpenStack dashboard.
 
 %package -n    {{ py2pkg('horizon-plugin-murano-ui') }}
 Summary:       The Murano Dashboard - Python module
-Requires:      {{ py2pkg('Babel') }}
-Requires:      {{ py2pkg('Django') }}
-Requires:      {{ py2pkg('PyYAML') }}
-Requires:      {{ py2pkg('beautifulsoup4') }}
-Requires:      {{ py2pkg('django-babel') }}
-Requires:      {{ py2pkg('django-formtools') }}
-Requires:      {{ py2pkg('python-muranoclient') }}
-Requires:      {{ py2pkg('oslo.log') }}
-Requires:      {{ py2pkg('pbr') }}
-Requires:      {{ py2pkg('semantic_version') }}
-Requires:      {{ py2pkg('yaql') }}
+Requires:      {{ py3('Babel') }}
+Requires:      {{ py3('Django') }}
+Requires:      {{ py3('PyYAML') }}
+Requires:      {{ py3('beautifulsoup4') }}
+Requires:      {{ py3('django-babel') }}
+Requires:      {{ py3('django-formtools') }}
+Requires:      {{ py3('python-muranoclient') }}
+Requires:      {{ py3('oslo.log') }}
+Requires:      {{ py3('pbr') }}
+Requires:      {{ py3('semantic_version') }}
+Requires:      {{ py3('yaql') }}
 
 %description -n {{ py2pkg('horizon-plugin-murano-ui') }}
 The Murano UI Horizon plugin adds Murano panel to the OpenStack dashboard.
@@ -50,10 +50,10 @@ The Murano UI Horizon plugin adds Murano panel to the OpenStack dashboard.
 %py_req_cleanup
 
 %build
-%py2_build
+%py3_build
 
 %install
-%py2_install
+%py3_install
 
 install -m 0755 -d %{buildroot}%{http_dashboard_dir}/openstack_dashboard/enabled/
 cp -a muranodashboard/local/enabled/*.py %{buildroot}%{http_dashboard_dir}/openstack_dashboard/enabled/
@@ -66,10 +66,10 @@ cp -a muranodashboard/conf/murano_policy.json %{buildroot}%{http_dashboard_dir}/
 %fdupes %{buildroot}%{http_dashboard_dir}
 
 %post
-su %{apache_user} -s /bin/sh -c "python %{http_dashboard_dir}/manage.py collectstatic --noinput --clear > /dev/null"
+su %{apache_user} -s /bin/sh -c "python3 %{http_dashboard_dir}/manage.py collectstatic --noinput --clear > /dev/null"
 
 %postun
-su %{apache_user} -s /bin/sh -c "python %{http_dashboard_dir}/manage.py collectstatic --noinput --clear > /dev/null"
+su %{apache_user} -s /bin/sh -c "python3 %{http_dashboard_dir}/manage.py collectstatic --noinput --clear > /dev/null"
 
 %files
 %doc ChangeLog CONTRIBUTING.rst README.rst
@@ -81,7 +81,7 @@ su %{apache_user} -s /bin/sh -c "python %{http_dashboard_dir}/manage.py collects
 %files -n {{ py2pkg('horizon-plugin-murano-ui') }}
 %doc README.rst
 %license LICENSE
-%{python2_sitelib}/muranodashboard
-%{python2_sitelib}/murano_dashboard-*.egg-info
+%{python3_sitelib}/muranodashboard
+%{python3_sitelib}/murano_dashboard-*.egg-info
 
 %changelog
