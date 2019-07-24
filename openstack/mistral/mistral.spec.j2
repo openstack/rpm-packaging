@@ -16,6 +16,8 @@ Source0:        {{ source }}
 Source1:        mistral-api.service
 Source2:        mistral-engine.service
 Source3:        mistral-executor.service
+# https://review.opendev.org/672185
+Patch0:         0001-disable-triggering-version-discovery-in-test_generat.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('PyJWT') }}
 BuildRequires:  {{ py2pkg('aodhclient') }}
