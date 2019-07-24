@@ -2,7 +2,6 @@
 {% set source = fetch_source("https://tarballs.openstack.org/watcher/watcher-master.tar.gz") %}
 {% set upstream_version = upstream_version() %}
 {% set rpm_release = '1' %}
-{% set build_py_versions = ['py2'] %}
 
 %global with_doc 1
 %if 0%{?rhel} || 0%{?fedora}
@@ -23,52 +22,53 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source|basename }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('microversion_parse') }}
-BuildRequires:  {{ py2pkg('os-api-ref') }}
-BuildRequires:  {{ py2pkg('APScheduler', py_versions=build_py_versions) }}
-BuildRequires:  {{ py2pkg('PrettyTable', py_versions=build_py_versions) }}
-BuildRequires:  {{ py2pkg('SQLAlchemy', py_versions=build_py_versions) }}
-BuildRequires:  {{ py2pkg('WSME', py_versions=build_py_versions) }}
-BuildRequires:  {{ py2pkg('WebOb', py_versions=build_py_versions) }}
-BuildRequires:  {{ py2pkg('cinderclient', py_versions=build_py_versions) }}
-BuildRequires:  {{ py2pkg('coverage', py_versions=build_py_versions) }}
-BuildRequires:  {{ py2pkg('croniter', py_versions=build_py_versions) }}
-BuildRequires:  {{ py2pkg('freezegun', py_versions=build_py_versions) }}
-BuildRequires:  {{ py2pkg('glanceclient', py_versions=build_py_versions) }}
-BuildRequires:  {{ py2pkg('gnocchiclient', py_versions=build_py_versions) }}
-BuildRequires:  {{ py2pkg('ironicclient', py_versions=build_py_versions) }}
-BuildRequires:  {{ py2pkg('jsonpatch', py_versions=build_py_versions) }}
-BuildRequires:  {{ py2pkg('jsonschema', py_versions=build_py_versions) }}
-BuildRequires:  {{ py2pkg('keystoneauth1', py_versions=build_py_versions) }}
-BuildRequires:  {{ py2pkg('keystoneclient', py_versions=build_py_versions) }}
-BuildRequires:  {{ py2pkg('keystonemiddleware', py_versions=build_py_versions) }}
-BuildRequires:  {{ py2pkg('lxml', py_versions=build_py_versions) }}
-BuildRequires:  {{ py2pkg('mock', py_versions=build_py_versions) }}
-BuildRequires:  {{ py2pkg('monascaclient', py_versions=build_py_versions) }}
-BuildRequires:  {{ py2pkg('networkx', py_versions=build_py_versions) }}
-BuildRequires:  {{ py2pkg('neutronclient', py_versions=build_py_versions) }}
-BuildRequires:  {{ py2pkg('novaclient', py_versions=build_py_versions) }}
-BuildRequires:  {{ py2pkg('openstackclient', py_versions=build_py_versions) }}
-BuildRequires:  {{ py2pkg('oslo.cache', py_versions=build_py_versions) }}
-BuildRequires:  {{ py2pkg('oslo.concurrency', py_versions=build_py_versions) }}
-BuildRequires:  {{ py2pkg('oslo.context', py_versions=build_py_versions) }}
-BuildRequires:  {{ py2pkg('oslo.db', py_versions=build_py_versions) }}
-BuildRequires:  {{ py2pkg('oslo.messaging', py_versions=build_py_versions) }}
-BuildRequires:  {{ py2pkg('oslo.policy', py_versions=build_py_versions) }}
-BuildRequires:  {{ py2pkg('oslo.reports', py_versions=build_py_versions) }}
-BuildRequires:  {{ py2pkg('oslo.serialization', py_versions=build_py_versions) }}
-BuildRequires:  {{ py2pkg('oslo.service', py_versions=build_py_versions) }}
-BuildRequires:  {{ py2pkg('oslo.upgradecheck', py_versions=build_py_versions) }}
-BuildRequires:  {{ py2pkg('oslo.utils', py_versions=build_py_versions) }}
-BuildRequires:  {{ py2pkg('oslo.versionedobjects', py_versions=build_py_versions) }}
-BuildRequires:  {{ py2pkg('oslotest', py_versions=build_py_versions) }}
-BuildRequires:  {{ py2pkg('pbr', py_versions=build_py_versions) }}
-BuildRequires:  {{ py2pkg('pecan', py_versions=build_py_versions) }}
-BuildRequires:  {{ py2pkg('six', py_versions=build_py_versions) }}
-BuildRequires:  {{ py2pkg('stestr', py_versions=build_py_versions) }}
-BuildRequires:  {{ py2pkg('stevedore', py_versions=build_py_versions) }}
-BuildRequires:  {{ py2pkg('taskflow', py_versions=build_py_versions) }}
-Requires:       python-{{ pypi_name }} = %{epoch}:%{version}-%{release}
+BuildRequires:  {{ py2pkg('APScheduler', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('PrettyTable', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('SQLAlchemy', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('WSME', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('WebOb', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('cinderclient', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('coverage', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('croniter', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('freezegun', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('glanceclient', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('gnocchiclient', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('ironicclient', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('jsonpatch', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('jsonschema', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('keystoneauth1', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('keystoneclient', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('keystonemiddleware', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('lxml', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('microversion_parse', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('mock', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('monascaclient', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('networkx', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('neutronclient', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('novaclient', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('openstackclient', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('os-api-ref', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('oslo.cache', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('oslo.concurrency', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('oslo.context', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('oslo.db', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('oslo.log', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('oslo.messaging', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('oslo.policy', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('oslo.reports', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('oslo.serialization', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('oslo.service', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('oslo.upgradecheck', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('oslo.utils', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('oslo.versionedobjects', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('oslotest', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('pbr', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('pecan', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('six', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('stestr', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('stevedore', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('taskflow', py_versions=['py3']) }}
+Requires:       python3-{{ pypi_name }} = %{epoch}:%{version}-%{release}
 BuildArch:      noarch
 %if 0%{?suse_version}
 BuildRequires:  apache2-mod_wsgi
@@ -89,44 +89,43 @@ optimization goals, including the reduction of data center
 operating costs, increased system performance via intelligent virtual machine
 migration, increased energy efficiency and more!
 
-%package -n     python-{{ pypi_name }}
+%package -n python3-{{ pypi_name }}
 Summary:        Resource optimization service for OpenStack. (Wathcer) - Python Module
 Group:          Applications/System
-BuildRequires:  fdupes
-Requires:       {{ py2pkg('microversion_parse') }}
-Requires:       {{ py2pkg('APScheduler', py_versions=build_py_versions) }}
-Requires:       {{ py2pkg('PasteDeploy', py_versions=build_py_versions) }}
-Requires:       {{ py2pkg('PrettyTable', py_versions=build_py_versions) }}
-Requires:       {{ py2pkg('SQLAlchemy', py_versions=build_py_versions) }}
-Requires:       {{ py2pkg('WSME', py_versions=build_py_versions) }}
-Requires:       {{ py2pkg('WebOb', py_versions=build_py_versions) }}
-Requires:       {{ py2pkg('croniter', py_versions=build_py_versions) }}
-Requires:       {{ py2pkg('enum34', py_versions=build_py_versions) }}
-Requires:       {{ py2pkg('gnocchiclient', py_versions=build_py_versions) }}
-Requires:       {{ py2pkg('jsonpatch', py_versions=build_py_versions) }}
-Requires:       {{ py2pkg('jsonschema', py_versions=build_py_versions) }}
-Requires:       {{ py2pkg('keystoneauth1', py_versions=build_py_versions) }}
-Requires:       {{ py2pkg('keystonemiddleware', py_versions=build_py_versions) }}
-Requires:       {{ py2pkg('lxml', py_versions=build_py_versions) }}
-Requires:       {{ py2pkg('networkx', py_versions=build_py_versions) }}
-Requires:       {{ py2pkg('openstackclient', py_versions=build_py_versions) }}
-Requires:       {{ py2pkg('oslo.cache', py_versions=build_py_versions) }}
-Requires:       {{ py2pkg('oslo.db', py_versions=build_py_versions) }}
-Requires:       {{ py2pkg('oslo.messaging', py_versions=build_py_versions) }}
-Requires:       {{ py2pkg('oslo.policy', py_versions=build_py_versions) }}
-Requires:       {{ py2pkg('oslo.reports', py_versions=build_py_versions) }}
-Requires:       {{ py2pkg('oslo.serialization', py_versions=build_py_versions) }}
-Requires:       {{ py2pkg('oslo.service', py_versions=build_py_versions) }}
-Requires:       {{ py2pkg('oslo.upgradecheck', py_versions=build_py_versions) }}
-Requires:       {{ py2pkg('oslo.versionedobjects', py_versions=build_py_versions) }}
-Requires:       {{ py2pkg('pbr', py_versions=build_py_versions) }}
-Requires:       {{ py2pkg('pecan', py_versions=build_py_versions) }}
-Requires:       {{ py2pkg('six', py_versions=build_py_versions) }}
-Requires:       {{ py2pkg('stevedore', py_versions=build_py_versions) }}
-Requires:       {{ py2pkg('taskflow', py_versions=build_py_versions) }}
+Requires:       {{ py2pkg('APScheduler', py_versions=['py3']) }}
+Requires:       {{ py2pkg('PasteDeploy', py_versions=['py3']) }}
+Requires:       {{ py2pkg('PrettyTable', py_versions=['py3']) }}
+Requires:       {{ py2pkg('SQLAlchemy', py_versions=['py3']) }}
+Requires:       {{ py2pkg('WSME', py_versions=['py3']) }}
+Requires:       {{ py2pkg('WebOb', py_versions=['py3']) }}
+Requires:       {{ py2pkg('croniter', py_versions=['py3']) }}
+Requires:       {{ py2pkg('enum34', py_versions=['py3']) }}
+Requires:       {{ py2pkg('gnocchiclient', py_versions=['py3']) }}
+Requires:       {{ py2pkg('jsonpatch', py_versions=['py3']) }}
+Requires:       {{ py2pkg('jsonschema', py_versions=['py3']) }}
+Requires:       {{ py2pkg('keystoneauth1', py_versions=['py3']) }}
+Requires:       {{ py2pkg('keystonemiddleware', py_versions=['py3']) }}
+Requires:       {{ py2pkg('lxml', py_versions=['py3']) }}
+Requires:       {{ py2pkg('microversion_parse', py_versions=['py3']) }}
+Requires:       {{ py2pkg('networkx', py_versions=['py3']) }}
+Requires:       {{ py2pkg('openstackclient', py_versions=['py3']) }}
+Requires:       {{ py2pkg('oslo.cache', py_versions=['py3']) }}
+Requires:       {{ py2pkg('oslo.db', py_versions=['py3']) }}
+Requires:       {{ py2pkg('oslo.messaging', py_versions=['py3']) }}
+Requires:       {{ py2pkg('oslo.policy', py_versions=['py3']) }}
+Requires:       {{ py2pkg('oslo.reports', py_versions=['py3']) }}
+Requires:       {{ py2pkg('oslo.serialization', py_versions=['py3']) }}
+Requires:       {{ py2pkg('oslo.service', py_versions=['py3']) }}
+Requires:       {{ py2pkg('oslo.upgradecheck', py_versions=['py3']) }}
+Requires:       {{ py2pkg('oslo.versionedobjects', py_versions=['py3']) }}
+Requires:       {{ py2pkg('pbr', py_versions=['py3']) }}
+Requires:       {{ py2pkg('pecan', py_versions=['py3']) }}
+Requires:       {{ py2pkg('six', py_versions=['py3']) }}
+Requires:       {{ py2pkg('stevedore', py_versions=['py3']) }}
+Requires:       {{ py2pkg('taskflow', py_versions=['py3']) }}
 BuildArch:      noarch
 
-%description -n     python-{{ pypi_name }}
+%description -n python3-{{ pypi_name }}
 OpenStack Watcher provides a flexible and scalable resource optimization
 service for multi-tenant OpenStack-based clouds.
 Watcher provides a robust framework to realize a wide range of cloud
@@ -141,11 +140,12 @@ This package contains the Watcher Python library.
 Summary:        Documentation for OpenStack Watcher Service
 Group:          Documentation/HTML
 BuildRequires:  fdupes
-BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('os-api-ref') }}
-BuildRequires:  {{ py2pkg('sphinxcontrib-apidoc') }}
-BuildRequires:  {{ py2pkg('sphinxcontrib-pecanwsme ') }}
-BuildRequires:  {{ py2pkg('sphinxcontrib-seqdiag ') }}
+BuildRequires:  {{ py2pkg('Sphinx', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('keystoneclient', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('os-api-ref', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('sphinxcontrib-apidoc', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('sphinxcontrib-pecanwsme', py_versions=['py3']) }}
+BuildRequires:  {{ py2pkg('sphinxcontrib-seqdiag', py_versions=['py3']) }}
 BuildArch:      noarch
 
 %description -n {{ py2name() }}-doc
@@ -160,10 +160,10 @@ This package contains the documentation
 %py_req_cleanup
 
 %build
-%{py2_build}
+%{py3_build}
 
 %if 0%{?with_doc}
-PYTHONPATH=.  PBR_VERSION={{ upstream_version }} sphinx-build -b html doc/source doc/build/html
+PYTHONPATH=.  PBR_VERSION={{ upstream_version }} %sphinx_build -b html doc/source doc/build/html
 rm -rf doc/build/html/.{doctrees,buildinfo}
 %fdupes doc/build/html/
 %endif
@@ -183,7 +183,7 @@ sed -e "
 " -i devstack/files/apache-watcher-api.template
 
 %install
-%{py2_install}
+%{py3_install}
 %python_expand %fdupes %{buildroot}%{$python_sitelib}
 
 # Install service configuration files
@@ -223,12 +223,12 @@ install -p -D -m 644 watcher/api/app.wsgi %{buildroot}%{wsgi_dir}
 %config(noreplace) %attr(0640, root, watcher) %{_sysconfdir}/{{ pypi_name }}/{{ pypi_name }}.conf.sample
 %dir %attr(0750, root, watcher) %{_sysconfdir}/{{ pypi_name }}/{{ pypi_name }}.conf.d/
 
-%files -n python-{{ pypi_name}}
+%files -n python3-{{ pypi_name}}
 %defattr(-,root,root,-)
 %license LICENSE
 %doc AUTHORS README.rst
-%{python2_sitelib}/{{ pypi_name }}/
-%{python2_sitelib}/python_{{ pypi_name }}-*.egg-info
+%{python3_sitelib}/{{ pypi_name }}/
+%{python3_sitelib}/python_{{ pypi_name }}-*.egg-info
 
 %if 0%{?with_doc}
 %files -n {{ py2name() }}-doc
