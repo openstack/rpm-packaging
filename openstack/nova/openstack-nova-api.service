@@ -8,8 +8,9 @@ NotifyAccess=all
 TimeoutStartSec=0
 Restart=on-failure
 User=nova
-ExecStartPre=-/usr/bin/nova-manage db sync
 ExecStartPre=-/usr/bin/nova-manage api_db sync
+ExecStartPre=-/usr/bin/nova-manage cell_v2 map_cell0
+ExecStartPre=-/usr/bin/nova-manage db sync
 ExecStart=/usr/bin/nova-api
 
 [Install]
