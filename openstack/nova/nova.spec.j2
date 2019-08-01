@@ -26,7 +26,6 @@ Source13:       openstack-nova-network.service
 Source14:       openstack-nova-scheduler.service
 Source15:       openstack-nova-xvpvncproxy.service
 Source16:       openstack-nova-console.service
-Source17:       openstack-nova-consoleauth.service
 Source18:       openstack-nova-api-metadata.service
 Source19:       openstack-nova-conductor.service
 Source21:       openstack-nova-spicehtml5proxy.service
@@ -288,24 +287,6 @@ standard hardware configurations and seven major hypervisors.
 This package contains the Nova services providing
 console access services to Virtual Machines.
 
-%package consoleauth
-Summary:        OpenStack Nova consoleauth access services
-Group:          Applications/System
-Requires:       %{name} = %{epoch}:%{version}-%{release}
-
-%description consoleauth
-OpenStack Compute (codename Nova) is open source software designed to
-provision and manage large networks of virtual machines, creating a
-redundant and scalable cloud computing platform. It gives you the
-software, control panels, and APIs required to orchestrate a cloud,
-including running instances, managing networks, and controlling access
-through users and projects. OpenStack Compute strives to be both
-hardware and hypervisor agnostic, currently supporting a variety of
-standard hardware configurations and seven major hypervisors.
-
-This package contains the Nova services providing
-consoleauth access services to Virtual Machines.
-
 %package network
 Summary:        OpenStack Nova Network control service
 Group:          Applications/System
@@ -562,7 +543,6 @@ install -p -D -m 755 %{SOURCE13} %{buildroot}%{_unitdir}/%{name}-network.service
 install -p -D -m 755 %{SOURCE14} %{buildroot}%{_unitdir}/%{name}-scheduler.service
 install -p -D -m 755 %{SOURCE15} %{buildroot}%{_unitdir}/%{name}-xvpvncproxy.service
 install -p -D -m 755 %{SOURCE16} %{buildroot}%{_unitdir}/%{name}-console.service
-install -p -D -m 755 %{SOURCE17} %{buildroot}%{_unitdir}/%{name}-consoleauth.service
 install -p -D -m 755 %{SOURCE18} %{buildroot}%{_unitdir}/%{name}-api-metadata.service
 install -p -D -m 755 %{SOURCE19} %{buildroot}%{_unitdir}/%{name}-conductor.service
 install -p -D -m 755 %{SOURCE21} %{buildroot}%{_unitdir}/%{name}-spicehtml5proxy.service
@@ -579,7 +559,6 @@ ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-network
 ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-scheduler
 ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-xvpvncproxy
 ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-console
-ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-consoleauth
 ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-api-metadata
 ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-conductor
 ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-spicehtml5proxy
@@ -630,9 +609,6 @@ usermod -a -G qemu nova
 %post console
 %systemd_post %{name}-console.service
 
-%post consoleauth
-%systemd_post %{name}-consoleauth.service
-
 %post network
 %systemd_post %{name}-network.service
 
@@ -667,9 +643,6 @@ usermod -a -G qemu nova
 %preun console
 %systemd_preun %{name}-console.service
 
-%preun consoleauth
-%systemd_preun %{name}-consoleauth.service
-
 %preun network
 %systemd_preun %{name}-network.service
 
@@ -703,9 +676,6 @@ usermod -a -G qemu nova
 
 %postun console
 %systemd_postun_with_restart %{name}-console.service
-
-%postun consoleauth
-%systemd_postun_with_restart %{name}-consoleauth.service
 
 %postun network
 %systemd_postun_with_restart %{name}-network.service
@@ -806,14 +776,6 @@ usermod -a -G qemu nova
 %{_unitdir}/%{name}-console.service
 %if 0%{?suse_version}
 %{_sbindir}/rc%{name}-console
-%endif
-
-%files consoleauth
-%license LICENSE
-%{_bindir}/nova-consoleauth
-%{_unitdir}/%{name}-consoleauth.service
-%if 0%{?suse_version}
-%{_sbindir}/rc%{name}-consoleauth
 %endif
 
 %files network
