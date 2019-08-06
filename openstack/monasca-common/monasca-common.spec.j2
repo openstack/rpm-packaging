@@ -13,20 +13,20 @@ Group:          Development/Languages/Python
 URL:            https://wiki.openstack.org/wiki/Monasca
 Source0:        {{ source|basename }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('PyMySQL') }}
-BuildRequires:  {{ py2pkg('kazoo') }}
-BuildRequires:  {{ py2pkg('mock') }}
-BuildRequires:  {{ py2pkg('oslo.config') }}
-BuildRequires:  {{ py2pkg('oslo.context') }}
-BuildRequires:  {{ py2pkg('oslo.policy') }}
-BuildRequires:  {{ py2pkg('oslotest') }}
-BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('pyparsing') }}
-BuildRequires:  {{ py2pkg('requests-mock') }}
-BuildRequires:  {{ py2pkg('setuptools') }}
-BuildRequires:  {{ py2pkg('six') }}
-BuildRequires:  {{ py2pkg('stestr') }}
-BuildRequires:  {{ py2pkg('ujson') }}
+BuildRequires:  {{ py2pkg('PyMySQL', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('kazoo', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.config', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.context', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.policy', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pyparsing', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('requests-mock', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('setuptools', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('six', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('ujson', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('PyMySQL') }}
 Requires:       {{ py2pkg('kazoo') }}
 Requires:       {{ py2pkg('oslo.config') }}
@@ -36,9 +36,10 @@ Requires:       {{ py2pkg('six') }}
 Requires:       {{ py2pkg('ujson') }}
 BuildArch:      noarch
 %if 0%{?suse_version}
-BuildRequires:  {{ py2pkg('confluent-kafka') }}
+BuildRequires:  {{ py2pkg('confluent-kafka', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('confluent-kafka') }}
 %endif
+%python_subpackages
 
 %description
 Collection of sub-projects containing reusable application and
@@ -49,20 +50,23 @@ platform code for building monitoring related services.
 %py_req_cleanup
 
 %build
-%{py2_build}
+export LC_ALL=en_US.utf-8
+%{python_build}
 
 %install
-%{py2_install}
+export LC_ALL=en_US.utf-8
+%{python_install}
 
 %if 0%{?suse_version}
 %check
-stestr run
+export LC_ALL=en_US.utf-8
+%python_exec -m stestr.cli run
 %endif
 
-%files
+%files %{python_files}
 %license LICENSE
 %doc README.rst ChangeLog
-%{python2_sitelib}/monasca_common
-%{python2_sitelib}/*.egg-info
+%{python_sitelib}/monasca_common
+%{python_sitelib}/*.egg-info
 
 %changelog
