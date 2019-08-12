@@ -3,6 +3,7 @@
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
+%global oldpython python
 Name:           {{ py2name() }}
 Version:        {{ py2rpmversion() }}
 Release:        {{ py2rpmrelease() }}
@@ -14,7 +15,7 @@ Source0:        https://files.pythonhosted.org/packages/source/i/ironic-lib/iron
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('setuptools', py_versions=['py2', 'py3']) }}
-Requires:       python-ironic-lib-common = %{version}-%{release}
+Requires:       %{oldpython}-ironic-lib-common = %{version}-%{release}
 Requires:       {{ py2pkg('oslo.concurrency') }}
 Requires:       {{ py2pkg('oslo.config') }}
 Requires:       {{ py2pkg('oslo.i18n') }}
