@@ -16,6 +16,8 @@ License:       {{ license('Apache-2.0') }}
 Group:         Development/Languages/Python
 URL:           https://git.openstack.org/cgit/openstack/{{ pypi_name }}
 Source0:       {{ source|basename }}
+# https://review.opendev.org/#/c/620576/
+Patch1:        0001-Fix-volume-revert-to-snapshot-tests.patch
 BuildRequires: openstack-macros
 BuildRequires: {{ py2pkg('devel') }}
 BuildRequires: {{ py2pkg('pbr') }}
@@ -42,7 +44,7 @@ It contains the documentation for the cinder tempest tests.
 %endif
 
 %prep
-%autosetup -n cinder_tempest_plugin-{{ upstream_version }}
+%autosetup -p1 -n cinder_tempest_plugin-{{ upstream_version }}
 
 # Let's handle dependencies ourseleves
 %py_req_cleanup

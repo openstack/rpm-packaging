@@ -1,0 +1,61 @@
+From f208601ab5ba7e33cff535595d4ce480489ef4b9 Mon Sep 17 00:00:00 2001
+From: "Erlon R. Cruz" <erlon@netapp.com>
+Date: Mon, 5 Nov 2018 17:44:21 -0200
+Subject: [PATCH] Fix volume revert to snapshot tests
+
+According to the revert to snapshot spec, it should not be
+possible to revert a volume to a snapshot after the volume is
+extended. This was fixed on [1] but the cinder_tempest_plugin
+test still was being considering the old behavior.
+
+[1] https://bugs.launchpad.net/cinder/+bug/1798503
+
+Change-Id: I21d0b2291608922e46278ae5799478a5df0c4904
+---
+ .../api/volume/test_volume_revert.py          | 19 +++++++------------
+ 1 file changed, 7 insertions(+), 12 deletions(-)
+
+diff --git a/cinder_tempest_plugin/api/volume/test_volume_revert.py b/cinder_tempest_plugin/api/volume/test_volume_revert.py
+index f7e91699..8a2f657c 100644
+--- a/cinder_tempest_plugin/api/volume/test_volume_revert.py
++++ b/cinder_tempest_plugin/api/volume/test_volume_revert.py
+@@ -16,6 +16,7 @@
+ from tempest.common import waiters
+ from tempest import config
+ from tempest.lib import decorators
++from tempest.lib import exceptions
+ 
+ from cinder_tempest_plugin.api.volume import base
+ from cinder_tempest_plugin import cinder_clients
+@@ -65,7 +66,7 @@ class VolumeRevertTests(base.BaseVolumeTest):
+         self.assertEqual(expected_size, volume['size'])
+ 
+     @decorators.idempotent_id('4e8b0788-87fe-430d-be7a-444d7f8e0347')
+-    def test_volume_revert_to_snapshot_after_extended(self):
++    def test_volume_revert_to_snapshot_after_extended_negative(self):
+         """Test revert to snapshot after extended"""
+         # Extend volume to double the size
+         expected_size = self.volume['size'] * 2
+@@ -74,14 +75,8 @@ class VolumeRevertTests(base.BaseVolumeTest):
+                                           new_size=expected_size)
+         waiters.wait_for_volume_resource_status(self.volumes_client,
+                                                 self.volume['id'], 'available')
+-        # Revert to snapshot
+-        self.volume_revert_client.revert_to_snapshot(self.volume,
+-                                                     self.snapshot['id'])
+-        waiters.wait_for_volume_resource_status(
+-            self.volumes_client,
+-            self.volume['id'], 'available')
+-        waiters.wait_for_volume_resource_status(
+-            self.snapshots_client,
+-            self.snapshot['id'], 'available')
+-        volume = self.volumes_client.show_volume(self.volume['id'])['volume']
+-        self.assertEqual(expected_size, volume['size'])
++
++        # Destination volume smaller than source, API should block that
++        self.assertRaises(exceptions.BadRequest,
++                          self.volume_revert_client.revert_to_snapshot,
++                          self.volume, self.snapshot)
+-- 
+2.22.0
+
