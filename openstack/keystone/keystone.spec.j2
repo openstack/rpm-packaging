@@ -19,36 +19,36 @@ Source3:        openstack-keystone.tmpfiles
 Source4:        openstack-keystone.defaultconf
 Source5:        openstack-keystone.README.config
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('Flask', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('Flask-RESTful', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('WebTest', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('bcrypt', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('fixtures', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('freezegun', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('jsonschema', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('keystonemiddleware', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('ldappool', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('lxml', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('mock', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('oauthlib', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('oslo.cache', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('oslo.config', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('oslo.db', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('oslo.messaging', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('oslo.policy', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('oslotest', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('osprofiler', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('passlib', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('pbr', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('pysaml2', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('requests', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('scrypt', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('setuptools', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('sqlparse', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('stestr', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('testresources', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('testtools', py_versions=['py3']) }}
+BuildRequires:  {{ py3('Flask') }}
+BuildRequires:  {{ py3('Flask-RESTful') }}
+BuildRequires:  {{ py3('WebTest') }}
+BuildRequires:  {{ py3('bcrypt') }}
+BuildRequires:  {{ py3('fixtures') }}
+BuildRequires:  {{ py3('freezegun') }}
+BuildRequires:  {{ py3('jsonschema') }}
+BuildRequires:  {{ py3('keystonemiddleware') }}
+BuildRequires:  {{ py3('ldappool') }}
+BuildRequires:  {{ py3('lxml') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('oauthlib') }}
+BuildRequires:  {{ py3('oslo.cache') }}
+BuildRequires:  {{ py3('oslo.config') }}
+BuildRequires:  {{ py3('oslo.db') }}
+BuildRequires:  {{ py3('oslo.messaging') }}
+BuildRequires:  {{ py3('oslo.policy') }}
+BuildRequires:  {{ py3('oslotest') }}
+BuildRequires:  {{ py3('osprofiler') }}
+BuildRequires:  {{ py3('passlib') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('pysaml2') }}
+BuildRequires:  {{ py3('requests') }}
+BuildRequires:  {{ py3('scrypt') }}
+BuildRequires:  {{ py3('setuptools') }}
+BuildRequires:  {{ py3('sqlparse') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('testresources') }}
+BuildRequires:  {{ py3('testscenarios') }}
+BuildRequires:  {{ py3('testtools') }}
 BuildRequires:  which
 Requires:       logrotate
 Requires:       python3-{{ pypi_name }} = %{epoch}:%{version}-%{release}
@@ -71,46 +71,46 @@ This package contains the keystone python libraries.
 %package -n     python3-{{ pypi_name }}
 Summary:        Keystone Python libraries
 Group:          Applications/System
-Requires:       {{ py2pkg('python-ldap', py_versions=['py3']) }}
-Requires:       {{ py2pkg('Babel', py_versions=['py3']) }}
-Requires:       {{ py2pkg('Flask', py_versions=['py3']) }}
-Requires:       {{ py2pkg('Flask-RESTful', py_versions=['py3']) }}
-Requires:       {{ py2pkg('PyJWT', py_versions=['py3']) }}
-Requires:       {{ py2pkg('SQLAlchemy', py_versions=['py3']) }}
-Requires:       {{ py2pkg('WebOb', py_versions=['py3']) }}
-Requires:       {{ py2pkg('bcrypt', py_versions=['py3']) }}
-Requires:       {{ py2pkg('cryptography', py_versions=['py3']) }}
-Requires:       {{ py2pkg('dogpile.cache', py_versions=['py3']) }}
-Requires:       {{ py2pkg('jsonschema', py_versions=['py3']) }}
-Requires:       {{ py2pkg('python-keystoneclient', py_versions=['py3']) }}
-Requires:       {{ py2pkg('keystonemiddleware', py_versions=['py3']) }}
-Requires:       {{ py2pkg('ldappool', py_versions=['py3']) }}
-Requires:       {{ py2pkg('msgpack', py_versions=['py3']) }}
-Requires:       {{ py2pkg('oauthlib', py_versions=['py3']) }}
-Requires:       {{ py2pkg('oslo.cache', py_versions=['py3']) }}
-Requires:       {{ py2pkg('oslo.concurrency', py_versions=['py3']) }}
-Requires:       {{ py2pkg('oslo.config', py_versions=['py3']) }}
-Requires:       {{ py2pkg('oslo.context', py_versions=['py3']) }}
-Requires:       {{ py2pkg('oslo.db', py_versions=['py3']) }}
-Requires:       {{ py2pkg('oslo.i18n', py_versions=['py3']) }}
-Requires:       {{ py2pkg('oslo.log', py_versions=['py3']) }}
-Requires:       {{ py2pkg('oslo.messaging', py_versions=['py3']) }}
-Requires:       {{ py2pkg('oslo.middleware', py_versions=['py3']) }}
-Requires:       {{ py2pkg('oslo.policy', py_versions=['py3']) }}
-Requires:       {{ py2pkg('oslo.serialization', py_versions=['py3']) }}
-Requires:       {{ py2pkg('oslo.upgradecheck', py_versions=['py3']) }}
-Requires:       {{ py2pkg('oslo.utils', py_versions=['py3']) }}
-Requires:       {{ py2pkg('osprofiler', py_versions=['py3']) }}
-Requires:       {{ py2pkg('passlib', py_versions=['py3']) }}
-Requires:       {{ py2pkg('pbr', py_versions=['py3']) }}
-Requires:       {{ py2pkg('pycadf', py_versions=['py3']) }}
-Requires:       {{ py2pkg('pysaml2', py_versions=['py3']) }}
-Requires:       {{ py2pkg('python-memcached', py_versions=['py3']) }}
-Requires:       {{ py2pkg('pytz', py_versions=['py3']) }}
-Requires:       {{ py2pkg('scrypt', py_versions=['py3']) }}
-Requires:       {{ py2pkg('six', py_versions=['py3']) }}
-Requires:       {{ py2pkg('sqlalchemy-migrate', py_versions=['py3']) }}
-Requires:       {{ py2pkg('stevedore', py_versions=['py3']) }}
+Requires:       {{ py3('python-ldap') }}
+Requires:       {{ py3('Babel') }}
+Requires:       {{ py3('Flask') }}
+Requires:       {{ py3('Flask-RESTful') }}
+Requires:       {{ py3('PyJWT') }}
+Requires:       {{ py3('SQLAlchemy') }}
+Requires:       {{ py3('WebOb') }}
+Requires:       {{ py3('bcrypt') }}
+Requires:       {{ py3('cryptography') }}
+Requires:       {{ py3('dogpile.cache') }}
+Requires:       {{ py3('jsonschema') }}
+Requires:       {{ py3('python-keystoneclient') }}
+Requires:       {{ py3('keystonemiddleware') }}
+Requires:       {{ py3('ldappool') }}
+Requires:       {{ py3('msgpack') }}
+Requires:       {{ py3('oauthlib') }}
+Requires:       {{ py3('oslo.cache') }}
+Requires:       {{ py3('oslo.concurrency') }}
+Requires:       {{ py3('oslo.config') }}
+Requires:       {{ py3('oslo.context') }}
+Requires:       {{ py3('oslo.db') }}
+Requires:       {{ py3('oslo.i18n') }}
+Requires:       {{ py3('oslo.log') }}
+Requires:       {{ py3('oslo.messaging') }}
+Requires:       {{ py3('oslo.middleware') }}
+Requires:       {{ py3('oslo.policy') }}
+Requires:       {{ py3('oslo.serialization') }}
+Requires:       {{ py3('oslo.upgradecheck') }}
+Requires:       {{ py3('oslo.utils') }}
+Requires:       {{ py3('osprofiler') }}
+Requires:       {{ py3('passlib') }}
+Requires:       {{ py3('pbr') }}
+Requires:       {{ py3('pycadf') }}
+Requires:       {{ py3('pysaml2') }}
+Requires:       {{ py3('python-memcached') }}
+Requires:       {{ py3('pytz') }}
+Requires:       {{ py3('scrypt') }}
+Requires:       {{ py3('six') }}
+Requires:       {{ py3('sqlalchemy-migrate') }}
+Requires:       {{ py3('stevedore') }}
 
 %description -n   python3-{{ pypi_name }}
 Keystone is a Python implementation of the OpenStack
@@ -131,31 +131,12 @@ This package contains the Keystone test files.
 %package doc
 Summary:        Documentation for OpenStack Identity Service
 Group:          Documentation/HTML
-BuildRequires:  {{ py2pkg('Routes', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('Sphinx', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('cryptography', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('dogpile.cache', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('jsonschema', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('keystonemiddleware', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('ldappool', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('msgpack', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('oauthlib', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('openstackdocstheme', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('oslo.concurrency', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('oslo.db', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('oslo.i18n', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('oslo.log', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('oslo.messaging', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('oslo.middleware', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('oslo.policy', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('osprofiler', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('passlib', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('pysaml2', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('python-memcached', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('sphinx-feature-classification', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('sphinxcontrib-apidoc', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('sphinxcontrib-blockdiag', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('sphinxcontrib-seqdiag', py_versions=['py3']) }}
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
+BuildRequires:  {{ py3('sphinx-feature-classification') }}
+BuildRequires:  {{ py3('sphinxcontrib-apidoc') }}
+BuildRequires:  {{ py3('sphinxcontrib-blockdiag') }}
+BuildRequires:  {{ py3('sphinxcontrib-seqdiag') }}
 
 %description doc
 OpenStack Keystone documentaion.
