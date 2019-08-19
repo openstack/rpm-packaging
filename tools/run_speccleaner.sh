@@ -17,7 +17,7 @@ echo "run spec-cleaner over specfiles from $WORKSPACE/logs/"
 count=0
 # TODO(toabctl): also run spec-cleaner with non-SUSE specs
 # but the current problem is that the license check works for SUSE only
-for spec in `find $WORKSPACE/logs/suse/ -name "${FIND_STR}.spec" -type f -print` ; do
+for spec in `find $WORKSPACE/logs/suse/ -name "*${FIND_STR}.spec" -type f -print` ; do
     echo "spec-cleaner checking $spec"
     # NOTE(toabctl):spec-cleaner can not ignore epochs currently
     sed -i '/^Epoch:.*/d' $spec
