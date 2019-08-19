@@ -1,0 +1,14 @@
+[Unit]
+Description=OpenStack key and secret management (Barbican) - keystone-service
+After=syslog.target network.target
+
+[Service]
+Type=simple
+User=barbican
+Group=barbican
+WorkingDirectory=/var/lib/barbican
+PrivateTmp=yes
+ExecStart=/usr/bin/barbican-keystone-listener
+
+[Install]
+WantedBy=multi-user.target

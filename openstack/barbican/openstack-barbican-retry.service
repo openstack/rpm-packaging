@@ -1,0 +1,14 @@
+[Unit]
+Description=OpenStack key and secret management (Barbican) - retry
+After=syslog.target network.target
+
+[Service]
+Type=simple
+User=barbican
+Group=barbican
+WorkingDirectory=/var/lib/barbican
+PrivateTmp=yes
+ExecStart=/usr/bin/barbican-retry
+
+[Install]
+WantedBy=multi-user.target
