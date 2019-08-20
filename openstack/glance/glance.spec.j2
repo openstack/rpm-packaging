@@ -20,39 +20,39 @@ Source3:        openstack-glance-api.service
 Source6:        openstack-glance.defaultconf
 Source7:        openstack-glance.README.config
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('Paste', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('PasteDeploy', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('Routes', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('WSME', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('WebOb', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('cursive', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('ddt', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('debtcollector', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('defusedxml', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('eventlet', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('futurist', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('glance_store', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('httplib2', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('keystoneclient', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('keystonemiddleware', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('oslo.concurrency', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('oslo.config', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('oslo.context', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('oslo.db', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('oslo.log', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('oslo.messaging', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('oslo.middleware', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('oslo.policy', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('oslo.upgradecheck', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('oslo.utils', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('oslotest', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('osprofiler', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('pyOpenSSL', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('sqlparse', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('stestr', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('stevedore', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('taskflow', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('xattr', py_versions=['py3']) }}
+BuildRequires:  {{ py3('Paste') }}
+BuildRequires:  {{ py3('PasteDeploy') }}
+BuildRequires:  {{ py3('Routes') }}
+BuildRequires:  {{ py3('WSME') }}
+BuildRequires:  {{ py3('WebOb') }}
+BuildRequires:  {{ py3('cursive') }}
+BuildRequires:  {{ py3('ddt') }}
+BuildRequires:  {{ py3('debtcollector') }}
+BuildRequires:  {{ py3('defusedxml') }}
+BuildRequires:  {{ py3('eventlet') }}
+BuildRequires:  {{ py3('futurist') }}
+BuildRequires:  {{ py3('glance_store') }}
+BuildRequires:  {{ py3('httplib2') }}
+BuildRequires:  {{ py3('keystoneclient') }}
+BuildRequires:  {{ py3('keystonemiddleware') }}
+BuildRequires:  {{ py3('oslo.concurrency') }}
+BuildRequires:  {{ py3('oslo.config') }}
+BuildRequires:  {{ py3('oslo.context') }}
+BuildRequires:  {{ py3('oslo.db') }}
+BuildRequires:  {{ py3('oslo.log') }}
+BuildRequires:  {{ py3('oslo.messaging') }}
+BuildRequires:  {{ py3('oslo.middleware') }}
+BuildRequires:  {{ py3('oslo.policy') }}
+BuildRequires:  {{ py3('oslo.upgradecheck') }}
+BuildRequires:  {{ py3('oslo.utils') }}
+BuildRequires:  {{ py3('oslotest') }}
+BuildRequires:  {{ py3('osprofiler') }}
+BuildRequires:  {{ py3('pyOpenSSL') }}
+BuildRequires:  {{ py3('sqlparse') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('stevedore') }}
+BuildRequires:  {{ py3('taskflow') }}
+BuildRequires:  {{ py3('xattr') }}
 Requires:       logrotate
 Requires:       python3-{{ pypi_name }} = %{epoch}:%{version}-%{release}
 BuildArch:      noarch
@@ -86,48 +86,48 @@ OpenStack Swift project.
 %package -n     python3-{{ pypi_name }}
 Summary:        OpenStack Image Service (Glance) - Python module
 Group:          Applications/System
-Requires:       {{ py2pkg('Paste', py_versions=['py3']) }}
-Requires:       {{ py2pkg('PasteDeploy', py_versions=['py3']) }}
-Requires:       {{ py2pkg('PrettyTable', py_versions=['py3']) }}
-Requires:       {{ py2pkg('Routes', py_versions=['py3']) }}
-Requires:       {{ py2pkg('SQLAlchemy', py_versions=['py3']) }}
-Requires:       {{ py2pkg('WSME', py_versions=['py3']) }}
-Requires:       {{ py2pkg('WebOb', py_versions=['py3']) }}
-Requires:       {{ py2pkg('alembic', py_versions=['py3']) }}
-Requires:       {{ py2pkg('cryptography', py_versions=['py3']) }}
-Requires:       {{ py2pkg('cursive', py_versions=['py3']) }}
-Requires:       {{ py2pkg('debtcollector', py_versions=['py3']) }}
-Requires:       {{ py2pkg('defusedxml', py_versions=['py3']) }}
-Requires:       {{ py2pkg('eventlet', py_versions=['py3']) }}
-Requires:       {{ py2pkg('futurist', py_versions=['py3']) }}
-Requires:       {{ py2pkg('glance_store', py_versions=['py3']) }}
-Requires:       {{ py2pkg('httplib2', py_versions=['py3']) }}
-Requires:       {{ py2pkg('iso8601', py_versions=['py3']) }}
-Requires:       {{ py2pkg('jsonschema', py_versions=['py3']) }}
-Requires:       {{ py2pkg('keystoneauth1', py_versions=['py3']) }}
-Requires:       {{ py2pkg('python-keystoneclient', py_versions=['py3']) }}
-Requires:       {{ py2pkg('keystonemiddleware', py_versions=['py3']) }}
-Requires:       {{ py2pkg('monotonic', py_versions=['py3']) }}
-Requires:       {{ py2pkg('oslo.concurrency', py_versions=['py3']) }}
-Requires:       {{ py2pkg('oslo.config', py_versions=['py3']) }}
-Requires:       {{ py2pkg('oslo.context', py_versions=['py3']) }}
-Requires:       {{ py2pkg('oslo.db', py_versions=['py3']) }}
-Requires:       {{ py2pkg('oslo.i18n', py_versions=['py3']) }}
-Requires:       {{ py2pkg('oslo.log', py_versions=['py3']) }}
-Requires:       {{ py2pkg('oslo.messaging', py_versions=['py3']) }}
-Requires:       {{ py2pkg('oslo.middleware', py_versions=['py3']) }}
-Requires:       {{ py2pkg('oslo.policy', py_versions=['py3']) }}
-Requires:       {{ py2pkg('oslo.upgradecheck', py_versions=['py3']) }}
-Requires:       {{ py2pkg('oslo.utils', py_versions=['py3']) }}
-Requires:       {{ py2pkg('osprofiler', py_versions=['py3']) }}
-Requires:       {{ py2pkg('pbr', py_versions=['py3']) }}
-Requires:       {{ py2pkg('pyOpenSSL', py_versions=['py3']) }}
-Requires:       {{ py2pkg('retrying', py_versions=['py3']) }}
-Requires:       {{ py2pkg('six', py_versions=['py3']) }}
-Requires:       {{ py2pkg('sqlalchemy-migrate', py_versions=['py3']) }}
-Requires:       {{ py2pkg('sqlparse', py_versions=['py3']) }}
-Requires:       {{ py2pkg('stevedore', py_versions=['py3']) }}
-Requires:       {{ py2pkg('taskflow', py_versions=['py3']) }}
+Requires:       {{ py3('Paste') }}
+Requires:       {{ py3('PasteDeploy') }}
+Requires:       {{ py3('PrettyTable') }}
+Requires:       {{ py3('Routes') }}
+Requires:       {{ py3('SQLAlchemy') }}
+Requires:       {{ py3('WSME') }}
+Requires:       {{ py3('WebOb') }}
+Requires:       {{ py3('alembic') }}
+Requires:       {{ py3('cryptography') }}
+Requires:       {{ py3('cursive') }}
+Requires:       {{ py3('debtcollector') }}
+Requires:       {{ py3('defusedxml') }}
+Requires:       {{ py3('eventlet') }}
+Requires:       {{ py3('futurist') }}
+Requires:       {{ py3('glance_store') }}
+Requires:       {{ py3('httplib2') }}
+Requires:       {{ py3('iso8601') }}
+Requires:       {{ py3('jsonschema') }}
+Requires:       {{ py3('keystoneauth1') }}
+Requires:       {{ py3('python-keystoneclient') }}
+Requires:       {{ py3('keystonemiddleware') }}
+Requires:       {{ py3('monotonic') }}
+Requires:       {{ py3('oslo.concurrency') }}
+Requires:       {{ py3('oslo.config') }}
+Requires:       {{ py3('oslo.context') }}
+Requires:       {{ py3('oslo.db') }}
+Requires:       {{ py3('oslo.i18n') }}
+Requires:       {{ py3('oslo.log') }}
+Requires:       {{ py3('oslo.messaging') }}
+Requires:       {{ py3('oslo.middleware') }}
+Requires:       {{ py3('oslo.policy') }}
+Requires:       {{ py3('oslo.upgradecheck') }}
+Requires:       {{ py3('oslo.utils') }}
+Requires:       {{ py3('osprofiler') }}
+Requires:       {{ py3('pbr') }}
+Requires:       {{ py3('pyOpenSSL') }}
+Requires:       {{ py3('retrying') }}
+Requires:       {{ py3('six') }}
+Requires:       {{ py3('sqlalchemy-migrate') }}
+Requires:       {{ py3('sqlparse') }}
+Requires:       {{ py3('stevedore') }}
+Requires:       {{ py3('taskflow') }}
 
 %description -n python3-{{ pypi_name }}
 The Glance project provides a service where users can upload and discover
