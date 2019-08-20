@@ -1,0 +1,5 @@
+[DEFAULT]
+log_dir=/var/log/barbican
+state_path=/var/lib/barbican
+# disable the snakeoil certificate which is enabled by default
+enabled_certificate_plugins =
