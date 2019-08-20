@@ -1,6 +1,6 @@
 %global sname pymod2pkg
 {% set pypi_name = 'pymod2pkg' %}
-{% set upstream_version = upstream_version('0.18.0') %}
+{% set upstream_version = upstream_version('0.19.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 Name:           {{ py2name() }}
@@ -12,7 +12,6 @@ Group:          Development/Libraries/Python
 URL:            https://wiki.openstack.org/wiki/Rpm-packaging
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testresources', py_versions=['py2', 'py3']) }}
@@ -27,8 +26,8 @@ corresponding package names which is a common problem in the packaging world.
 
 %package -n {{ py2name() }}-doc
 Summary:        Documentation for python module name to package name map library
-BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
 
 %description -n {{ py2name() }}-doc
 Documentation for python module name to package name map library.
@@ -41,7 +40,7 @@ Documentation for python module name to package name map library.
 %{python_build}
 
 # generate html docs
-%{__python2} setup.py build_sphinx
+%sphinx_build -b html doc/source doc/build/html
 # remove the sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
