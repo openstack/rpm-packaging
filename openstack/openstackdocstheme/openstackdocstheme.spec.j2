@@ -11,6 +11,8 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://launchpad.net/%{sname}
 Source0:        {{ source }}
+# https://review.opendev.org/677868
+Patch0:         0001-Catch-any-exception-when-trying-to-call-git.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('Sphinx', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('dulwich', py_versions=['py2', 'py3']) }}
