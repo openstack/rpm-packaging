@@ -1,11 +1,12 @@
 /var/log/neutron/*.log {
-    weekly
-    dateext
-    rotate 10
-    size 1M
-    missingok
     compress
-    notifempty
-    su neutron neutron
+    dateext
     minsize 100k
+    missingok
+    notifempty
+    rotate 10
+    sharedscripts
+    size 1M
+    su neutron neutron
+    weekly
 }

@@ -5,11 +5,13 @@ After=syslog.target network.target
 [Service]
 Type=notify
 User=neutron
-ExecStart=/usr/bin/neutron-rpc-server --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugin.ini
+Group=neutron
+WorkingDirectory=/var/lib/neutron
 PrivateTmp=true
 NotifyAccess=all
 KillMode=process
 Restart=on-failure
+ExecStart=/usr/bin/neutron-rpc-server --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugin.ini
 
 [Install]
 WantedBy=multi-user.target

@@ -5,8 +5,9 @@ After=syslog.target network.target
 [Service]
 Type=simple
 User=neutron
+Group=neutron
+WorkingDirectory=/var/lib/neutron
 ExecStart=/usr/bin/neutron-l3-agent --config-file /etc/neutron/neutron.conf --config-file=/etc/neutron/l3_agent.ini
-PrivateTmp=false
 KillMode=process
 Restart=on-failure
 

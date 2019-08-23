@@ -5,10 +5,12 @@ After=syslog.target
 [Service]
 Type=simple
 User=neutron
-ExecStart=/usr/bin/neutron-macvtap-agent --config-file /etc/neutron/neutron.conf
+Group=neutron
+WorkingDirectory=/var/lib/neutron
 PrivateTmp=true
 KillMode=process
 Restart=on-failure
+ExecStart=/usr/bin/neutron-macvtap-agent --config-file /etc/neutron/neutron.conf  --config-file /etc/neutron/plugins/ml2/macvtap_agent.ini
 
 [Install]
 WantedBy=multi-user.target
