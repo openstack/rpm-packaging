@@ -1,6 +1,7 @@
 [Unit]
 Description=OpenStack Nova Compute Server
-After=syslog.target network.target libvirtd.service libvirt-guests.service
+After=syslog.target network.target
+After=libvirtd.service libvirt-guests.service
 
 [Service]
 Environment=LIBGUESTFS_ATTACH_METHOD=appliance
@@ -9,7 +10,10 @@ NotifyAccess=all
 TimeoutStartSec=0
 Restart=on-failure
 User=nova
+
+
 ExecStart=/usr/bin/nova-compute
+TasksMax=infinity
 
 [Install]
 WantedBy=multi-user.target
