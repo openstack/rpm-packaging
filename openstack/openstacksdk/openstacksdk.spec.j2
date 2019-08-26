@@ -1,5 +1,5 @@
 {% set pypi_name = 'openstacksdk' %}
-{% set upstream_version = upstream_version('0.27.0') %}
+{% set upstream_version = upstream_version('0.35.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -11,10 +11,6 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
-# https://review.openstack.org/#/c/651119/
-Patch0:         0001-add-python-3.7-unit-test-job.patch
-# https://review.openstack.org/#/c/651193/
-Patch1:         0001-baremetal-Add-support-for-mkisofs-and-xorrisofs-for-.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('PyYAML', py_versions=['py2', 'py3']) }}
@@ -35,12 +31,14 @@ BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('munch', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('netifaces', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('os-service-types', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.config', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('python-subunit', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('requests-mock', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('requestsexceptions', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('six', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('statsd', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('stevedore', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
@@ -65,6 +63,8 @@ Requires:       {{ py2pkg('futures') }}
 Requires:       {{ py2pkg('ipaddress') }}
 %endif
 %if 0%{?suse_version}
+# RDO does not package prometheus_client
+BuildRequires:  {{ py2pkg('prometheus_client', py_versions=['py2', 'py3']) }}
 Requires(post): update-alternatives
 Requires(postun): update-alternatives
 %if 0%{?sle_version} >= 150000
@@ -109,6 +109,10 @@ applications to work with OpenStack clouds.
 %py_req_cleanup
 sed -i -e 's,coverage.*,,' test-requirements.txt || true
 sed -i -e "s,'sphinx.ext.intersphinx'\,,," doc/source/conf.py
+%if !0%{?suse_version}
+# RDO does not package prometheus_client
+rm openstack/tests/unit/test_stats.py
+%endif
 
 %build
 %python_build
