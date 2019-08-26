@@ -1,0 +1,10 @@
+[DEFAULT]
+log_dir=/var/log/neutron
+state_path=/var/lib/neutron
+
+[agent]
+root_helper=sudo neutron-rootwrap /etc/neutron/rootwrap.conf
+root_helper_daemon=sudo neutron-rootwrap-daemon /etc/neutron/rootwrap.conf
+
+[oslo_concurrency]
+lock_path=/run/neutron

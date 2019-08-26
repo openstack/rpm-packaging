@@ -1,0 +1,18 @@
+[Unit]
+Description=OpenStack Neutron Linux Bridge Cleanup Utility
+After=syslog.target network.target
+Before=openstack-neutron-linuxbridge-agent.service openstack-neutron-dhcp-agent.service openstack-neutron-l3-agent.service
+Before=openstack-nova-compute.service
+
+[Service]
+Type=oneshot
+User=neutron
+Group=neutron
+PrivateTmp=true
+RemainAfterExit=yes
+WorkingDirectory=/var/lib/neutron
+ExecStart=/usr/bin/neutron-linuxbridge-cleanup --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugin.ini --config-dir /etc/neutron/neutron.conf.d/
+ExecStop=/usr/bin/neutron-linuxbridge-cleanup --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugin.ini --config-dir /etc/neutron/neutron.conf.d/
+
+[Install]
+WantedBy=multi-user.target
