@@ -1,6 +1,6 @@
 %global sname keystoneauth1
 Name:           {{ py2name('keystoneauth1') }}
-Version:        3.15.0
+Version:        3.17.0
 Release:        0
 Summary:        OpenStack authenticating tools
 License:        {{ license('Apache-2.0') }}
@@ -20,7 +20,6 @@ BuildRequires:  {{ py2pkg('oslo.config', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('oslo.utils', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('reno', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('requests-kerberos', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('requests-mock', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
