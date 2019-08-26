@@ -1,5 +1,5 @@
 {% set pypi_name = 'tooz' %}
-{% set upstream_version = upstream_version('1.65.0') %}
+{% set upstream_version = upstream_version('1.66.1') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -14,8 +14,6 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://docs.openstack.org/developer/tooz/
 Source0:        {{ source }}
-# https://review.openstack.org/#/c/640695/
-Patch1:         0001-Move-grpcio-from-requirements.txt-to-extras.patch
 BuildRequires:  memcached
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('enum34', py_versions=['py2']) }}
@@ -23,22 +21,18 @@ BuildRequires:  {{ py2pkg('fasteners', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('fixtures', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('futures', py_versions=['py2']) }}
 BuildRequires:  {{ py2pkg('futurist', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('iso8601', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('oslo.serialization', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('oslo.utils', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('pifpaf', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('pymemcache', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('setuptools', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('stevedore', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('tenacity', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('voluptuous', py_versions=['py2', 'py3']) }}
-Requires:       {{ py2pkg('Babel') }}
 Requires:       {{ py2pkg('fasteners') }}
 Requires:       {{ py2pkg('futurist') }}
-Requires:       {{ py2pkg('iso8601') }}
 Requires:       {{ py2pkg('msgpack') }}
 Requires:       {{ py2pkg('oslo.serialization') }}
 Requires:       {{ py2pkg('oslo.utils') }}
@@ -61,8 +55,8 @@ a coordination API helping developers to build distributed applications.
 %package -n python-tooz-doc
 Summary:        Documentation for %{name}
 Group:          Documentation/HTML
-BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('openstackdocstheme') }}
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
 
 %description  -n python-tooz-doc
 The Tooz project aims at centralizing the most common distributed primitives
@@ -80,7 +74,7 @@ This package contains documentation in HTML format.
 
 # generate html docs
 PYTHONPATH=. \
-    sphinx-build -b html doc/source doc/build/html
+    %sphinx_build -b html doc/source doc/build/html
 # remove the Sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
