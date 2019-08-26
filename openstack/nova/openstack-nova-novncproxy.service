@@ -5,8 +5,10 @@ After=syslog.target network.target
 [Service]
 Type=simple
 User=nova
-EnvironmentFile=-/etc/sysconfig/openstack-nova-novncproxy
-ExecStart=/usr/bin/nova-novncproxy --web /usr/share/novnc/ $OPTIONS
+
+
+PrivateTmp=yes
+ExecStart=/usr/bin/nova-novncproxy
 Restart=on-failure
 
 [Install]
