@@ -79,11 +79,11 @@ BuildArch:      noarch
 %if 0%{?suse_version}
 BuildRequires:  apache2
 Requires:       apache2
-Requires:       apache2-mod_wsgi
+Requires:       apache2-mod_wsgi-python3
 %endif
 %if 0%{?rdo}
 Requires:       httpd
-Requires:       mod_wsgi
+Requires:       python3-mod_wsgi
 %endif
 # Apache2 example configuration:
 %if 0%{?rdo}
