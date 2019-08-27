@@ -1,5 +1,5 @@
 Name:           {{ py2name('mistral-lib') }}
-Version:        1.1.0
+Version:        1.2.0
 Release:        0
 Summary:        Mistral shared routings and utilities
 License:        {{ license('Apache-2.0') }}
@@ -7,13 +7,14 @@ Group:          Development/Languages/Python
 URL:            http://www.openstack.org/
 Source0:        https://files.pythonhosted.org/packages/source/m/mistral-lib/mistral-lib-%{version}.tar.gz
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py2pkg('eventlet') }}
+BuildRequires:  {{ py2pkg('oslo.log') }}
 BuildRequires:  {{ py2pkg('oslo.serialization') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
 BuildRequires:  {{ py2pkg('oslotest') }}
 BuildRequires:  {{ py2pkg('stestr') }}
-BuildRequires:  {{ py2pkg('testscenarios') }}
 BuildRequires:  {{ py2pkg('testtools') }}
+Requires:       {{ py2pkg('eventlet') }}
+Requires:       {{ py2pkg('oslo.log') }}
 Requires:       {{ py2pkg('oslo.serialization') }}
 Requires:       {{ py2pkg('pbr') }}
 BuildArch:       noarch
