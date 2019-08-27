@@ -1,0 +1,6 @@
+[DEFAULT]
+log_dir=/var/log/placement
+state_path=/var/lib/placement
+
+[oslo_concurrency]
+lock_path=/run/placement

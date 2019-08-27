@@ -1,0 +1,211 @@
+{% set pypi_name = 'placement' %}
+{% set source = fetch_source('https://tarballs.openstack.org/placement/placement-master.tar.gz') %}
+{% set upstream_version = upstream_version() %}
+{% set pypi_name = 'openstack-placement' %}
+{% set rpm_release = '1' %}
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
+Summary:        OpenStack Placement
+License:        {{ license('Apache-2.0') }}
+Group:          System/Management
+URL:            https://docs.openstack.org/placement/
+Source0:        {{ source|basename }}
+Source1:        openstack-placement.logrotate
+Source3:        openstack-placement-api.conf.sample
+Source4:        openstack-placement.tmpfiles
+Source5:        openstack-placement.defaultconf
+Source50:       openstack-placement.README.config
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py3('Routes') }}
+BuildRequires:  {{ py3('WebOb') }}
+BuildRequires:  {{ py3('keystonemiddleware') }}
+BuildRequires:  {{ py3('microversion_parse') }}
+BuildRequires:  {{ py3('os-resource-classes') }}
+BuildRequires:  {{ py3('oslo.concurrency') }}
+BuildRequires:  {{ py3('oslo.config') }}
+BuildRequires:  {{ py3('oslo.db') }}
+BuildRequires:  {{ py3('oslo.log') }}
+BuildRequires:  {{ py3('oslo.middleware') }}
+BuildRequires:  {{ py3('oslo.policy') }}
+BuildRequires:  {{ py3('paramiko') }}
+BuildRequires:  {{ py3('pbr') }}
+Requires:       logrotate
+Requires:       python3-openstack-placement = %{version}-%{release}
+BuildArch:      noarch
+%if 0%{?suse_version}
+Requires(pre):  pwdutils
+%else
+Requires(pre):  shadow-utils
+%endif
+
+%description
+OpenStack Placement provides an HTTP service for managing, selecting,
+and claiming providers of classes of inventory representing available
+resources in a cloud.
+
+%package -n python3-openstack-placement
+Summary:        OpenStack Placement - Python module
+Group:          Development/Languages/Python
+Requires:       {{ py3('Routes') }}
+Requires:       {{ py3('SQLAlchemy') }}
+Requires:       {{ py3('WebOb') }}
+Requires:       {{ py3('jsonschema') }}
+Requires:       {{ py3('keystonemiddleware') }}
+Requires:       {{ py3('microversion_parse') }}
+Requires:       {{ py3('oslo.concurrency') }}
+Requires:       {{ py3('oslo.config') }}
+Requires:       {{ py3('oslo.context') }}
+Requires:       {{ py3('oslo.db') }}
+Requires:       {{ py3('oslo.log') }}
+Requires:       {{ py3('oslo.middleware') }}
+Requires:       {{ py3('oslo.policy') }}
+Requires:       {{ py3('oslo.serialization') }}
+Requires:       {{ py3('oslo.upgradecheck') }}
+Requires:       {{ py3('oslo.utils') }}
+Requires:       {{ py3('pbr') }}
+Requires:       {{ py3('requests') }}
+Requires:       {{ py3('six') }}
+Requires:       {{ py3('sqlalchemy') }}
+Requires:       {{ py3('wsgi_intercept') }}
+
+%description -n python3-openstack-placement
+This package contains the core Python module of OpenStack Placement.
+
+%package doc
+Summary:        OpenStack Placement - Documentation
+Group:          Development/Languages/Python
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
+BuildRequires:  {{ py3('sphinx-feature-classification') }}
+BuildRequires:  {{ py3('sphinxcontrib-actdiag') }}
+BuildRequires:  {{ py3('sphinxcontrib-apidoc') }}
+BuildRequires:  {{ py3('sphinxcontrib-seqdiag') }}
+
+%description doc
+This package contains the documentation of OpenStack Placement.
+
+%package api
+Summary:        OpenStack Compute (Placement) - API
+# prereq for creating the right openstack-placement user/group
+Group:          System/Management
+Requires:       %{name} = %{version}
+Requires(pre):  %{name} = %{version}
+
+%description api
+This package contains the OpenStack Placement API.
+
+%prep
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
+%py_req_cleanup
+
+%build
+python3 setup.py build
+
+# doc
+PYTHONPATH=. PBR_VERSION={{ upstream_version }} %sphinx_build -b man doc/source doc/build/man
+# sample config
+PYTHONPATH=. oslo-config-generator --config-file=etc/placement/config-generator.conf
+# sample policy
+PYTHONPATH=. oslopolicy-sample-generator --config-file=etc/placement/policy-generator.conf
+
+%install
+python3 setup.py install --root %{buildroot} --prefix %{_prefix}
+
+### directories
+install -d -m 755 %{buildroot}%{_localstatedir}/lib/placement
+install -d -m 755 %{buildroot}%{_localstatedir}/lib/placement/images
+install -d -m 755 %{buildroot}%{_localstatedir}/lib/placement/instances
+install -d -m 755 %{buildroot}%{_localstatedir}/lib/placement/keys
+install -d -m 755 %{buildroot}%{_localstatedir}/lib/placement/networks
+install -d -m 755 %{buildroot}%{_localstatedir}/lib/placement/tmp
+install -d -m 750 %{buildroot}%{_localstatedir}/log/placement
+install -d -m 700 %{buildroot}%{_rundir}/placement
+install -d -m 700 %{buildroot}%{_localstatedir}/cache/placement
+install -D -m 644 %{SOURCE4} %{buildroot}/%_tmpfilesdir/%name.conf
+install -d -m 755 %{buildroot}/srv/www/openstack-placement-api
+install -d %{buildroot}%{_sysconfdir}/apache2/vhosts.d
+
+# apache vhost sample configs
+install -p -D -m 644 %{SOURCE3} %{buildroot}%{_sysconfdir}/apache2/vhosts.d/
+
+# WSGI
+install -p -D -m 644 %{buildroot}/%{_bindir}/placement-api %{buildroot}/srv/www/openstack-placement-api/app.wsgi
+
+### configuration files
+install -d -m 755 %{buildroot}%{_sysconfdir}/placement/
+#mv %{buildroot}/usr/etc/placement/* %{buildroot}%{_sysconfdir}/placement/
+install -d -m 755 %{buildroot}%{_sysconfdir}/placement/placement.conf.d
+install -p -D -m 640 %{SOURCE50} %{buildroot}%{_sysconfdir}/placement/README.config
+install -p -D -m 640 etc/placement/placement.conf.sample %{buildroot}%{_sysconfdir}/placement/placement.conf
+install -p -D -m 640 etc/placement/policy.yaml.sample %{buildroot}%{_sysconfdir}/placement/policy.yaml
+# bash-completion/logrotate/etc.
+install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/%{name}
+
+### documentation
+install -d %{buildroot}%{_mandir}/man1
+install -m 644 doc/build/man/*.1 %{buildroot}%{_mandir}/man1
+
+
+### set default configuration
+install -p -D -m 640 %{SOURCE5} %{buildroot}%{_sysconfdir}/placement/placement.conf.d/010-placement.conf
+
+%pre
+%openstack_pre_user_group_create placement placement
+
+%post
+%tmpfiles_create %{_tmpfilesdir}/%{name}.conf
+
+%pre api
+%service_add_pre openstack-placement-api.service
+
+%post api
+%service_add_post openstack-placement-api.service
+
+%preun api
+%service_del_preun openstack-placement-api.service
+
+%postun api
+%restart_on_update openstack-placement-api.service
+%service_del_postun openstack-placement-api.service
+
+%files
+%license LICENSE
+%doc README.rst
+%config(noreplace) %{_sysconfdir}/logrotate.d/%{name}
+%dir %{_sysconfdir}/placement
+%dir %{_sysconfdir}/placement/placement.conf.d/
+%{_sysconfdir}/placement/README.config
+%dir %attr(0750, placement, placement) %{_localstatedir}/cache/placement
+%config(noreplace) %attr(0640, root, placement) %{_sysconfdir}/placement/placement.conf
+%config(noreplace) %attr(0640, root, placement) %{_sysconfdir}/placement/placement.conf.d/010-placement.conf
+%config %attr(0640, root, placement) %{_sysconfdir}/placement/policy.yaml
+%dir %attr(0755, placement, placement) %{_localstatedir}/lib/placement
+%dir %attr(0750, placement, placement) %{_localstatedir}/log/placement
+%_tmpfilesdir/%name.conf
+%{_bindir}/placement-manage
+%{_bindir}/placement-status
+%{_mandir}/man1/openstack-placement.1%{?ext_man}
+%dir %attr(0755, root, root) %{_localstatedir}/lib/placement/images
+%dir %attr(0755, placement, root) %{_localstatedir}/lib/placement/instances
+%dir %attr(0755, root, root) %{_localstatedir}/lib/placement/keys
+%dir %attr(0755, root, root) %{_localstatedir}/lib/placement/networks
+%dir %attr(0755, root, root) %{_localstatedir}/lib/placement/tmp
+
+%files -n python3-openstack-placement
+%license LICENSE
+%{python3_sitelib}/placement/
+%{python3_sitelib}/placement_db_tools/
+%{python3_sitelib}/openstack_placement*egg-info
+
+%files api
+%license LICENSE
+%{_bindir}/placement-api
+%{_sysconfdir}/apache2/
+%{_sysconfdir}/apache2/vhosts.d/
+%{_sysconfdir}/apache2/vhosts.d/openstack-placement-api.conf.sample
+/srv/www/
+/srv/www/openstack-placement-api/
+##/srv/www/openstack-placement-api/app.wsgi
+
+%changelog
