@@ -70,9 +70,6 @@ BuildRequires:  {{ py3('testtools') }}
 BuildRequires:  sudo
 Requires:       python3-{{ pypi_name }} = %{epoch}:%{version}-%{release}
 Requires:       sudo
-Provides:       {{ py2name('neutron') }}-dhcp-agent = %{version}-%{release}
-Provides:       {{ py2name('neutron') }}-l3-agent = %{version}-%{release}
-Provides:       {{ py2name('neutron') }}-metadata-agent = %{version}-%{release}
 BuildArch:      noarch
 %if 0%{?suse_version}
 BuildRequires:  systemd-rpm-macros
@@ -181,6 +178,7 @@ Requires:       ebtables
 Requires:       ipset
 Requires:       iptables
 Requires:       {{ py2name() }} = %{epoch}:%{version}-%{release}
+Provides:       {{ py2name('neutron') }}-l2-agent = %{epoch}:%{version}-%{release}
 
 %description linuxbridge-agent
 Neutron is a virtual network service for Openstack.
@@ -224,6 +222,7 @@ Requires:       ipset
 Requires:       iptables
 Requires:       {{ py2name() }} = %{epoch}:%{version}-%{release}
 Requires:       openvswitch
+Provides:       {{ py2name('neutron') }}-l2-agent = %{epoch}:%{version}-%{release}
 
 %description openvswitch-agent
 Neutron is a virtual network service for Openstack.
