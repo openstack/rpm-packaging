@@ -1,0 +1,15 @@
+[Unit]
+Description=OpenStack Watcher API
+After=syslog.target network.target
+
+[Service]
+Type=notify
+User=watcher
+Group=watcher
+ExecStartPre=-/usr/bin/watcher-db-manage upgrade
+ExecStart=/usr/bin/watcher-api
+Restart=on-failure
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target
