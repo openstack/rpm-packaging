@@ -1,0 +1,359 @@
+{% set pypi_name = 'manila' %}
+{% set source = fetch_source('https://tarballs.openstack.org/manila/manila-master.tar.gz') %}
+{% set upstream_version = upstream_version() %}
+{% set rpm_release = '1' %}
+%if 0%{?rhel} || 0%{?fedora}
+%global rdo 1
+%endif
+Name:           {{ py2name() }}
+Epoch:          {{ epoch('manila') }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
+Summary:        OpenStack shared file system service
+License:        {{ license('Apache-2.0') }}
+URL:            https://launchpad.net/manila
+Source0:        {{ source|basename }}
+Source1:        openstack-manila.sudoers
+Source2:        openstack-manila.logrotate
+Source3:        openstack-manila.tmpfiles
+Source4:        openstack-manila.defaultconf
+Source5:        openstack-manila.README.config
+# systemd service files
+Source6:        openstack-manila-api.service
+Source7:        openstack-manila-scheduler.service
+Source8:        openstack-manila-share.service
+Source9:        openstack-manila-data.service
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py3('Babel') }}
+BuildRequires:  {{ py3('Paste') }}
+BuildRequires:  {{ py3('PasteDeploy') }}
+BuildRequires:  {{ py3('Routes') }}
+BuildRequires:  {{ py3('SQLAlchemy') }}
+BuildRequires:  {{ py3('WebOb') }}
+BuildRequires:  {{ py3('alembic') }}
+BuildRequires:  {{ py3('python-cinderclient') }}
+BuildRequires:  {{ py3('ddt') }}
+BuildRequires:  {{ py3('eventlet') }}
+BuildRequires:  {{ py3('fixtures') }}
+BuildRequires:  {{ py3('greenlet') }}
+BuildRequires:  {{ py3('iso8601') }}
+BuildRequires:  {{ py3('keystoneauth1') }}
+BuildRequires:  {{ py3('keystonemiddleware') }}
+BuildRequires:  {{ py3('lxml') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('netaddr') }}
+BuildRequires:  {{ py3('python-neutronclient') }}
+BuildRequires:  {{ py3('python-novaclient') }}
+BuildRequires:  {{ py3('os-api-ref') }}
+BuildRequires:  {{ py3('os-testr') }}
+BuildRequires:  {{ py3('oslo.concurrency') }}
+BuildRequires:  {{ py3('oslo.config') }}
+BuildRequires:  {{ py3('oslo.context') }}
+BuildRequires:  {{ py3('oslo.db') }}
+BuildRequires:  {{ py3('oslo.i18n') }}
+BuildRequires:  {{ py3('oslo.log') }}
+BuildRequires:  {{ py3('oslo.messaging') }}
+BuildRequires:  {{ py3('oslo.middleware') }}
+BuildRequires:  {{ py3('oslo.policy') }}
+BuildRequires:  {{ py3('oslo.reports') }}
+BuildRequires:  {{ py3('oslo.rootwrap') }}
+BuildRequires:  {{ py3('oslo.serialization') }}
+BuildRequires:  {{ py3('oslo.service') }}
+BuildRequires:  {{ py3('oslo.upgradecheck') }}
+BuildRequires:  {{ py3('oslo.utils') }}
+BuildRequires:  {{ py3('oslotest') }}
+BuildRequires:  {{ py3('paramiko') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('psycopg2') }}
+BuildRequires:  {{ py3('pyparsing') }}
+BuildRequires:  {{ py3('requests') }}
+BuildRequires:  {{ py3('requests-mock') }}
+BuildRequires:  {{ py3('retrying') }}
+BuildRequires:  {{ py3('six') }}
+BuildRequires:  {{ py3('stevedore') }}
+BuildRequires:  {{ py3('testresources') }}
+BuildRequires:  {{ py3('testscenarios') }}
+BuildRequires:  {{ py3('testtools') }}
+BuildRequires:  {{ py3('tooz') }}
+BuildRequires:  sudo
+Requires:       logrotate
+Requires:       python3-{{ pypi_name }} = %{epoch}:%{version}-%{release}
+BuildArch:      noarch
+%if 0%{?suse_version}
+BuildRequires:  systemd-rpm-macros
+%{?systemd_requires}
+%else
+BuildRequires:  systemd
+Requires(post): systemd
+Requires(postun): systemd
+Requires(pre):  shadow-utils
+Requires(preun): systemd
+%endif
+
+%description
+OpenStack shared file system service.
+The File Share Service provides coordinated access to shared or distributed file systems.
+
+%package -n     python3-{{ pypi_name }}
+Summary:        OpenStack shared file system service (Manila) - Python module
+Group:          Development/Languages/Python
+Requires:       {{ py3('Babel') }}
+Requires:       {{ py3('Paste') }}
+Requires:       {{ py3('PasteDeploy') }}
+Requires:       {{ py3('Routes') }}
+Requires:       {{ py3('SQLAlchemy') }}
+Requires:       {{ py3('WebOb') }}
+Requires:       {{ py3('alembic') }}
+Requires:       {{ py3('python-cinderclient') }}
+Requires:       {{ py3('eventlet') }}
+Requires:       {{ py3('greenlet') }}
+Requires:       {{ py3('keystoneauth1') }}
+Requires:       {{ py3('keystonemiddleware') }}
+Requires:       {{ py3('lxml') }}
+Requires:       {{ py3('netaddr') }}
+Requires:       {{ py3('python-neutronclient') }}
+Requires:       {{ py3('python-novaclient') }}
+Requires:       {{ py3('oslo.concurrency') }}
+Requires:       {{ py3('oslo.config') }}
+Requires:       {{ py3('oslo.context') }}
+Requires:       {{ py3('oslo.db') }}
+Requires:       {{ py3('oslo.i18n') }}
+Requires:       {{ py3('oslo.log') }}
+Requires:       {{ py3('oslo.messaging') }}
+Requires:       {{ py3('oslo.middleware') }}
+Requires:       {{ py3('oslo.policy') }}
+Requires:       {{ py3('oslo.reports') }}
+Requires:       {{ py3('oslo.rootwrap') }}
+Requires:       {{ py3('oslo.serialization') }}
+Requires:       {{ py3('oslo.service') }}
+Requires:       {{ py3('oslo.upgradecheck') }}
+Requires:       {{ py3('oslo.utils') }}
+Requires:       {{ py3('paramiko') }}
+Requires:       {{ py3('pbr') }}
+Requires:       {{ py3('pyparsing') }}
+Requires:       {{ py3('requests') }}
+Requires:       {{ py3('retrying') }}
+Requires:       {{ py3('six') }}
+Requires:       {{ py3('stevedore') }}
+Requires:       {{ py3('tooz') }}
+Requires:       sudo
+
+%description -n python3-{{ pypi_name }}
+OpenStack shared file system service.
+This package contains the core Python module of OpenStack Manila.
+
+%package doc
+Summary:        OpenStack shared file system service (Manila) - Documentation
+Group:          Documentation/HTML
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
+
+%description doc
+OpenStack shared file system service.
+This package contains the Documentation.
+
+%package api
+Summary:        OpenStack shared file system service (Manila) - API
+Group:          Development/Languages/Python
+Requires:       openstack-{{ pypi_name }} = %{epoch}:%{version}-%{release}
+
+%description api
+OpenStack shared file system service.
+This package contains the OpenStack Manila API.
+
+%package scheduler
+Summary:        OpenStack shared file system service (Manila) - Scheduler
+Group:          Development/Languages/Python
+Requires:       openstack-{{ pypi_name }} = %{epoch}:%{version}-%{release}
+
+%description scheduler
+OpenStack shared file system service.
+This package contains the OpenStack Manila scheduler.
+
+%package share
+Summary:        OpenStack shared file system service (Manila) - Share
+Group:          Development/Languages/Python
+Requires:       openstack-{{ pypi_name }} = %{epoch}:%{version}-%{release}
+
+%description share
+OpenStack shared file system service.
+This package contains the OpenStack Manila Share.
+
+%package data
+Summary:        OpenStack shared file system service (Manila) - Data
+Group:          Development/Languages/Python
+Requires:       openstack-{{ pypi_name }} = %{epoch}:%{version}-%{release}
+
+%description data
+OpenStack shared file system service.
+This package contains the OpenStack Manila Data service.
+
+%prep
+%autosetup -p1 -n {{ pypi_name }}-{{upstream_version}}
+%py_req_cleanup
+
+%build
+%{py3_build}
+PYTHONPATH=. PBR_VERSION={{ upstream_version }} %sphinx_build -b html doc/source doc/build/html
+# remove the Sphinx-build leftovers
+rm -rf doc/build/html/.{doctrees,buildinfo}
+
+# config file generation
+PYTHONPATH=. oslo-config-generator --config-file etc/oslo-config-generator/manila.conf \
+--output-file etc/manila.conf.sample
+# policy file generation
+PYTHONPATH=. oslopolicy-sample-generator --config-file=etc/manila/manila-policy-generator.conf \
+--output etc/policy.json.sample
+
+%install
+%{py3_install}
+
+### directories
+install -d -m 750 %{buildroot}%{_localstatedir}/{lib,log}/manila
+install -d -m 750 %{buildroot}%{_localstatedir}/cache/manila
+install -d -m 700 %{buildroot}%{_localstatedir}/run/manila
+install -D -m 644 %{SOURCE3} %{buildroot}/%_tmpfilesdir/manila.conf
+install -d -m 755 %{buildroot}%{_sysconfdir}/manila
+install -d -m 755 %{buildroot}%{_sysconfdir}/manila/manila.conf.d/
+install -d -m 755 %{buildroot}%{_sysconfdir}/manila/manila-share.conf.d/
+install -p -D -m 640 %{SOURCE5} %{buildroot}%{_sysconfdir}/manila/README.config
+
+### configuration files
+mv %{buildroot}%{_prefix}%{_sysconfdir}/manila/* %{buildroot}%{_sysconfdir}/manila/
+install -p -D -m 644 etc/manila.conf.sample %{buildroot}%{_sysconfdir}/manila/manila.conf
+install -p -D -m 644 etc/policy.json.sample %{buildroot}%{_sysconfdir}/manila/policy.json
+cp -a etc/manila/rootwrap.d/ %{buildroot}%{_sysconfdir}/manila/
+
+# bash-completion/logrotate/etc.
+install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/manila
+
+# Install systemd unit services
+mkdir -p %{buildroot}%{_sbindir} %{buildroot}%{_unitdir}
+install -p -D -m 444 %{SOURCE6} %{buildroot}%{_unitdir}/%{name}-api.service
+install -p -D -m 444 %{SOURCE7} %{buildroot}%{_unitdir}/%{name}-scheduler.service
+install -p -D -m 444 %{SOURCE8} %{buildroot}%{_unitdir}/%{name}-share.service
+install -p -D -m 444 %{SOURCE9} %{buildroot}%{_unitdir}/%{name}-data.service
+%if 0%{?suse_version}
+ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-api
+ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-scheduler
+ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-share
+ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-data
+%endif
+
+### sudoers configuration for manila-rootwrap:
+install -D -m 440 %{SOURCE1} %{buildroot}%{_sysconfdir}/sudoers.d/openstack-manila
+
+### default configuration
+install -D -m 640 %{SOURCE4} %{buildroot}/%{_sysconfdir}/manila/manila.conf.d/010-manila.conf
+
+%pre
+%openstack_pre_user_group_create manila manila /sbin/nologin
+exit 0
+
+%post
+%tmpfiles_create %{_tmpfilesdir}/manila.conf
+
+%post api
+%systemd_post %{name}-api.service
+
+%preun api
+%systemd_preun %{name}-api.service
+
+%postun api
+%systemd_postun %{name}-api.service
+
+%post scheduler
+%systemd_post %{name}-scheduler.service
+
+%preun scheduler
+%systemd_preun %{name}-scheduler.service
+
+%postun scheduler
+%systemd_postun %{name}-scheduler.service
+
+%post share
+%systemd_post %{name}-share.service
+
+%preun share
+%systemd_preun %{name}-share.service
+
+%postun share
+%systemd_postun %{name}-share.service
+
+%post data
+%systemd_post %{name}-data.service
+
+%preun data
+%systemd_preun %{name}-data.service
+
+%postun data
+%systemd_postun %{name}-data.service
+
+%files
+%doc README.rst
+%license LICENSE
+%dir %attr(0750, manila, manila) %{_localstatedir}/lib/manila
+%dir %attr(0750, manila, manila) %{_localstatedir}/cache/manila
+%dir %attr(0750, manila, manila) %{_localstatedir}/log/manila
+%_tmpfilesdir/manila.conf
+%dir %{_sysconfdir}/manila
+%dir %{_sysconfdir}/manila/manila.conf.d/
+%dir %{_sysconfdir}/manila/manila-share.conf.d/
+%dir %{_sysconfdir}/manila/rootwrap.d
+%{_sysconfdir}/manila/README.config
+%config(noreplace) %{_sysconfdir}/logrotate.d/manila
+%config(noreplace) %{_sysconfdir}/sudoers.d/openstack-manila
+%config %attr(0640, root, manila) %{_sysconfdir}/manila/api-paste.ini
+%config(noreplace) %attr(0640, root, manila) %{_sysconfdir}/manila/manila.conf
+%config(noreplace) %attr(0640, root, manila) %{_sysconfdir}/manila/manila.conf.d/010-manila.conf
+%config %{_sysconfdir}/manila/policy.json
+%config %{_sysconfdir}/manila/rootwrap.conf
+%config %{_sysconfdir}/manila/rootwrap.d/share.filters
+%{_bindir}/manila-all
+%{_bindir}/manila-manage
+%{_bindir}/manila-status
+%{_bindir}/manila-rootwrap
+
+%files -n python3-manila
+%license LICENSE
+%{python3_sitelib}/manila/
+%{python3_sitelib}/manila-*.egg-info
+
+%files doc
+%license LICENSE
+%doc doc/build/html
+
+%files api
+%license LICENSE
+%{_unitdir}/%{name}-api.service
+%if 0%{?suse_version}
+%{_sbindir}/rc%{name}-api
+%endif
+%{_bindir}/manila-api
+%{_bindir}/manila-wsgi
+
+%files scheduler
+%license LICENSE
+%{_unitdir}/%{name}-scheduler.service
+%if 0%{?suse_version}
+%{_sbindir}/rc%{name}-scheduler
+%endif
+%{_bindir}/manila-scheduler
+
+%files share
+%license LICENSE
+%{_unitdir}/%{name}-share.service
+%if 0%{?suse_version}
+%{_sbindir}/rc%{name}-share
+%endif
+%{_bindir}/manila-share
+
+%files data
+%license LICENSE
+%{_unitdir}/%{name}-data.service
+%if 0%{?suse_version}
+%{_sbindir}/rc%{name}-data
+%endif
+%{_bindir}/manila-data
+
+%changelog

@@ -1,0 +1,2 @@
+Defaults:manila !syslog, !pam_session, !use_pty
+manila ALL = (root) NOPASSWD: /usr/bin/manila-rootwrap /etc/manila/rootwrap.conf *

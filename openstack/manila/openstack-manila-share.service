@@ -1,0 +1,14 @@
+[Unit]
+Description=OpenStack shared file system service (Manila) - Share
+After=syslog.target network.target
+
+[Service]
+Type=notify
+User=manila
+Group=manila
+WorkingDirectory=/var/lib/manila
+PrivateTmp=yes
+ExecStart=/usr/bin/manila-share
+
+[Install]
+WantedBy=multi-user.target
