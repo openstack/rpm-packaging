@@ -1,8 +1,10 @@
 {% set pypi_name = 'octavia-lib' %}
-{% set upstream_version = upstream_version('1.2.0') %}
+{% set upstream_version = upstream_version('1.3.1') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
-
+%if 0%{?rdo}
+%define skip_python2 1
+%endif
 Name:           {{ py2name() }}
 Version:        {{ py2rpmversion() }}
 Release:        {{ py2rpmrelease() }}
@@ -21,11 +23,13 @@ BuildRequires:  {{ py2pkg('oslo.utils', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('tenacity', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('oslo.i18n') }}
 Requires:       {{ py2pkg('oslo.log') }}
 Requires:       {{ py2pkg('oslo.serialization') }}
 Requires:       {{ py2pkg('pbr') }}
 Requires:       {{ py2pkg('six') }}
+Requires:       {{ py2pkg('tenacity') }}
 BuildArch:      noarch
 %python_subpackages
 
@@ -36,7 +40,7 @@ This python module provides a python library for Octavia provider driver
 developers.
 
 %prep
-%autosetup -p1 -n octavia-lib-%{version}
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
 
 %build

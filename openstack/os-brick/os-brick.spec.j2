@@ -1,5 +1,5 @@
 {% set pypi_name = 'os-brick' %}
-{% set upstream_version = upstream_version('2.9.0') %}
+{% set upstream_version = upstream_version('2.9.1') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 # NOTE(ykarel): This is required to prevent singlespec macros from changing the requires
@@ -60,8 +60,8 @@ Features:
 
 %package -n {{ py2name() }}-doc
 Summary:        Documentation for OpenStack os-brick library
-BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('openstackdocstheme', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
 
 %description -n {{ py2name() }}-doc
 OpenStack Cinder brick library for managing local volume attaches.
@@ -84,7 +84,7 @@ Configuration files for the OpenStack Cinder brick library.
 %{python_build}
 
 # generate html docs
-PBR_VERSION=%{version} sphinx-build -b html doc/source doc/build/html
+PBR_VERSION=%{version} %sphinx_build -b html doc/source doc/build/html
 # remove the sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 

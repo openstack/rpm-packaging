@@ -1,13 +1,16 @@
-%global sname keystonemiddleware
-Name:           {{ py2name('keystonemiddleware') }}
-Version:        6.1.0
-Release:        0
+{% set pypi_name = 'keystonemiddleware' %}
+{% set upstream_version = upstream_version('7.0.0') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
 Summary:        Middleware for OpenStack Identity
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
-URL:            https://launchpad.net/%{sname}
-Source0:        https://files.pythonhosted.org/packages/source/k/%{sname}/%{sname}-%{version}.tar.gz
-BuildRequires:  openssl
+URL:            https://launchpad.net/{{ pypi_name }}
+Source0:        {{ source }}
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('WebOb', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('WebTest', py_versions=['py2', 'py3']) }}
@@ -40,6 +43,7 @@ Requires:       {{ py2pkg('oslo.cache') }}
 Requires:       {{ py2pkg('oslo.config') }}
 Requires:       {{ py2pkg('oslo.context') }}
 Requires:       {{ py2pkg('oslo.i18n') }}
+Requires:       {{ py2pkg('oslo.log') }}
 Requires:       {{ py2pkg('oslo.serialization') }}
 Requires:       {{ py2pkg('oslo.utils') }}
 Requires:       {{ py2pkg('pycadf') }}
@@ -57,15 +61,15 @@ does not expose any CLI or Python API features.
 
 %package -n {{ py2name('keystonemiddleware') }}-doc
 Summary:        Documentation for Middleware for OpenStack Identity
-BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('openstackdocstheme') }}
-BuildRequires:  {{ py2pkg('sphinxcontrib-apidoc') }}
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
+BuildRequires:  {{ py3('sphinxcontrib-apidoc') }}
 
 %description -n {{ py2name('keystonemiddleware') }}-doc
 Documentation for Middleware for OpenStack Identity.
 
 %prep
-%autosetup -p1 -n %{sname}-%{version}
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
 
 %build
@@ -76,7 +80,7 @@ Documentation for Middleware for OpenStack Identity.
 
 # generate html docs
 export PYTHONPATH=.
-PBR_VERSION=%{version} sphinx-build -b html doc/source doc/build/html
+PBR_VERSION=%{version} %sphinx_build -b html doc/source doc/build/html
 # remove the sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
@@ -86,8 +90,8 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %files %python_files
 %license LICENSE
 %doc ChangeLog README.rst
-%{python2_sitelib}/%{sname}
-%{python2_sitelib}/*.egg-info
+%{python_sitelib}/{{ pypi_name }}
+%{python_sitelib}/*.egg-info
 
 %files -n {{ py2name('keystonemiddleware') }}-doc
 %doc doc/build/html
