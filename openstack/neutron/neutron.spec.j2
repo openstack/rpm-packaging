@@ -338,6 +338,7 @@ install -D -m 644 %{SOURCE21} %{buildroot}/%_tmpfilesdir/%{name}.conf
 
 # Install systemd units
 install -p -D -m 644 %{SOURCE3} %{buildroot}%{_unitdir}/openstack-neutron-server.service
+ln -s openstack-neutron-server.service %{buildroot}%{_unitdir}/openstack-neutron.service
 install -p -D -m 644 %{SOURCE4} %{buildroot}%{_unitdir}/openstack-neutron-linuxbridge-agent.service
 install -p -D -m 644 %{SOURCE5} %{buildroot}%{_unitdir}/openstack-neutron-openvswitch-agent.service
 install -p -D -m 644 %{SOURCE6} %{buildroot}%{_unitdir}/openstack-neutron-dhcp-agent.service
@@ -541,6 +542,7 @@ rm neutron/tests/unit/hacking/test_checks.py
 %{_bindir}/neutron-api
 %{_bindir}/neutron-server
 %{_unitdir}/openstack-neutron-server.service
+%{_unitdir}/openstack-neutron.service
 %dir %{_sysconfdir}/{{ pypi_name }}/neutron-server.conf.d
 
 %files dhcp-agent

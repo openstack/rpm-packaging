@@ -16,5 +16,4 @@ ExecStartPre=-/usr/bin/neutron-db-manage --config-file /etc/neutron/neutron.conf
 ExecStart=/usr/bin/neutron-server --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugin.ini
 
 [Install]
-Alias=openstack-neutron
 WantedBy=multi-user.target
