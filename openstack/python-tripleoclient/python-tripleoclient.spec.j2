@@ -8,6 +8,7 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/%{sname}
 Source0:        https://files.pythonhosted.org/packages/source/p/%{sname}/%{sname}-%{version}.tar.gz
 BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('tripleo-common') }}
 BuildRequires:  {{ py2pkg('cliff') }}
 BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('fixtures') }}
@@ -21,8 +22,8 @@ BuildRequires:  {{ py2pkg('psutil') }}
 BuildRequires:  {{ py2pkg('requests-mock') }}
 BuildRequires:  {{ py2pkg('testrepository') }}
 BuildRequires:  {{ py2pkg('testtools') }}
-BuildRequires:  {{ py2pkg('tripleo-common') }}
 BuildRequires:  {{ py2pkg('python-zaqarclient') }}
+Requires:       {{ py2pkg('tripleo-common') }}
 Requires:       {{ py2pkg('Babel') }}
 Requires:       {{ py2pkg('cliff') }}
 Requires:       {{ py2pkg('python-heatclient') }}
@@ -35,7 +36,6 @@ Requires:       {{ py2pkg('passlib') }}
 Requires:       {{ py2pkg('psutil') }}
 Requires:       {{ py2pkg('simplejson') }}
 Requires:       {{ py2pkg('six') }}
-Requires:       {{ py2pkg('tripleo-common') }}
 Requires:       {{ py2pkg('websocket-client') }}
 Requires:       {{ py2pkg('python-zaqarclient') }}
 BuildArch:      noarch
