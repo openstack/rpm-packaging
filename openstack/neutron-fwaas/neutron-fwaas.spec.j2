@@ -1,0 +1,108 @@
+{% set pypi_name = 'neutron-fwaas' %}
+{% set source = fetch_source('https://tarballs.openstack.org/neutron-fwaas/neutron-fwaas-master.tar.gz') %}
+{% set upstream_version = upstream_version() %}
+{% set rpm_release = '1' %}
+Name:           {{ py2name() }}
+Epoch:          {{ epoch('neutron') }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
+Summary:        OpenStack Neutron Firewall Service
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+URL:            https://launchpad.net/neutron
+Source0:        {{ source|basename }}
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('neutron') }}
+BuildRequires:  {{ py3('pbr') }}
+Requires:       python3-{{ pypi_name }} = %{epoch}:%{version}-%{release}
+BuildArch:      noarch
+
+%description
+Neutron is a virtual network service for Openstack.
+This is a Firewall service plugin for Openstack Neutron (Networking) service.
+
+%package -n python3-{{ pypi_name }}
+Summary:        OpenStack Neutron Firewall Service - Python module
+Group:          Development/Languages/Python
+Requires:       {{ py2pkg('neutron') }}
+Requires:       {{ py3('SQLAlchemy') }}
+Requires:       {{ py3('alembic') }}
+Requires:       {{ py3('eventlet') }}
+Requires:       {{ py3('netaddr') }}
+Requires:       {{ py3('neutron-lib') }}
+Requires:       {{ py3('os-ken') }}
+Requires:       {{ py3('oslo.config') }}
+Requires:       {{ py3('oslo.db') }}
+Requires:       {{ py3('oslo.log') }}
+Requires:       {{ py3('oslo.messaging') }}
+Requires:       {{ py3('oslo.privsep') }}
+Requires:       {{ py3('oslo.service') }}
+Requires:       {{ py3('oslo.utils') }}
+Requires:       {{ py3('pbr') }}
+Requires:       {{ py3('pyroute2') }}
+Requires:       {{ py3('pyzmq') }}
+Requires:       {{ py3('six') }}
+
+%description -n   python3-{{ pypi_name }}
+Neutron is a virtual network service for Openstack.
+This is a Firewall service plugin for Openstack Neutron (Networking) service.
+
+This package contains the Neutron Firewall Python library.
+
+%package doc
+Summary:        OpenStack Neutron Firewall Service - Documentation
+Group:          Documentation/HTML
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
+BuildRequires:  {{ py3('sphinxcontrib-apidoc') }}
+
+%description doc
+Neutron is a virtual network service for Openstack.
+This is a Firewall service plugin for Openstack Neutron (Networking) service.
+
+This package contains the documentation.
+
+%prep
+%autosetup -p1 -n {{ pypi_name }}-{{upstream_version}}
+%py_req_cleanup
+
+%build
+%py3_build
+
+# generate html docs
+PYTHONPATH=$PWD PBR_VERSION={{ upstream_version }} %sphinx_build --keep-going -b html doc/source doc/build/html
+# remove the Sphinx-build leftovers
+rm -rf doc/build/html/.{doctrees,buildinfo}
+
+%install
+%py3_install
+
+### configuration files
+for x in `ls etc/oslo-config-generator/*`; do
+    PYTHONPATH=. oslo-config-generator --config-file $x
+done
+
+install -p -D -m 644 etc/neutron_fwaas.conf.sample %{buildroot}%{_sysconfdir}/neutron/neutron_fwaas.conf
+
+# move wrongly installed files from /usr/etc to /etc
+mkdir -p %{buildroot}%{_sysconfdir}/neutron/rootwrap.d/
+mv %{buildroot}/%{_prefix}/%{_sysconfdir}/neutron/rootwrap.d/* %{buildroot}%{_sysconfdir}/neutron/rootwrap.d/
+
+%files
+%license LICENSE
+%doc README.rst
+%dir %{_sysconfdir}/neutron/rootwrap.d/
+%config(noreplace) %{_sysconfdir}/neutron/neutron_fwaas.conf
+%config(noreplace) %{_sysconfdir}/neutron/rootwrap.d/fwaas-privsep.filters
+%{_bindir}/neutron-fwaas-migrate-v1-to-v2
+
+%files -n python3-{{ pypi_name }}
+%license LICENSE
+%{python3_sitelib}/neutron_fwaas
+%{python3_sitelib}/neutron_fwaas-*.egg-info
+
+%files doc
+%license LICENSE
+%doc doc/build/html
+
+%changelog
