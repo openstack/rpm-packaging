@@ -5,6 +5,9 @@ After=syslog.target network.target
 [Service]
 Type=notify
 User=cinder
+Group=cinder
+WorkingDirectory=/var/lib/cinder
+PrivateTmp=yes
 ExecStart=/usr/bin/cinder-scheduler
 Restart=on-failure
 

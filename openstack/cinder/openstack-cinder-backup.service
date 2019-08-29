@@ -5,6 +5,8 @@ After=syslog.target network.target
 [Service]
 Type=notify
 User=cinder
+Group=cinder
+WorkingDirectory=/var/lib/cinder
 ExecStart=/usr/bin/cinder-backup
 Restart=on-failure
 
