@@ -1,0 +1,12 @@
+[Unit]
+Description=Neutron VPN as a Service - Brocade Vyatte agent
+After=syslog.target network.target
+
+[Service]
+Type=simple
+KillMode=process
+User=neutron
+ExecStart=/usr/bin/neutron-vyatta-agent --config-file /etc/neutron/neutron.conf --config-file=/etc/neutron/vpn_agent.ini
+
+[Install]
+WantedBy=multi-user.target
