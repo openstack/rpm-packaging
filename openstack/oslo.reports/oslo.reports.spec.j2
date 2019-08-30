@@ -70,8 +70,8 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %files %{python_files}
 %license LICENSE
 %doc README.rst ChangeLog
-%{python2_sitelib}/oslo_reports
-%{python2_sitelib}/*.egg-info
+%{python_sitelib}/oslo_reports
+%{python_sitelib}/*.egg-info
 
 %files -n python-oslo.reports-doc
 %license LICENSE
