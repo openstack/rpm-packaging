@@ -290,6 +290,9 @@ done
 %install
 %py3_install
 
+# create directories
+install -d -m 750 %{buildroot}%{_localstatedir}/{lib,log,cache}/{{ pypi_name }}
+
 # Move rootwrap files to proper location
 install -d -m 755 %{buildroot}%{_datarootdir}/{{ pypi_name }}/rootwrap
 mv %{buildroot}%{_prefix}%{_sysconfdir}/{{ pypi_name }}/rootwrap.d/*.filters %{buildroot}%{_datarootdir}/{{ pypi_name }}/rootwrap
@@ -319,6 +322,9 @@ for file in linuxbridge_agent ml2_conf openvswitch_agent sriov_agent
 do
   mv etc/{{ pypi_name }}/plugins/ml2/${file}.ini %{buildroot}%{_sysconfdir}/{{ pypi_name }}/plugins/ml2/${file}.ini
 done
+
+# default core plugin (the plugin.ini link defines the used plugin. see .service file)
+ln -s %{_sysconfdir}/neutron/plugins/ml2/ml2_conf.ini %{buildroot}/%{_sysconfdir}/neutron/plugin.ini
 
 # install modules/modprobe/sysctl
 install -D -m 644 %{SOURCE22} %{buildroot}%{_libexecdir}/modules-load.d/openstack-neutron-linuxbridge-agent.conf
@@ -498,6 +504,7 @@ rm neutron/tests/unit/hacking/test_checks.py
 %{_unitdir}/openstack-neutron-ovs-cleanup.service
 %_tmpfilesdir/%{name}.conf
 %attr(-, root, {{ pypi_name }}) %{_sysconfdir}/{{ pypi_name }}/api-paste.ini
+%config(noreplace) %{_sysconfdir}/neutron/plugin.ini
 %config(noreplace) %attr(0640, root, {{ pypi_name }}) %{_sysconfdir}/{{ pypi_name }}/plugins/ml2/*.ini
 %config(noreplace) %attr(0640, root, {{ pypi_name }}) %{_sysconfdir}/{{ pypi_name }}/dhcp_agent.ini
 %config(noreplace) %attr(0640, root, {{ pypi_name }}) %{_sysconfdir}/{{ pypi_name }}/l3_agent.ini
@@ -515,6 +522,9 @@ rm neutron/tests/unit/hacking/test_checks.py
 %config(noreplace) %{_sysconfdir}/logrotate.d/%{name}
 %dir %{_datarootdir}/{{ pypi_name }}
 %dir %{_datarootdir}/{{ pypi_name }}/rootwrap
+%dir %attr(0750, neutron, neutron) %{_localstatedir}/lib/{{ pypi_name }}
+%dir %attr(0750, neutron, neutron) %{_localstatedir}/log/{{ pypi_name }}
+%dir %attr(0750, neutron, neutron) %{_localstatedir}/cache/{{ pypi_name }}
 %{_datarootdir}/{{ pypi_name }}/rootwrap/debug.filters
 %{_datarootdir}/{{ pypi_name }}/rootwrap/dhcp.filters
 %{_datarootdir}/{{ pypi_name }}/rootwrap/dibbler.filters
