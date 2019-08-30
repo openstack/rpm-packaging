@@ -84,6 +84,7 @@ BuildRequires:  {{ py3('testrepository') }}
 BuildRequires:  {{ py3('testresources') }}
 BuildRequires:  {{ py3('testscenarios') }}
 BuildRequires:  {{ py3('testtools') }}
+BuildRequires:  {{ py3('tooz') }}
 BuildRequires:  sudo
 Requires:       logrotate
 Requires:       python3-{{ pypi_name }} = %{epoch}:%{version}-%{release}
@@ -172,6 +173,7 @@ Requires:       {{ py3('setuptools') }}
 Requires:       {{ py3('six') }}
 Requires:       {{ py3('sqlalchemy-migrate') }}
 Requires:       {{ py3('stevedore') }}
+Requires:       {{ py3('tooz') }}
 Requires:       {{ py3('websockify') }}
 Requires:       sudo
 
@@ -641,12 +643,12 @@ testr run --load-list=list
 %doc README.rst
 %dir %{_sysconfdir}/nova
 %dir %{_sysconfdir}/nova/rootwrap.d
-%dir %{_localstatedir}/lib/nova
-%dir %{_localstatedir}/lib/nova/buckets
-%dir %{_localstatedir}/lib/nova/instances
-%dir %{_localstatedir}/lib/nova/keys
-%dir %{_localstatedir}/lib/nova/networks
-%dir %{_localstatedir}/lib/nova/tmp
+%dir %attr(0750, nova, nova) %{_localstatedir}/lib/nova
+%dir %attr(0750, nova, nova) %{_localstatedir}/lib/nova/buckets
+%dir %attr(0750, nova, nova) %{_localstatedir}/lib/nova/instances
+%dir %attr(0750, nova, nova) %{_localstatedir}/lib/nova/keys
+%dir %attr(0750, nova, nova) %{_localstatedir}/lib/nova/networks
+%dir %attr(0750, nova, nova) %{_localstatedir}/lib/nova/tmp
 %dir %attr(0750, nova, root) %{_localstatedir}/log/nova
 %{_sysconfdir}/bash_completion.d/openstack-nova-manage.sh
 %{_sysconfdir}/nova/release
