@@ -106,8 +106,8 @@ install -p -D -m 644 etc/neutron_vpnaas.conf.sample %{buildroot}%{_sysconfdir}/n
 install -p -D -m 644 etc/vpn_agent.ini.sample %{buildroot}%{_sysconfdir}/neutron/vpn_agent.ini
 
 # move wrongly installed files from /usr/etc to /etc
-mkdir -p %{buildroot}%{_sysconfdir}/neutron/rootwrap.d/
-mv %{buildroot}/%{_prefix}/%{_sysconfdir}/neutron/rootwrap.d/* %{buildroot}%{_sysconfdir}/neutron/rootwrap.d/
+install -d -m 755 %{buildroot}%{_datarootdir}/neutron/rootwrap
+mv %{buildroot}/%{_prefix}/%{_sysconfdir}/neutron/rootwrap.d/* %{buildroot}%{_datarootdir}/neutron/rootwrap
 
 ### systemd
 mkdir -p %{buildroot}%{_sbindir} %{buildroot}%{_unitdir}
@@ -130,8 +130,8 @@ ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rcopenstack-neutron-vyatta-age
 %doc README.rst
 %config(noreplace) %{_sysconfdir}/neutron/neutron_vpnaas.conf
 %config(noreplace) %{_sysconfdir}/neutron/vpn_agent.ini
-%dir %{_sysconfdir}/neutron/rootwrap.d/
-%config %{_sysconfdir}/neutron/rootwrap.d/vpnaas.filters
+%dir %{_datarootdir}/neutron/rootwrap
+%{_datarootdir}/neutron/rootwrap/vpnaas.filters
 %{_bindir}/neutron-vpn-netns-wrapper
 
 %files -n python3-{{ pypi_name }}

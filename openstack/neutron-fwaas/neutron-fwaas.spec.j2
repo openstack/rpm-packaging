@@ -85,15 +85,15 @@ done
 install -p -D -m 644 etc/neutron_fwaas.conf.sample %{buildroot}%{_sysconfdir}/neutron/neutron_fwaas.conf
 
 # move wrongly installed files from /usr/etc to /etc
-mkdir -p %{buildroot}%{_sysconfdir}/neutron/rootwrap.d/
-mv %{buildroot}/%{_prefix}/%{_sysconfdir}/neutron/rootwrap.d/* %{buildroot}%{_sysconfdir}/neutron/rootwrap.d/
+install -d -m 755 %{buildroot}%{_datarootdir}/neutron/rootwrap
+mv %{buildroot}/%{_prefix}/%{_sysconfdir}/neutron/rootwrap.d/* %{buildroot}%{_datarootdir}/neutron/rootwrap
 
 %files
 %license LICENSE
 %doc README.rst
-%dir %{_sysconfdir}/neutron/rootwrap.d/
 %config(noreplace) %{_sysconfdir}/neutron/neutron_fwaas.conf
-%config(noreplace) %{_sysconfdir}/neutron/rootwrap.d/fwaas-privsep.filters
+%dir %{_datarootdir}/neutron/rootwrap
+%{_datarootdir}/neutron/rootwrap/fwaas-privsep.filters
 %{_bindir}/neutron-fwaas-migrate-v1-to-v2
 
 %files -n python3-{{ pypi_name }}
