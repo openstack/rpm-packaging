@@ -1,0 +1,15 @@
+[Unit]
+Description=OpenStack shared file system service (Manila) - API
+After=syslog.target network.target
+
+[Service]
+Type=notify
+User=manila
+Group=manila
+WorkingDirectory=/var/lib/manila
+PrivateTmp=yes
+ExecStartPre=-/usr/bin/manila-manage db sync
+ExecStart=/usr/bin/manila-api
+
+[Install]
+WantedBy=multi-user.target

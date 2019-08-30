@@ -1,0 +1,13 @@
+/var/log/manila/*.log {
+    compress
+    copytruncate
+    dateext
+    minsize 100k
+    missingok
+    notifempty
+    rotate 10
+    sharedscripts
+    size 1M
+    su manila manila
+    weekly
+}
