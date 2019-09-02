@@ -1,33 +1,33 @@
-{% set upstream_version = upstream_version('2.2.0') %}
-%global sname saharaclient
-Name:           {{ py2name('python-saharaclient') }}
+{% set pypi_name = 'python-saharaclient' %}
+{% set upstream_version = upstream_version('2.2.1') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
+Name:           {{ py2name() }}
 Version:        {{ py2rpmversion() }}
-Release:        0
+Release:        {{ py2rpmrelease() }}
+Epoch:          {{ epoch('python-saharaclient') }}
 Summary:        Client library for OpenStack Sahara API
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://launchpad.net/%{name}
-Source0:        https://files.pythonhosted.org/packages/source/p/%{name}/%{name}-%{version}.tar.gz
+Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('python-keystoneclient') }}
-BuildRequires:  {{ py2pkg('mock') }}
-BuildRequires:  {{ py2pkg('openstackdocstheme') }}
-BuildRequires:  {{ py2pkg('osc-lib') }}
-BuildRequires:  {{ py2pkg('oslo.i18n') }}
-BuildRequires:  {{ py2pkg('oslo.log') }}
-BuildRequires:  {{ py2pkg('oslo.serialization') }}
-BuildRequires:  {{ py2pkg('oslo.utils') }}
-BuildRequires:  {{ py2pkg('oslotest') }}
-BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('requests') }}
-BuildRequires:  {{ py2pkg('requests-mock') }}
-BuildRequires:  {{ py2pkg('setuptools') }}
-BuildRequires:  {{ py2pkg('stestr') }}
-BuildRequires:  {{ py2pkg('testrepository') }}
+BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('osc-lib', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.i18n', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.log', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.serialization', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.utils', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('requests', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('requests-mock', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('setuptools', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('Babel') }}
-Requires:       {{ py2pkg('PrettyTable') }}
 Requires:       {{ py2pkg('keystoneauth1') }}
-Requires:       {{ py2pkg('python-keystoneclient') }}
 Requires:       {{ py2pkg('python-openstackclient') }}
 Requires:       {{ py2pkg('osc-lib') }}
 Requires:       {{ py2pkg('oslo.i18n') }}
@@ -37,45 +37,47 @@ Requires:       {{ py2pkg('oslo.utils') }}
 Requires:       {{ py2pkg('requests') }}
 Requires:       {{ py2pkg('six') }}
 BuildArch:      noarch
+%python_subpackages
 
 %description
 Python client library for interacting with OpenStack Sahara API.
 
-%package doc
+%package -n python-saharaclient-doc
 Summary:        Documentation for Client library for OpenStack Sahara API
 Group:          Documentation/HTML
-BuildRequires:  {{ py2pkg('Sphinx') }}
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
 
-%description doc
+%description -n python-saharaclient-doc
 Python client library for interacting with OpenStack Sahara API.
 
 %prep
-%autosetup -p1 -n %{name}-%{version}
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
 
 %build
-%py2_build
+%{python_build}
 
 %install
-%py2_install
+%{python_install}
 
 # Build HTML docs and man page
-PBR_VERSION={{ upstream_version }} PYTHONPATH=%{buildroot}%{python2_sitelib} sphinx-build -b html doc/source doc/build/html
+PYTHONPATH=. PBR_VERSION={{ upstream_version }} %sphinx_build -b html -d doc/build/doctrees doc/source doc/build/html
 # remove the sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %check
 # we don't want to depend on hacking/flake8/pep8
 rm -v saharaclient/tests/unit/test_hacking.py
-python2 -m stestr.cli run
+%python_exec -m stestr.cli run
 
-%files
+%files %{python_files}
 %license LICENSE
 %doc ChangeLog README.rst
-%{python2_sitelib}/saharaclient
-%{python2_sitelib}/*.egg-info
+%{python_sitelib}/saharaclient
+%{python_sitelib}/*.egg-info
 
-%files doc
+%files -n python-saharaclient-doc
 %doc doc/build/html
 %license LICENSE
 
