@@ -25,52 +25,52 @@ Source1:        openstack-watcher-applier.service
 Source2:        openstack-watcher-decision-engine.service
 Source3:        openstack-watcher-api.service
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('APScheduler', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('PrettyTable', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('SQLAlchemy', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('WSME', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('WebOb', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('cinderclient', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('coverage', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('croniter', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('freezegun', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('glanceclient', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('gnocchiclient', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('ironicclient', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('jsonpatch', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('jsonschema', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('keystoneauth1', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('keystoneclient', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('keystonemiddleware', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('lxml', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('microversion_parse', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('mock', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('monascaclient', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('networkx', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('neutronclient', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('novaclient', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('openstackclient', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('os-api-ref', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('oslo.cache', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('oslo.concurrency', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('oslo.context', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('oslo.db', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('oslo.log', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('oslo.messaging', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('oslo.policy', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('oslo.reports', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('oslo.serialization', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('oslo.service', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('oslo.upgradecheck', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('oslo.utils', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('oslo.versionedobjects', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('oslotest', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('pbr', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('pecan', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('six', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('stestr', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('stevedore', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('taskflow', py_versions=['py3']) }}
+BuildRequires:  {{ py3('APScheduler') }}
+BuildRequires:  {{ py3('PrettyTable') }}
+BuildRequires:  {{ py3('SQLAlchemy') }}
+BuildRequires:  {{ py3('WSME') }}
+BuildRequires:  {{ py3('WebOb') }}
+BuildRequires:  {{ py3('cinderclient') }}
+BuildRequires:  {{ py3('coverage') }}
+BuildRequires:  {{ py3('croniter') }}
+BuildRequires:  {{ py3('freezegun') }}
+BuildRequires:  {{ py3('glanceclient') }}
+BuildRequires:  {{ py3('gnocchiclient') }}
+BuildRequires:  {{ py3('ironicclient') }}
+BuildRequires:  {{ py3('jsonpatch') }}
+BuildRequires:  {{ py3('jsonschema') }}
+BuildRequires:  {{ py3('keystoneauth1') }}
+BuildRequires:  {{ py3('keystoneclient') }}
+BuildRequires:  {{ py3('keystonemiddleware') }}
+BuildRequires:  {{ py3('lxml') }}
+BuildRequires:  {{ py3('microversion_parse') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('monascaclient') }}
+BuildRequires:  {{ py3('networkx') }}
+BuildRequires:  {{ py3('neutronclient') }}
+BuildRequires:  {{ py3('novaclient') }}
+BuildRequires:  {{ py3('openstackclient') }}
+BuildRequires:  {{ py3('os-api-ref') }}
+BuildRequires:  {{ py3('oslo.cache') }}
+BuildRequires:  {{ py3('oslo.concurrency') }}
+BuildRequires:  {{ py3('oslo.context') }}
+BuildRequires:  {{ py3('oslo.db') }}
+BuildRequires:  {{ py3('oslo.log') }}
+BuildRequires:  {{ py3('oslo.messaging') }}
+BuildRequires:  {{ py3('oslo.policy') }}
+BuildRequires:  {{ py3('oslo.reports') }}
+BuildRequires:  {{ py3('oslo.serialization') }}
+BuildRequires:  {{ py3('oslo.service') }}
+BuildRequires:  {{ py3('oslo.upgradecheck') }}
+BuildRequires:  {{ py3('oslo.utils') }}
+BuildRequires:  {{ py3('oslo.versionedobjects') }}
+BuildRequires:  {{ py3('oslotest') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('pecan') }}
+BuildRequires:  {{ py3('six') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('stevedore') }}
+BuildRequires:  {{ py3('taskflow') }}
 Requires:       python3-{{ pypi_name }} = %{epoch}:%{version}-%{release}
 BuildArch:      noarch
 %if 0%{?suse_version}
@@ -98,37 +98,37 @@ migration, increased energy efficiency and more!
 %package -n python3-{{ pypi_name }}
 Summary:        Resource optimization service for OpenStack. (Wathcer) - Python Module
 Group:          Applications/System
-Requires:       {{ py2pkg('APScheduler', py_versions=['py3']) }}
-Requires:       {{ py2pkg('PasteDeploy', py_versions=['py3']) }}
-Requires:       {{ py2pkg('PrettyTable', py_versions=['py3']) }}
-Requires:       {{ py2pkg('SQLAlchemy', py_versions=['py3']) }}
-Requires:       {{ py2pkg('WSME', py_versions=['py3']) }}
-Requires:       {{ py2pkg('WebOb', py_versions=['py3']) }}
-Requires:       {{ py2pkg('croniter', py_versions=['py3']) }}
-Requires:       {{ py2pkg('enum34', py_versions=['py3']) }}
-Requires:       {{ py2pkg('gnocchiclient', py_versions=['py3']) }}
-Requires:       {{ py2pkg('jsonpatch', py_versions=['py3']) }}
-Requires:       {{ py2pkg('jsonschema', py_versions=['py3']) }}
-Requires:       {{ py2pkg('keystoneauth1', py_versions=['py3']) }}
-Requires:       {{ py2pkg('keystonemiddleware', py_versions=['py3']) }}
-Requires:       {{ py2pkg('lxml', py_versions=['py3']) }}
-Requires:       {{ py2pkg('microversion_parse', py_versions=['py3']) }}
-Requires:       {{ py2pkg('networkx', py_versions=['py3']) }}
-Requires:       {{ py2pkg('openstackclient', py_versions=['py3']) }}
-Requires:       {{ py2pkg('oslo.cache', py_versions=['py3']) }}
-Requires:       {{ py2pkg('oslo.db', py_versions=['py3']) }}
-Requires:       {{ py2pkg('oslo.messaging', py_versions=['py3']) }}
-Requires:       {{ py2pkg('oslo.policy', py_versions=['py3']) }}
-Requires:       {{ py2pkg('oslo.reports', py_versions=['py3']) }}
-Requires:       {{ py2pkg('oslo.serialization', py_versions=['py3']) }}
-Requires:       {{ py2pkg('oslo.service', py_versions=['py3']) }}
-Requires:       {{ py2pkg('oslo.upgradecheck', py_versions=['py3']) }}
-Requires:       {{ py2pkg('oslo.versionedobjects', py_versions=['py3']) }}
-Requires:       {{ py2pkg('pbr', py_versions=['py3']) }}
-Requires:       {{ py2pkg('pecan', py_versions=['py3']) }}
-Requires:       {{ py2pkg('six', py_versions=['py3']) }}
-Requires:       {{ py2pkg('stevedore', py_versions=['py3']) }}
-Requires:       {{ py2pkg('taskflow', py_versions=['py3']) }}
+Requires:       {{ py3('APScheduler') }}
+Requires:       {{ py3('PasteDeploy') }}
+Requires:       {{ py3('PrettyTable') }}
+Requires:       {{ py3('SQLAlchemy') }}
+Requires:       {{ py3('WSME') }}
+Requires:       {{ py3('WebOb') }}
+Requires:       {{ py3('croniter') }}
+Requires:       {{ py3('enum34') }}
+Requires:       {{ py3('gnocchiclient') }}
+Requires:       {{ py3('jsonpatch') }}
+Requires:       {{ py3('jsonschema') }}
+Requires:       {{ py3('keystoneauth1') }}
+Requires:       {{ py3('keystonemiddleware') }}
+Requires:       {{ py3('lxml') }}
+Requires:       {{ py3('microversion_parse') }}
+Requires:       {{ py3('networkx') }}
+Requires:       {{ py3('openstackclient') }}
+Requires:       {{ py3('oslo.cache') }}
+Requires:       {{ py3('oslo.db') }}
+Requires:       {{ py3('oslo.messaging') }}
+Requires:       {{ py3('oslo.policy') }}
+Requires:       {{ py3('oslo.reports') }}
+Requires:       {{ py3('oslo.serialization') }}
+Requires:       {{ py3('oslo.service') }}
+Requires:       {{ py3('oslo.upgradecheck') }}
+Requires:       {{ py3('oslo.versionedobjects') }}
+Requires:       {{ py3('pbr') }}
+Requires:       {{ py3('pecan') }}
+Requires:       {{ py3('six') }}
+Requires:       {{ py3('stevedore') }}
+Requires:       {{ py3('taskflow') }}
 BuildArch:      noarch
 
 %description -n python3-{{ pypi_name }}
@@ -170,12 +170,12 @@ This package contains the OpenStack Watcher Api.
 Summary:        Documentation for OpenStack Watcher Service
 Group:          Documentation/HTML
 BuildRequires:  fdupes
-BuildRequires:  {{ py2pkg('Sphinx', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('keystoneclient', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('os-api-ref', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('sphinxcontrib-apidoc', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('sphinxcontrib-pecanwsme', py_versions=['py3']) }}
-BuildRequires:  {{ py2pkg('sphinxcontrib-seqdiag', py_versions=['py3']) }}
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('keystoneclient') }}
+BuildRequires:  {{ py3('os-api-ref') }}
+BuildRequires:  {{ py3('sphinxcontrib-apidoc') }}
+BuildRequires:  {{ py3('sphinxcontrib-pecanwsme') }}
+BuildRequires:  {{ py3('sphinxcontrib-seqdiag') }}
 BuildArch:      noarch
 
 %description -n {{ py2name() }}-doc
