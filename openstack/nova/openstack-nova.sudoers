@@ -1,3 +1,4 @@
-Defaults:nova !requiretty
+Defaults:nova syslog_goodpri=none, !pam_session
+
 nova ALL = (root) NOPASSWD: /usr/bin/nova-rootwrap-daemon /etc/nova/rootwrap.conf
 nova ALL = (root) NOPASSWD: /usr/bin/nova-rootwrap /etc/nova/rootwrap.conf *
