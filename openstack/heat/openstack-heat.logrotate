@@ -1,0 +1,11 @@
+/var/log/heat/*.log {
+    compress
+    dateext
+    minsize 100k
+    missingok
+    notifempty
+    rotate 10
+    sharedscripts
+    size 1M
+    su heat heat
+    weekly}

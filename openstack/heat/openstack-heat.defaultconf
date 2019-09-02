@@ -1,0 +1,5 @@
+[DEFAULT]
+log_dir = /var/log/heat
+
+[oslo_concurrency]
+lock_path = /run/heat
