@@ -75,8 +75,8 @@ rm -rf html/.{doctrees,buildinfo}
 %files %{python_files}
 %license LICENSE
 %doc README.rst
-%{python2_sitelib}/%{pypi_name}
-%{python2_sitelib}/%{pypi_name}-*.egg-info
+%{python_sitelib}/%{pypi_name}
+%{python_sitelib}/%{pypi_name}-*.egg-info
 
 %files -n python-debtcollector-doc
 %license LICENSE
