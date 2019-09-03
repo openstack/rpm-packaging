@@ -16,36 +16,36 @@ Source0:        {{ source|basename }}
 Source1:        openstack-freezer.logrotate
 Source2:        openstack-freezer-scheduler.service
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('Tempest') }}
-BuildRequires:  {{ py2pkg('APScheduler') }}
-BuildRequires:  {{ py2pkg('Babel') }}
-BuildRequires:  {{ py2pkg('PyMySQL') }}
-BuildRequires:  {{ py2pkg('botocore') }}
-BuildRequires:  {{ py2pkg('python-cinderclient') }}
-BuildRequires:  {{ py2pkg('cryptography') }}
-BuildRequires:  {{ py2pkg('ddt') }}
-BuildRequires:  {{ py2pkg('fixtures') }}
-BuildRequires:  {{ py2pkg('python-freezerclient') }}
-BuildRequires:  {{ py2pkg('python-glanceclient') }}
-BuildRequires:  {{ py2pkg('keystoneauth1') }}
-BuildRequires:  {{ py2pkg('python-keystoneclient') }}
-BuildRequires:  {{ py2pkg('mock') }}
-BuildRequires:  {{ py2pkg('python-neutronclient') }}
-BuildRequires:  {{ py2pkg('python-novaclient') }}
-BuildRequires:  {{ py2pkg('os-brick') }}
-BuildRequires:  {{ py2pkg('oslo.config') }}
-BuildRequires:  {{ py2pkg('oslo.log') }}
-BuildRequires:  {{ py2pkg('oslo.service') }}
-BuildRequires:  {{ py2pkg('oslo.utils') }}
-BuildRequires:  {{ py2pkg('paramiko') }}
-BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('psutil') }}
-BuildRequires:  {{ py2pkg('pymongo') }}
-BuildRequires:  {{ py2pkg('setuptools') }}
-BuildRequires:  {{ py2pkg('six') }}
-BuildRequires:  {{ py2pkg('stestr') }}
-BuildRequires:  {{ py2pkg('python-swiftclient') }}
-Requires:       python-{{ pypi_name }} = %{version}-%{release}
+BuildRequires:  {{ py2pkg('tempest') }}
+BuildRequires:  {{ py3('APScheduler') }}
+BuildRequires:  {{ py3('Babel') }}
+BuildRequires:  {{ py3('PyMySQL') }}
+BuildRequires:  {{ py3('botocore') }}
+BuildRequires:  {{ py3('python-cinderclient') }}
+BuildRequires:  {{ py3('cryptography') }}
+BuildRequires:  {{ py3('ddt') }}
+BuildRequires:  {{ py3('fixtures') }}
+BuildRequires:  {{ py3('python-freezerclient') }}
+BuildRequires:  {{ py3('python-glanceclient') }}
+BuildRequires:  {{ py3('keystoneauth1') }}
+BuildRequires:  {{ py3('python-keystoneclient') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('python-neutronclient') }}
+BuildRequires:  {{ py3('python-novaclient') }}
+BuildRequires:  {{ py3('os-brick') }}
+BuildRequires:  {{ py3('oslo.config') }}
+BuildRequires:  {{ py3('oslo.log') }}
+BuildRequires:  {{ py3('oslo.service') }}
+BuildRequires:  {{ py3('oslo.utils') }}
+BuildRequires:  {{ py3('paramiko') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('psutil') }}
+BuildRequires:  {{ py3('pymongo') }}
+BuildRequires:  {{ py3('setuptools') }}
+BuildRequires:  {{ py3('six') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('python-swiftclient') }}
+Requires:       python3-{{ pypi_name }} = %{version}-%{release}
 BuildArch:      noarch
 %if 0%{?suse_version}
 BuildRequires:  systemd-rpm-macros
@@ -64,33 +64,33 @@ Requires(preun): systemd
 OpenStack Swift incremental backup and restore automation tool for
 file system, MongoDB, MySQL. LVM snapshot and encryption support.
 
-%package -n     python-{{ pypi_name }}
+%package -n     python3-{{ pypi_name }}
 Summary:        Freezer Python libraries
 Group:          Applications/System
-Requires:       {{ py2pkg('APScheduler') }}
-Requires:       {{ py2pkg('Babel') }}
-Requires:       {{ py2pkg('PyMySQL') }}
-Requires:       {{ py2pkg('botocore') }}
-Requires:       {{ py2pkg('python-cinderclient') }}
-Requires:       {{ py2pkg('cryptography') }}
-Requires:       {{ py2pkg('python-freezerclient') }}
-Requires:       {{ py2pkg('python-glanceclient') }}
-Requires:       {{ py2pkg('keystoneauth1') }}
-Requires:       {{ py2pkg('python-keystoneclient') }}
-Requires:       {{ py2pkg('python-neutronclient') }}
-Requires:       {{ py2pkg('python-novaclient') }}
-Requires:       {{ py2pkg('os-brick') }}
-Requires:       {{ py2pkg('oslo.config') }}
-Requires:       {{ py2pkg('oslo.log') }}
-Requires:       {{ py2pkg('oslo.service') }}
-Requires:       {{ py2pkg('oslo.utils') }}
-Requires:       {{ py2pkg('paramiko') }}
-Requires:       {{ py2pkg('psutil') }}
-Requires:       {{ py2pkg('pymongo') }}
-Requires:       {{ py2pkg('six') }}
-Requires:       {{ py2pkg('python-swiftclient') }}
+Requires:       {{ py3('APScheduler') }}
+Requires:       {{ py3('Babel') }}
+Requires:       {{ py3('PyMySQL') }}
+Requires:       {{ py3('botocore') }}
+Requires:       {{ py3('python-cinderclient') }}
+Requires:       {{ py3('cryptography') }}
+Requires:       {{ py3('python-freezerclient') }}
+Requires:       {{ py3('python-glanceclient') }}
+Requires:       {{ py3('keystoneauth1') }}
+Requires:       {{ py3('python-keystoneclient') }}
+Requires:       {{ py3('python-neutronclient') }}
+Requires:       {{ py3('python-novaclient') }}
+Requires:       {{ py3('os-brick') }}
+Requires:       {{ py3('oslo.config') }}
+Requires:       {{ py3('oslo.log') }}
+Requires:       {{ py3('oslo.service') }}
+Requires:       {{ py3('oslo.utils') }}
+Requires:       {{ py3('paramiko') }}
+Requires:       {{ py3('psutil') }}
+Requires:       {{ py3('pymongo') }}
+Requires:       {{ py3('six') }}
+Requires:       {{ py3('python-swiftclient') }}
 
-%description -n python-{{ pypi_name }}
+%description -n python3-{{ pypi_name }}
 OpenStack Swift incremental backup and restore automation tool for
 file system, MongoDB, MySQL. LVM snapshot and encryption support.
 
@@ -122,24 +122,24 @@ This package contains the Freezer scheduler agent.
 Summary:        Documentation for OpenStack Backup Service
 Group:          Documentation/HTML
 BuildRequires:  fdupes
-BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('openstackdocstheme') }}
-BuildRequires:  {{ py2pkg('sphinxcontrib-apidoc') }}
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
+BuildRequires:  {{ py3('sphinxcontrib-apidoc') }}
 
 %description doc
-OpenStack Freezer documentaion.
+OpenStack Swift incremental backup and restore automation tool for
+file system, MongoDB, MySQL. LVM snapshot and encryption support.
 
 This package contains the documentation
 
 %prep
 %autosetup -p1 -n {{ pypi_name }}-{{upstream_version}}
 %py_req_cleanup
-sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
-%{py2_build}
+%{py3_build}
 
-PBR_VERSION={{ upstream_version }} sphinx-build -b html doc/source doc/build/html
+PBR_VERSION={{ upstream_version }} %sphinx_build -b html doc/source doc/build/html
 # remove the Sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 %fdupes doc/build/html/
@@ -148,7 +148,7 @@ PYTHONPATH=. oslo-config-generator --config-file etc/config-generator.conf \
     --output-file etc/scheduler.conf.sample
 
 %install
-%{py2_install}
+%{py3_install}
 install -d -m 755 %{buildroot}%{_sysconfdir}/freezer
 install -d -m 755 %{buildroot}%{_localstatedir}/{lib,log}/freezer
 install -d -m 755 %{buildroot}%{_sysconfdir}/freezer/freezer.conf.d/
@@ -157,9 +157,14 @@ install -d -m 750 %{buildroot}%{_sysconfdir}/freezer/scheduler/conf.d/
 install -p -D -m 640 etc/scheduler.conf.sample %{buildroot}%{_sysconfdir}/freezer/scheduler.conf
 install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/openstack-freezer
 install -p -D -m 755 %{SOURCE2} %{buildroot}%{_unitdir}/%{name}-scheduler.service
+# install symlinks on SUSE
+%if 0%{?suse_version}
+mkdir -p %{buildroot}%{_sbindir}
+ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-scheduler
+%endif
 
 # remove duplicates
-%fdupes %{buildroot}%{python2_sitelib}
+%fdupes %{buildroot}%{python3_sitelib}
 
 # remove Windows script
 rm -fr %{buildroot}%{_prefix}/freezer/scripts/vss.ps1
@@ -179,10 +184,14 @@ rm -fr %{buildroot}%{_prefix}/freezer/scripts/vss.ps1
 %postun scheduler
 %systemd_postun_with_restart %{name}-scheduler.service
 
-
 %check
 export OS_TEST_PATH=./freezer/tests/unit
-stestr run
+%if 0%{?suse_version}
+PYTHON=python3 stestr run
+%endif
+%if 0%{?rdo}
+stestr-3 run
+%endif
 
 %files
 %license LICENSE
@@ -196,11 +205,11 @@ stestr run
 %dir %attr(0755, freezer, freezer) %{_localstatedir}/lib/freezer
 %dir %attr(0750, freezer, freezer) %{_localstatedir}/log/freezer
 
-%files -n python-{{ pypi_name }}
+%files -n python3-{{ pypi_name }}
 %doc README.rst
 %license LICENSE
-%{python2_sitelib}/freezer*
-%{python2_sitelib}/freezer-*.egg-info
+%{python3_sitelib}/freezer*
+%{python3_sitelib}/freezer-*.egg-info
 
 %files agent
 %license LICENSE
@@ -210,6 +219,9 @@ stestr run
 %license LICENSE
 %{_bindir}/freezer-scheduler
 %{_unitdir}/%{name}-scheduler.service
+%if 0%{?suse_version}
+%{_sbindir}/rc%{name}-scheduler
+%endif
 
 %files doc
 %license LICENSE
