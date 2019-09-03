@@ -3,12 +3,7 @@
 {% set upstream_version = upstream_version() %}
 {% set rpm_release = '1' %}
 
-%global sname monasca_tempest_plugin
-%global with_doc 0
-%global common_desc \
-This package contains Tempest tests to cover the monasca project. \
-Additionally it provides a plugin to automatically load these tests into Tempest.
-Name:          {{ py2pkg('monasca-tempest-plugin') }}
+Name:          {{ py2name() }}
 Version:       {{ py2rpmversion() }}
 Release:       {{ py2rpmrelease() }}
 Summary:       Tempest plugin for the monasca project
@@ -17,63 +12,36 @@ Group:         Development/Languages/Python
 URL:           https://git.openstack.org/cgit/openstack/{{ pypi_name }}
 Source0:       {{ source|basename }}
 BuildRequires: openstack-macros
-BuildRequires: {{ py2pkg('pbr') }}
-BuildRequires: {{ py2pkg('setuptools') }}
+BuildRequires: {{ py3('pbr') }}
 Requires:      {{ py2pkg('Tempest') }}
-Requires:      {{ py2pkg('mock') }}
-Requires:      {{ py2pkg('monasca-common') }}
-Requires:      {{ py2pkg('oslo.config') }}
-Requires:      {{ py2pkg('oslo.serialization') }}
-Requires:      {{ py2pkg('oslo.utils') }}
-Requires:      {{ py2pkg('oslotest') }}
-Requires:      {{ py2pkg('pbr') }}
-Requires:      {{ py2pkg('six') }}
+Requires:      {{ py3('mock') }}
+Requires:      {{ py3('monasca-common') }}
+Requires:      {{ py3('oslo.config') }}
+Requires:      {{ py3('oslo.serialization') }}
+Requires:      {{ py3('oslo.utils') }}
+Requires:      {{ py3('oslotest') }}
+Requires:      {{ py3('pbr') }}
+Requires:      {{ py3('six') }}
 BuildArch:     noarch
 
 %description
-%{common_desc}
-
-%if 0%{?with_doc}
-%package doc
-Summary:    Documentation for monasca tempest plugin
-BuildRequires: {{ py2pkg('Sphinx') }}
-BuildRequires: {{ py2pkg('oslosphinx') }}
-
-%description doc
-It contains the documentation for the monasca tempest tests.
-%endif
+This package contains Tempest tests to cover the monasca project.
+Additionally it provides a plugin to automatically load these tests into Tempest.
 
 %prep
-%autosetup -n {{ pypi_name }}-{{ upstream_version }}
-
-# Let's handle dependencies ourseleves
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
-# Remove bundled egg-info
-rm -rf %{module}.egg-info
 
 %build
-%{py2_build}
-
-# Generate Docs
-%if 0%{?with_doc}
-%{__python2} setup.py build_sphinx
-# remove the sphinx build leftovers
-rm -rf doc/build/html/.{doctrees,buildinfo}
-%endif
+%{py3_build}
 
 %install
-%{py2_install}
+%{py3_install}
 
 %files
 %license LICENSE
 %doc README.rst
-%{python2_sitelib}/monasca_tempest_tests
-%{python2_sitelib}/*.egg-info
-
-%if 0%{?with_doc}
-%files doc
-%doc doc/build/html
-%license LICENSE
-%endif
+%{python3_sitelib}/monasca_tempest_tests
+%{python3_sitelib}/*.egg-info
 
 %changelog
