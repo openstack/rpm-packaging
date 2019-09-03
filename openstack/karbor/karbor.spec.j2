@@ -1,7 +1,7 @@
 {% set pypi_name = 'karbor' %}
-{% set upstream_version = '1.3.0' %}
+{% set source = fetch_source('https://tarballs.openstack.org/karbor/karbor-master.tar.gz') %}
+{% set upstream_version = upstream_version() %}
 {% set rpm_release = '1' %}
-%global with_doc 0
 %if 0%{?rhel} || 0%{?fedora}
 %global rdo 1
 %endif
@@ -12,66 +12,71 @@ Release:        {{ py2rpmrelease() }}
 Summary:        OpenStack Application Data Protection Service
 License:        {{ license('Apache-2.0') }}
 URL:            https://launchpad.net/karbor
-Source0:        https://tarballs.openstack.org/{{ pypi_name }}/{{ pypi_name }}-{{upstream_version}}.tar.gz
+Source0:        {{ source|basename }}
 Source1:        openstack-karbor.logrotate
 Source2:        openstack-karbor-operationengine.service
 Source3:        openstack-karbor-protection.service
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('Tempest') }}
-BuildRequires:  {{ py2pkg('Babel') }}
-BuildRequires:  {{ py2pkg('Paste') }}
-BuildRequires:  {{ py2pkg('PasteDeploy') }}
-BuildRequires:  {{ py2pkg('Routes') }}
-BuildRequires:  {{ py2pkg('SQLAlchemy') }}
-BuildRequires:  {{ py2pkg('WebOb') }}
-BuildRequires:  {{ py2pkg('WebTest') }}
-BuildRequires:  {{ py2pkg('abclient') }}
-BuildRequires:  {{ py2pkg('bcrypt') }}
-BuildRequires:  {{ py2pkg('python-cinderclient') }}
-BuildRequires:  {{ py2pkg('croniter') }}
-BuildRequires:  {{ py2pkg('eventlet') }}
-BuildRequires:  {{ py2pkg('fixtures') }}
-BuildRequires:  {{ py2pkg('freezegun') }}
-BuildRequires:  {{ py2pkg('python-glanceclient') }}
-BuildRequires:  {{ py2pkg('greenlet') }}
-BuildRequires:  {{ py2pkg('python-heatclient') }}
-BuildRequires:  {{ py2pkg('icalendar') }}
-BuildRequires:  {{ py2pkg('python-karborclient') }}
-BuildRequires:  {{ py2pkg('keystoneauth1') }}
-BuildRequires:  {{ py2pkg('keystonemiddleware') }}
-BuildRequires:  {{ py2pkg('lxml') }}
-BuildRequires:  {{ py2pkg('python-manilaclient') }}
-BuildRequires:  {{ py2pkg('mock') }}
-BuildRequires:  {{ py2pkg('python-neutronclient') }}
-BuildRequires:  {{ py2pkg('python-novaclient') }}
-BuildRequires:  {{ py2pkg('os-api-ref') }}
-BuildRequires:  {{ py2pkg('oslo.concurrency') }}
-BuildRequires:  {{ py2pkg('oslo.config') }}
-BuildRequires:  {{ py2pkg('oslo.context') }}
-BuildRequires:  {{ py2pkg('oslo.db') }}
-BuildRequires:  {{ py2pkg('oslo.i18n') }}
-BuildRequires:  {{ py2pkg('oslo.log') }}
-BuildRequires:  {{ py2pkg('oslo.messaging') }}
-BuildRequires:  {{ py2pkg('oslo.middleware') }}
-BuildRequires:  {{ py2pkg('oslo.policy') }}
-BuildRequires:  {{ py2pkg('oslo.serialization') }}
-BuildRequires:  {{ py2pkg('oslo.service') }}
-BuildRequires:  {{ py2pkg('oslo.versionedobjects') }}
-BuildRequires:  {{ py2pkg('reno') }}
-BuildRequires:  {{ py2pkg('requests') }}
-BuildRequires:  {{ py2pkg('setuptools') }}
-BuildRequires:  {{ py2pkg('six') }}
-BuildRequires:  {{ py2pkg('sqlalchemy-migrate') }}
-BuildRequires:  {{ py2pkg('stevedore') }}
-BuildRequires:  {{ py2pkg('python-swiftclient') }}
-BuildRequires:  {{ py2pkg('taskflow') }}
+BuildRequires:  {{ py2pkg('tempest') }}
+BuildRequires:  {{ py3('Babel') }}
+BuildRequires:  {{ py3('Paste') }}
+BuildRequires:  {{ py3('PasteDeploy') }}
+BuildRequires:  {{ py3('Routes') }}
+BuildRequires:  {{ py3('SQLAlchemy') }}
+BuildRequires:  {{ py3('WebOb') }}
+BuildRequires:  {{ py3('WebTest') }}
+BuildRequires:  {{ py3('abclient') }}
+BuildRequires:  {{ py3('bcrypt') }}
+BuildRequires:  {{ py3('python-cinderclient') }}
+BuildRequires:  {{ py3('croniter') }}
+BuildRequires:  {{ py3('eventlet') }}
+BuildRequires:  {{ py3('fixtures') }}
+BuildRequires:  {{ py3('freezegun') }}
+BuildRequires:  {{ py3('python-glanceclient') }}
+BuildRequires:  {{ py3('greenlet') }}
+BuildRequires:  {{ py3('python-heatclient') }}
+BuildRequires:  {{ py3('icalendar') }}
+BuildRequires:  {{ py3('python-karborclient') }}
+BuildRequires:  {{ py3('keystoneauth1') }}
+BuildRequires:  {{ py3('keystonemiddleware') }}
+BuildRequires:  {{ py3('lxml') }}
+BuildRequires:  {{ py3('python-manilaclient') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('python-neutronclient') }}
+BuildRequires:  {{ py3('python-novaclient') }}
+BuildRequires:  {{ py3('os-api-ref') }}
+BuildRequires:  {{ py3('oslo.concurrency') }}
+BuildRequires:  {{ py3('oslo.config') }}
+BuildRequires:  {{ py3('oslo.context') }}
+BuildRequires:  {{ py3('oslo.db') }}
+BuildRequires:  {{ py3('oslo.i18n') }}
+BuildRequires:  {{ py3('oslo.log') }}
+BuildRequires:  {{ py3('oslo.messaging') }}
+BuildRequires:  {{ py3('oslo.middleware') }}
+BuildRequires:  {{ py3('oslo.policy') }}
+BuildRequires:  {{ py3('oslo.serialization') }}
+BuildRequires:  {{ py3('oslo.service') }}
+BuildRequires:  {{ py3('oslo.versionedobjects') }}
+BuildRequires:  {{ py3('requests') }}
+BuildRequires:  {{ py3('setuptools') }}
+BuildRequires:  {{ py3('six') }}
+BuildRequires:  {{ py3('sqlalchemy-migrate') }}
+BuildRequires:  {{ py3('stevedore') }}
+BuildRequires:  {{ py3('python-swiftclient') }}
+BuildRequires:  {{ py3('taskflow') }}
 Requires:       logrotate
-Requires:       python-{{ pypi_name }} = %{epoch}:%{version}-%{release}
+Requires:       python3-{{ pypi_name }} = %{epoch}:%{version}-%{release}
 BuildArch:      noarch
 %if 0%{?suse_version}
 BuildRequires:  systemd-rpm-macros
+Requires(pre):  pwdutils
+%{?systemd_requires}
 %else
 BuildRequires:  systemd
+Requires(post): systemd
+Requires(postun): systemd
+Requires(pre):  shadow-utils
+Requires(preun): systemd
 %endif
 
 %description
@@ -80,49 +85,49 @@ Karbor is a Python implementation of the OpenStack
 .
 This package contains the karbor python libraries.
 
-%package -n     python-{{ pypi_name }}
+%package -n     python3-{{ pypi_name }}
 Summary:        Karbor Python libraries
 Group:          Applications/System
-Requires:       {{ py2pkg('Babel') }}
-Requires:       {{ py2pkg('Paste') }}
-Requires:       {{ py2pkg('PasteDeploy') }}
-Requires:       {{ py2pkg('Routes') }}
-Requires:       {{ py2pkg('SQLAlchemy') }}
-Requires:       {{ py2pkg('WebOb') }}
-Requires:       {{ py2pkg('abclient') }}
-Requires:       {{ py2pkg('python-cinderclient') }}
-Requires:       {{ py2pkg('croniter') }}
-Requires:       {{ py2pkg('eventlet') }}
-Requires:       {{ py2pkg('python-glanceclient') }}
-Requires:       {{ py2pkg('greenlet') }}
-Requires:       {{ py2pkg('python-heatclient') }}
-Requires:       {{ py2pkg('icalendar') }}
-Requires:       {{ py2pkg('python-karborclient') }}
-Requires:       {{ py2pkg('keystoneauth1') }}
-Requires:       {{ py2pkg('keystonemiddleware') }}
-Requires:       {{ py2pkg('python-manilaclient') }}
-Requires:       {{ py2pkg('python-neutronclient') }}
-Requires:       {{ py2pkg('python-novaclient') }}
-Requires:       {{ py2pkg('oslo.concurrency') }}
-Requires:       {{ py2pkg('oslo.config') }}
-Requires:       {{ py2pkg('oslo.context') }}
-Requires:       {{ py2pkg('oslo.db') }}
-Requires:       {{ py2pkg('oslo.i18n') }}
-Requires:       {{ py2pkg('oslo.log') }}
-Requires:       {{ py2pkg('oslo.messaging') }}
-Requires:       {{ py2pkg('oslo.middleware') }}
-Requires:       {{ py2pkg('oslo.policy') }}
-Requires:       {{ py2pkg('oslo.serialization') }}
-Requires:       {{ py2pkg('oslo.service') }}
-Requires:       {{ py2pkg('oslo.versionedobjects') }}
-Requires:       {{ py2pkg('requests') }}
-Requires:       {{ py2pkg('six') }}
-Requires:       {{ py2pkg('sqlalchemy-migrate') }}
-Requires:       {{ py2pkg('stevedore') }}
-Requires:       {{ py2pkg('python-swiftclient') }}
-Requires:       {{ py2pkg('taskflow') }}
+Requires:       {{ py3('Babel') }}
+Requires:       {{ py3('Paste') }}
+Requires:       {{ py3('PasteDeploy') }}
+Requires:       {{ py3('Routes') }}
+Requires:       {{ py3('SQLAlchemy') }}
+Requires:       {{ py3('WebOb') }}
+Requires:       {{ py3('abclient') }}
+Requires:       {{ py3('python-cinderclient') }}
+Requires:       {{ py3('croniter') }}
+Requires:       {{ py3('eventlet') }}
+Requires:       {{ py3('python-glanceclient') }}
+Requires:       {{ py3('greenlet') }}
+Requires:       {{ py3('python-heatclient') }}
+Requires:       {{ py3('icalendar') }}
+Requires:       {{ py3('python-karborclient') }}
+Requires:       {{ py3('keystoneauth1') }}
+Requires:       {{ py3('keystonemiddleware') }}
+Requires:       {{ py3('python-manilaclient') }}
+Requires:       {{ py3('python-neutronclient') }}
+Requires:       {{ py3('python-novaclient') }}
+Requires:       {{ py3('oslo.concurrency') }}
+Requires:       {{ py3('oslo.config') }}
+Requires:       {{ py3('oslo.context') }}
+Requires:       {{ py3('oslo.db') }}
+Requires:       {{ py3('oslo.i18n') }}
+Requires:       {{ py3('oslo.log') }}
+Requires:       {{ py3('oslo.messaging') }}
+Requires:       {{ py3('oslo.middleware') }}
+Requires:       {{ py3('oslo.policy') }}
+Requires:       {{ py3('oslo.serialization') }}
+Requires:       {{ py3('oslo.service') }}
+Requires:       {{ py3('oslo.versionedobjects') }}
+Requires:       {{ py3('requests') }}
+Requires:       {{ py3('six') }}
+Requires:       {{ py3('sqlalchemy-migrate') }}
+Requires:       {{ py3('stevedore') }}
+Requires:       {{ py3('python-swiftclient') }}
+Requires:       {{ py3('taskflow') }}
 
-%description -n   python-{{ pypi_name }}
+%description -n   python3-{{ pypi_name }}
 Karbor is a Python implementation of the OpenStack
 (https://docs.openstack.org/developer/karbor/) Application Data Protection API.
 This package contains the Karbor Python library.
@@ -131,8 +136,8 @@ This package contains the Karbor Python library.
 %package doc
 Summary:        Documentation for OpenStack Application Data Protection Service
 Group:          Documentation/HTML
-BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('oslosphinx') }}
 
 %description doc
 OpenStack Karbor documentaion.
@@ -144,13 +149,13 @@ This package contains the documentation
 %if 0%{?suse_version}
 %define apache_name         apache2
 %define apache_site_dir     %{_sysconfdir}/%{apache_name}/vhosts.d/
-BuildRequires:  apache2-mod_wsgi
-Requires:       apache2-mod_wsgi
+BuildRequires:  apache2-mod_wsgi-python3
+Requires:       apache2-mod_wsgi-python3
 %else
 %define apache_name         httpd
 %define apache_site_dir     %{_sysconfdir}/%{apache_name}/conf.d/
-BuildRequires:  mod_wsgi
-Requires:       mod_wsgi
+BuildRequires:  python3-mod_wsgi
+Requires:       python3-mod_wsgi
 %endif
 Summary:        OpenStack Karbor - API service
 Group:          Applications/System
@@ -174,25 +179,25 @@ Requires:       %{name} = %{version}
 OpenStack Karbor Protection service.
 
 %prep
-%autosetup -n {{ pypi_name }}-{{upstream_version}}
+%autosetup -p1 -n {{ pypi_name }}-{{upstream_version}}
 %py_req_cleanup
 
 
 %build
-%{py2_build}
+%{py3_build}
 export PYTHONPATH="."
 # config file generation
 oslo-config-generator --config-file etc/oslo-config-generator/karbor.conf \
 --output-file etc/karbor.conf.sample
 %if 0%{?with_doc}
-%{__python2} setup.py build_sphinx
+%{__python3} setup.py build_sphinx
 # remove the sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 %endif
 
 
 %install
-%{py2_install}
+%{py3_install}
 
 # Install config files
 mkdir -p %{buildroot}%{_sysconfdir}/karbor/
@@ -223,7 +228,6 @@ install -p -D -m 644 etc/apache2/apache-karbor-api.conf  %{buildroot}%{apache_si
 # systemd unitfiles
 install -p -D -m 644 %SOURCE2 %{buildroot}%{_unitdir}/openstack-karbor-operationengine.service
 install -p -D -m 644 %SOURCE3 %{buildroot}%{_unitdir}/openstack-karbor-protection.service
-
 
 %pre
 %openstack_pre_user_group_create karbor karbor
@@ -267,10 +271,10 @@ install -p -D -m 644 %SOURCE3 %{buildroot}%{_unitdir}/openstack-karbor-protectio
 %config(noreplace) %attr(0640, root, karbor) %{_sysconfdir}/karbor/api-paste.ini
 %config(noreplace) %attr(0640, root, karbor) %{_sysconfdir}/karbor/providers.d/*.conf
 
-%files -n python-karbor
+%files -n python3-karbor
 %license LICENSE
-%{python2_sitelib}/karbor/
-%{python2_sitelib}/karbor-*.egg-info
+%{python3_sitelib}/karbor/
+%{python3_sitelib}/karbor-*.egg-info
 
 %files api
 %{_bindir}/karbor-api
