@@ -1,0 +1,361 @@
+{% set pypi_name = 'heat' %}
+{% set source = fetch_source('https://tarballs.openstack.org/heat/heat-master.tar.gz') %}
+{% set upstream_version = upstream_version() %}
+{% set rpm_release = '1' %}
+%global with_doc 1
+%if 0%{?rhel} || 0%{?fedora}
+%global rdo 1
+%endif
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
+Epoch:          {{ epoch('heat') }}
+Summary:        Openstack Orchestration (Heat)
+License:        {{ license('Apache-2.0') }}
+URL:            https://launchpad.net/heat
+Source0:        {{ source|basename }}
+Source1:        openstack-heat.logrotate
+Source2:        openstack-heat.tmpfiles
+Source3:        openstack-heat.defaultconf
+# systemd service files
+Source20:       openstack-heat-api.service
+Source21:       openstack-heat-api-cfn.service
+Source22:       openstack-heat-engine.service
+Source50:       openstack-heat.README.config
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py3('PasteDeploy') }}
+BuildRequires:  {{ py3('Routes') }}
+BuildRequires:  {{ py3('SQLAlchemy') }}
+BuildRequires:  {{ py3('WebOb') }}
+BuildRequires:  {{ py3('python-barbicanclient') }}
+BuildRequires:  {{ py3('python-cinderclient') }}
+BuildRequires:  {{ py3('eventlet') }}
+BuildRequires:  {{ py3('python-glanceclient') }}
+BuildRequires:  {{ py3('keystoneauth1') }}
+BuildRequires:  {{ py3('python-keystoneclient') }}
+BuildRequires:  {{ py3('lxml') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('netaddr') }}
+BuildRequires:  {{ py3('python-neutronclient') }}
+BuildRequires:  {{ py3('python-novaclient') }}
+BuildRequires:  {{ py3('oslo.cache') }}
+BuildRequires:  {{ py3('oslo.config') }}
+BuildRequires:  {{ py3('oslo.context') }}
+BuildRequires:  {{ py3('oslo.db') }}
+BuildRequires:  {{ py3('oslo.i18n') }}
+BuildRequires:  {{ py3('oslo.log') }}
+BuildRequires:  {{ py3('oslo.messaging') }}
+BuildRequires:  {{ py3('oslo.middleware') }}
+BuildRequires:  {{ py3('oslo.policy') }}
+BuildRequires:  {{ py3('oslo.utils') }}
+BuildRequires:  {{ py3('oslo.versionedobjects') }}
+BuildRequires:  {{ py3('osprofiler') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('python-saharaclient') }}
+BuildRequires:  {{ py3('stevedore') }}
+BuildRequires:  {{ py3('python-swiftclient') }}
+BuildRequires:  {{ py3('tenacity') }}
+BuildRequires:  {{ py3('yaql') }}
+Requires:       logrotate
+Requires:       python3-heat = %{epoch}:%{version}-%{release}
+BuildArch:      noarch
+%if 0%{?suse_version}
+BuildRequires:  systemd-rpm-macros
+Requires(pre):  pwdutils
+%{?systemd_requires}
+%else
+BuildRequires:  systemd
+Requires(post): systemd
+Requires(postun): systemd
+Requires(pre):  shadow-utils
+Requires(preun): systemd
+%endif
+
+%description
+Heat is a service to orchestrate composite cloud applications using a
+declarative template format through an OpenStack-native REST API.
+
+%package -n python3-heat
+Summary:        Openstack Orchestration (Heat) - Python module
+Group:          Development/Languages/Python
+Requires:       {{ py3('Babel') }}
+Requires:       {{ py3('PasteDeploy') }}
+Requires:       {{ py3('PyYAML') }}
+Requires:       {{ py3('Routes') }}
+Requires:       {{ py3('SQLAlchemy') }}
+Requires:       {{ py3('WebOb') }}
+Requires:       {{ py3('aodhclient') }}
+Requires:       {{ py3('python-barbicanclient') }}
+Requires:       {{ py3('python-cinderclient') }}
+Requires:       {{ py3('croniter') }}
+Requires:       {{ py3('cryptography') }}
+Requires:       {{ py3('python-designateclient') }}
+Requires:       {{ py3('eventlet') }}
+Requires:       {{ py3('python-glanceclient') }}
+Requires:       {{ py3('python-heatclient') }}
+Requires:       {{ py3('keystoneauth1') }}
+Requires:       {{ py3('python-keystoneclient') }}
+Requires:       {{ py3('keystonemiddleware') }}
+Requires:       {{ py3('lxml') }}
+Requires:       {{ py3('python-magnumclient') }}
+Requires:       {{ py3('python-manilaclient') }}
+Requires:       {{ py3('python-monascaclient') }}
+Requires:       {{ py3('netaddr') }}
+Requires:       {{ py3('neutron-lib') }}
+Requires:       {{ py3('python-neutronclient') }}
+Requires:       {{ py3('python-novaclient') }}
+Requires:       {{ py3('python-octaviaclient') }}
+Requires:       {{ py3('python-openstackclient') }}
+Requires:       {{ py3('openstacksdk') }}
+Requires:       {{ py3('oslo.cache') }}
+Requires:       {{ py3('oslo.concurrency') }}
+Requires:       {{ py3('oslo.config') }}
+Requires:       {{ py3('oslo.context') }}
+Requires:       {{ py3('oslo.db') }}
+Requires:       {{ py3('oslo.i18n') }}
+Requires:       {{ py3('oslo.log') }}
+Requires:       {{ py3('oslo.messaging') }}
+Requires:       {{ py3('oslo.middleware') }}
+Requires:       {{ py3('oslo.policy') }}
+Requires:       {{ py3('oslo.reports') }}
+Requires:       {{ py3('oslo.serialization') }}
+Requires:       {{ py3('oslo.service') }}
+Requires:       {{ py3('oslo.upgradecheck') }}
+Requires:       {{ py3('oslo.utils') }}
+Requires:       {{ py3('oslo.versionedobjects') }}
+Requires:       {{ py3('osprofiler') }}
+Requires:       {{ py3('pbr') }}
+Requires:       {{ py3('python-pytz') }}
+Requires:       {{ py3('python-requests') }}
+Requires:       {{ py3('python-six') }}
+Requires:       {{ py3('python-sqlalchemy-migrate') }}
+Requires:       {{ py3('python-stevedore') }}
+Requires:       {{ py3('python-tenacity') }}
+Requires:       {{ py3('python-yaql') }}
+Requires:       {{ py3('python-swiftclient') }}
+
+%description -n python3-heat
+Heat is a service to orchestrate composite cloud applications using a
+declarative template format through an OpenStack-native REST API.
+
+This package contains the python module.
+
+%if 0%{?with_doc}
+%package doc
+Summary:        Openstack Orchestration (Heat) - Documentation
+Group:          Documentation/HTML
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
+BuildRequires:  {{ py3('sphinxcontrib-apidoc') }}
+
+%description doc
+Heat is a service to orchestrate composite cloud applications using a
+declarative template format through an OpenStack-native REST API.
+
+This package contains the documentation.
+%endif
+
+%package api
+Summary:        Openstack Orchestration (Heat) - API
+Group:          System/Management
+Requires:       python3-heat = %{epoch}:%{version}-%{release}
+
+%description api
+Heat is a service to orchestrate composite cloud applications using a
+declarative template format through an OpenStack-native REST API.
+
+This package contains the Heat API server.
+
+%package api-cfn
+Summary:        Openstack Orchestration (Heat) - CFN API
+Group:          System/Management
+Requires:       %{name} = %{epoch}:%{version}-%{release}
+
+%description api-cfn
+Heat is a service to orchestrate composite cloud applications using a
+declarative template format through an OpenStack-native REST API.
+
+This package contains the Heat CFN API server.
+
+%package engine
+Summary:        Openstack Orchestration (Heat) - Engine
+Group:          System/Management
+Requires:       %{name} = %{epoch}:%{version}-%{release}
+
+%description engine
+Heat is a service to orchestrate composite cloud applications using a
+declarative template format through an OpenStack-native REST API.
+
+This package contains the Heat engine.
+
+%package plugin-heat_docker
+Summary:        Openstack Orchestration (Heat) - Support for Docker
+Group:          System/Management
+Requires:       %{name} = %{epoch}:%{version}-%{release}
+
+%description plugin-heat_docker
+Heat is a service to orchestrate composite cloud applications using a
+declarative template format through an OpenStack-native REST API.
+
+This package contains the Heat docker plugin
+
+%prep
+%autosetup -p1 -n openstack-heat-{{ upstream_version }}
+%py_req_cleanup
+
+%build
+%{py3_build}
+
+### heat_docker plugin
+pushd contrib/heat_docker
+OSLO_PACKAGE_VERSION=%{version} python3 setup.py build
+popd
+
+### documentation
+%if 0%{?with_doc}
+PBR_VERSION={{ upstream_version }} %sphinx_build --keep-going -b html doc/source doc/build/html
+rm -rf doc/build/html/.{doctrees,buildinfo}
+%endif
+
+%install
+%{py3_install}
+
+### heat_docker plugin
+pushd contrib/heat_docker
+OSLO_PACKAGE_VERSION=%{version} python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+# no need for the egg-info file
+rm -r %{buildroot}%{python3_sitelib}/heat_contrib_docker-*.egg-info
+popd
+
+### Setup directories
+install -d -m 750 %{buildroot}%{_localstatedir}/{lib,log,cache}/heat
+install -d -m 755 %{buildroot}%{_sysconfdir}/heat
+install -d -m 755 %{buildroot}%{_sysconfdir}/heat/heat.conf.d
+
+### install tmpfiles
+install -D -m 644 %{SOURCE2} %{buildroot}/%_tmpfilesdir/%name.conf
+
+### install config files
+install -p -D -m 640 %{SOURCE3} %{buildroot}%{_sysconfdir}/heat/heat.conf.d/010-heat.conf
+mv %{buildroot}/%{_prefix}/%{_sysconfdir}/heat/* %{buildroot}%{_sysconfdir}/heat/
+### sample config and policy
+PYTHONPATH=. oslo-config-generator --config-file=config-generator.conf --output %{buildroot}%{_sysconfdir}/heat/heat.conf
+PYTHONPATH=. oslopolicy-sample-generator --config-file=etc/heat/heat-policy-generator.conf --output %{buildroot}%{_sysconfdir}/heat/policy.json
+rm etc/heat/heat-policy-generator.conf
+install -p -D -m 640 %{SOURCE50} %{buildroot}%{_sysconfdir}/heat/README.config
+
+### install systemd service files
+install -p -D -m 644 %{SOURCE20} %{buildroot}%{_unitdir}/openstack-heat-api.service
+install -p -D -m 644 %{SOURCE21} %{buildroot}%{_unitdir}/openstack-heat-api-cfn.service
+install -p -D -m 644 %{SOURCE22} %{buildroot}%{_unitdir}/openstack-heat-engine.service
+
+### install symlinks on SUSE
+%if 0%{?suse_version}
+mkdir -p %{buildroot}%{_sbindir}
+ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-api
+ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-api-cfn
+ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-engine
+%endif
+
+### Install logrotate
+install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/openstack-heat
+
+%pre
+%openstack_pre_user_group_create heat heat /sbin/nologin
+exit 0
+
+%post
+%tmpfiles_create %{_tmpfilesdir}/%{name}.conf
+
+%post api
+%systemd_post %{name}-api.service
+
+%preun api
+%systemd_preun %{name}-api.service
+
+%postun api
+%systemd_postun_with_restart %{name}-api.service
+
+%post api-cfn
+%systemd_post %{name}-api-cfn.service
+
+%preun api-cfn
+%systemd_preun %{name}-api-cfn.service
+
+%postun api-cfn
+%systemd_postun_with_restart %{name}-api-cfn.service
+
+%post engine
+%systemd_post %{name}-engine.service
+
+%preun engine
+%systemd_preun %{name}-engine.service
+
+%postun engine
+%systemd_postun_with_restart %{name}-engine.service
+
+%files
+%license LICENSE
+%{_sysconfdir}/heat/README.config
+%dir %attr(0750, root, heat) %{_sysconfdir}/heat
+%dir %attr(0750, root, heat) %{_sysconfdir}/heat/heat.conf.d/
+%config(noreplace) %attr(0640, root, %{groupname}) %{_sysconfdir}/heat/heat.conf
+%config(noreplace) %attr(0640, root, %{groupname}) %{_sysconfdir}/heat/heat.conf.d/010-heat.conf
+%config(noreplace) %attr(-, root, heat) %{_sysconfdir}/heat/api-paste.ini
+%config %{_sysconfdir}/logrotate.d/openstack-heat
+%config %{_sysconfdir}/heat/policy.json
+%config %{_sysconfdir}/heat/environment.d
+%config %{_sysconfdir}/heat/templates
+%_tmpfilesdir/%{name}.conf
+%dir %attr(0750, heat, root) %{_localstatedir}/log/heat
+%dir %attr(0750, heat, root) %{_localstatedir}/lib/heat
+%dir %attr(0750, heat, root) %{_localstatedir}/cache/heat
+%{_bindir}/heat-db-setup
+%{_bindir}/heat-manage
+%{_bindir}/heat-status
+%{_bindir}/heat-keystone-setup
+%{_bindir}/heat-keystone-setup-domain
+%{_bindir}/heat-all
+
+%files -n python3-heat
+%license LICENSE
+%{python3_sitelib}/heat/
+%{python3_sitelib}/openstack_heat-*.egg-info
+%{python3_sitelib}/heat_integrationtests
+
+%if 0%{?with_doc}
+%files doc
+%license LICENSE
+%doc doc/build/html
+%endif
+
+%files api
+%license LICENSE
+%{_bindir}/heat-*api
+%{_unitdir}/%{name}-api.service
+%if 0%{?suse_version}
+%{_sbindir}/rc%{name}-api
+%endif
+
+%files api-cfn
+%license LICENSE
+%{_bindir}/heat-*api-cfn
+%{_unitdir}/%{name}-api-cfn.service
+%if 0%{?suse_version}
+%{_sbindir}/rc%{name}-api-cfn
+%endif
+
+%files engine
+%license LICENSE
+%{_bindir}/heat-engine
+%{_unitdir}/%{name}-engine.service
+%if 0%{?suse_version}
+%{_sbindir}/rc%{name}-engine
+%endif
+
+%files plugin-heat_docker
+%dir %{_prefix}/lib/heat/
+%{_prefix}/lib/heat/docker/
+
+%changelog
+

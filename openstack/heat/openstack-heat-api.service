@@ -1,0 +1,16 @@
+[Unit]
+Description=OpenStack Heat API
+After=syslog.target network.target
+
+[Service]
+Type=notify
+User=heat
+Group=heat
+WorkingDirectory=/var/lib/heat
+PrivateTmp=yes
+ExecStartPre=-/usr/bin/heat-manage db_sync
+ExecStart=/usr/bin/heat-api
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

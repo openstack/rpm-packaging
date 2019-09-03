@@ -1,0 +1,15 @@
+[Unit]
+Description=OpenStack Heat CFN API
+After=syslog.target network.target
+
+[Service]
+Type=notify
+User=heat
+Group=heat
+WorkingDirectory=/var/lib/heat
+PrivateTmp=yes
+ExecStart=/usr/bin/heat-api-cfn
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
