@@ -3,11 +3,6 @@
 {% set upstream_version = upstream_version() %}
 {% set rpm_release = '1' %}
 
-%global sname ironic_tempest_plugin
-%global with_doc 0
-%global common_desc \
-This package contains a Tempest_ plugin for OpenStack `Bare Metal`_ and \
-`Bare Metal Introspection`_ projects.
 Name:          {{ py2pkg('ironic-tempest-plugin') }}
 Version:       {{ py2rpmversion() }}
 Release:       {{ py2rpmrelease() }}
@@ -17,62 +12,35 @@ Group:         Development/Languages/Python
 URL:           https://git.openstack.org/cgit/openstack/{{ pypi_name }}
 Source0:       {{ source|basename }}
 BuildRequires: openstack-macros
-BuildRequires: {{ py2pkg('pbr') }}
-BuildRequires: {{ py2pkg('setuptools') }}
-Requires:      {{ py2pkg('Tempest') }}
-Requires:      {{ py2pkg('fixtures') }}
-Requires:      {{ py2pkg('oslo.config') }}
-Requires:      {{ py2pkg('oslo.log') }}
-Requires:      {{ py2pkg('oslo.serialization') }}
-Requires:      {{ py2pkg('oslo.utils') }}
-Requires:      {{ py2pkg('pbr') }}
-Requires:      {{ py2pkg('six') }}
+BuildRequires: {{ py3('pbr') }}
+Requires:      {{ py2pkg('tempest') }}
+Requires:      {{ py3('fixtures') }}
+Requires:      {{ py3('oslo.config') }}
+Requires:      {{ py3('oslo.log') }}
+Requires:      {{ py3('oslo.serialization') }}
+Requires:      {{ py3('oslo.utils') }}
+Requires:      {{ py3('pbr') }}
+Requires:      {{ py3('six') }}
 BuildArch:     noarch
 
 %description
-%{common_desc}
-
-%if 0%{?with_doc}
-%package doc
-Summary:    Documentation for ironic tempest plugin
-BuildRequires: {{ py2pkg('Sphinx') }}
-BuildRequires: {{ py2pkg('oslosphinx') }}
-
-%description doc
-It contains the documentation for the ironic tempest tests.
-%endif
+This package contains a Tempest plugin for OpenStack Bare Metal and
+Bare Metal Introspection projects.
 
 %prep
-%autosetup -n {{ pypi_name }}-{{ upstream_version }}
-
-# Let's handle dependencies ourseleves
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
-# Remove bundled egg-info
-rm -rf %{module}.egg-info
 
 %build
-%{py2_build}
-
-# Generate Docs
-%if 0%{?with_doc}
-%{__python2} setup.py build_sphinx
-# remove the sphinx build leftovers
-rm -rf doc/build/html/.{doctrees,buildinfo}
-%endif
+%{py3_build}
 
 %install
-%{py2_install}
+%{py3_install}
 
 %files
 %license LICENSE
 %doc README.rst
-%{python2_sitelib}/ironic_tempest_plugin
-%{python2_sitelib}/*.egg-info
-
-%if 0%{?with_doc}
-%files doc
-%doc doc/build/html
-%license LICENSE
-%endif
+%{python3_sitelib}/ironic_tempest_plugin
+%{python3_sitelib}/*.egg-info
 
 %changelog
