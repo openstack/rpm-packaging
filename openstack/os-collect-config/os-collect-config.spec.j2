@@ -1,42 +1,45 @@
-%global sname os-collect-config
-Name:           {{ py2name('os-collect-config') }}
-Version:        10.4.0
-Release:        0
+{% set pypi_name = 'os-collect-config' %}
+{% set upstream_version = upstream_version('10.4.0') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
+Name:           {{ py2name('os-collect-config', py_versions='py3') }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
+Epoch:          {{ epoch('os-collect-config') }}
 Summary:        Collect and cache metadata running hooks on changes
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
-URL:            https://launchpad.net/%{sname}
-Source0:        https://files.pythonhosted.org/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
+URL:            https://launchpad.net/{{ pypi_name }}
+Source0:        {{ source }}
 Source1:        os-collect-config.service
 Source2:        os-collect-config.conf
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('fixtures') }}
-BuildRequires:  {{ py2pkg('python-heatclient') }}
-BuildRequires:  {{ py2pkg('python-keystoneclient') }}
-BuildRequires:  {{ py2pkg('lxml') }}
-BuildRequires:  {{ py2pkg('mock') }}
-BuildRequires:  {{ py2pkg('oslo.config') }}
-BuildRequires:  {{ py2pkg('oslo.log') }}
-BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('setuptools') }}
-BuildRequires:  {{ py2pkg('stestr') }}
-BuildRequires:  {{ py2pkg('testscenarios') }}
-BuildRequires:  {{ py2pkg('testtools') }}
-BuildRequires:  {{ py2pkg('python-zaqarclient') }}
-Requires:       {{ py2pkg('anyjson') }}
-Requires:       {{ py2pkg('dogpile.cache') }}
-Requires:       {{ py2pkg('eventlet') }}
-Requires:       {{ py2pkg('python-heatclient') }}
-Requires:       {{ py2pkg('iso8601') }}
-Requires:       {{ py2pkg('python-keystoneclient') }}
-Requires:       {{ py2pkg('lxml') }}
-Requires:       {{ py2pkg('os-refresh-config') }}
-Requires:       {{ py2pkg('oslo.config') }}
-Requires:       {{ py2pkg('oslo.log') }}
-Requires:       {{ py2pkg('pbr') }}
-Requires:       {{ py2pkg('requests') }}
-Requires:       {{ py2pkg('six') }}
-Requires:       {{ py2pkg('python-zaqarclient') }}
+BuildRequires:  {{ py3('fixtures') }}
+BuildRequires:  {{ py3('python-heatclient') }}
+BuildRequires:  {{ py3('python-keystoneclient') }}
+BuildRequires:  {{ py3('lxml') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('oslo.config') }}
+BuildRequires:  {{ py3('oslo.log') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('testscenarios') }}
+BuildRequires:  {{ py3('testtools') }}
+BuildRequires:  {{ py3('python-zaqarclient') }}
+Requires:       {{ py3('anyjson') }}
+Requires:       {{ py3('dogpile.cache') }}
+Requires:       {{ py3('eventlet') }}
+Requires:       {{ py3('python-heatclient') }}
+Requires:       {{ py3('iso8601') }}
+Requires:       {{ py3('python-keystoneclient') }}
+Requires:       {{ py3('lxml') }}
+Requires:       {{ py3('oslo.config') }}
+Requires:       {{ py3('oslo.log') }}
+Requires:       {{ py3('pbr') }}
+Requires:       {{ py3('requests') }}
+Requires:       {{ py3('six') }}
+Requires:       {{ py3('python-zaqarclient') }}
 BuildArch:      noarch
 %if 0%{?suse_version}
 BuildRequires:  systemd-rpm-macros
@@ -52,21 +55,20 @@ Requires(preun): systemd
 Service to collect openstack heat metadata.
 
 %prep
-%autosetup -n %{sname}-%{version}
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
-sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
-%py2_build
+%{py3_build}
 
 %install
-%py2_install
+%{py3_install}
 install -p -D -m 644 %{SOURCE1} %{buildroot}%{_unitdir}/os-collect-config.service
 install -p -D -m 644 %{SOURCE2} %{buildroot}%{_sysconfdir}/os-collect-config.conf
 mkdir -p %{buildroot}%{_localstatedir}/lib/%{name}/local-data
 
 %check
-%{__python2} -m stestr.cli run
+python3 -m stestr.cli run
 
 %post
 %systemd_post os-collect-config.service
@@ -82,8 +84,8 @@ mkdir -p %{buildroot}%{_localstatedir}/lib/%{name}/local-data
 %doc README.rst
 %{_bindir}/os-collect-config
 %config(noreplace) %attr(-, root, root) %{_sysconfdir}/os-collect-config.conf
-%{python2_sitelib}/os_collect_config
-%{python2_sitelib}/*.egg-info
+%{python3_sitelib}/os_collect_config
+%{python3_sitelib}/*.egg-info
 %{_unitdir}/os-collect-config.service
 %{_localstatedir}/lib/%{name}
 
