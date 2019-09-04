@@ -441,15 +441,14 @@ mkdir -p %{buildroot}%{_mandir}/man1
 install -p -D -m 644 doc/build/man/*.1 %{buildroot}%{_mandir}/man1/
 
 # Setup directories
-install -d -m 750 %{buildroot}%{_localstatedir}/lib/nova
-install -d -m 750 %{buildroot}%{_localstatedir}/lib/nova/images
-install -d -m 750 %{buildroot}%{_localstatedir}/lib/nova/buckets
-install -d -m 750 %{buildroot}%{_localstatedir}/lib/nova/instances
-install -d -m 750 %{buildroot}%{_localstatedir}/lib/nova/keys
-install -d -m 750 %{buildroot}%{_localstatedir}/lib/nova/networks
-install -d -m 750 %{buildroot}%{_localstatedir}/lib/nova/tmp
+install -d -m 755 %{buildroot}%{_localstatedir}/lib/nova
+install -d -m 755 %{buildroot}%{_localstatedir}/lib/nova/instances
+install -d -m 755 %{buildroot}%{_localstatedir}/lib/nova/keys
+install -d -m 755 %{buildroot}%{_localstatedir}/lib/nova/networks
+install -d -m 755 %{buildroot}%{_localstatedir}/lib/nova/tmp
 install -d -m 750 %{buildroot}%{_localstatedir}/log/nova
 install -d -m 700 %{buildroot}%{_rundir}/nova
+install -d -m 700 %{buildroot}%{_localstatedir}/cache/nova
 
 # systemd tmpfiles
 install -D -m 644 %{SOURCE27} %{buildroot}/%_tmpfilesdir/%name.conf
@@ -540,7 +539,12 @@ testr run --load-list=list
 %endif
 
 %pre
-%openstack_pre_user_group_create nova nova -s /bin/bash
+# need a fixed uid/gid for being able to use shared storage over NFS
+%if 0%{?suse_version}
+%openstack_pre_user_group_create -u 96 -g 96 -s /bin/bash nova nova
+%else
+%openstack_pre_user_group_create -u 162 -g 162 -s /bin/bash nova nova
+%endif
 
 %post
 %tmpfiles_create %{_tmpfilesdir}/%{name}.conf
@@ -640,16 +644,17 @@ testr run --load-list=list
 %systemd_postun_with_restart %{name}-serialproxy.service
 
 %files
+%license LICENSE
 %doc README.rst
 %dir %{_sysconfdir}/nova
 %dir %{_sysconfdir}/nova/rootwrap.d
-%dir %attr(0750, nova, nova) %{_localstatedir}/lib/nova
-%dir %attr(0750, nova, nova) %{_localstatedir}/lib/nova/buckets
-%dir %attr(0750, nova, nova) %{_localstatedir}/lib/nova/instances
-%dir %attr(0750, nova, nova) %{_localstatedir}/lib/nova/keys
-%dir %attr(0750, nova, nova) %{_localstatedir}/lib/nova/networks
-%dir %attr(0750, nova, nova) %{_localstatedir}/lib/nova/tmp
-%dir %attr(0750, nova, root) %{_localstatedir}/log/nova
+%dir %attr(-, nova, nova) %{_localstatedir}/lib/nova
+%dir %attr(-, nova, nova) %{_localstatedir}/lib/nova/instances
+%dir %attr(-, nova, nova) %{_localstatedir}/lib/nova/keys
+%dir %attr(-, nova, nova) %{_localstatedir}/lib/nova/networks
+%dir %attr(-, nova, nova) %{_localstatedir}/lib/nova/tmp
+%dir %attr(-, nova, root) %{_localstatedir}/log/nova
+%dir %attr(-, nova, nova) %{_localstatedir}/cache/nova
 %{_sysconfdir}/bash_completion.d/openstack-nova-manage.sh
 %{_sysconfdir}/nova/release
 %_tmpfilesdir/%name.conf
