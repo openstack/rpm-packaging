@@ -2,7 +2,6 @@
 {% set upstream_version = upstream_version('1.11.0') %}
 {% set rpm_release = '1' %}
 
-%global sname {{ pypi_name }}
 Name:           {{ py2name() }}
 Version:        {{ py2rpmversion() }}
 Release:        {{ py2rpmrelease() }}
@@ -10,39 +9,39 @@ Summary:        Python Statsd library for sending statsd messages via the Monasc
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://wiki.openstack.org/wiki/Monasca
-Source0:        https://files.pythonhosted.org/packages/source/m/%{sname}/%{sname}-%{version}.tar.gz
+Source0:        https://files.pythonhosted.org/packages/source/m/{{ pypi_name }}/{{ pypi_name }}-%{version}.tar.gz
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('mock') }}
-BuildRequires:  {{ py2pkg('nose') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
-BuildRequires:  {{ py2pkg('setuptools') }}
-BuildRequires:  {{ py2pkg('six') }}
+BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('six', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('six') }}
 BuildArch:      noarch
+%python_subpackages
 
 %description
 Python Statsd library for sending statsd messages via the Monasca Agent
 
 %prep
-%autosetup -n %{sname}-{{ upstream_version }}
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
 
 %build
-%{py2_build}
-PBR_VERSION={{ upstream_version }} sphinx-build -b html doc/source doc/build/html
-rm -r doc/build/html/.{doctrees,buildinfo}
+export LC_ALL=en_US.utf-8
+%{python_build}
 
 %install
-%{py2_install}
+export LC_ALL=en_US.utf-8
+%{python_install}
 
 %check
-nosetests monascastatsd --verbose
+export LC_ALL=en_US.utf-8
+%python_exec -m stestr.cli run
 
-%files
+%files %{python_files}
 %license LICENSE
 %doc README.rst ChangeLog
-%{python2_sitelib}/monascastatsd
-%{python2_sitelib}/*.egg-info
+%{python_sitelib}/monascastatsd
+%{python_sitelib}/*.egg-info
 
 %changelog

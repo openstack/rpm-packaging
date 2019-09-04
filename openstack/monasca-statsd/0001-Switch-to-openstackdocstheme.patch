@@ -1,0 +1,80 @@
+From 0b44c4d0805a1cc417f8d8e73e2885290ebf9ddf Mon Sep 17 00:00:00 2001
+From: Thomas Bechtold <tbechtold@suse.com>
+Date: Wed, 4 Sep 2019 14:50:48 +0200
+Subject: [PATCH] Switch to openstackdocstheme
+
+The current code does not work with python3.7 on openSUSE
+Tumbleweed. It fails with:
+
+Exception occurred:
+  File ".tox/docs/lib/python3.7/site-packages/oslosphinx/__init__.py", \
+    line 76, in builder_inited
+    app.info('Using openstack theme from %s' % theme_dir)
+AttributeError: 'Sphinx' object has no attribute 'info'
+
+Switching to openstackdocstheme and also calling sphinx-build directly
+instead of relying on the pbr doc build integration fixes that problem.
+
+Change-Id: I6def2f7006fedfe57f9736c75abbf082294e635e
+---
+ doc/source/conf.py    | 6 +++++-
+ test-requirements.txt | 1 -
+ tox.ini               | 2 +-
+ 3 files changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/doc/source/conf.py b/doc/source/conf.py
+index 9468074..10e35a7 100644
+--- a/doc/source/conf.py
++++ b/doc/source/conf.py
+@@ -71,7 +71,7 @@ extensions = [
+     'sphinx.ext.coverage',
+     'sphinx.ext.viewcode',
+     'sphinx.ext.graphviz',
+-    'oslosphinx'
++    'openstackdocstheme'
+ ]
+ 
+ # Add any paths that contain templates here, relative to this directory.
+@@ -140,6 +140,7 @@ modindex_common_prefix = ['monasca.']
+ # The theme to use for HTML and HTML Help pages.  See the documentation for
+ # a list of builtin themes.
+ # html_theme = 'default'
++html_theme = 'openstackdocs'
+ 
+ # Theme options are theme-specific and customize the look and feel of a theme
+ # further.  For a list of options available for each theme, see the
+@@ -302,3 +303,6 @@ texinfo_documents = [
+ 
+ # How to display URL addresses: 'footnote', 'no', or 'inline'.
+ # texinfo_show_urls = 'footnote'
++
++# openstackdocstheme options
++repository_name = 'openstack/monasca-statsd'
+diff --git a/test-requirements.txt b/test-requirements.txt
+index 67fa8e7..4eaaf73 100644
+--- a/test-requirements.txt
++++ b/test-requirements.txt
+@@ -6,7 +6,6 @@ bandit>=1.1.0 # Apache-2.0
+ coverage!=4.4,>=4.0 # Apache-2.0
+ mock>=2.0.0 # BSD
+ sphinx!=1.6.6,!=1.6.7,>=1.6.5 # BSD
+-oslosphinx>=4.7.0 # Apache-2.0
+ oslotest>=3.2.0 # Apache-2.0
+ stestr>=1.0.0 # Apache-2.0
+ testrepository>=0.0.18 # Apache-2.0/BSD
+diff --git a/tox.ini b/tox.ini
+index bee413c..dededac 100644
+--- a/tox.ini
++++ b/tox.ini
+@@ -40,7 +40,7 @@ commands =
+ basepython = python3
+ commands =
+   rm -rf doc/build
+-  python setup.py build_sphinx
++  sphinx-build -b html doc/source doc/build/html
+ 
+ [testenv:bandit]
+ basepython = python3
+-- 
+2.23.0
+
