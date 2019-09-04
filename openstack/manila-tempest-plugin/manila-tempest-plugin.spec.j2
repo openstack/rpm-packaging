@@ -3,7 +3,7 @@
 {% set source=fetch_source('https://tarballs.openstack.org/manila-tempest-plugin/manila-tempest-plugin-master.tar.gz') %}
 {% set upstream_version = upstream_version() %}
 
-Name:          {{ py2pkg('manila-tempest-plugin') }}
+Name:          {{ py2name(py_versions='py3') }}
 Version:       {{ py2rpmversion() }}
 Release:       {{ py2rpmrelease() }}
 Summary:       Tempest plugin for the manila project

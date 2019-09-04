@@ -3,7 +3,7 @@
 {% set upstream_version = upstream_version() %}
 {% set rpm_release = '1' %}
 
-Name:          {{ py2name() }}
+Name:          {{ py2name(py_versions='py3') }}
 Version:       {{ py2rpmversion() }}
 Release:       {{ py2rpmrelease() }}
 Summary:       Tempest plugin for the barbican project
