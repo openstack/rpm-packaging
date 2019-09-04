@@ -1,0 +1,7 @@
+[DEFAULT]
+log_dir = /var/log/ironic
+rootwrap_config = /etc/ironic/rootwrap.conf
+state_path = /var/lib/ironic
+
+[oslo_concurrency]
+lock_path = /run/ironic

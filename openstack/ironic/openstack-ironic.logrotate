@@ -1,0 +1,10 @@
+/var/log/ironic/*.log {
+    compress
+    rotate 15
+    size 1M
+    dateext
+    missingok
+    notifempty
+    su ironic ironic
+    sharedscripts
+}

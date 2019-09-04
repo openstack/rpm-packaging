@@ -1,0 +1,2 @@
+Defaults:ironic syslog_goodpri=none, !pam_session
+ironic ALL = (root) NOPASSWD: /usr/bin/ironic-rootwrap /etc/ironic/rootwrap.conf *
