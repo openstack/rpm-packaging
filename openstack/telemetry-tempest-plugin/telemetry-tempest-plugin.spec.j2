@@ -3,23 +3,22 @@
 {% set upstream_version = upstream_version() %}
 {% set rpm_release = '1' %}
 
-Name:           {{ py2pkg('telemetry-tempest-plugin') }}
+Name:           {{ py2name(py_versions='py3') }}
 Version:        {{ py2rpmversion() }}
 Release:        {{ py2rpmrelease() }}
 Summary:        Tempest plugin for Telemetry Projects (Aodh, Ceilometer, Gnocchi and Panko)
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://git.openstack.org/cgit/openstack/telemetry-tempest-plugin
-Source0:       {{ source|basename }}
+Source0:        {{ source|basename }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
-Requires:       {{ py2pkg('gabbi') }}
-Requires:       {{ py2pkg('oslo.config') }}
-Requires:       {{ py2pkg('oslo.utils') }}
-Requires:       {{ py2pkg('six') }}
+BuildRequires:  {{ py3('pbr') }}
+Requires:       {{ py2pkg('tempest') }}
+Requires:       {{ py3('gabbi') }}
+Requires:       {{ py3('oslo.config') }}
+Requires:       {{ py3('oslo.utils') }}
+Requires:       {{ py3('six') }}
 BuildArch:      noarch
-%python_subpackages
 
 %description
 Tempest plugin for Telemetry Project.
@@ -30,13 +29,13 @@ It contains tempest tests for Aodh, Ceilometer, Gnocchi and Panko Projects.
 %py_req_cleanup
 
 %build
-%{python_build}
+%{py3_build}
 
 %install
-%{python_install}
+%{py3_install}
 
-%files %{python_files}
+%files
 %license LICENSE
-%{python_sitelib}/telemetry_tempest_plugin*
+%{python3_sitelib}/telemetry_tempest_plugin*
 
 %changelog
