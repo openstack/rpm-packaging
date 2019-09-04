@@ -299,8 +299,8 @@ exit 0
 %{_sysconfdir}/heat/README.config
 %dir %attr(0750, root, heat) %{_sysconfdir}/heat
 %dir %attr(0750, root, heat) %{_sysconfdir}/heat/heat.conf.d/
-%config(noreplace) %attr(0640, root, %{groupname}) %{_sysconfdir}/heat/heat.conf
-%config(noreplace) %attr(0640, root, %{groupname}) %{_sysconfdir}/heat/heat.conf.d/010-heat.conf
+%config(noreplace) %attr(0640, root, heat) %{_sysconfdir}/heat/heat.conf
+%config(noreplace) %attr(0640, root, heat) %{_sysconfdir}/heat/heat.conf.d/010-heat.conf
 %config(noreplace) %attr(-, root, heat) %{_sysconfdir}/heat/api-paste.ini
 %config %{_sysconfdir}/logrotate.d/openstack-heat
 %config %{_sysconfdir}/heat/policy.json
