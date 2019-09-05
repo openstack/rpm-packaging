@@ -1,0 +1,15 @@
+[Unit]
+Description=OpenStack designate zone manager service
+After=syslog.target network.target
+
+[Service]
+Type=notify
+User=designate
+Group=designate
+WorkingDirectory=/var/lib/designate
+PrivateTmp=yes
+ExecStart=/usr/bin/designate-zone-manager
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

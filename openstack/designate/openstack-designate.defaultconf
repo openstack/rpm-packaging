@@ -1,0 +1,6 @@
+[DEFAULT]
+log_dir = /var/log/designate
+state_path = /var/lib/designate
+
+[oslo_concurrency]
+lock_path = /run/designate

@@ -1,0 +1,3 @@
+Defaults:designate syslog_goodpri=none, !pam_session
+
+designate ALL = (root) NOPASSWD: /usr/bin/designate-rootwrap /etc/designate/rootwrap.conf *

@@ -1,0 +1,12 @@
+/var/log/designate/*.log {
+    compress
+    dateext
+    minsize 100k
+    missingok
+    notifempty
+    rotate 10
+    sharedscripts
+    size 1M
+    su designate designate
+    weekly
+}

@@ -1,0 +1,16 @@
+[Unit]
+Description=OpenStack designate API service
+After=syslog.target network.target
+
+[Service]
+Type=notify
+User=designate
+Group=designate
+WorkingDirectory=/var/lib/designate
+PrivateTmp=yes
+ExecStartPre=-/usr/bin/designate-manage database sync
+ExecStart=/usr/bin/designate-api
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
