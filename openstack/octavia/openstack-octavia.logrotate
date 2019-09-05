@@ -1,0 +1,11 @@
+/var/log/octavia/*.log {
+    compress
+    copytruncate
+    dateext
+    missingok
+    notifempty
+    rotate 15
+    sharedscripts
+    size 1M
+    su octavia octavia
+}

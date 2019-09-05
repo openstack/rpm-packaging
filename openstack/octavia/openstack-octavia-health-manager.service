@@ -1,0 +1,15 @@
+[Unit]
+Description=Provides the OpenStack Octavia health manager
+After=syslog.target network.target
+
+[Service]
+Type=simple
+User=octavia
+Group=octavia
+WorkingDirectory=/var/lib/octavia
+ExecStart=/usr/bin/octavia-health-manager
+KillMode=process
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

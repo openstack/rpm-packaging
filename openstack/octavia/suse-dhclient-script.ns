@@ -1,0 +1,556 @@
+#!/bin/bash
+#
+# Compatible Namespace dhclient-script for network interface.
+#
+# Copyright (c) 2018 SUSE LINUX Products GmbH, Nuernberg, Germany.
+#
+# This program is free software; you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation; either version 2 of the License, or (at your option) any later
+# version.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# Authors: Marius Tomaschewski <mt@suse.de>
+#          Swaminathan Vasudevan <svasudevan@suse.com>
+#
+
+test "x$reason" = x -o "x$interface" = x && exit 1
+case $reason in
+  *6) dhclient=dhclient6 ;;
+  *)  dhclient=dhclient  ;;
+esac
+
+netns=`ip netns identify 2>/dev/null`
+
+set -a # allexport
+if mkdir -p /var/log/${netns:+netns/$netns} ; then
+  (
+    echo '****************' 
+    echo "$0 $*"
+    date
+    echo '----------------'
+    env
+    echo '----------------'
+  ) >> "/var/log/${netns:+netns/$netns}/${dhclient}-script.$interface.log"
+  exec 2>> "/var/log/${netns:+netns/$netns}/${dhclient}-script.$interface.log"
+  set +a
+  set -x
+fi
+
+prefixlen2netmask()
+{
+	test -n "$1" || return 1
+	local o i n=0 adr=() len=$(($1))
+	for o in 0 1 2 3; do
+		adr[$o]=0
+		for i in 128 64 32 16 8 4 2 1; do
+			((n++ < len)) && \
+			((adr[$o] = ${adr[$o]} + $i))
+		done
+	done
+	echo ${adr[0]}.${adr[1]}.${adr[2]}.${adr[3]}
+	return 0
+}
+parse_ipv4_classless_routes()
+{
+  local route_regex='^[0-9]{1,3}([ ][0-9]{1,3}){4,}$'
+  local rfc_routes=() _routes=()
+
+  # check whether it is a list of numbers
+  [[ $* =~ $route_regex ]] && rfc_routes=($*)
+
+  for (( i=0; i < ${#rfc_routes[@]}; )) ; do
+    net_length=${rfc_routes[$i]}
+    test $net_length -gt 32 && return 1
+
+    ((i++))
+    net_octets=$(($net_length / 8 + ($net_length % 8 ? 1 : 0)))
+    test ${#rfc_routes[@]} -lt $(( $i + $net_octets + 4 )) && \
+      return 1
+
+    net_netmask=$(prefixlen2netmask $net_length)
+    net_netmask=(${net_netmask//./ })
+    net_address=(0 0 0 0)
+    for(( j=0; j < $net_octets; j++, i++)); do
+      net_address[$j]=$((${rfc_routes[$i]} & ${net_netmask[$j]}))
+    done
+
+    gateway=(0 0 0 0)
+    for (( j=0; j < 4; j++, i++ )); do
+      gateway[$j]=${rfc_routes[$i]}
+    done
+
+    old_IFS=$IFS
+    IFS='.'
+    _routes+=("${net_address[*]},${net_netmask[*]},${gateway[*]}")
+    IFS=$old_IFS
+  done
+
+  echo "${_routes[*]}"
+  return 0
+}
+set_ipv4_route()
+{
+  local dest=$1 ; shift
+  local mask=$1 ; shift
+  local gate=("$@")
+  local hops args
+
+  hops=()
+  if [ ${#gate[@]} -gt 1 ] ; then
+    for((g=0; g<${#gate[@]}; g++)) ; do
+      hops+=(nexthop ${gate[$g]:+via ${gate[$g]}}
+             dev $interface weight $((g+1)))
+    done
+  elif [ ${#gate[@]} -gt 0 ] ; then
+    hops+=(${gate[$g]:+via ${gate[$g]}} dev $interface)
+  fi
+  [ ${#hops[@]} -eq 0 ] && hops=(dev $interface)
+  args=("$dest${mask:+/$mask}" $metric_arg ${hops[*]})
+
+  err=`LC_ALL=C /sbin/ip route replace ${args[*]} 2>&1` && return 0
+  case $err in
+  RTNETLINK*answers:*File*exists) ;;
+  RTNETLINK*answers:*No*such*process)
+    #
+    # The gateway seems to be not reachable via local network
+    # route (implicitly created by ifconfig based on the IP
+    # and netmask provided by dhcp).
+    # Check this, set an explicit host route to the gateway
+    # over the current interface and try again (bnc#266215).
+    #
+    retry=0
+    for router in ${gate[@]} ; do
+      matches=$(/sbin/ip -f inet -o route list match $router | \
+                grep -v ^default | grep -c -v "^$" 2>/dev/null)
+      if [ -n "$matches" -a $(($matches)) -eq 0 ] ; then
+        LC_ALL=C /sbin/ip route add $router/32 dev $interface || retry=1
+      fi
+    done
+    if [ $retry -eq 0 ] ; then
+      LC_ALL=C /sbin/ip route replace ${args[*]} && return 0
+    fi
+  ;;
+  esac
+  return 1
+}
+get_ipv4_default_gw()
+{
+  if [ "x$new_rfc3442_classless_static_routes_formatted" != x ] ; then
+    local r route=() gw=()
+    for r in $new_rfc3442_classless_static_routes_formatted ; do
+      route=(${r//,/ })
+      case ${route[0]}/${route[1]} in
+      0.0.0.0/0.0.0.0)
+        [ "x${route[2]}" = "x0.0.0.0" ] || \
+          gw+=(${route[2]})
+      ;;
+      esac
+    done
+    echo "${gw[*]}"
+  elif [ "$new_routers" != x ] ; then
+    echo "$new_routers"
+  fi
+}
+set_ipv4_routes()
+{
+  if [ "x$new_rfc3442_classless_static_routes_formatted" != x ] ; then
+    local r route=()
+    # TODO: multiple gw's to one dest as in $new_routers?
+    for r in $new_rfc3442_classless_static_routes_formatted ; do
+      route=(${r//,/ })
+      set_ipv4_route ${route[*]}
+    done
+  elif [ "$new_routers" != x ] ; then
+    set_ipv4_route default "" $new_routers
+  fi
+}
+dhcp6_dad_check()
+{
+	local ifname="$1" word i
+	local ipaddr="$2"
+	local noaddr=1 nodad=0 tentative=0 dadfailed=0
+	test -n "$ifname" -a -n "$ipaddr" || return 1
+
+	while read -a word ; do
+		test "${word[0]}" != "inet6" && continue
+		noaddr=0
+		for((i=2; i<${#word[@]}; ++i)) ; do
+			case ${word[$i]} in
+			nodad)          nodad=1     ;;
+			tentative)      tentative=1 ;;
+			dadfailed)      dadfailed=1 ;;
+			flags)  ((i++))
+				rx='^[[:xdigit:]]+$'
+				[[ "${word[$i]}" =~ $rx ]] || continue
+				hx="0x${word[$i]}"
+				((hx & 0x02)) && nodad=1
+				((hx & 0x08)) && dadfailed=1
+				((hx & 0x40)) && tentative=1
+			;;
+			esac
+		done
+		((nodad))     && continue
+		((dadfailed)) && return 3
+		((tentative)) && return 2
+	done < <(LC_ALL=C ip -6 addr show dev "${ifname}" to "${ipaddr}" 2>/dev/null)
+	# on dad failure of dynamic (non-persistent) address,
+	# the kernel deletes dad failed addresses
+	# that is, the address is tentative (2) and vanishes
+	# (4) and is not visible as dadfailed (3).
+	((noaddr)) && return 4 || return 0
+}
+dhcp6_dad_wait()
+{
+	local ifname="$1"
+	local ipaddr="$2"
+	local -i wsecs=${3:-0}
+	local -i uwait=25000
+	local -i loops=$(((wsecs * 1000000) / uwait))
+	local -i loop=0 ret=0
+
+	dhcp6_dad_check "$ifname" "$ipaddr" ; ret=$?
+	while ((ret == 2 && loop++ < loops)) ; do
+		usleep $uwait
+		dhcp6_dad_check "$ifname" "$ipaddr" ; ret=$?
+	done
+	return $ret
+}
+add_to_wordlist()
+{
+	local v="${1}"
+	local l=(${!v}) ; shift
+	local a w
+	for a in ${@} ; do
+		for w in ${l[@]} ; do
+			[ "x$w" = "x$a" ] && continue 2
+		done
+		l+=($a)
+	done
+	eval "$v='${l[@]}'"
+}
+merge_resolv_conf()
+{
+	local files=()
+	local fname key values ns
+	local domain="" search="" server=""
+	for fname in "$@" ; do
+		test "X$fname" = "X" && continue
+		test -f "$fname"     && files+=("$fname")
+	done
+	while read key values ; do
+		case $key in
+		domain)     add_to_wordlist domain $values ;;
+		search)     add_to_wordlist search $values ;;
+		nameserver) add_to_wordlist server $values ;;
+		esac
+	done < <(cat "${files[@]}" /dev/null 2>/dev/null)
+	echo ${domain:+domain $domain}
+	echo ${search:+search $search}
+	for ns in $server ; do
+          echo ${ns:+nameserver $ns}
+	done
+}
+write_resolv_conf()
+{
+  case $dhclient in
+  dhclient)
+    mkdir -p "/var/run/dhclient/${netns:+netns/$netns}"
+    {
+	echo ${new_domain_name:+domain $new_domain_name}
+        echo ${new_domain_search:+search $new_domain_search}
+        for ns in $new_domain_name_servers ; do
+          echo ${ns:+nameserver $ns}
+        done
+    } > "/var/run/dhclient/${netns:+netns/$netns}/resolv.ipv4"
+  ;;
+  dhclient6)
+    mkdir -p "/var/run/dhclient/${netns:+netns/$netns}"
+    {
+        echo ${new_dhcp6_domain_search:+search $new_dhcp6_domain_search}
+        for ns in $new_dhcp6_name_servers ; do
+          echo ${ns:+nameserver $ns}
+        done
+    } > "/var/run/dhclient/${netns:+netns/$netns}/resolv.ipv6"
+  ;;
+  esac
+  merge_resolv_conf \
+    "/var/run/dhclient/${netns:+netns/$netns}/resolv.ipv4" \
+    "/var/run/dhclient/${netns:+netns/$netns}/resolv.ipv6" \
+    > /etc/${netns:+netns/$netns}/resolv.conf 2>/dev/null
+}
+remove_resolv_conf()
+{
+  case $dhclient in
+  dhclient)
+    rm -f -- "/var/run/dhclient/${netns:+netns/$netns}/resolv.ipv4"
+  ;;
+  dhclient6)
+    rm -f -- "/var/run/dhclient/${netns:+netns/$netns}/resolv.ipv6"
+  ;;
+  esac
+  merge_resolv_conf \
+    "/var/run/dhclient/${netns:+netns/$netns}/resolv.ipv4" \
+    "/var/run/dhclient/${netns:+netns/$netns}/resolv.ipv6" \
+    > /etc/${netns:+netns/$netns}/resolv.conf 2>/dev/null
+}
+
+# Must be used on exit. Invokes the local dhcp client exit hooks, if any.
+exit_with_hooks() {
+  exit_status=$1
+  if [ -f /etc/${dhclient}-exit-hooks ]; then
+    . /etc/${dhclient}-exit-hooks
+  fi
+  # probably should do something with exit status of the local script
+  exit $exit_status
+}
+
+# Invoke the local dhcp client enter hooks, if they exist.
+if [ -f /etc/${dhclient}-enter-hooks ]; then
+  exit_status=0
+  . /etc/${dhclient}-enter-hooks
+  # allow the local script to abort processing of this state
+  # local script must set exit_status variable to nonzero.
+  if [ $exit_status -ne 0 ]; then
+    exit $exit_status
+  fi
+fi
+
+case $dhclient in
+dhclient)
+  if [ "x$new_rfc3442_classless_static_routes" != x ] ; then
+    new_rfc3442_classless_static_routes_formatted=$(
+      parse_ipv4_classless_routes $new_rfc3442_classless_static_routes
+    )
+  else
+    unset new_rfc3442_classless_static_routes_formatted
+  fi
+  if [ x$new_broadcast_address != x ] ; then
+    new_broadcast_arg="brd $new_broadcast_address"
+  elif [ "x$new_subnet_mask" != "x255.255.255.255" ] ; then
+    new_broadcast_arg="brd +"
+  fi
+  if [ x$new_interface_mtu != x -a \
+       $(( $new_interface_mtu )) -le 576 ] ;
+  then
+    # 68 is the minimal legal value, but 576 the real life minimum
+    unset new_interface_mtu
+  fi
+  if [ x$IF_METRIC != x ]; then
+    metric_arg="metric $IF_METRIC"
+  fi
+;;
+dhclient6)
+;;
+esac
+
+case $reason in
+######################################################################
+## DHCPv4                                                            #
+######################################################################
+
+MEDIUM)
+  ####################################################################
+  exit_with_hooks 0
+;;
+
+PREINIT)
+  ####################################################################
+  if [ "x$alias_ip_address" != x ]; then
+    /sbin/ip addr del $alias_ip_address/$alias_subnet_mask dev $interface
+  fi
+  # if [ "x$STARTMODE" != "xnfsroot" ] ; then
+    /sbin/ip -4 addr flush dev $interface
+  # fi
+  /sbin/ip link set $interface up
+
+  # We need to give the kernel some time to get the interface up.
+  sleep 1
+
+  exit_with_hooks 0
+;;
+
+ARPCHECK|ARPSEND)
+  ####################################################################
+  exit_with_hooks 0
+;;
+
+BOUND|RENEW|REBIND|REBOOT)
+  ####################################################################
+
+  if [ x$alias_ip_address != x -a x$alias_ip_address != x$old_ip_address -a \
+       x$new_ip_address != x$old_ip_address ] ;
+  then
+    # Possible new alias. Remove old alias.
+    /sbin/ip addr del $alias_ip_address/$alias_subnet_mask dev $interface
+  fi
+  if [ x$old_ip_address != x -a x$old_ip_address != x$new_ip_address ]; then
+    # IP address changed. Flush to clear routes and ARP cache.
+    # if [ "x$STARTMODE" != "xnfsroot" ] ; then
+      /sbin/ip -4 addr flush dev $interface
+    # fi
+  fi
+
+  if [ x$new_interface_mtu != x ] ; then
+    /sbin/ip link set $interface mtu $new_interface_mtu
+  fi
+  if [ x$new_ip_address != x ] && \
+     [ x$new_ip_address != x$old_ip_address -o \
+       x$reason = xBOUND -o x$reason = xREBOOT ]; then
+
+    /sbin/ip addr add $new_ip_address/${new_subnet_mask:-32} \
+                      ${new_broadcast_arg} \
+                      dev $interface
+
+    set_ipv4_routes
+  fi
+  if [ x$new_ip_address != x$alias_ip_address -a x$alias_ip_address != x \
+    -a x$new_ip_address != x$old_ip_address ];
+  then
+    /sbin/ip addr add $alias_ip_address/$alias_subnet_mask \
+                      dev $interface
+  fi
+
+  write_resolv_conf
+
+  exit_with_hooks 0
+;;
+
+EXPIRE|FAIL|RELEASE|STOP)
+  ####################################################################
+  if [ x$old_ip_address != x ]; then
+    # if [ "x$STARTMODE" != "xnfsroot" ] ; then
+      /sbin/ip -4 addr flush dev $interface
+    # fi
+  fi
+  if [ x$alias_ip_address != x ]; then
+    /sbin/ip addr add $alias_ip_address/$alias_subnet_mask \
+                  dev $interface
+  fi
+
+  remove_resolv_conf
+
+  exit_with_hooks 0
+;;
+
+TIMEOUT)
+  ####################################################################
+  if [ x$alias_ip_address != x ]; then
+    /sbin/ip addr del $alias_ip_address/$alias_subnet_mask \
+                  dev $interface
+  fi
+
+  if [ x$new_ip_address != x -a x$old_ip_address != x$new_ip_address ];
+  then
+    /sbin/ip addr add $new_ip_address/${new_subnet_mask:-32} \
+                      ${new_broadcast_arg} \
+                      dev $interface
+
+    set -- $(get_ipv4_default_gw)
+    if [ -n "$1" ] && /sbin/arping -q -c 1 -w 5 -I $interface $1 ;
+    then
+      if [ x$new_ip_address != x$alias_ip_address ] && \
+         [ x$alias_ip_address != x ]; then
+        /sbin/ip addr add $alias_ip_address/$alias_subnet_arg
+      fi
+
+      set_ipv4_routes
+
+      write_resolv_conf
+
+      exit_with_hooks 0
+    else
+      if [ x$old_ip_address != x ]; then
+        # if [ "x$STARTMODE" != "xnfsroot" ] ; then
+          /sbin/ip -4 addr flush dev $interface
+        # fi
+      fi
+
+      remove_resolv_conf
+
+      exit_with_hooks 1
+    fi
+  fi
+;;
+
+
+######################################################################
+## DHCPv6                                                            #
+######################################################################
+
+PREINIT6)
+  ####################################################################
+  # if [ "x$STARTMODE" != "xnfsroot" ] ; then
+    /sbin/ip -6 addr flush dev $interface scope global permanent
+  # fi
+  /sbin/ip link set $interface up
+
+  # We need to give the kernel some time to get the interface up.
+  sleep 1
+
+  exit_with_hooks 0
+;;
+
+BOUND6|RENEW6|REBIND6|REBOOT6)
+  ####################################################################
+
+  if [ x$old_ip6_address != x -a x$old_ip6_address != x$new_ip6_address ];
+  then
+
+    /sbin/ip addr del "$old_ip6_address/$old_ip6_prefixlen" dev $interface
+
+  fi
+
+  if [ "x$new_ip6_address" != x -a "x$new_ip6_prefixlen" != x ] ; then
+    /sbin/ip addr replace "$new_ip6_address/$new_ip6_prefixlen" \
+                  scope global dev $interface \
+                  ${new_max_life:+valid_lft $new_max_life} \
+                  ${new_preferred_life:+preferred_lft $new_preferred_life} \
+      || exit_with_hooks 2
+
+    echo >&2 "Checking DAD results for $new_ip6_address"
+
+    if ! dhcp6_dad_wait "$interface" "$new_ip6_address/$new_ip6_prefixlen" 5 ; then
+      /sbin/ip addr del "$new_ip6_address/$new_ip6_prefixlen" dev $interface 2>/dev/null
+      exit_with_hooks 3
+    fi
+  fi
+
+  write_resolv_conf
+
+  exit_with_hooks 0
+;;
+
+DEPREF6)
+  ####################################################################
+  if [ x$cur_ip6_address = x -o x$cur_ip6_prefixlen = x ] ; then
+    exit_with_hooks 2
+  fi
+
+  /sbin/ip addr change "$cur_ip6_address/$cur_ip6_prefixlen" \
+                dev $interface scope global preferred_lft 0
+
+  exit_with_hooks 0
+;;
+
+EXPIRE6|RELEASE6|STOP6)
+  ####################################################################
+  if [ x$old_ip6_address != x -a x$old_ip6_prefixlen != x ] ; then
+    /sbin/ip addr del "$old_ip6_address/$old_ip6_prefixlen" \
+                  dev $interface
+  fi
+
+  remove_resolv_conf
+
+  exit_with_hooks 0
+;;
+esac
+
+exit_with_hooks 0

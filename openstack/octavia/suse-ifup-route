@@ -1,0 +1,215 @@
+#!/bin/bash
+# Copyright (c) 2018 SuSE Linux AG Nuernberg, Germany. All rights reserved.
+# This program is free software; you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation; either version 2 of the License, or (at your option) any later
+# version.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# Author: Marius  Tomaschewski <mt@suse.de>
+#         Swaminathan Vasudevan <svasudevan@suse.com>
+# Based on rcroute: Burchard Steinbild <bs@suse.de>, 1996
+#                   Werner Fink <werner@suse.de>, 1996-2000
+#
+# $Id$
+#
+usage () {
+	echo $@
+	echo "Usage: if{up,down}-route [<config>] <interface> [-o <options>]"
+	echo ""
+	echo "Options are:"
+	echo "    dhcp     : we are called from dhcp client (read only ifroute-*)" 
+	echo "All other or wrong options are silently ignored"
+	exit $R_USAGE
+}
+
+SCRIPTNAME=${0##*/}
+case "$SCRIPTNAME" in
+	ifup-route) ACTION=replace ;;
+	ifdown-route) ACTION=del ;;
+	*) usage
+esac
+case "$1" in ""|-h|*help*) usage; esac
+CONFIG=$1
+shift
+if [ -n "$1" -a "$1" != "-o" ] ; then
+	INTERFACE=$1
+else
+	INTERFACE=$CONFIG
+fi
+shift
+test "$1" = "-o" && shift
+OPTIONS="$@"
+MODE=manual
+while [ $# -gt 0 ]; do
+	case $1 in
+		boot|onboot) MODE=auto ;;
+		hotplug)     MODE=auto ;;
+		rc)          export RUN_FROM_RC=yes
+		             SUPPRESS_ERROR_MESSAGE=yes ;;
+		quiet)       be_quiet_has_gone ;;
+		dhcp)        DHCP=yes ;;
+		*)           echo "unknown option $1 ignored" ;;
+	esac
+	shift
+done
+
+# The global route configuration file must not be read if we were called from
+# dhcp client. In this case we only read the ifroute-* file.
+if [ "$DHCP" != yes ] ; then
+	ROUTECONF=routes
+fi
+test -f $ROUTECONF || ROUTECONF=""
+EXTRAROUTECONF=ifroute-$CONFIG
+test -f $EXTRAROUTECONF || EXTRAROUTECONF=""
+
+read_routes() {
+        test -r "$1" || return
+        local DEST GWAY MASK IFACE OPTS
+        while read DEST GWAY MASK NDEV OPTS; do
+                test -z "$GWAY" && GWAY=-
+                test -z "$MASK" && MASK=-
+                test -z "$IFACE" -o "$IFACE" = "-" && IFACE="$INTERFACE"
+                echo $DEST $GWAY $MASK $NDEV $OPTS
+        done < <(cat "$1" ; echo)
+}
+
+is_iface_up () {
+	test -z "$1" && return 1
+	test -d /sys/class/net/$1 || return 1
+	case "`LC_ALL=POSIX ip link show $1 2>/dev/null`" in
+		*$1*UP*) ;;
+		*) return 1 ;;
+	esac
+}
+
+filter_routes()
+{
+	LANG=C LC_ALL=C gawk -vrp="$ROUTE_PROTOS" -- \
+	'/proto [^ ]+/ {
+		if(length(rp) > 0 && match($0,"proto ("rp")")) {
+			print $0;
+		}
+		next;
+	}
+	{ print $0;}'
+}
+
+pop_route_stack () {
+	# The default route stack consists of files named route-stack-<i>-<X>-<Y>.
+	# If the topmost entry (with highest i) has for Y the current interface, then
+	# the current interface hosts the current default route. We can look for the
+	# current default route interface via 'ip route', but in one case thsi does not
+	# work. 
+	# NICs that are handled by '/sbin/hotplug' (cardmgr behaves different) loose
+	# their registered interface immediately when the NIC is ejected. Therefore
+	# we must get the name of the current default route interface from the stack
+	# itself and not via 'ip route'.
+
+	local f g # variables for route-stack-* filenames
+
+	# At first look for the current default route interface via 'ip route' and store
+	# it in $DR_IFACE.
+	set -- `ip -4 route show | filter_routes` 
+	while [ "$1" != default -a $# -gt 0 ] ; do shift; done
+	while [ "$1" != dev -a $# -gt 0 ] ; do shift; done
+	DR_IFACE=$2
+	if [ -z "$DR_IFACE" ] ; then
+		# Get the latest stack entry (with highest number)
+		for f in $ROUTESTACKDIR/route-stack-*-*-* ; do true; done
+		IFS=-; set -- $f; DR_IFACE=$5; unset IFS
+	fi
+	# If $DR_IFACE equals $INTERFACE we have to restore the previous default
+	# route. That means we look for the newest route-stack-X-$INTERFACE (which in
+	# this case should be the newest route-stack-X-*). This file may be deleted
+	# after the default route via dev X was restored.
+	# 
+	# Then we look for the newest route-stack-$INTERFACE-X and again for the now
+	# newest route-stack-Y-$INTERFACE. If X==Y these files may just be deleted.
+	# If X!=Y and there  is no route-stack-Y-X we have to copy
+	# route-stack-Y-$INTERFACE to route-stack-Y-X and delete the two old files
+	# afterwards.
+	# Repeat that until no more route-stack-*-$INTERFACE exists.
+	#
+	# Finally remove all route-stack-$INTERFACE-*.
+	#
+	if [ "$DR_IFACE" = "$INTERFACE" ] ; then
+		local restore_nullglob="$(shopt -p nullglob)"
+		shopt -s nullglob
+		for f in $ROUTESTACKDIR/route-stack-*-*-${INTERFACE} ; do true; done
+		eval $restore_nullglob
+		IFS=-; set -- $f; OLDDEFROUTEIFACE=$4; unset IFS
+		read OLDDEFROUTEARGS < ${f:-<(echo)}
+	fi
+	while true ; do 
+		for f in $ROUTESTACKDIR/route-stack-*-*-${INTERFACE} ; do true; done
+		for g in $ROUTESTACKDIR/route-stack-*-${INTERFACE}-* ; do true; done
+		test -f "$f" -a -f "$g" || break
+		IFS=-
+		set -- $f ; fi=$4
+		set -- $g ; gi=$5
+		unset IFS
+		if [ "$fi" != "$gi" ] ; then
+			declare -i i
+			read i < $ROUTESTACKDIR/route-stack-number
+			i=$((i+1))
+			echo $i > $ROUTESTACKDIR/route-stack-number
+			ii=`printf "%.6d\n" $i`
+			cp -v $f $ROUTESTACKDIR/route-stack-$ii-${fi}-${gi}
+		fi
+		rm -vf $f $g
+	done
+	test -z "$OLDDEFROUTEARGS"    && return 1
+	test -z "$OLDDEFROUTEIFACE"   && return
+	is_iface_up $OLDDEFROUTEIFACE && return || return 1
+}
+
+reverse ()
+{
+	local LINE
+	while read -r LINE ; do
+		case "$LINE" in \#*|"") continue ;; esac
+		test "$ACTION" = "del" && reverse
+		echo "$LINE"
+	done
+}
+
+while read DEST GWAY MASK NDEV OPTS ; do
+	case $DEST in ""|\#*) continue ;; esac
+	case $GWAY in -) unset GWAY ;; esac
+	case $MASK in -) unset MASK ;; esac
+	case $NDEV in -) unset NDEV  ;; esac
+	case $OPTS in -) unset OPTS ;; esac
+
+	ifname=${ifname:-$NDEV}
+        if [ "$ACTION" == "replace" ]; then
+		case $GWAY$ifname in "") continue ;; esac
+		case $GWAY in
+		*:*)	ver="-6" ;;
+		*.*)	ver="-4" ;;
+		*)	case $DEST in
+			*:*) ver="-6" ;;
+			*.*) ver="-4" ;;
+			esac	 ;;
+		esac
+
+		/bin/ip ${ver} route replace \
+			${DEST}${GWAY:+ via $GWAY }${ifname:+ dev $ifname }${OPTS}
+
+		## TODO: catch false errors
+	fi
+        if [ "$ACTION" == "del" ]; then
+        	pop_route_stack && /bin/ip route replace to $OLDDEFROUTEARGS
+        fi
+
+done < <(reverse < <(${ROUTECONF:+cat $ROUTECONF}; echo; \
+                     read_routes $EXTRAROUTECONF)  )
+
+exit 0

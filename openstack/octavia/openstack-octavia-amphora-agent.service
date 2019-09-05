@@ -1,0 +1,14 @@
+[Unit]
+Description=Provides the OpenStack Octavia amphora agent
+After=syslog.target network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/var/lib/octavia
+ExecStart=/usr/bin/amphora-agent
+KillMode=process
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
