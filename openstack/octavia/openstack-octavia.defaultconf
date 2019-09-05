@@ -1,0 +1,3 @@
+[DEFAULT]
+log_dir=/var/log/octavia
+state_path=/var/lib/octavia

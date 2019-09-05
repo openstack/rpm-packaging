@@ -1,0 +1,380 @@
+{% set pypi_name = 'octavia' %}
+{% set source = fetch_source('https://tarballs.openstack.org/octavia/octavia-master.tar.gz') %}
+{% set upstream_version = upstream_version() %}
+{% set rpm_release = '1' %}
+%if 0%{?rhel} || 0%{?fedora}
+%global rdo 1
+%endif
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
+Epoch:          {{ epoch('octavia') }}
+Summary:        OpenStack load balancer (Octavia)
+License:        {{ license('Apache-2.0') }}
+URL:            https://launchpad.net/octavia
+Source0:        {{ source|basename }}
+Source1:        openstack-octavia.logrotate
+Source2:        openstack-octavia.tmpfiles
+Source3:        openstack-octavia.defaultconf
+# systemd
+Source20:       openstack-octavia-api.service
+Source21:       openstack-octavia-amphora-agent.service
+Source22:       openstack-octavia-health-manager.service
+Source23:       openstack-octavia-housekeeping.service
+Source24:       openstack-octavia-worker.service
+Source25:       openstack-octavia-driver-agent.service
+Source50:       openstack-octavia.README.config
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py3('keystoneauth1') }}
+BuildRequires:  {{ py3('octavia-lib') }}
+BuildRequires:  {{ py3('oslo.config') }}
+BuildRequires:  {{ py3('oslo.db') }}
+BuildRequires:  {{ py3('oslo.log') }}
+BuildRequires:  {{ py3('oslo.messaging') }}
+BuildRequires:  {{ py3('oslo.policy') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  sudo
+Requires:       logrotate
+Requires:       python3-octavia = %{epoch}:%{version}-%{release}
+BuildArch:      noarch
+%if 0%{?suse_version}
+Source60:       suse-ifup.ns
+Source61:       suse-ifup-route
+Source62:       suse-dhclient-script.ns
+%endif
+%if 0%{?suse_version}
+BuildRequires:  systemd-rpm-macros
+Requires(pre):  pwdutils
+%{?systemd_requires}
+%else
+BuildRequires:  systemd
+Requires(post): systemd
+Requires(postun): systemd
+Requires(pre):  shadow-utils
+Requires(preun): systemd
+%endif
+
+%description
+Octavia is an scalable load balancer for OpenStack.
+
+%package -n python3-octavia
+Summary:        OpenStack load balancer (Octavia) - python module
+Group:          Development/Languages/Python
+Requires:       {{ py3('Babel') }}
+Requires:       {{ py3('Flask') }}
+Requires:       {{ py3('Jinja2') }}
+Requires:       {{ py3('SQLAlchemy') }}
+Requires:       {{ py3('WSME') }}
+Requires:       {{ py3('WebOb') }}
+Requires:       {{ py3('Werkzeug') }}
+Requires:       {{ py3('alembic') }}
+Requires:       {{ py3('python-barbicanclient') }}
+Requires:       {{ py3('castellan') }}
+Requires:       {{ py3('cotyledon') }}
+Requires:       {{ py3('cryptography') }}
+#Requires:       {{ py3('diskimage-builder') }}
+Requires:       {{ py3('distro') }}
+Requires:       {{ py3('futurist') }}
+Requires:       {{ py3('python-glanceclient') }}
+# Requires:       {{ py3('gunicorn') }}
+Requires:       {{ py3('jsonschema') }}
+Requires:       {{ py3('keystoneauth1') }}
+Requires:       {{ py3('keystonemiddleware') }}
+Requires:       {{ py3('netaddr') }}
+Requires:       {{ py3('netifaces') }}
+Requires:       {{ py3('python-neutronclient') }}
+Requires:       {{ py3('python-novaclient') }}
+Requires:       {{ py3('octavia-lib') }}
+Requires:       {{ py3('oslo.config') }}
+Requires:       {{ py3('oslo.context') }}
+Requires:       {{ py3('oslo.db') }}
+Requires:       {{ py3('oslo.i18n') }}
+Requires:       {{ py3('oslo.log') }}
+Requires:       {{ py3('oslo.messaging') }}
+Requires:       {{ py3('oslo.middleware') }}
+Requires:       {{ py3('oslo.policy') }}
+Requires:       {{ py3('oslo.reports') }}
+Requires:       {{ py3('oslo.serialization') }}
+Requires:       {{ py3('oslo.upgradecheck') }}
+Requires:       {{ py3('oslo.utils') }}
+Requires:       {{ py3('pbr') }}
+Requires:       {{ py3('pecan') }}
+Requires:       {{ py3('pyOpenSSL') }}
+Requires:       {{ py3('pyasn1') }}
+Requires:       {{ py3('pyasn1-modules') }}
+Requires:       {{ py3('pyroute2') }}
+Requires:       {{ py3('requests') }}
+Requires:       {{ py3('rfc3986') }}
+Requires:       {{ py3('simplejson') }}
+Requires:       {{ py3('six') }}
+Requires:       {{ py3('stevedore') }}
+Requires:       {{ py3('taskflow') }}
+Requires:       {{ py3('tenacity') }}
+Requires:       sudo
+
+%description -n python3-octavia
+Octavia is an scalable load balancer for OpenStack.
+
+This package contains the Octavia Python library.
+
+%package api
+Summary:        OpenStack load balancer (Octavia) - API
+Group:          Development/Languages/Python
+Requires:       python3-octavia = %{epoch}:%{version}-%{release}
+
+%description api
+Octavia is an scalable load balancer for OpenStack.
+
+This package contains the API server.
+
+%package worker
+Summary:        OpenStack load balancer (Octavia) - worker
+Group:          Development/Languages/Python
+Requires:       %{name} = %{epoch}:%{version}-%{release}
+
+%description worker
+Octavia is an scalable load balancer for OpenStack.
+
+This package contains OpenStack Octavia worker service.
+
+%package health-manager
+Summary:        OpenStack load balancer (Octavia) - health-manager
+Group:          Development/Languages/Python
+Requires:       %{name} = %{epoch}:%{version}-%{release}
+
+%description health-manager
+Octavia is an scalable load balancer for OpenStack.
+
+This package contains OpenStack Octavia health-manager service.
+
+%package housekeeping
+Summary:        OpenStack load balancer (Octavia) - housekeeping
+Group:          Development/Languages/Python
+Requires:       %{name} = %{epoch}:%{version}-%{release}
+
+%description housekeeping
+Octavia is an scalable load balancer for OpenStack.
+
+This package contains OpenStack Octavia housekeeping service.
+
+%package amphora-agent
+Summary:        OpenStack load balancer (Octavia) - amphora-agent
+Group:          Development/Languages/Python
+Requires:       %{name} = %{epoch}:%{version}-%{release}
+
+%description amphora-agent
+Octavia is an scalable load balancer for OpenStack.
+
+This package contains OpenStack Octavia amphora-agent service.
+
+%package driver-agent
+Summary:        OpenStack load balancer (Octavia) - driver-agent
+Group:          Development/Languages/Python
+Requires:       %{name} = %{epoch}:%{version}-%{release}
+
+%description driver-agent
+Octavia is an scalable load balancer for OpenStack.
+
+This package contains OpenStack Octavia driver-agent service.
+
+%package diskimage-create
+Summary:        OpenStack load balancer (Octavia) - diskimage-builder
+Group:          Applications/System
+Requires:       %{name} = %{epoch}:%{version}-%{release}
+# NOTE: we don't have theses packaged yet
+#Requires:       dib-utils
+#Requires:       diskimage-builder
+
+%description diskimage-create
+Octavia is an scalable load balancer for OpenStack.
+
+This package contains diskimage builder script and elements
+
+%if 0%{?suse_version}
+%package network-namespace-scripts
+Summary:        OpenStack load balancer (Octavia) - network-namespace-scripts
+Group:          Development/Languages/Python
+Requires:       %{name} = %{epoch}:%{version}-%{release}
+
+%description network-namespace-scripts
+Octavia is an scalable load balancer for OpenStack.
+
+This package contains OpenStack Octavia network-namespace-scripts.
+%endif
+
+%prep
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
+%py_req_cleanup
+
+%build
+%{py3_build}
+
+# generate the sample config file
+mkdir etc/octavia/
+PYTHONPATH=. oslo-config-generator --output-file etc/octavia/octavia.conf \
+  --namespace octavia \
+  --namespace oslo.db \
+  --namespace oslo.log \
+  --namespace oslo.messaging \
+  --namespace keystonemiddleware.auth_token
+
+# generate the sample policy
+PYTHONPATH=. oslopolicy-sample-generator --config-file=etc/policy/octavia-policy-generator.conf --output etc/octavia/policy.json
+
+%install
+%{py3_install}
+
+# Setup directories
+install -d -m 750 %{buildroot}%{_localstatedir}/{lib,log,cache}/octavia
+install -d -m 755 %{buildroot}%{_sysconfdir}/octavia
+install -d -m 755 %{buildroot}%{_sysconfdir}/octavia/octavia.conf.d
+
+# install tmpfiles
+install -D -m 644 %{SOURCE2} %{buildroot}/%_tmpfilesdir/%name.conf
+
+# install config files
+mv %{buildroot}%{_prefix}/%{_sysconfdir}/octavia/*  %{buildroot}/%{_sysconfdir}/octavia/
+install -D -m 640 %{SOURCE3} %{buildroot}/%{_sysconfdir}/octavia/octavia.conf.d/010-octavia.conf
+install -p -D -m 644 etc/octavia/octavia.conf %{buildroot}/%{_sysconfdir}/octavia/octavia.conf
+install -p -D -m 640 %{SOURCE50} %{buildroot}%{_sysconfdir}/octavia/README.config
+install -p -D -m 644 etc/octavia/policy.json %{buildroot}%{_sysconfdir}/octavia/
+
+# install systemd service files
+install -p -D -m 644 %{SOURCE20} %{buildroot}%{_unitdir}/openstack-octavia-api.service
+install -p -D -m 644 %{SOURCE21} %{buildroot}%{_unitdir}/openstack-octavia-amphora-agent.service
+install -p -D -m 644 %{SOURCE22} %{buildroot}%{_unitdir}/openstack-octavia-health-manager.service
+install -p -D -m 644 %{SOURCE23} %{buildroot}%{_unitdir}/openstack-octavia-housekeeping.service
+install -p -D -m 644 %{SOURCE24} %{buildroot}%{_unitdir}/openstack-octavia-worker.service
+install -p -D -m 644 %{SOURCE25} %{buildroot}%{_unitdir}/openstack-octavia-driver-agent.service
+
+# install symlinks on SUSE
+%if 0%{?suse_version}
+mkdir -p %{buildroot}%{_sbindir}
+ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-api
+ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-amphora-agent
+ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-health-manager
+ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-housekeeping
+ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-worker
+ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-driver-agent
+%endif
+
+# install network scripts on SUSE
+%if 0%{?suse_version}
+install -m 755 %{SOURCE60} %{buildroot}%{_sbindir}/ifup.ns
+install -m 755 %{SOURCE61} %{buildroot}%{_sbindir}/ifup-route
+install -m 755 %{SOURCE62} %{buildroot}%{_sbindir}/dhclient-script.ns
+%endif
+
+# Install logrotate
+install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/openstack-octavia
+
+# Install diskimage-create files
+cp -vr elements/ %{buildroot}%{_datadir}/octavia-image-elements
+install -m 755 diskimage-create/diskimage-create.sh %{buildroot}%{_bindir}/octavia-diskimage-create.sh
+# Remove setuptools installed diskimage-create files
+rm -rf %{buildroot}%{_datadir}/octavia/diskimage-create
+rm -rf %{buildroot}%{_datadir}/octavia/LICENSE
+rm -rf %{buildroot}%{_datadir}/octavia/README.rst
+
+%pre
+%openstack_pre_user_group_create octavia octavia /sbin/nologin
+exit 0
+
+%post
+%tmpfiles_create %{_tmpfilesdir}/%{name}.conf
+
+%post api
+%systemd_post %{name}-api.service
+
+%preun api
+%systemd_preun %{name}-api.service
+
+%postun api
+%systemd_postun_with_restart %{name}-api.service
+
+%files
+%license LICENSE
+%dir %attr(0750, root, octavia) %{_sysconfdir}/octavia
+%dir %attr(0750, root, octavia) %{_sysconfdir}/octavia/octavia.conf.d/
+%{_sysconfdir}/octavia/README.config
+%config(noreplace) %attr(0640, root, octavia) %{_sysconfdir}/octavia/octavia.conf
+%config(noreplace) %attr(0640, root, octavia) %{_sysconfdir}/octavia/octavia.conf.d/010-octavia.conf
+%config(noreplace) %{_sysconfdir}/logrotate.d/openstack-octavia
+%config(noreplace) %{_sysconfdir}/octavia/policy.json
+%_tmpfilesdir/%name.conf
+%dir %attr(0750, octavia, root) %{_localstatedir}/log/octavia
+%dir %attr(0750, octavia, root) %{_localstatedir}/lib/octavia
+%{_bindir}/octavia-status
+%{_bindir}/octavia-db-manage
+%{_bindir}/haproxy-vrrp-check
+
+%files -n python3-octavia
+%license LICENSE
+%{python3_sitelib}/octavia*
+
+%files api
+%license LICENSE
+%{_bindir}/octavia-api
+%{_bindir}/octavia-wsgi
+%{_unitdir}/openstack-octavia-api.service
+%if 0%{?suse_version}
+%{_sbindir}/rc%{name}-api
+%endif
+
+%files amphora-agent
+%license LICENSE
+%{_bindir}/amphora-agent
+%{_unitdir}/openstack-octavia-amphora-agent.service
+%if 0%{?suse_version}
+%{_sbindir}/rc%{name}-amphora-agent
+%endif
+
+%files health-manager
+%license LICENSE
+%{_bindir}/octavia-health-manager
+%{_unitdir}/openstack-octavia-health-manager.service
+%if 0%{?suse_version}
+%{_sbindir}/rc%{name}-health-manager
+%endif
+
+%files housekeeping
+%license LICENSE
+%{_bindir}/octavia-housekeeping
+%{_unitdir}/openstack-octavia-housekeeping.service
+%if 0%{?suse_version}
+%{_sbindir}/rc%{name}-housekeeping
+%endif
+
+%files worker
+%license LICENSE
+%{_bindir}/octavia-worker
+%{_unitdir}/openstack-octavia-worker.service
+%if 0%{?suse_version}
+%{_sbindir}/rc%{name}-worker
+%endif
+
+%files driver-agent
+%license LICENSE
+%{_bindir}/octavia-driver-agent
+%{_unitdir}/openstack-octavia-driver-agent.service
+%if 0%{?suse_version}
+%{_sbindir}/rc%{name}-driver-agent
+%endif
+
+%files diskimage-create
+%license LICENSE
+%doc diskimage-create/README.rst
+%{_bindir}/octavia-diskimage-create.sh
+%{_datadir}/octavia-image-elements
+
+%if 0%{?suse_version}
+%files network-namespace-scripts
+%defattr(-,root,root,-)
+%license LICENSE
+%{_sbindir}/ifup.ns
+%{_sbindir}/ifup-route
+%{_sbindir}/dhclient-script.ns
+%endif
+
+%changelog
+

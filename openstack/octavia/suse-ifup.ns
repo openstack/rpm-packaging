@@ -1,0 +1,334 @@
+#!/bin/bash
+#
+# Namespace ifup network interface configuration compatibility script.
+#
+# Copyright (c) 2018 SUSE LINUX Products GmbH, Nuernberg, Germany.
+#
+# This program is free software; you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation; either version 2 of the License, or (at your option) any later
+# version.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# Authors: Marius Tomaschewski <mt@suse.de>
+#          Pawel Wieczorkiewicz <pwieczorkiewicz@suse.de>
+#          Swaminathan Vasudevan <svasudevan@suse.com>
+#
+###
+
+unset POSIXLY_CORRECT ; set +o posix # we are using non-posix bash features
+export PATH=/sbin:/usr/sbin:/bin:/usr/bin
+if test -f /etc/sysconfig/network/config ; then
+	.  /etc/sysconfig/network/config
+fi
+
+R_SUCCESS=0        # interface has been set up
+R_ERROR=1          # any unspecified error
+R_USAGE=2          # wrong usage
+R_NOTIMPL=3        # feature not implemented
+R_NOTALLOWED=4     # insufficient privilege
+R_NODEV=7          # the given interface does not exist
+R_INACTIVE=5       # the interface is not up and it should not
+R_NOTRUNNING=7     # the interface is not up but it should be up
+R_NOCONFIG=9       # we could not find a matching configuration file
+R_DHCP_BG=12       # dhcp client is running in bg, ip may be not yet applied
+
+usage ()
+{
+	echo "Usage: if{up.ns,down.ns,status.ns} [<config>] <interface> [-o <options>]"
+	echo ""
+	echo "Common options are:"
+	echo "    debug    : be verbose"
+	echo ""
+	echo "Options for ifdown are:"
+	echo "    force    : Forces persistent (nfsroot type) interface down"
+	echo ""
+        echo "Options ifstatus shows the dev state"
+        echo ""
+	echo "Unknown options are simply ignored, so be careful."
+	echo ""
+	exit $R_USAGE
+}
+
+mask2pfxlen()
+{
+	local i octet width=0 mask=(${1//./ })
+	test ${#mask[@]} -eq 4 || return 1
+	for octet in 0 1 2 3; do
+		test "${mask[octet]}" -ge 0 -a \
+		     "${mask[octet]}" -le 255 2>/dev/null \
+			|| return 1
+		for i in 128 192 224 240 248 252 254 255; do
+			test ${mask[octet]} -ge $i && ((width++))
+		done
+	done
+	echo $width
+	return 0
+}
+
+is_iface_up () {
+        test -z "$1" && return 1
+        test -d /sys/class/net/$1 || return 1
+        case "`LC_ALL=POSIX ip link show $1 2>/dev/null`" in
+                *$1*UP*) ;;
+                *) return 1 ;;
+        esac
+}
+
+# INTERFACE=`read_cached_config_data <type> <name> [PFX=<prefix>]`
+# needs at least 2 arguments
+# - the type of data to read: config, options, state, ...
+# - the configuration or interface name
+# - the file prefix is optional and must be given in the form PFX=<prefix>
+#   (default prefix is 'if-'
+# prints the wanted data
+read_cached_config_data () {
+        touch $RUN_FILES_BASE/tmp/test 2>/dev/null || return 1
+        local PFX
+        test -n "$3" && eval $3
+        : ${PFX:=if-}
+        if [ -r "$RUN_FILES_BASE/$PFX$2" ] ; then
+                while IFS== read a b; do
+                        case $a in
+                                $1) echo "$b" ;;
+                                 *) ;;
+                        esac
+                done < $RUN_FILES_BASE/$PFX$2
+        fi
+}
+mesg()
+{
+	local p s t
+
+	case $1 in
+	-p) shift; p="$1" ; shift ;;
+	esac
+	test $PPID -eq 1 || s="-s"
+	test "X$SCRIPTNAME" = "X" || t="$SCRIPTNAME[$$]"
+
+	printf -- "%s\n" "$*" | logger ${p:+-p $p} ${s:+-s} ${t:+-t "$t"}
+}
+
+debug()
+{
+	test "X${DEBUG:-no}" != "Xno" && mesg -p debug "$*"
+}
+
+SCRIPTNAME=${0##*/}
+case $SCRIPTNAME in
+	ifup.ns|ifdown.ns|ifstatus.ns)		;;
+	*)		usage			;;
+esac
+
+INTERFACE=""
+CONFIG=""
+
+CONFIGDIR="/etc/sysconfig/network"
+case $1 in
+	""|-h|*help)	usage	;;
+esac
+INTERFACE=$1
+if [ -n "$1" -a "$1" != "-o" ] ; then
+	CONFIG=$INTERFACE
+	INTERFACE=$1
+else
+	CONFIG=$INTERFACE
+fi
+shift
+test "$1" = "-o" && shift
+OPTIONS="$@"
+
+case $CONFIG in
+""|.|..|*/*)
+	exit $R_NOCONFIG
+	;;
+*)
+	test -f "$CONFIGDIR/ifcfg-$CONFIG" && \
+	     .  "$CONFIGDIR/ifcfg-$CONFIG" || \
+	     exit $R_NOCONFIG
+	;;
+esac
+
+opt_debug=""
+opt_quiet=""
+opt_force=""
+while [ $# -gt 0 ]; do
+	case $1 in
+	debug)		DEBUG="yes"				;;
+	debug=*)	DEBUG="${1#debug=}"			;;
+	quiet)		opt_quiet="--quiet"			;;
+	force)          opt_force="--force device-exists"	;;
+	*)		debug "unknown option \"$1\""		;;
+	esac
+	shift
+done
+
+# apply debug from config or argument
+case $DEBUG in
+no|"")	DEBUG="no"			;;
+yes)	opt_debug="--debug most"	;;
+*)	opt_debug="--debug ${DEBUG}"	;;
+esac
+
+ns_ip="/sbin/ip"
+start_dhcp4()
+{
+	DH_OPTIONS="-4 $DHCLIENT_OPTIONS"
+	DH_CONFIG="${DHCLIENT_CONFIG:-/etc/dhclient.conf}"
+	DH_SCRIPT="${DHCLIENT_SCRIPT:-/sbin/dhclient-script.ns}"
+	DH_LEASE="/var/run/dhcp/dhclient.${INTERFACE}.lease"
+	if test -f "${DH_CONFIG}.${INTERFACE}" ; then
+		DH_CONFIG="${DH_CONFIG}.${INTERFACE}"
+	fi
+	dhclient $DH_OPTIONS -cf "$DH_CONFIG" -sf "$DH_SCRIPT" -lf "$DH_LEASE" "$INTERFACE"
+}
+start_dhcp6()
+{
+	OPTIONS="-6 $DHCLIENT6_OPTIONS"
+	DH_CONFIG="${DHCLIENT6_CONFIG:-/etc/dhclient6.conf}"
+	DH_SCRIPT="${DHCLIENT6_SCRIPT:-/sbin/dhclient-script.ns}"
+	DH_LEASE="/var/run/dhcp6/dhclient.${INTERFACE}.lease"
+	if test -f "${DH_CONFIG}.${INTERFACE}" ; then
+		DH_CONFIG="${DH_CONFIG}.${INTERFACE}"
+	fi
+	dhclient $DH_OPTIONS -cf "$DH_CONFIG" -sf "$DH_SCRIPT" -lf "$DH_LEASE" "$INTERFACE"
+}
+
+retcode=$R_SUCCESS
+
+case $SCRIPTNAME in
+	ifup.ns)
+		case $BOOTPROTO in
+			dhcp4)
+				retcode=$R_DHCP_BG
+				start_dhcp4 || retcode=$R_NOTRUNNING
+				# TODO: check if dhcp finished already to
+                                # set success status
+				;;
+			dhcp6)
+				retcode=$R_DHCP_BG
+				start_dhcp6 || retcode=$R_NOTRUNNING
+				# TODO: check if dhcp finished already to
+                                # set success status
+				;;
+			dhcp)
+				retcode=$R_DHCP_BG
+				start_dhcp4 || retcode=$R_NOTRUNNING
+				start_dhcp6 || retcode=$R_NOTRUNNING
+				# TODO: check if dhcp finished already to
+                                # set success status
+				;;
+			static)
+				# always applied, also in dhcp case
+				;;
+		esac
+
+		if [ -n "$MTU" ] ; then
+		ip link set $INTERFACE mtu $MTU
+		fi
+
+		if ! ip link set up dev $INTERFACE \
+			${LLADDR:+address $LLADDR} $LINK_OPTIONS ; then
+			echo 2>&1 "Cannot setup interface $INTERFACE."
+			retcode=$R_NOTRUNNING
+		else
+			#
+			# Apply IP addresses
+			#
+			for IPVAR in ${!IPADDR*}; do
+				SUFFIX=${IPVAR#IPADDR}
+				if [ -n "$SUFFIX" ] ; then
+					eval REMOTE_IPADDR=\$REMOTE_IPADDR$SUFFIX
+					eval BROADCAST=\$BROADCAST$SUFFIX
+					eval NETMASK=\$NETMASK$SUFFIX
+					eval PREFIXLEN=\$PREFIXLEN$SUFFIX
+					eval IP_OPTIONS=\$IP_OPTIONS$SUFFIX
+					eval SCOPE=\$SCOPE$SUFFIX
+					eval LABEL=\$LABEL$SUFFIX
+				fi
+				IPADDR=${!IPVAR}
+				test -z "$IPADDR"    && continue
+				case $IPADDR in
+				*/*)
+					PREFIXLEN=${IPADDR#*/}
+					IPADDR=${IPADDR%/*}
+					;;
+				*)
+					if [ -z "$PREFIXLEN" ] ; then
+						PREFIXLEN=`mask2pfxlen $NETMASK`
+					fi
+				;;
+				esac
+				case $IPADDR in
+					*:*)	unset LABEL NETMASK BROADCAST	;;
+					*)	test -z "$BROADCAST" && BROADCAST="+" ;;
+				esac
+
+				MESSAGE=`\
+					ip addr add dev $INTERFACE \
+					"local" $IPADDR${PREFIXLEN:+/$PREFIXLEN} \
+					${REMOTE_IPADDR:+peer $REMOTE_IPADDR} \
+					${BROADCAST:+brd "$BROADCAST"} \
+					${LABEL:+label "$INTERFACE:${LABEL#$INTERFACE:}"} \
+					${SCOPE:+scope $SCOPE} \
+					$IP_OPTIONS \
+					2>&1 `
+				case $? in
+					0)	;;
+					2)
+						case $MESSAGE in
+						# Address is already set.
+						RTNET*File*exists*| \
+						RTNET*No*buffer*space*available*) ;;
+						*)	retcode=$R_NOTRUNNING	  ;;
+						esac
+						;;
+					*)	retcode=$R_NOTRUNNING ;;
+				esac
+		done
+		#
+		# Apply routes
+		#
+		## TODO: -> man ifroute(5)
+                ifup-route $CONFIG $INTERFACE ${OPTIONS:+-o $OPTIONS}
+		fi
+	;;
+	ifdown.ns)
+		case $BOOTPROTO in
+			dhcp4)
+				$ns_ip -4 addr flush dev $INTERFACE 
+                		$ns_ip link set $INTERFACE down
+				retcode=$R_SUCCESS
+				;;
+			dhcp6)
+                		$ns_ip -6 link set $INTERFACE down
+				retcode=$R_SUCCESS
+				;;
+			dhcp)
+				$ns_ip -4 addr flush dev $INTERFACE 
+                		$ns_ip link set $INTERFACE down
+                		$ns_ip -6 link set $INTERFACE down
+				retcode=$R_SUCCESS
+				;;
+			static)
+				# always applied, also in dhcp case
+				$ns_ip -4 addr flush dev $INTERFACE 
+                		$ns_ip link set $INTERFACE down
+				;;
+		esac
+                ifdown-route $CONFIG $INTERFACE ${OPTIONS:+-o $OPTIONS}
+	;;
+	ifstatus.ns)
+                $ns_ip link show\
+                        "$INTERFACE"
+                retcode=$R_SUCCESS
+        ;;
+esac
+exit $retcode

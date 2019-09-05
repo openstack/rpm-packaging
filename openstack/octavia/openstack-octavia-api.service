@@ -1,0 +1,16 @@
+[Unit]
+Description=Provides the OpenStack Octavia API service
+After=syslog.target network.target
+
+[Service]
+Type=simple
+User=octavia
+Group=octavia
+WorkingDirectory=/var/lib/octavia
+ExecStartPre=-/usr/bin/octavia-db-manage upgrade head
+ExecStart=/usr/bin/octavia-api
+KillMode=process
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
