@@ -1,0 +1,513 @@
+{% set pypi_name = 'designate' %}
+{% set source = fetch_source('https://tarballs.openstack.org/designate/designate-master.tar.gz') %}
+{% set upstream_version = upstream_version() %}
+{% set rpm_release = '1' %}
+%global with_doc 1
+%if 0%{?rhel} || 0%{?fedora}
+%global rdo 1
+%endif
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
+Epoch:          {{ epoch('designate') }}
+Summary:        OpenStack DNS Service (Designate)
+License:        {{ license('Apache-2.0') }}
+URL:            https://launchpad.net/designate
+Source0:        {{ source|basename }}
+Source1:        openstack-designate.logrotate
+Source2:        openstack-designate.sudoers
+Source3:        openstack-designate.tmpfiles
+Source4:        openstack-designate.defaultconf
+# systemd service files
+Source20:       openstack-designate-api.service
+Source21:       openstack-designate-sink.service
+Source22:       openstack-designate-central.service
+Source23:       openstack-designate-agent.service
+Source24:       openstack-designate-producer.service
+Source25:       openstack-designate-worker.service
+Source26:       openstack-designate-mdns.service
+Source27:       openstack-designate-pool-manager.service
+Source28:       openstack-designate-zone-manager.service
+Source50:       openstack-designate.README.config
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py3('keystoneauth1') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('oslo.concurrency') }}
+BuildRequires:  {{ py3('oslo.config') }}
+BuildRequires:  {{ py3('oslo.context') }}
+BuildRequires:  {{ py3('oslo.db') }}
+BuildRequires:  {{ py3('oslo.i18n') }}
+BuildRequires:  {{ py3('oslo.log') }}
+BuildRequires:  {{ py3('oslo.messaging') }}
+BuildRequires:  {{ py3('oslo.middleware') }}
+BuildRequires:  {{ py3('oslo.policy') }}
+BuildRequires:  {{ py3('oslo.reports') }}
+BuildRequires:  {{ py3('oslo.rootwrap') }}
+BuildRequires:  {{ py3('oslo.serialization') }}
+BuildRequires:  {{ py3('oslo.service') }}
+BuildRequires:  {{ py3('oslo.upgradecheck') }}
+BuildRequires:  {{ py3('oslo.utils') }}
+BuildRequires:  {{ py3('oslo.versionedobjects') }}
+BuildRequires:  {{ py3('oslotest') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('python-memcached') }}
+BuildRequires:  {{ py3('requests') }}
+BuildRequires:  {{ py3('requests-mock') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('tooz') }}
+BuildRequires:  sudo
+Requires:       logrotate
+Requires:       python3-{{ pypi_name }} = %{epoch}:%{version}-%{release}
+BuildArch:      noarch
+%if 0%{?suse_version}
+BuildRequires:  systemd-rpm-macros
+Requires(pre):  pwdutils
+%{?systemd_requires}
+%else
+BuildRequires:  systemd
+Requires(post): systemd
+Requires(postun): systemd
+Requires(pre):  shadow-utils
+Requires(preun): systemd
+%endif
+
+%description
+Designate is an OpenStack inspired DNSaaS.
+
+%package -n python3-{{ pypi_name }}
+Summary:        OpenStack DNS Service (Designate) - Python module
+Group:          Development/Languages/Python
+Requires:       {{ py3('Babel') }}
+Requires:       {{ py3('Flask') }}
+Requires:       {{ py3('Jinja2') }}
+Requires:       {{ py3('Paste') }}
+Requires:       {{ py3('PasteDeploy') }}
+Requires:       {{ py3('SQLAlchemy') }}
+Requires:       {{ py3('WebOb') }}
+Requires:       {{ py3('Werkzeug') }}
+Requires:       {{ py3('debtcollector') }}
+Requires:       {{ py3('python-designateclient') }}
+Requires:       {{ py3('dnspython') }}
+Requires:       {{ py3('eventlet') }}
+Requires:       {{ py3('futurist') }}
+Requires:       {{ py3('greenlet') }}
+Requires:       {{ py3('jsonschema') }}
+Requires:       {{ py3('keystoneauth1') }}
+Requires:       {{ py3('keystonemiddleware') }}
+Requires:       {{ py3('monasca-statsd') }}
+Requires:       {{ py3('netaddr') }}
+Requires:       {{ py3('python-neutronclient') }}
+Requires:       {{ py3('os-win') }}
+Requires:       {{ py3('oslo.concurrency') }}
+Requires:       {{ py3('oslo.config') }}
+Requires:       {{ py3('oslo.context') }}
+Requires:       {{ py3('oslo.db') }}
+Requires:       {{ py3('oslo.i18n') }}
+Requires:       {{ py3('oslo.log') }}
+Requires:       {{ py3('oslo.messaging') }}
+Requires:       {{ py3('oslo.middleware') }}
+Requires:       {{ py3('oslo.policy') }}
+Requires:       {{ py3('oslo.reports') }}
+Requires:       {{ py3('oslo.rootwrap') }}
+Requires:       {{ py3('oslo.serialization') }}
+Requires:       {{ py3('oslo.service') }}
+Requires:       {{ py3('oslo.upgradecheck') }}
+Requires:       {{ py3('oslo.utils') }}
+Requires:       {{ py3('oslo.versionedobjects') }}
+Requires:       {{ py3('pbr') }}
+Requires:       {{ py3('pecan') }}
+Requires:       {{ py3('python-memcached') }}
+Requires:       {{ py3('requests') }}
+Requires:       {{ py3('six') }}
+Requires:       {{ py3('sqlalchemy-migrate') }}
+Requires:       {{ py3('stevedore') }}
+Requires:       {{ py3('suds-jurko') }}
+Requires:       {{ py3('tenacity') }}
+Requires:       {{ py3('tooz') }}
+Requires:       sudo
+
+%description -n python3-{{ pypi_name }}
+Designate is an OpenStack inspired DNSaaS.
+
+This package contains the Python module.
+
+%if 0%{?with_doc}
+%package doc
+Summary:        OpenStack DNS Service (Designate) - Documentation
+Group:          Documentation/HTML
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
+BuildRequires:  {{ py3('sphinxcontrib-blockdiag') }}
+BuildRequires:  {{ py3('sphinxcontrib-httpdomain') }}
+
+%description doc
+Designate is an OpenStack inspired DNSaaS.
+
+This package contains the documentation.
+%endif
+
+%package api
+Summary:        OpenStack DNS Service (Designate) - API
+Group:          Development/Languages/Python
+Requires:       python3-{{ pypi_name }} = %{epoch}:%{version}-%{release}
+
+%description api
+Designate is an OpenStack inspired DNSaaS.
+
+This package contains the API server.
+
+%package sink
+Summary:        OpenStack DNS Service (Designate) - Sink
+Group:          Development/Languages/Python
+Requires:       python3-{{ pypi_name }} = %{epoch}:%{version}-%{release}
+
+%description sink
+Designate is an OpenStack inspired DNSaaS.
+
+This package contains the sink server.
+
+%package central
+Summary:        OpenStack DNS Service (Designate) - Central
+Group:          Development/Languages/Python
+Requires:       python3-{{ pypi_name }} = %{epoch}:%{version}-%{release}
+
+%description central
+Designate is an OpenStack inspired DNSaaS.
+
+This package contains the central server.
+
+%package agent
+Summary:        OpenStack DNS Service (Designate) - Agent
+Group:          Development/Languages/Python
+Requires:       python3-{{ pypi_name }} = %{epoch}:%{version}-%{release}
+
+%description agent
+Designate is an OpenStack inspired DNSaaS.
+
+This package contains the agent.
+
+%package producer
+Summary:        OpenStack DNS Service (Designate) - Producer
+Group:          Development/Languages/Python
+Requires:       python3-{{ pypi_name }} = %{epoch}:%{version}-%{release}
+
+%description producer
+Designate is an OpenStack inspired DNSaaS.
+
+This package contains the producer.
+
+%package worker
+Summary:        OpenStack DNS Service (Designate) - Worker
+Group:          Development/Languages/Python
+Requires:       python3-{{ pypi_name }} = %{epoch}:%{version}-%{release}
+
+%description worker
+Designate is an OpenStack inspired DNSaaS.
+
+This package contains the worker.
+
+%package mdns
+Summary:        OpenStack DNS Service (Designate) - mdns
+Group:          Development/Languages/Python
+Requires:       python3-{{ pypi_name }} = %{epoch}:%{version}-%{release}
+
+%description mdns
+Designate is an OpenStack inspired DNSaaS.
+
+This package contains the mdns.
+
+%package pool-manager
+Summary:        OpenStack DNS Service (Designate) - pool manager
+Group:          Development/Languages/Python
+Requires:       python3-{{ pypi_name }} = %{epoch}:%{version}-%{release}
+
+%description pool-manager
+Designate is an OpenStack inspired DNSaaS.
+
+This package contains the pool manager.
+
+%package zone-manager
+Summary:        OpenStack DNS Service (Designate) - zone manager
+Group:          Development/Languages/Python
+Requires:       python3-{{ pypi_name }} = %{epoch}:%{version}-%{release}
+
+%description zone-manager
+Designate is an OpenStack inspired DNSaaS.
+
+This package contains the zone manager.
+
+%prep
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
+%py_req_cleanup
+
+%build
+%{py3_build}
+
+# build documentation
+%if 0%{?with_doc}
+PYTHONPATH=. PBR_VERSION={{ upstream_version }} %sphinx_build -b html doc/source doc/build/html
+rm -rf doc/build/html/.{doctrees,buildinfo}
+%endif
+
+# generate the sample config files
+PYTHONPATH=. oslo-config-generator --config-file etc/designate/designate-config-generator.conf --output-file etc/designate/designate.conf.sample
+# generate the sample policy
+PYTHONPATH=. oslopolicy-sample-generator --config-file=etc/designate/designate-policy-generator.conf --output etc/designate/policy.json.sample
+
+%install
+%{py3_install}
+
+# Setup directories
+install -d -m 750 %{buildroot}%{_localstatedir}/{lib,log,cache}/designate
+install -d -m 755 %{buildroot}%{_sysconfdir}/designate
+install -d -m 755 %{buildroot}%{_sysconfdir}/designate/designate.conf.d
+
+# Install logrotate
+install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/openstack-designate
+
+# Install sudoers
+install -p -D -m 440 %{SOURCE2} %{buildroot}%{_sysconfdir}/sudoers.d/openstack-designate
+
+# install tmpfiles
+install -D -m 644 %{SOURCE3} %{buildroot}/%_tmpfilesdir/%{name}.conf
+
+# install rootwrap filters
+install -d -m 755 %{buildroot}%{_datarootdir}/designate/rootwrap
+mv %{buildroot}/%{_prefix}/%{_sysconfdir}/designate/rootwrap.d/* %{buildroot}%{_datarootdir}/designate/rootwrap
+
+# install config files
+install -p -D -m 640 %{SOURCE50} %{buildroot}%{_sysconfdir}/designate/README.config
+install -p -D -m 640 %{SOURCE4} %{buildroot}%{_sysconfdir}/designate/designate.conf.d/010-designate.conf
+install -p -D -m 644 etc/designate/rootwrap.conf.sample %{buildroot}%{_sysconfdir}/designate/rootwrap.conf
+install -D -m 644 etc/designate/designate.conf.sample %{buildroot}%{_sysconfdir}/designate/
+install -D -m 644 etc/designate/policy.json.sample %{buildroot}%{_sysconfdir}/designate/
+install -D -m 644 etc/designate/pools.yaml.sample-bind %{buildroot}%{_sysconfdir}/designate/pools.yaml
+mv %{buildroot}/%{_prefix}/%{_sysconfdir}/designate/* %{buildroot}%{_sysconfdir}/designate/.
+for f in %{buildroot}%{_sysconfdir}/designate/*.sample ; do mv $f ${f/.sample} ; done
+
+# install systemd service files
+install -p -D -m 644 %{SOURCE20} %{buildroot}%{_unitdir}/openstack-designate-api.service
+install -p -D -m 644 %{SOURCE21} %{buildroot}%{_unitdir}/openstack-designate-sink.service
+install -p -D -m 644 %{SOURCE22} %{buildroot}%{_unitdir}/openstack-designate-central.service
+install -p -D -m 644 %{SOURCE23} %{buildroot}%{_unitdir}/openstack-designate-agent.service
+install -p -D -m 644 %{SOURCE24} %{buildroot}%{_unitdir}/openstack-designate-producer.service
+install -p -D -m 644 %{SOURCE25} %{buildroot}%{_unitdir}/openstack-designate-worker.service
+install -p -D -m 644 %{SOURCE26} %{buildroot}%{_unitdir}/openstack-designate-mdns.service
+install -p -D -m 644 %{SOURCE27} %{buildroot}%{_unitdir}/openstack-designate-pool-manager.service
+install -p -D -m 644 %{SOURCE28} %{buildroot}%{_unitdir}/openstack-designate-zone-manager.service
+
+# install symlinks on SUSE
+%if 0%{?suse_version}
+mkdir -p %{buildroot}%{_sbindir}
+ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-api
+ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-sink
+ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-central
+ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-agent
+ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-producer
+ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-worker
+ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-mdns
+ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-pool-manager
+ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-zone-manager
+%endif
+
+%pre
+%openstack_pre_user_group_create designate designate /sbin/nologin
+exit 0
+
+%post
+%tmpfiles_create %{_tmpfilesdir}/%{name}.conf
+
+#TODO: enable testing when all BuildRequires are py3 ready
+##%%check
+##%stestr run
+
+%post api
+%systemd_post %{name}-api.service
+
+%preun api
+%systemd_preun %{name}-api.service
+
+%postun api
+%systemd_postun_with_restart %{name}-api.service
+
+%post sink
+%systemd_post %{name}-sink.service
+
+%preun sink
+%systemd_preun %{name}-sink.service
+
+%postun sink
+%systemd_postun_with_restart %{name}-sink.service
+
+%post central
+%systemd_post %{name}-central.service
+
+%preun central
+%systemd_preun %{name}-central.service
+
+%postun central
+%systemd_postun_with_restart %{name}-central.service
+
+%post agent
+%systemd_post %{name}-agent.service
+
+%preun agent
+%systemd_preun %{name}-agent.service
+
+%postun agent
+%systemd_postun_with_restart %{name}-agent.service
+
+%post producer
+%systemd_post %{name}-producer.service
+
+%preun producer
+%systemd_preun %{name}-producer.service
+
+%postun producer
+%systemd_postun_with_restart %{name}-producer.service
+
+%post worker
+%systemd_post %{name}-worker.service
+
+%preun worker
+%systemd_preun %{name}-worker.service
+
+%postun worker
+%systemd_postun_with_restart %{name}-worker.service
+
+%post mdns
+%systemd_post %{name}-mdns.service
+
+%preun mdns
+%systemd_preun %{name}-mdns.service
+
+%postun mdns
+%systemd_postun_with_restart %{name}-mdns.service
+
+%post pool-manager
+%systemd_post %{name}-pool-manager.service
+
+%preun pool-manager
+%systemd_preun %{name}-pool-manager.service
+
+%postun pool-manager
+%systemd_postun_with_restart %{name}-pool-manager.service
+
+%post zone-manager
+%systemd_post %{name}-zone-manager.service
+
+%preun zone-manager
+%systemd_preun %{name}-zone-manager.service
+
+%postun zone-manager
+%systemd_postun_with_restart %{name}-zone-manager.service
+
+%files
+%license LICENSE
+%dir %attr(0750, designate, designate) %{_localstatedir}/log/designate
+%dir %attr(0750, designate, designate) %{_localstatedir}/lib/designate
+%dir %attr(0750, root, designate) %{_sysconfdir}/designate
+%dir %attr(0750, root, designate) %{_sysconfdir}/designate/designate.conf.d/
+%{_sysconfdir}/designate/README.config
+%config(noreplace) %attr(0640, designate, designate) %{_sysconfdir}/designate/designate.conf
+%config(noreplace) %attr(0640, designate, designate) %{_sysconfdir}/designate/designate.conf.d/010-designate.conf
+%config(noreplace) %attr(-, designate, designate) %{_sysconfdir}/designate/api-paste.ini
+%config(noreplace) %attr(-, root, designate) %{_sysconfdir}/designate/rootwrap.conf
+%config(noreplace) %{_sysconfdir}/logrotate.d/openstack-designate
+%config(noreplace) %{_sysconfdir}/sudoers.d/openstack-designate
+%config(noreplace) %{_sysconfdir}/designate/policy.json
+%config(noreplace) %{_sysconfdir}/designate/pools.yaml
+%_tmpfilesdir/%name.conf
+%dir %{_datarootdir}/designate
+%dir %{_datarootdir}/designate/rootwrap
+%{_datarootdir}/designate/rootwrap/bind9.filters
+%{_datarootdir}/designate/rootwrap/djbdns.filters
+%{_datarootdir}/designate/rootwrap/knot2.filters
+%{_bindir}/designate-manage
+%{_bindir}/designate-rootwrap
+%{_bindir}/designate-status
+
+%files -n python3-designate
+%license LICENSE
+%{python3_sitelib}/designate*
+
+%if 0%{?with_doc}
+%files doc
+%license LICENSE
+%doc doc/build/html
+%endif
+
+%files api
+%license LICENSE
+%{_bindir}/designate-api
+%{_unitdir}/openstack-designate-api.service
+%if 0%{?suse_version}
+%{_sbindir}/rc%{name}-api
+%endif
+
+%files sink
+%license LICENSE
+%{_bindir}/designate-sink
+%{_unitdir}/openstack-designate-sink.service
+%if 0%{?suse_version}
+%{_sbindir}/rc%{name}-sink
+%endif
+
+%files central
+%license LICENSE
+%{_bindir}/designate-central
+%{_unitdir}/openstack-designate-central.service
+%if 0%{?suse_version}
+%{_sbindir}/rc%{name}-central
+%endif
+
+%files agent
+%license LICENSE
+%{_bindir}/designate-agent
+%{_unitdir}/openstack-designate-agent.service
+%if 0%{?suse_version}
+%{_sbindir}/rc%{name}-agent
+%endif
+
+%files producer
+%license LICENSE
+%{_bindir}/designate-producer
+%{_unitdir}/openstack-designate-producer.service
+%if 0%{?suse_version}
+%{_sbindir}/rc%{name}-producer
+%endif
+
+%files worker
+%license LICENSE
+%{_bindir}/designate-worker
+%{_unitdir}/openstack-designate-worker.service
+%if 0%{?suse_version}
+%{_sbindir}/rc%{name}-worker
+%endif
+
+%files mdns
+%license LICENSE
+%{_bindir}/designate-mdns
+%{_unitdir}/openstack-designate-mdns.service
+%if 0%{?suse_version}
+%{_sbindir}/rc%{name}-mdns
+%endif
+
+%files pool-manager
+%license LICENSE
+%{_bindir}/designate-pool-manager
+%{_unitdir}/openstack-designate-pool-manager.service
+%if 0%{?suse_version}
+%{_sbindir}/rc%{name}-pool-manager
+%endif
+
+%files zone-manager
+%license LICENSE
+%{_bindir}/designate-zone-manager
+%{_unitdir}/openstack-designate-zone-manager.service
+%if 0%{?suse_version}
+%{_sbindir}/rc%{name}-zone-manager
+%endif
+
+%changelog
+
