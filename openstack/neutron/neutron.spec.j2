@@ -188,6 +188,7 @@ networks using VLAN or VXLAN using Linuxbridge technology.
 
 %package metadata-agent
 Summary:        Neutron metadata Agent
+Requires:       haproxy
 Requires:       {{ py2name() }} = %{epoch}:%{version}-%{release}
 
 %description metadata-agent
