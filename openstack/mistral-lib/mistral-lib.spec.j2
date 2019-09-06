@@ -1,23 +1,28 @@
-Name:           {{ py2name('mistral-lib') }}
-Version:        1.2.0
-Release:        0
+{% set pypi_name = 'mistral-lib' %}
+{% set upstream_version = upstream_version('1.2.0') %}
+{% set source = url_pypi() %}
+{% set rpm_release = '1' %}
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
 Summary:        Mistral shared routings and utilities
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            http://www.openstack.org/
-Source0:        https://files.pythonhosted.org/packages/source/m/mistral-lib/mistral-lib-%{version}.tar.gz
+Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('eventlet') }}
-BuildRequires:  {{ py2pkg('oslo.log') }}
-BuildRequires:  {{ py2pkg('oslo.serialization') }}
-BuildRequires:  {{ py2pkg('oslotest') }}
-BuildRequires:  {{ py2pkg('stestr') }}
-BuildRequires:  {{ py2pkg('testtools') }}
+BuildRequires:  {{ py2pkg('eventlet', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.log', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.serialization', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('eventlet') }}
 Requires:       {{ py2pkg('oslo.log') }}
 Requires:       {{ py2pkg('oslo.serialization') }}
 Requires:       {{ py2pkg('pbr') }}
 BuildArch:       noarch
+%python_subpackages
 
 %description
 This library contains data types, exceptions, functions and
@@ -28,22 +33,22 @@ This library also contains the public interfaces for 3rd party integration
 (e.g. Actions API, YAQL functions API, etc.)
 
 %prep
-%autosetup -n mistral-lib-%{version}
+%autosetup -p1 -n {{ pypi_name }}-%{version}
 %py_req_cleanup
 
 %build
-%{__python2} setup.py build
+%{python_build}
 
 %install
-%{__python2} setup.py install --skip-build --prefix=%{_prefix} --root=%{buildroot}
+%{python_install}
 
 %check
-stestr run
+%python_exec -m stestr.cli run
 
-%files
+%files %{python_files}
 %license LICENSE
 %doc README.rst ChangeLog
-%{python2_sitelib}/mistral_lib
-%{python2_sitelib}/*.egg-info
+%{python_sitelib}/mistral_lib
+%{python_sitelib}/*.egg-info
 
 %changelog
