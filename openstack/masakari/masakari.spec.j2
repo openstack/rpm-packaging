@@ -3,8 +3,7 @@
 {% set upstream_version = upstream_version() %}
 {% set rpm_release = '1' %}
 
-%global sname {{ pypi_name }}
-Name:           {{ py2name('masakari') }}
+Name:           {{ py2name() }}
 Version:        {{ py2rpmversion() }}
 Release:        {{ py2rpmrelease() }}
 Summary:        Virtual Machine High Availability (VMHA) service for OpenStack
@@ -12,9 +11,9 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://launchpad.net/masakari
 Source0:        {{ source|basename }}
-Source1:        masakari-api.service
-Source2:        masakari-engine.service
-Source3:        masakari.tmpfiles
+Source1:        openstack-masakari-api.service
+Source2:        openstack-masakari-engine.service
+Source3:        openstack-masakari.tmpfiles
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py3('ddt') }}
 BuildRequires:  {{ py3('eventlet') }}
@@ -94,7 +93,7 @@ This package contains the Python libraries.
 
 %package        api
 Summary:        OpenStack Masakari API service
-Requires:       %{name} = %{version}
+Requires:       %{name} = %{version}-%{release}
 
 %description    api
 Masakari is a service providing high availability for VMs in OpenStack.
@@ -103,7 +102,7 @@ This package contains the REST API.
 
 %package        engine
 Summary:        OpenStack Masakari Engine service
-Requires:       %{name} = %{version}
+Requires:       %{name} = %{version}-%{release}
 
 %description    engine
 Masakari is a service providing high availability for VMs in OpenStack.
@@ -122,11 +121,10 @@ oslo-config-generator --config-file etc/masakari/masakari-config-generator.conf
 oslopolicy-sample-generator --config-file etc/masakari/masakari-policy-generator.conf
 
 %if 0%{?with_doc}
-%{__python3} setup.py build_sphinx
+PBR_VERSION={{ upstream_version }} %sphinx_build -b html doc/source doc/build/html
 # remove the sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 %endif
-
 
 %install
 %{py3_install}
@@ -136,7 +134,7 @@ mkdir -p %{buildroot}%{_localstatedir}/log/masakari
 #systemd unitfiles
 install -p -D -m 644 %SOURCE1 %{buildroot}%{_unitdir}/openstack-masakari-api.service
 install -p -D -m 644 %SOURCE2 %{buildroot}%{_unitdir}/openstack-masakari-engine.service
-install -p -D -m 644 %SOURCE3 %{buildroot}/%{_tmpfilesdir}/masakari.conf
+install -p -D -m 644 %SOURCE3 %{buildroot}/%{_tmpfilesdir}/%{name}.conf
 
 install -p -D -m 640 etc/masakari/masakari.conf.sample %{buildroot}%{_sysconfdir}/masakari/masakari.conf
 install -p -D -m 640 etc/masakari/api-paste.ini %{buildroot}%{_sysconfdir}/masakari/api-paste.ini
@@ -150,7 +148,7 @@ rm -rf %{buildroot}%{_prefix}%{_sysconfdir}/
 %openstack_pre_user_group_create masakari masakari
 
 %post
-%tmpfiles_create %{_tmpfilesdir}/masakari.conf
+%tmpfiles_create %{_tmpfilesdir}/%{name}.conf
 
 %check
 # we don't want to check hacking rules
@@ -180,12 +178,12 @@ rm masakari/tests/unit/test_hacking.py
 %dir %{_sysconfdir}/masakari
 %config(noreplace) %attr(0640, root, masakari) %{_sysconfdir}/masakari/*
 %dir %attr(750, masakari, masakari) %{_localstatedir}/log/masakari
-%_tmpfilesdir/masakari.conf
+%_tmpfilesdir/%{name}.conf
+%{_bindir}/masakari-manage
+%{_bindir}/masakari-status
 
 %files api
 %{_bindir}/masakari-api
-%{_bindir}/masakari-manage
-%{_bindir}/masakari-status
 %{_bindir}/masakari-wsgi
 %{_unitdir}/openstack-masakari-api.service
 
