@@ -6,12 +6,13 @@
 Name:           {{ py2name() }}
 Version:        {{ py2rpmversion() }}
 Release:        {{ py2rpmrelease() }}
-Epoch:          {{ epoch('Tempest') }}
+Epoch:          {{ epoch('tempest') }}
 Summary:        The OpenStack Integration Test Suite (Tempest)
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://launchpad.net/tempest
 Source0:        {{ source }}
+Source1:        openstack-tempest.tmpfiles
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py3('PrettyTable') }}
 BuildRequires:  {{ py3('PyYAML') }}
@@ -19,24 +20,36 @@ BuildRequires:  {{ py3('cliff') }}
 BuildRequires:  {{ py3('debtcollector') }}
 BuildRequires:  {{ py3('fixtures') }}
 BuildRequires:  {{ py3('jsonschema') }}
-BuildRequires:  {{ py3('mock') }}
 BuildRequires:  {{ py3('netaddr') }}
-BuildRequires:  {{ py3('os-testr') }}
 BuildRequires:  {{ py3('oslo.concurrency') }}
 BuildRequires:  {{ py3('oslo.config') }}
 BuildRequires:  {{ py3('oslo.log') }}
 BuildRequires:  {{ py3('oslo.serialization') }}
 BuildRequires:  {{ py3('oslo.utils') }}
-BuildRequires:  {{ py3('oslotest') }}
 BuildRequires:  {{ py3('paramiko') }}
-BuildRequires:  {{ py3('pep8') }}
 BuildRequires:  {{ py3('python-subunit') }}
 BuildRequires:  {{ py3('six') }}
 BuildRequires:  {{ py3('stevedore') }}
-BuildRequires:  {{ py3('testrepository') }}
-BuildRequires:  {{ py3('testscenarios') }}
 BuildRequires:  {{ py3('testtools') }}
+BuildRequires:  {{ py3('unittest2') }}
 BuildRequires:  {{ py3('urllib3') }}
+Requires:       python3-{{ pypi_name }} = %{epoch}:%{version}-%{release}
+BuildArch:      noarch
+%if 0%{?suse_version}
+# to be compatible with older tempest packages
+Provides:       openstack-tempest-test = %{epoch}:%{version}-%{release}
+Obsoletes:      openstack-tempest-test < %{epoch}:%{version}-%{release}
+%endif
+
+%description
+Tempest is a set of integration tests to be run against a live OpenStack
+cluster. Tempest has batteries of tests for OpenStack API validation,
+Scenarios, and other specific tests useful in validating an OpenStack
+deployment.
+
+%package -n python3-{{ pypi_name }}
+Summary:        Documentation for the OpenStack Integration Test Suite
+Group:          Development/Languages/Python
 Requires:       {{ py3('PrettyTable') }}
 Requires:       {{ py3('PyYAML') }}
 Requires:       {{ py3('cliff') }}
@@ -57,13 +70,14 @@ Requires:       {{ py3('stevedore') }}
 Requires:       {{ py3('testtools') }}
 Requires:       {{ py3('unittest2') }}
 Requires:       {{ py3('urllib3') }}
-BuildArch:      noarch
 
-%description
+%description -n python3-{{ pypi_name }}
 Tempest is a set of integration tests to be run against a live OpenStack
 cluster. Tempest has batteries of tests for OpenStack API validation,
 Scenarios, and other specific tests useful in validating an OpenStack
 deployment.
+
+This package contains the python module.
 
 %package doc
 Summary:        Documentation for the OpenStack Integration Test Suite
@@ -71,7 +85,12 @@ BuildRequires:  {{ py3('Sphinx') }}
 BuildRequires:  {{ py3('openstackdocstheme') }}
 
 %description doc
-Documentation for the OpenStack Integration Test Suite.
+Tempest is a set of integration tests to be run against a live OpenStack
+cluster. Tempest has batteries of tests for OpenStack API validation,
+Scenarios, and other specific tests useful in validating an OpenStack
+deployment.
+
+This package contains the documentation.
 
 %prep
 %autosetup p1 -n {{ pypi_name }}-{{ upstream_version }}
@@ -79,6 +98,12 @@ Documentation for the OpenStack Integration Test Suite.
 
 %build
 %{py3_build}
+
+# generate html docs
+PBR_VERSION={{ upstream_version }} %sphinx_build -b html doc/source doc/build/html
+# remove the sphinx-build leftovers
+rm -rf doc/build/html/.{doctrees,buildinfo}
+
 
 %install
 %{py3_install}
@@ -89,20 +114,25 @@ mv %{buildroot}/%{_prefix}/%{_sysconfdir}/{{ pypi_name }}/accounts.yaml.sample %
 mv %{buildroot}/%{_prefix}/%{_sysconfdir}/{{ pypi_name }}/logging.conf.sample %{buildroot}/%{_sysconfdir}/{{ pypi_name }}/logging.conf
 mv %{buildroot}/%{_prefix}/%{_sysconfdir}/{{ pypi_name }}/whitelist.yaml %{buildroot}/%{_sysconfdir}/{{ pypi_name }}/whitelist.yaml
 
-# generate html docs
-PBR_VERSION={{ upstream_version }} %sphinx_build -b html doc/source doc/build/html
-# remove the sphinx-build leftovers
-rm -rf doc/build/html/.{doctrees,buildinfo}
+# install config
+PYTHONPATH=. oslo-config-generator --config-file %{_builddir}/{{ pypi_name }}-{{ upstream_version }}/tempest/cmd/config-generator.tempest.conf --output-file %{buildroot}%{_sysconfdir}/tempest/tempest.conf
 
-##%check
-##export OS_TEST_PATH=./tempest/tests
-##PYTHONPATH=. %{__python2} setup.py testr
+# install tmpfiles
+install -D -m 644 %{SOURCE1} %{buildroot}/%_tmpfilesdir/%{name}.conf
+
+%if 0%{?suse_version}
+# to be compatible with older tempest packages
+install -d -m 755 %{buildroot}%{_localstatedir}/lib/%{name}-test/
+cp -av .stestr.conf %{buildroot}/%{_localstatedir}/lib/%{name}-test/
+%endif
+
+%post
+%tmpfiles_create %{_tmpfilesdir}/%{name}.conf
 
 %files
 %license LICENSE
 %doc README.rst ChangeLog
-%{python3_sitelib}/tempest
-%{python3_sitelib}/*.egg-info
+%_tmpfilesdir/%{name}.conf
 %{_bindir}/tempest
 %{_bindir}/verify-tempest-config
 %{_bindir}/tempest-account-generator
@@ -110,9 +140,18 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %{_bindir}/check-uuid
 %{_bindir}/subunit-describe-calls
 %dir %{_sysconfdir}/tempest
+%config(noreplace) %{_sysconfdir}/tempest/tempest.conf
 %config(noreplace) %{_sysconfdir}/tempest/logging.conf
 %config(noreplace) %{_sysconfdir}/tempest/accounts.yaml
 %config(noreplace) %{_sysconfdir}/tempest/whitelist.yaml
+%if 0%{?suse_version}
+%{_localstatedir}/lib/openstack-tempest-test
+%endif
+
+%files -n python3-{{ pypi_name }}
+%license LICENSE
+%{python3_sitelib}/tempest
+%{python3_sitelib}/*.egg-info
 
 %files doc
 %license LICENSE
