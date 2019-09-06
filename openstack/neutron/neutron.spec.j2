@@ -522,7 +522,7 @@ rm neutron/tests/unit/hacking/test_checks.py
 %config(noreplace) %{_sysconfdir}/logrotate.d/%{name}
 %dir %{_datarootdir}/{{ pypi_name }}
 %dir %{_datarootdir}/{{ pypi_name }}/rootwrap
-%dir %attr(0750, neutron, neutron) %{_localstatedir}/lib/{{ pypi_name }}
+%dir %attr(0755, neutron, neutron) %{_localstatedir}/lib/{{ pypi_name }}
 %dir %attr(0750, neutron, neutron) %{_localstatedir}/log/{{ pypi_name }}
 %dir %attr(0750, neutron, neutron) %{_localstatedir}/cache/{{ pypi_name }}
 %{_datarootdir}/{{ pypi_name }}/rootwrap/debug.filters
