@@ -1,37 +1,39 @@
-%global sname python-tackerclient
-Name:           {{ py2name('python-tackerclient') }}
-Version:        0.15.0
-Release:        0
+{% set pypi_name = 'python-tackerclient' %}
+{% set upstream_version = upstream_version('0.15.0') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
+Name:           {{ py2name(py_versions='py3') }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
 Summary:        Client API library for Tacker
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
-URL:            https://launchpad.net/%{name}
-Source0:        https://files.pythonhosted.org/packages/source/p/%{sname}/%{sname}-%{version}.tar.gz
+URL:            https://launchpad.net/{{ pypi_name }}
+Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('cliff') }}
-BuildRequires:  {{ py2pkg('devel') }}
-BuildRequires:  {{ py2pkg('fixtures') }}
-BuildRequires:  {{ py2pkg('python-keystoneclient') }}
-BuildRequires:  {{ py2pkg('mock') }}
-BuildRequires:  {{ py2pkg('oslo.i18n') }}
-BuildRequires:  {{ py2pkg('oslo.log') }}
-BuildRequires:  {{ py2pkg('oslo.serialization') }}
-BuildRequires:  {{ py2pkg('python-subunit') }}
-BuildRequires:  {{ py2pkg('stestr') }}
-BuildRequires:  {{ py2pkg('testtools') }}
-Requires:       {{ py2pkg('Babel') }}
-Requires:       {{ py2pkg('cliff') }}
-Requires:       {{ py2pkg('iso8601') }}
-Requires:       {{ py2pkg('python-keystoneclient') }}
-Requires:       {{ py2pkg('netaddr') }}
-Requires:       {{ py2pkg('oslo.i18n') }}
-Requires:       {{ py2pkg('oslo.log') }}
-Requires:       {{ py2pkg('oslo.serialization') }}
-Requires:       {{ py2pkg('oslo.utils') }}
-Requires:       {{ py2pkg('pbr') }}
-Requires:       {{ py2pkg('requests') }}
-Requires:       {{ py2pkg('simplejson') }}
-Requires:       {{ py2pkg('six') }}
+BuildRequires:  {{ py3('cliff') }}
+BuildRequires:  {{ py3('fixtures') }}
+BuildRequires:  {{ py3('python-keystoneclient') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('oslo.i18n') }}
+BuildRequires:  {{ py3('oslo.log') }}
+BuildRequires:  {{ py3('oslo.serialization') }}
+BuildRequires:  {{ py3('python-subunit') }}
+BuildRequires:  {{ py3('stestr') }}
+Requires:       {{ py3('Babel') }}
+Requires:       {{ py3('cliff') }}
+Requires:       {{ py3('iso8601') }}
+Requires:       {{ py3('python-keystoneclient') }}
+Requires:       {{ py3('netaddr') }}
+Requires:       {{ py3('oslo.i18n') }}
+Requires:       {{ py3('oslo.log') }}
+Requires:       {{ py3('oslo.serialization') }}
+Requires:       {{ py3('oslo.utils') }}
+Requires:       {{ py3('pbr') }}
+Requires:       {{ py3('requests') }}
+Requires:       {{ py3('simplejson') }}
+Requires:       {{ py3('six') }}
 BuildArch:      noarch
 
 %description
@@ -40,9 +42,9 @@ OpenStack tacker client
 %package doc
 Summary:        Documentation for OpenStack tacker client
 Group:          Documentation/HTML
-BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('openstackdocstheme') }}
-BuildRequires:  {{ py2pkg('reno') }}
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
+BuildRequires:  {{ py3('reno') }}
 
 %description doc
 OpenStack tacker client.
@@ -50,28 +52,28 @@ OpenStack tacker client.
 This package contains the documentation.
 
 %prep
-%autosetup -p1 -n %{name}-%{version}
+%autosetup -p1 -n {{ pypi_name }}-%{version}
 %py_req_cleanup
 sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
-%{py2_build}
+%{py3_build}
 
 # Build HTML docs and man page
-%{__python2} setup.py build_sphinx --builder=html,man
+%{__python3} setup.py build_sphinx --builder=html,man
 rm -rf build/sphinx/html/.{doctrees,buildinfo}
 
 %install
-%{py2_install}
+%{py3_install}
 
 %check
-%{__python2} -m stestr.cli run
+%{__python3} -m stestr.cli run
 
 %files
 %doc README.rst
 %license LICENSE
-%{python2_sitelib}/tackerclient
-%{python2_sitelib}/*.egg-info
+%{python3_sitelib}/tackerclient
+%{python3_sitelib}/*.egg-info
 %{_bindir}/tacker
 
 %files doc
