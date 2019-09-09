@@ -161,7 +161,7 @@ PYTHONPATH=. PBR_VERSION={{ upstream_version }} %sphinx_build -b html doc/source
 # remove the Sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 # config file generation
-oslo-config-generator --config-file config-generator/keystone.conf \
+PYTHONPATH=. oslo-config-generator --config-file config-generator/keystone.conf \
 --output-file etc/keystone.conf.sample
 # policy file generation
 oslopolicy-sample-generator --config-file config-generator/keystone-policy-generator.conf --output-file etc/keystone.policy.yaml
