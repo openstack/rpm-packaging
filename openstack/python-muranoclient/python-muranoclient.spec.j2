@@ -1,47 +1,51 @@
-Name:           {{ py2name('python-muranoclient') }}
-Version:        1.2.0
-Release:        0
+{% set pypi_name = 'python-muranoclient' %}
+{% set upstream_version = upstream_version('1.3.0') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
+Name:           {{ py2name(py_versions='py3') }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
 Summary:        Python API and CLI for OpenStack Murano
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
-URL:            https://launchpad.net/%{name}
-Source0:        https://files.pythonhosted.org/packages/source/p/%{name}/%{name}-%{version}.tar.gz
+URL:            https://launchpad.net/{{ pypi_name }}
+Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('PrettyTable') }}
-BuildRequires:  {{ py2pkg('fixtures') }}
-BuildRequires:  {{ py2pkg('python-glanceclient') }}
-BuildRequires:  {{ py2pkg('python-keystoneclient') }}
-BuildRequires:  {{ py2pkg('mock') }}
-BuildRequires:  {{ py2pkg('murano-pkg-check') }}
-BuildRequires:  {{ py2pkg('osc-lib') }}
-BuildRequires:  {{ py2pkg('oslo.log') }}
-BuildRequires:  {{ py2pkg('oslo.serialization') }}
-BuildRequires:  {{ py2pkg('oslo.utils') }}
-BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('pyOpenSSL') }}
-BuildRequires:  {{ py2pkg('requests-mock') }}
-BuildRequires:  {{ py2pkg('setuptools') }}
-BuildRequires:  {{ py2pkg('stestr') }}
-BuildRequires:  {{ py2pkg('testscenarios') }}
-BuildRequires:  {{ py2pkg('testtools') }}
-BuildRequires:  {{ py2pkg('yaql') }}
-Requires:       {{ py2pkg('Babel') }}
-Requires:       {{ py2pkg('PrettyTable') }}
-Requires:       {{ py2pkg('PyYAML') }}
-Requires:       {{ py2pkg('python-glanceclient') }}
-Requires:       {{ py2pkg('iso8601') }}
-Requires:       {{ py2pkg('python-keystoneclient') }}
-Requires:       {{ py2pkg('murano-pkg-check') }}
-Requires:       {{ py2pkg('osc-lib') }}
-Requires:       {{ py2pkg('oslo.i18n') }}
-Requires:       {{ py2pkg('oslo.log') }}
-Requires:       {{ py2pkg('oslo.serialization') }}
-Requires:       {{ py2pkg('oslo.utils') }}
-Requires:       {{ py2pkg('pbr') }}
-Requires:       {{ py2pkg('pyOpenSSL') }}
-Requires:       {{ py2pkg('requests') }}
-Requires:       {{ py2pkg('six') }}
-Requires:       {{ py2pkg('yaql') }}
+BuildRequires:  {{ py3('PrettyTable') }}
+BuildRequires:  {{ py3('fixtures') }}
+BuildRequires:  {{ py3('python-glanceclient') }}
+BuildRequires:  {{ py3('python-keystoneclient') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('murano-pkg-check') }}
+BuildRequires:  {{ py3('osc-lib') }}
+BuildRequires:  {{ py3('oslo.log') }}
+BuildRequires:  {{ py3('oslo.serialization') }}
+BuildRequires:  {{ py3('oslo.utils') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('pyOpenSSL') }}
+BuildRequires:  {{ py3('requests-mock') }}
+BuildRequires:  {{ py3('setuptools') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('testscenarios') }}
+BuildRequires:  {{ py3('yaql') }}
+Requires:       {{ py3('Babel') }}
+Requires:       {{ py3('PrettyTable') }}
+Requires:       {{ py3('PyYAML') }}
+Requires:       {{ py3('python-glanceclient') }}
+Requires:       {{ py3('iso8601') }}
+Requires:       {{ py3('python-keystoneclient') }}
+Requires:       {{ py3('murano-pkg-check') }}
+Requires:       {{ py3('osc-lib') }}
+Requires:       {{ py3('oslo.i18n') }}
+Requires:       {{ py3('oslo.log') }}
+Requires:       {{ py3('oslo.serialization') }}
+Requires:       {{ py3('oslo.utils') }}
+Requires:       {{ py3('pbr') }}
+Requires:       {{ py3('pyOpenSSL') }}
+Requires:       {{ py3('requests') }}
+Requires:       {{ py3('six') }}
+Requires:       {{ py3('yaql') }}
 BuildArch:      noarch
 
 %description
@@ -51,9 +55,8 @@ Client library for Murano built on the Murano API. It provides a Python API
 %package doc
 Summary:        Documentation for OpenStack Magnum API client libary
 Group:          Documentation/HTML
-BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('openstackdocstheme') }}
-BuildRequires:  {{ py2pkg('reno') }}
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
 
 %description doc
 Client library for Murano built on the Murano API. It provides a Python API
@@ -61,18 +64,18 @@ Client library for Murano built on the Murano API. It provides a Python API
 This package contains the documentation.
 
 %prep
-%autosetup -n %{name}-%{version}
+%autosetup -p1 -n {{ pypi_name }}-%{version}
 %py_req_cleanup
 
 %build
-%py2_build
+%py3_build
 
 # Build HTML docs and man page
-PBR_VERSION=%version sphinx-build -b html doc/source doc/build/html
+PBR_VERSION=%version %sphinx_build -b html doc/source doc/build/html
 rm -r doc/build/html/.{doctrees,buildinfo}
 
 %install
-%py2_install
+%py3_install
 
 %check
 stestr run
@@ -80,8 +83,8 @@ stestr run
 %files
 %doc README.rst
 %license LICENSE
-%{python2_sitelib}/muranoclient
-%{python2_sitelib}/*.egg-info
+%{python3_sitelib}/muranoclient
+%{python3_sitelib}/*.egg-info
 %{_bindir}/murano
 
 %files doc
