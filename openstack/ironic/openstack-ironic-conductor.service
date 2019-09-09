@@ -1,0 +1,15 @@
+[Unit]
+Description=OpenStack Ironic - Conductor
+After=syslog.target network.target
+
+[Service]
+Type=notify
+User=ironic
+Group=ironic
+WorkingDirectory=/var/lib/ironic
+PrivateTmp=yes
+ExecStart=/usr/bin/ironic-conductor
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
