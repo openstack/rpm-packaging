@@ -224,6 +224,7 @@ stestr-3 run --black-regex keystone.tests.unit.test_policy.GeneratePolicyFileTes
 %attr(0644, root, keystone) %{_datadir}/keystone/wsgi-keystone.conf
 %dir %attr(0750, root, keystone) %{_sysconfdir}/keystone/
 %dir %attr(0750, root, keystone) %{_sysconfdir}/keystone/keystone.conf.d/
+%dir %attr(0750, root, keystone) %{_sysconfdir}/keystone/credential-keys
 %{_sysconfdir}/keystone/README.config
 %config(noreplace) %attr(0640, root, keystone) %{_sysconfdir}/keystone/keystone.conf
 %config(noreplace) %attr(0640, root, keystone) %{_sysconfdir}/keystone/keystone.conf.d/010-keystone.conf
