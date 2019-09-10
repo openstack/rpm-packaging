@@ -39,6 +39,7 @@ Requires:       {{ py2pkg('oslo.utils') }}
 Requires:       {{ py2pkg('pyinotify') }}
 Requires:       {{ py2pkg('python-dateutil') }}
 Requires:       {{ py2pkg('six') }}
+Requires:       {{ py2pkg('systemd') }}
 BuildArch:      noarch
 %if 0%{?suse_version}
 Requires(post): update-alternatives
