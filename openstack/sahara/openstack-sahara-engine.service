@@ -1,0 +1,15 @@
+[Unit]
+Description=OpenStack Sahara engine service
+After=syslog.target network.target
+
+[Service]
+Type=notify
+User=sahara
+Group=sahara
+WorkingDirectory=/var/lib/sahara
+PrivateTmp=yes
+ExecStart=/usr/bin/sahara-engine
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,2 @@
+Defaults:sahara syslog_goodpri=none, !pam_session
+sahara ALL = (root) NOPASSWD: /usr/bin/sahara-rootwrap /etc/sahara/rootwrap.conf *
