@@ -1,80 +1,93 @@
-%global sname python-glareclient
-Name:           {{ py2name('python-glareclient') }}
-Epoch:          {{ epoch('python-glareclient') }}
-Version:        0.5.3
-Release:        0
+{% set pypi_name = 'python-glareclient' %}
+{% set upstream_version = upstream_version('0.5.3') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
+# Tempoary disable docs. They currently don't build with python3
+# https://bugs.launchpad.net/python-glareclient/+bug/1843407
+# and don't contain much useful information anyways.
+%global with_doc 0
+Name:           {{ py2name(py_versions='py3') }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
+Epoch:          {{ epoch(' {{ pypi_name }} ') }}
 Summary:        Python API and CLI for OpenStack Glare
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
-URL:            https://launchpad.net/%{sname}
-Source0:        https://files.pythonhosted.org/packages/source/p/%{sname}/%{sname}-%{version}.tar.gz
+URL:            https://launchpad.net/{{ pypi_name }}
+Source0:        {{ source }}
+Patch1:         0001-python3-compatibility-for-failing-unit-tests.patch
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('PyYAML') }}
-BuildRequires:  {{ py2pkg('coverage') }}
-BuildRequires:  python-devel
-BuildRequires:  {{ py2pkg('fixtures') }}
-BuildRequires:  {{ py2pkg('mock') }}
-BuildRequires:  {{ py2pkg('os-client-config') }}
-BuildRequires:  {{ py2pkg('osc-lib') }}
-BuildRequires:  {{ py2pkg('oslo.log') }}
-BuildRequires:  {{ py2pkg('oslo.utils') }}
-BuildRequires:  {{ py2pkg('reno') }}
-BuildRequires:  {{ py2pkg('requests-mock') }}
-BuildRequires:  {{ py2pkg('testrepository') }}
-BuildRequires:  {{ py2pkg('testscenarios') }}
-BuildRequires:  {{ py2pkg('testtools') }}
-Requires:       {{ py2pkg('Babel') }}
-Requires:       {{ py2pkg('PrettyTable') }}
-Requires:       {{ py2pkg('keystoneauth1') }}
-Requires:       {{ py2pkg('osc-lib') }}
-Requires:       {{ py2pkg('oslo.i18n') }}
-Requires:       {{ py2pkg('oslo.log') }}
-Requires:       {{ py2pkg('oslo.utils') }}
-Requires:       {{ py2pkg('pbr') }}
-Requires:       {{ py2pkg('requests') }}
-Requires:       {{ py2pkg('six') }}
+BuildRequires:  {{ py3('PyYAML') }}
+BuildRequires:  {{ py3('coverage') }}
+BuildRequires:  {{ py3('fixtures') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('os-client-config') }}
+BuildRequires:  {{ py3('osc-lib') }}
+BuildRequires:  {{ py3('oslo.log') }}
+BuildRequires:  {{ py3('oslo.utils') }}
+BuildRequires:  {{ py3('reno') }}
+BuildRequires:  {{ py3('requests-mock') }}
+BuildRequires:  {{ py3('testrepository') }}
+BuildRequires:  {{ py3('testscenarios') }}
+Requires:       {{ py3('Babel') }}
+Requires:       {{ py3('PrettyTable') }}
+Requires:       {{ py3('keystoneauth1') }}
+Requires:       {{ py3('osc-lib') }}
+Requires:       {{ py3('oslo.i18n') }}
+Requires:       {{ py3('oslo.log') }}
+Requires:       {{ py3('oslo.utils') }}
+Requires:       {{ py3('pbr') }}
+Requires:       {{ py3('requests') }}
+Requires:       {{ py3('six') }}
 BuildArch:      noarch
 
 %description
 Python bindings to the Glare Artifact Repository
 
+%if 0%{?with_doc}
 %package doc
 Summary:        Documentation for OpenStack Glare API Client
 Group:          Documentation/HTML
-BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
 
 %description      doc
 Python bindings to the Glare Artifact Repository
 This package contains auto-generated documentation.
+%endif
 
 %prep
-%autosetup -p1 -n %{sname}-%{version}
+%autosetup -p1 -n {{ pypi_name }}-%{version}
 %py_req_cleanup
 
 %build
-%py2_build
+%py3_build
 
-# generate html docs
-%{__python2} setup.py build_sphinx
-# remove the sphinx-build leftovers
-rm -rf doc/build/html/.{doctrees,buildinfo}
+%if 0%{?with_doc}
+## generate html docs
+#PYTHONPATH=. PBR_VERSION={{ upstream_version }} %sphinx_build -b html doc/source doc/build/html
+## remove the sphinx-build leftovers
+#rm -rf doc/build/html/.{doctrees,buildinfo}
+%endif
 
 %install
-%py2_install
+%py3_install
 
 %check
-%{__python2} setup.py testr
+PYTHON=%{__python3} PYTHONPATH=. %{__python3} setup.py testr
 
 %files
 %license LICENSE
 %doc README.rst ChangeLog
 %{_bindir}/glare
-%{python2_sitelib}/glareclient
-%{python2_sitelib}/*.egg-info
+%{python3_sitelib}/glareclient
+%{python3_sitelib}/*.egg-info
 
+%if 0%{?with_doc}
 %files doc
 %license LICENSE
 %doc doc/build/html
+%endif
 
 %changelog

@@ -1,0 +1,84 @@
+From b1364646f78cf9e24ca9f74a7af093d240c094c0 Mon Sep 17 00:00:00 2001
+From: Corey Bryant <corey.bryant@canonical.com>
+Date: Tue, 31 Jul 2018 17:10:20 -0400
+Subject: [PATCH] python3 compatibility for failing unit tests
+
+Handle StopIteration for Py3.7. PEP 0479,
+https://www.python.org/dev/peps/pep-0479/, makes the following
+change: "when StopIteration is raised inside a generator, it is
+replaced it with RuntimeError". And states: "If raise StopIteration
+occurs directly in a generator, simply replace it with return."
+
+Also fix test cases that make assumptions about the ordering of
+**kwargs. Python, up to 3.6, doesn't preserve any ordering for those.
+And the behavior differs between various Python versions.
+For details see PEP 0468 (https://www.python.org/dev/peps/pep-0468/)
+
+Change-Id: I9847053534ffd47c4559d504be647be0de25b651
+Closes-Bug: #1784714
+Closes-Bug: #1711469
+---
+ glareclient/tests/unit/v1/test_artifacts.py | 26 +++++++++++----------
+ glareclient/v1/artifacts.py                 |  2 +-
+ 2 files changed, 15 insertions(+), 13 deletions(-)
+
+diff --git a/glareclient/tests/unit/v1/test_artifacts.py b/glareclient/tests/unit/v1/test_artifacts.py
+index 2fd0450..41d4468 100644
+--- a/glareclient/tests/unit/v1/test_artifacts.py
++++ b/glareclient/tests/unit/v1/test_artifacts.py
+@@ -50,17 +50,19 @@ class TestController(testtools.TestCase):
+         body = self.c.update('test-id', type_name='test_name',
+                              remove_props=remove_props, update1=1, update2=2)
+         self.assertEqual(self.mock_body, body)
+-        patch_kwargs = {
+-            'headers': {'Content-Type': 'application/json-patch+json'},
+-            'json': [
+-                {'path': '/remove1', 'value': None, 'op': 'replace'},
+-                {'path': '/remove2', 'value': None, 'op': 'replace'},
+-                {'path': '/update2', 'value': 2, 'op': 'add'},
+-                {'path': '/update1', 'value': 1, 'op': 'add'}
+-            ]
+-        }
+-        self.mock_http_client.patch.assert_called_once_with(
+-            '/artifacts/checked_name/test-id', **patch_kwargs)
++        headers = {'Content-Type': 'application/json-patch+json'}
++        json = [
++            {'path': '/remove1', 'value': None, 'op': 'replace'},
++            {'path': '/remove2', 'value': None, 'op': 'replace'},
++            {'path': '/update1', 'value': 1, 'op': 'add'},
++            {'path': '/update2', 'value': 2, 'op': 'add'}
++        ]
++
++        args, kwargs = self.mock_http_client.patch.call_args
++        self.assertEqual(args, ('/artifacts/checked_name/test-id',))
++        self.assertEqual(kwargs['headers'], headers)
++        sorted_json = sorted(kwargs['json'], key=lambda k: k['path'])
++        self.assertEqual(sorted_json, json)
+         self.c._check_type_name.assert_called_once_with('test_name')
+ 
+     def test_get(self):
+@@ -169,7 +171,7 @@ class TestController(testtools.TestCase):
+         schemas = {'schemas': {'a': {'version': 1}, 'b': {'version': 2}}}
+         self.mock_http_client.get.return_value = (None, schemas)
+         expected_types = [('a', 1), ('b', 2)]
+-        self.assertEqual(expected_types, self.c.get_type_list())
++        self.assertEqual(expected_types, sorted(self.c.get_type_list()))
+ 
+     def test_get_type_schema(self):
+         test_schema = {'schemas': {'checked_name': 'test-schema'}}
+diff --git a/glareclient/v1/artifacts.py b/glareclient/v1/artifacts.py
+index bfe549b..cf55975 100644
+--- a/glareclient/v1/artifacts.py
++++ b/glareclient/v1/artifacts.py
+@@ -171,7 +171,7 @@ class Controller(object):
+                     if limit:
+                         limit -= 1
+                         if limit <= 0:
+-                            raise StopIteration
++                            return
+ 
+                 try:
+                     next_url = body['next']
+-- 
+2.23.0
+
