@@ -114,7 +114,7 @@ This package contains the documentation.
 %package api
 Summary:        OpenStack EC2 API - API
 Group:          Development/Languages/Python
-Requires:       python3-{{ pypi_name }} = %{epoch}:%{version}-%{release}
+Requires:       %{name} = %{epoch}:%{version}-%{release}
 
 %description api
 AWS EC2 and VPC API support in standalone service for OpenStack.
@@ -125,7 +125,7 @@ This package contains the API server.
 %package metadata
 Summary:        OpenStack EC2 API - Metadata
 Group:          Development/Languages/Python
-Requires:       python3-{{ pypi_name }} = %{epoch}:%{version}-%{release}
+Requires:       %{name} = %{epoch}:%{version}-%{release}
 
 %description metadata
 AWS EC2 and VPC API support in standalone service for OpenStack.
@@ -136,7 +136,7 @@ This package contains the metadata server.
 %package s3
 Summary:        OpenStack EC2 API - S3
 Group:          Development/Languages/Python
-Requires:       python3-{{ pypi_name }} = %{epoch}:%{version}-%{release}
+Requires:       %{name} = %{epoch}:%{version}-%{release}
 
 %description s3
 AWS EC2 and VPC API support in standalone service for OpenStack.
