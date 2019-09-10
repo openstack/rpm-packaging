@@ -163,6 +163,7 @@ This package contains the Neutron DHCP Agent.
 
 %package l3-agent
 Summary:        Neutron l3 Agent
+Requires:       conntrack-tools
 Requires:       {{ py2name() }} = %{epoch}:%{version}-%{release}
 
 %description l3-agent
@@ -174,6 +175,7 @@ This package contains the Neutron l3 Agent.
 Summary:        Neutron Linuxbridge agent
 Requires:       /sbin/modprobe
 Requires:       bridge-utils
+Requires:       conntrack-tools
 Requires:       ebtables
 Requires:       ipset
 Requires:       iptables
