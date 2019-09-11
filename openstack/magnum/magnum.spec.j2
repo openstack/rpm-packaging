@@ -1,0 +1,317 @@
+{% set pypi_name = 'magnum' %}
+{% set source = fetch_source('https://tarballs.openstack.org/magnum/magnum-master.tar.gz') %}
+{% set upstream_version = upstream_version() %}
+{% set rpm_release = '1' %}
+%global with_doc 1
+%if 0%{?rhel} || 0%{?fedora}
+%global rdo 1
+%endif
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
+Epoch:          {{ epoch('magnum') }}
+Summary:        OpenStack container orchestration engines (Magnum)
+License:        {{ license('Apache-2.0') }}
+URL:            https://launchpad.net/magnum
+Source0:        {{ source|basename }}
+Source1:        openstack-magnum.logrotate
+Source2:        openstack-magnum.sudoers
+Source3:        openstack-magnum.tmpfiles
+Source4:        openstack-magnum.defaultconf
+# systemd
+Source20:       openstack-magnum-api.service
+Source21:       openstack-magnum-conductor.service
+Source50:       openstack-magnum.README.config
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py3('PyYAML') }}
+BuildRequires:  {{ py3('SQLAlchemy') }}
+BuildRequires:  {{ py3('WSME') }}
+BuildRequires:  {{ py3('WebOb') }}
+BuildRequires:  {{ py3('Werkzeug') }}
+BuildRequires:  {{ py3('python-barbicanclient') }}
+BuildRequires:  {{ py3('docker') }}
+BuildRequires:  {{ py3('python-glanceclient') }}
+BuildRequires:  {{ py3('python-heatclient') }}
+BuildRequires:  {{ py3('keystoneauth1') }}
+BuildRequires:  {{ py3('keystonemiddleware') }}
+BuildRequires:  {{ py3('kubernetes') }}
+BuildRequires:  {{ py3('marathon') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('python-neutronclient') }}
+BuildRequires:  {{ py3('python-novaclient') }}
+BuildRequires:  {{ py3('python-octaviaclient') }}
+BuildRequires:  {{ py3('oslo.concurrency') }}
+BuildRequires:  {{ py3('oslo.config') }}
+BuildRequires:  {{ py3('oslo.context') }}
+BuildRequires:  {{ py3('oslo.db') }}
+BuildRequires:  {{ py3('oslo.i18n') }}
+BuildRequires:  {{ py3('oslo.log') }}
+BuildRequires:  {{ py3('oslo.messaging') }}
+BuildRequires:  {{ py3('oslo.middleware') }}
+BuildRequires:  {{ py3('oslo.policy') }}
+BuildRequires:  {{ py3('oslo.reports') }}
+BuildRequires:  {{ py3('oslo.serialization') }}
+BuildRequires:  {{ py3('oslo.service') }}
+BuildRequires:  {{ py3('oslo.upgradecheck') }}
+BuildRequires:  {{ py3('oslo.utils') }}
+BuildRequires:  {{ py3('oslo.versionedobjects') }}
+BuildRequires:  {{ py3('oslotest') }}
+BuildRequires:  {{ py3('osprofiler') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('pecan') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('taskflow') }}
+BuildRequires:  sudo
+Requires:       logrotate
+Requires:       python3-{{ pypi_name }} = %{epoch}:%{version}-%{release}
+BuildArch:      noarch
+%if 0%{?suse_version}
+BuildRequires:  systemd-rpm-macros
+%{?systemd_requires}
+%else
+BuildRequires:  systemd
+Requires(post): systemd
+Requires(postun): systemd
+Requires(preun): systemd
+%endif
+%if 0%{?suse_version}
+Requires(pre):  pwdutils
+%endif
+%if 0%{?rdo}
+Requires(pre):  shadow-utils
+%endif
+
+%description
+Magnum is an OpenStack project which offers container orchestration engines for
+deploying and managing containers as first class resources in OpenStack.
+
+%package -n python3-{{ pypi_name }}
+Summary:        OpenStack container orchestration engines (Magnum) - python module
+Group:          Development/Languages/Python
+Requires:       {{ py3('Babel') }}
+Requires:       {{ py3('PyYAML') }}
+Requires:       {{ py3('SQLAlchemy') }}
+Requires:       {{ py3('WSME') }}
+Requires:       {{ py3('WebOb') }}
+Requires:       {{ py3('Werkzeug') }}
+Requires:       {{ py3('alembic') }}
+Requires:       {{ py3('python-barbicanclient') }}
+Requires:       {{ py3('cliff') }}
+Requires:       {{ py3('cryptography') }}
+Requires:       {{ py3('decorator') }}
+Requires:       {{ py3('docker') }}
+Requires:       {{ py3('eventlet') }}
+Requires:       {{ py3('python-glanceclient') }}
+Requires:       {{ py3('python-heatclient') }}
+Requires:       {{ py3('iso8601') }}
+Requires:       {{ py3('jsonpatch') }}
+Requires:       {{ py3('keystoneauth1') }}
+Requires:       {{ py3('keystonemiddleware') }}
+Requires:       {{ py3('kubernetes') }}
+Requires:       {{ py3('marathon') }}
+Requires:       {{ py3('netaddr') }}
+Requires:       {{ py3('python-neutronclient') }}
+Requires:       {{ py3('python-novaclient') }}
+Requires:       {{ py3('python-octaviaclient') }}
+Requires:       {{ py3('oslo.concurrency') }}
+Requires:       {{ py3('oslo.config') }}
+Requires:       {{ py3('oslo.context') }}
+Requires:       {{ py3('oslo.db') }}
+Requires:       {{ py3('oslo.i18n') }}
+Requires:       {{ py3('oslo.log') }}
+Requires:       {{ py3('oslo.messaging') }}
+Requires:       {{ py3('oslo.middleware') }}
+Requires:       {{ py3('oslo.policy') }}
+Requires:       {{ py3('oslo.reports') }}
+Requires:       {{ py3('oslo.serialization') }}
+Requires:       {{ py3('oslo.service') }}
+Requires:       {{ py3('oslo.upgradecheck') }}
+Requires:       {{ py3('oslo.utils') }}
+Requires:       {{ py3('oslo.versionedobjects') }}
+Requires:       {{ py3('osprofiler') }}
+Requires:       {{ py3('pecan') }}
+Requires:       {{ py3('pycadf') }}
+Requires:       {{ py3('requests') }}
+Requires:       {{ py3('setuptools') }}
+Requires:       {{ py3('six') }}
+Requires:       {{ py3('stevedore') }}
+Requires:       {{ py3('taskflow') }}
+Requires:       sudo
+
+%description -n python3-{{ pypi_name }}
+Magnum is an OpenStack project which offers container orchestration engines for
+deploying and managing containers as first class resources in OpenStack.
+
+This package contains the python module.
+
+%if 0%{?with_doc}
+%package doc
+Summary:        OpenStack container orchestration engines (Magnum) - documentation
+Group:          Documentation/HTML
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
+
+%description doc
+Magnum is an OpenStack project which offers container orchestration engines for
+deploying and managing containers as first class resources in OpenStack.
+
+This package contains the documentation.
+%endif
+
+%package api
+Summary:        OpenStack container orchestration engines (Magnum) - API
+Group:          Development/Languages/Python
+Requires:       python3-{{ pypi_name }} = %{epoch}:%{version}-%{release}
+
+%description api
+Magnum is an OpenStack project which offers container orchestration engines for
+deploying and managing containers as first class resources in OpenStack.
+
+This package contains the API server.
+
+%package conductor
+Summary:        OpenStack container orchestration engines (Magnum) - Conductor
+Group:          Development/Languages/Python
+Requires:       python3-{{ pypi_name }} = %{epoch}:%{version}-%{release}
+
+%description conductor
+Magnum is an OpenStack project which offers container orchestration engines for
+deploying and managing containers as first class resources in OpenStack.
+
+This package contains the conductor server.
+
+%prep
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
+%py_req_cleanup
+
+%build
+%{py3_build}
+
+# build documentation
+%if 0%{?with_doc}
+PYTHONPATH=. PBR_VERSION={{ upstream_version }} %sphinx_build --keep-going -b html doc/source doc/build/html
+rm -rf doc/build/html/.{doctrees,buildinfo}
+%endif
+
+### sample config files
+PYTHONPATH=. oslo-config-generator --config-file etc/magnum/magnum-config-generator.conf --output-file etc/magnum.conf.sample
+PYTHONPATH=. oslopolicy-sample-generator --config-file=etc/magnum/magnum-policy-generator.conf --output etc/magnum/policy.json.sample
+
+%install
+%{py3_install}
+
+# Setup directories
+install -d -m 750 %{buildroot}%{_localstatedir}/{lib,log,cache}/magnum
+install -d -m 750 %{buildroot}%{_localstatedir}/lib/magnum/certificates
+install -d -m 755 %{buildroot}%{_sysconfdir}/magnum
+install -d -m 755 %{buildroot}%{_sysconfdir}/magnum/magnum.conf.d
+
+# install logrotate
+install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/%{name}
+
+# Install sudoers
+install -p -D -m 440 %{SOURCE2} %{buildroot}%{_sysconfdir}/sudoers.d/%{name}
+
+# install tmpfiles
+install -D -m 644 %{SOURCE3} %{buildroot}/%_tmpfilesdir/%name.conf
+
+# install config files
+mv %{buildroot}/%{_prefix}/%{_sysconfdir}/magnum/* %{buildroot}%{_sysconfdir}/magnum/
+install -p -D -m 640 %{SOURCE4} %{buildroot}%{_sysconfdir}/magnum/magnum.conf.d/010-magnum.conf
+install -p -D -m 640 %{SOURCE50} %{buildroot}%{_sysconfdir}/magnum/README.config
+install -p -D -m 644 etc/magnum.conf.sample %{buildroot}%{_sysconfdir}/magnum/magnum.conf
+install -p -D -m 644 etc/magnum/policy.json.sample %{buildroot}%{_sysconfdir}/magnum/policy.json
+install -p -D -m 644 etc/magnum/api-paste.ini %{buildroot}%{_sysconfdir}/magnum/
+
+# install systemd service files
+install -p -D -m 644 %{SOURCE20} %{buildroot}%{_unitdir}/openstack-magnum-api.service
+install -p -D -m 644 %{SOURCE21} %{buildroot}%{_unitdir}/openstack-magnum-conductor.service
+
+# install symlinks on SUSE
+%if 0%{?suse_version}
+mkdir -p %{buildroot}%{_sbindir}
+ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-api
+ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-conductor
+%endif
+
+%pre
+%openstack_pre_user_group_create magnum magnum /sbin/nologin
+exit 0
+
+%post
+%tmpfiles_create %{_tmpfilesdir}/%{name}.conf
+
+%check
+# we don't want to depend on hacking
+rm magnum/tests/unit/test_hacking.py
+
+export LC_ALL=en_US.UTF-8
+python3 -m stestr.cli run
+
+%post api
+%systemd_post %{name}-api.service
+
+%preun api
+%systemd_preun %{name}-api.service
+
+%postun api
+%systemd_postun_with_restart %{name}-api.service
+
+%post conductor
+%systemd_post %{name}-conductor.service
+
+%preun conductor
+%systemd_preun %{name}-conductor.service
+
+%postun conductor
+%systemd_postun_with_restart %{name}-conductor.service
+
+%files
+%license LICENSE
+%dir %attr(0750, magnum, magnum) %{_localstatedir}/log/magnum
+%dir %attr(0750, magnum, magnum) %{_localstatedir}/lib/magnum
+%dir %attr(0750, magnum, magnum) %{_localstatedir}/lib/magnum/certificates
+%dir %attr(0750, magnum, magnum) %{_localstatedir}/cache/magnum
+%dir %attr(0750, root, magnum) %{_sysconfdir}/magnum
+%dir %attr(0750, root, magnum) %{_sysconfdir}/magnum/magnum.conf.d/
+%{_sysconfdir}/magnum/README.config
+%config(noreplace) %attr(0640, root, magnum) %{_sysconfdir}/magnum/magnum.conf
+%config(noreplace) %attr(0640, root, magnum) %{_sysconfdir}/magnum/magnum.conf.d/010-magnum.conf
+%config(noreplace) %attr(0640, root, magnum) %{_sysconfdir}/magnum/api-paste.ini
+%config(noreplace) %{_sysconfdir}/magnum/policy.json
+%config(noreplace) %{_sysconfdir}/logrotate.d/openstack-magnum
+%config(noreplace) %{_sysconfdir}/sudoers.d/openstack-magnum
+%_tmpfilesdir/%name.conf
+%{_bindir}/magnum-db-manage
+%{_bindir}/magnum-driver-manage
+%{_bindir}/magnum-status
+
+%files -n python3-magnum
+%license LICENSE
+%{python3_sitelib}/magnum*
+%{python3_sitelib}/magnum-*.egg-info
+
+%if 0%{?with_doc}
+%files doc
+%license LICENSE
+%doc doc/build/html
+%endif
+
+%files api
+%license LICENSE
+%{_bindir}/magnum-api
+%{_unitdir}/openstack-magnum-api.service
+%if 0%{?suse_version}
+%{_sbindir}/rc%{name}-api
+%endif
+
+%files conductor
+%license LICENSE
+%{_bindir}/magnum-conductor
+%{_unitdir}/openstack-magnum-conductor.service
+%if 0%{?suse_version}
+%{_sbindir}/rc%{name}-conductor
+%endif
+
+%changelog
+

@@ -1,0 +1,17 @@
+[Unit]
+Description=OpenStack container orchestration engines (Magnum) - API
+After=syslog.target network.target
+After=mariadb.service postgresql.service rabbitmq-server.service
+
+[Service]
+Type=notify
+User=magnum
+Group=magnum
+WorkingDirectory=/var/lib/magnum
+PrivateTmp=yes
+ExecStartPre=-/usr/bin/magnum-db-manage upgrade
+ExecStart=/usr/bin/magnum-api
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

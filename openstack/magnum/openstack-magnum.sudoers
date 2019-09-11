@@ -1,0 +1,3 @@
+Defaults:magnum syslog_goodpri=none, !pam_session
+
+magnum ALL = (root) NOPASSWD: /usr/bin/magnum-rootwrap /etc/magnum/rootwrap.conf *

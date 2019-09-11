@@ -1,0 +1,12 @@
+[DEFAULT]
+log_dir=/var/log/magnum
+state_path=/var/lib/magnum
+
+[oslo_concurrency]
+lock_path=/run/magnum
+
+[oslo_policy]
+policy_file=/et/magnum/policy.json
+
+[certificates]
+cert_manager_type=local
