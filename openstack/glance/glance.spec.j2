@@ -273,12 +273,7 @@ rm -rf %{buildroot}%{_prefix}%{_sysconfdir}/glance
 exit 0
 
 %check
-%if 0%{?suse_version}
-PYTHON=python3 OS_TEST_PATH=./glance/tests/unit PYTHONPATH=. stestr run
-%endif
-%if 0%{?rdo}
-OS_TEST_PATH=./glance/tests/unit PYTHONPATH=. stestr-3 run
-%endif
+PYTHONPATH=. python3 -m stestr.cli --test-path glance/tests/unit run
 
 %post
 %tmpfiles_create %{_tmpfilesdir}/glance.conf
