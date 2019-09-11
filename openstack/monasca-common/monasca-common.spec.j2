@@ -14,6 +14,7 @@ URL:            https://wiki.openstack.org/wiki/Monasca
 Source0:        {{ source|basename }}
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('PyMySQL', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('confluent-kafka', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('kazoo', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('oslo.config', py_versions=['py2', 'py3']) }}
@@ -28,6 +29,7 @@ BuildRequires:  {{ py2pkg('six', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('ujson', py_versions=['py2', 'py3']) }}
 Requires:       {{ py2pkg('PyMySQL') }}
+Requires:       {{ py2pkg('confluent-kafka') }}
 Requires:       {{ py2pkg('kazoo') }}
 Requires:       {{ py2pkg('oslo.config') }}
 Requires:       {{ py2pkg('oslo.policy') }}
@@ -35,10 +37,6 @@ Requires:       {{ py2pkg('pyparsing') }}
 Requires:       {{ py2pkg('six') }}
 Requires:       {{ py2pkg('ujson') }}
 BuildArch:      noarch
-%if 0%{?suse_version}
-BuildRequires:  {{ py2pkg('confluent-kafka', py_versions=['py2', 'py3']) }}
-Requires:       {{ py2pkg('confluent-kafka') }}
-%endif
 %python_subpackages
 
 %description
