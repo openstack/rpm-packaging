@@ -7,7 +7,7 @@
 Name:           {{ py2name() }}
 Version:        {{ py2rpmversion() }}
 Release:        {{ py2rpmrelease() }}
-Summary:        Consumes metrics and alarm state transitions from message queue and stores them in database
+Summary:        Persists state transistions in database
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://wiki.openstack.org/wiki/Monasca
@@ -46,7 +46,7 @@ Consumes metrics and alarm state transitions from message queue and stores them 
 Data is read from Kafka queue and saved either in InfluxDB or Cassandra
 
 %package -n python3-{{ pypi_name }}
-Summary:        Consumes metrics and alarm state transitions from message queue and stores them in database
+Summary:        Persists state transistions in database
 Group:          Development/Languages/Python
 Requires:       {{ py3('cassandra-driver') }}
 Requires:       {{ py3('influxdb') }}
@@ -84,6 +84,12 @@ install -D -m 644 etc/monasca/persister.conf.sample %{buildroot}%{_sysconfdir}/m
 # install systemd service
 install -p -D -m 444 %{SOURCE1} %{buildroot}%{_unitdir}/openstack-monasca-persister.service
 
+# install symlinks on SUSE
+%if 0%{?suse_version}
+mkdir -p %{buildroot}%{_sbindir}
+ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}
+%endif
+
 # Install logrotate
 install -p -D -m 644 %{SOURCE2} %{buildroot}%{_sysconfdir}/logrotate.d/openstack-monasca-persister.logrotate
 
@@ -119,6 +125,9 @@ fi
 %config(noreplace) %attr(0640, root, monasca) %{_sysconfdir}/monasca/persister-logging.conf
 %config(noreplace) %{_sysconfdir}/logrotate.d/openstack-monasca-persister.logrotate
 %{_unitdir}/openstack-monasca-persister.service
+%if 0%{?suse_version}
+%{_sbindir}/rc%{name}
+%endif
 %{_bindir}/monasca-persister
 
 %files -n python3-{{ pypi_name }}
