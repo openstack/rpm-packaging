@@ -22,6 +22,7 @@ Source4:        openstack-cinder-volume.service
 Source5:        openstack-cinder-backup.service
 Source6:        openstack-cinder.sudoers
 Source7:        openstack-cinder.tmpfiles
+Source8:        openstack-cinder.defaultconf
 Source50:       openstack-cinder.README.config
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py3('PyMySQL') }}
@@ -268,6 +269,7 @@ install -d -m 755 %{buildroot}%{_sysconfdir}/%{service}
 install -p -D -m 644 etc/%{service}/{cinder.conf,api-paste.ini,policy.json,resource_filters.json,rootwrap.conf} %{buildroot}%{_sysconfdir}/%{service}/
 cp -a etc/cinder/rootwrap.d/ %{buildroot}%{_sysconfdir}/%{service}/
 install -p -D -m 640 %{SOURCE50} %{buildroot}%{_sysconfdir}/%{service}/README.config
+install -p -D -m 640 %{SOURCE8} %{buildroot}%{_sysconfdir}/cinder/cinder.conf.d/010-cinder.conf
 
 # install systemd service files
 install -p -D -m 644 %{SOURCE2} %{buildroot}%{_unitdir}/openstack-%{service}-api.service
@@ -348,6 +350,7 @@ stestr run
 %config(noreplace) %attr(-, root, %{service}) %{_sysconfdir}/%{service}/%{service}.conf
 %config(noreplace) %attr(-, root, %{service}) %{_sysconfdir}/%{service}/api-paste.ini
 %config(noreplace) %attr(-, root, %{service}) %{_sysconfdir}/%{service}/rootwrap.conf
+%config(noreplace) %attr(0640, root, %{service}) %{_sysconfdir}/cinder/cinder.conf.d/010-cinder.conf
 %config(noreplace) %{_sysconfdir}/logrotate.d/openstack-%{service}
 %config(noreplace) %{_sysconfdir}/sudoers.d/openstack-%{service}
 %config(noreplace) %{_sysconfdir}/%{service}/policy.json
