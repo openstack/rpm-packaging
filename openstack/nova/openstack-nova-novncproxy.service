@@ -1,12 +1,11 @@
 [Unit]
 Description=OpenStack Nova NoVNC Proxy Server
 After=syslog.target network.target
+After=mariadb.service postgresql.service rabbitmq-server.service
 
 [Service]
 Type=simple
 User=nova
-
-
 PrivateTmp=yes
 ExecStart=/usr/bin/nova-novncproxy
 Restart=on-failure

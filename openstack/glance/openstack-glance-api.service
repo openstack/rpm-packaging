@@ -1,6 +1,7 @@
 [Unit]
 Description=OpenStack Image Service API server
 After=syslog.target network.target
+After=mariadb.service postgresql.service rabbitmq-server.service
 
 [Service]
 Type=simple
@@ -10,7 +11,8 @@ LimitNOFILE=131072
 LimitNPROC=131072
 WorkingDirectory=/var/lib/glance
 PrivateTmp=yes
-ExecStartPre=-/usr/bin/glance-manage db sync
+# the connection parameter might be stored in the glace-api related config files
+ExecStartPre=-/usr/bin/glance-manage --config-dir=/etc/glance/glance.conf.d/ --config-dir=/etc/glance/glance-api.conf.d/ db sync
 ExecStart=/usr/bin/glance-api
 
 [Install]

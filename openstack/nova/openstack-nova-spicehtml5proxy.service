@@ -1,16 +1,14 @@
 [Unit]
 Description=OpenStack Nova Spice HTML5 Proxy Server
 After=syslog.target network.target
+After=mariadb.service postgresql.service rabbitmq-server.service
 
 [Service]
 Type=simple
 User=nova
-
-
 PrivateTmp=yes
 ExecStart=/usr/bin/nova-spicehtml5proxy
 Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target
-

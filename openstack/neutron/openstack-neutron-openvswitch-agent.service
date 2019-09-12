@@ -1,6 +1,8 @@
 [Unit]
 Description=OpenStack Neutron Open vSwitch Agent
-After=syslog.target network.target openvswitch.service
+After=syslog.target network.target
+After=openvswitch.service
+After=mariadb.service postgresql.service rabbitmq-server.service
 
 [Service]
 Type=simple
