@@ -2,7 +2,7 @@
 {% set source = fetch_source('https://tarballs.openstack.org/neutron/neutron-master.tar.gz') %}
 {% set upstream_version = upstream_version() %}
 {% set rpm_release = '1' %}
-%global with_doc 0
+%global with_doc 1
 %if 0%{?rhel} || 0%{?fedora}
 %global rdo 1
 %endif
@@ -34,27 +34,29 @@ Source21:       openstack-neutron.tmpfiles
 Source22:       openstack-neutron-l2-agents.modules
 Source23:       openstack-neutron-l2-agents.sysctl
 Source90:       openstack-neutron-server.README.config
+# https://review.opendev.org/681400
+Patch0:         0001-Use-sys.executable-instead-of-python.patch
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py3('PyMySQL') }}
 BuildRequires:  {{ py3('WebTest') }}
 BuildRequires:  {{ py3('ddt') }}
-BuildRequires:  {{ py3('devel') }}
+BuildRequires:  {{ py3('python-designateclient') }}
 BuildRequires:  {{ py3('fixtures') }}
 BuildRequires:  {{ py3('httplib2') }}
+BuildRequires:  {{ py3('python-ironicclient') }}
 BuildRequires:  {{ py3('keystoneauth1') }}
 BuildRequires:  {{ py3('keystonemiddleware') }}
 BuildRequires:  {{ py3('mock') }}
 BuildRequires:  {{ py3('neutron-lib') }}
-# TODO
-# BuildRequires:  {{ py3('python-designateclient') }}
 BuildRequires:  {{ py3('python-neutronclient') }}
 BuildRequires:  {{ py3('python-novaclient') }}
 BuildRequires:  {{ py3('os-ken') }}
+BuildRequires:  {{ py3('os-vif') }}
 BuildRequires:  {{ py3('os-xenapi') }}
 BuildRequires:  {{ py3('oslo.cache') }}
 BuildRequires:  {{ py3('oslo.privsep') }}
 BuildRequires:  {{ py3('oslo.reports') }}
 BuildRequires:  {{ py3('oslo.rootwrap') }}
+BuildRequires:  {{ py3('oslo.upgradecheck') }}
 BuildRequires:  {{ py3('oslo.versionedobjects') }}
 BuildRequires:  {{ py3('oslotest') }}
 BuildRequires:  {{ py3('osprofiler') }}
@@ -64,9 +66,8 @@ BuildRequires:  {{ py3('pecan') }}
 BuildRequires:  {{ py3('pyroute2') }}
 BuildRequires:  {{ py3('python-subunit') }}
 BuildRequires:  {{ py3('reno') }}
-BuildRequires:  {{ py3('testrepository') }}
-BuildRequires:  {{ py3('testresources') }}
-BuildRequires:  {{ py3('testtools') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('tenacity') }}
 BuildRequires:  sudo
 Requires:       python3-{{ pypi_name }} = %{epoch}:%{version}-%{release}
 Requires:       sudo
@@ -97,9 +98,11 @@ Requires:       {{ py3('SQLAlchemy') }}
 Requires:       {{ py3('WebOb') }}
 Requires:       {{ py3('alembic') }}
 Requires:       {{ py3('debtcollector') }}
+Requires:       {{ py3('decorator') }}
 Requires:       {{ py3('python-designateclient') }}
 Requires:       {{ py3('eventlet') }}
 Requires:       {{ py3('httplib2') }}
+Requires:       {{ py3('python-ironicclient') }}
 Requires:       {{ py3('keystoneauth1') }}
 Requires:       {{ py3('keystonemiddleware') }}
 Requires:       {{ py3('netaddr') }}
@@ -108,6 +111,7 @@ Requires:       {{ py3('neutron-lib') }}
 Requires:       {{ py3('python-neutronclient') }}
 Requires:       {{ py3('python-novaclient') }}
 Requires:       {{ py3('os-ken') }}
+Requires:       {{ py3('os-vif') }}
 Requires:       {{ py3('os-xenapi') }}
 Requires:       {{ py3('oslo.cache') }}
 Requires:       {{ py3('oslo.concurrency') }}
@@ -124,6 +128,7 @@ Requires:       {{ py3('oslo.reports') }}
 Requires:       {{ py3('oslo.rootwrap') }}
 Requires:       {{ py3('oslo.serialization') }}
 Requires:       {{ py3('oslo.service') }}
+Requires:       {{ py3('oslo.upgradecheck') }}
 Requires:       {{ py3('oslo.utils') }}
 Requires:       {{ py3('oslo.versionedobjects') }}
 Requires:       {{ py3('osprofiler') }}
@@ -378,9 +383,7 @@ exit 0
 %check
 # don't want to depend on hacking for package building
 rm neutron/tests/unit/hacking/test_checks.py
-# FIXME(jpena): Reduce the number of unit tests, we have issues when testing time goes > 1h
-# FIXME(dmllr): Currently fail
-# OS_TEST_PATH=./neutron/tests/unit ostestr --black-regex '(neutron.tests.unit.objects|neutron.tests.unit.plugins)'
+python3 -m stestr.cli --test-path neutron/tests/unit run
 
 %post
 %tmpfiles_create %{_tmpfilesdir}/%{name}.conf
