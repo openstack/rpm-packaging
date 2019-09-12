@@ -245,6 +245,7 @@ rm -f cinder/tests/unit/test_hacking.py
 %if 0%{?with_doc}
 export PYTHONPATH="$( pwd ):$PYTHONPATH"
 PBR_VERSION={{ upstream_version }} %sphinx_build --keep-going -b html doc/source doc/build/html || :
+PBR_VERSION={{ upstream_version }} %sphinx_build --keep-going -b man doc/source doc/build/man || :
 rm -rf doc/build/html/.{doctrees,buildinfo}
 %endif
 # generate the sample config files
@@ -291,6 +292,12 @@ install -p -D -m 440 %{SOURCE6} %{buildroot}%{_sysconfdir}/sudoers.d/openstack-c
 
 # Install logrotate
 install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/openstack-%{service}
+
+# man pages
+%if 0%{?with_doc}
+mkdir -p %{buildroot}%{_mandir}/man1
+install -p -D -m 644 doc/build/man/*.1 %{buildroot}%{_mandir}/man1/
+%endif
 
 # Remove duplicate config files under /usr/etc/
 rm -rf %{buildroot}%{_prefix}/%{_sysconfdir}
@@ -364,6 +371,10 @@ stestr run
 %{_bindir}/{{ pypi_name }}-rtstool
 %{_bindir}/{{ pypi_name }}-volume-usage-audit
 %{_bindir}/{{ pypi_name }}-status
+%if 0%{?with_doc}
+%{_mandir}/man1/cinder-manage.1.gz
+%{_mandir}/man1/cinder-status.1.gz
+%endif
 
 %files -n python3-cinder
 %license LICENSE

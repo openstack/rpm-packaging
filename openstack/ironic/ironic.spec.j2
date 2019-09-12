@@ -2,6 +2,7 @@
 {% set source = fetch_source('https://tarballs.openstack.org/ironic/ironic-master.tar.gz') %}
 {% set upstream_version = upstream_version() %}
 {% set rpm_release = '1' %}
+%global with_doc 1
 %if 0%{?rhel} || 0%{?fedora}
 %global rdo 1
 %endif
@@ -153,6 +154,7 @@ Requires:       sudo
 %description -n python3-{{ pypi_name }}
 This package contains the core code of OpenStack Ironic.
 
+%if 0%{?with_doc}
 %package doc
 Summary:        OpenStack bare metal provisioning service (ironic) - Documentation
 Group:          Documentation/HTML
@@ -166,6 +168,7 @@ BuildRequires:  {{ py3('sphinxcontrib-seqdiag') }}
 %description doc
 OpenStack bare metal provisioning service.
 This package contains the Documentation.
+%endif
 
 %package api
 Summary:        OpenStack Ironic - API
@@ -189,9 +192,14 @@ This package contains the OpenStack Ironic Conductor Manager Daemon.
 
 %build
 %{py3_build}
+
+%if 0%{?with_doc}
 PYTHONPATH=. PBR_VERSION={{ upstream_version }} %sphinx_build --keep-going -b html doc/source doc/build/html
+PYTHONPATH=. PBR_VERSION={{ upstream_version }} %sphinx_build --keep-going -b man doc/source doc/build/man
 # remove the Sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
+rm -rf doc/build/manx/.{doctrees,buildinfo}
+%endif
 
 %install
 %{py3_install}
@@ -225,6 +233,12 @@ install -D -m 440 %{SOURCE1} %{buildroot}%{_sysconfdir}/sudoers.d/openstack-iron
 
 ### Install logrotate
 install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/openstack-ironic
+
+### man pages
+%if 0%{?with_doc}
+mkdir -p %{buildroot}%{_mandir}/man1
+install -p -D -m 644 doc/build/man/*.1 %{buildroot}%{_mandir}/man1/
+%endif
 
 %check
 export LC_ALL=en_US.UTF-8
@@ -276,6 +290,9 @@ exit 0
 %{_bindir}/ironic-status
 %{_bindir}/ironic-rootwrap
 %{_bindir}/ironic-dbsync
+%if 0%{?with_doc}
+%{_mandir}/man1/ironic.1.gz
+%endif
 
 %files -n python3-ironic
 %license LICENSE

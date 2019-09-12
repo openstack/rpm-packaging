@@ -2,6 +2,7 @@
 {% set source = fetch_source('https://tarballs.openstack.org/barbican/barbican-master.tar.gz') %}
 {% set upstream_version = upstream_version() %}
 {% set rpm_release = '1' %}
+%global with_doc 1
 %if 0%{?rhel} || 0%{?fedora}
 %global rdo 1
 %endif
@@ -27,7 +28,6 @@ BuildRequires:  {{ py3('Paste') }}
 BuildRequires:  {{ py3('PasteDeploy') }}
 BuildRequires:  {{ py3('PyKMIP') }}
 BuildRequires:  {{ py3('SQLAlchemy') }}
-BuildRequires:  {{ py3('Sphinx') }}
 BuildRequires:  {{ py3('WebOb') }}
 BuildRequires:  {{ py3('castellan') }}
 BuildRequires:  {{ py3('ddt') }}
@@ -37,7 +37,6 @@ BuildRequires:  {{ py3('jsonschema') }}
 BuildRequires:  {{ py3('ldap3') }}
 BuildRequires:  {{ py3('mock') }}
 BuildRequires:  {{ py3('neutronclient') }}
-BuildRequires:  {{ py3('openstackdocstheme') }}
 BuildRequires:  {{ py3('oslo.concurrency') }}
 BuildRequires:  {{ py3('oslo.config') }}
 BuildRequires:  {{ py3('oslo.db') }}
@@ -165,15 +164,35 @@ management of secrets. It is aimed at being useful for all environments,
 including large ephemeral Clouds.
 This package contains the OpenStack Barbican Retry Scheduler service.
 
+%if 0%{?with_doc}
+%package doc
+Summary:        OpenStack key and secret management (Barbican) - Documentation
+Group:          Documentation/HTML
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
+
+%description doc
+Barbican is a REST API designed for the secure storage, provisioning and
+management of secrets. It is aimed at being useful for all environments,
+including large ephemeral Clouds.
+
+This package contains documentation.
+%endif
+
 %prep
 %autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
 
 %build
 %{py3_build}
+# doc
+%if 0%{?with_doc}
 PYTHONPATH=. PBR_VERSION={{ upstream_version }} %sphinx_build -b html doc/source doc/build/html
+PYTHONPATH=. PBR_VERSION={{ upstream_version }} %sphinx_build -b man doc/source doc/build/man
 # remove the Sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
+rm -rf doc/build/man/.{doctrees,buildinfo}
+%endif
 
 ### configuration file generation
 PYTHONPATH=. oslo-config-generator --config-file etc/oslo-config-generator/barbican.conf --output-file etc/barbican.conf.sample
@@ -216,6 +235,12 @@ ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-retry
 
 # Install apache configuration files
 install -p -D -m 644 %{SOURCE5}  %{buildroot}%{_datadir}/barbican/
+
+# man pages
+%if 0%{?with_doc}
+mkdir -p %{buildroot}%{_mandir}/man1
+install -p -D -m 644 doc/build/man/*.1 %{buildroot}%{_mandir}/man1/
+%endif
 
 %check
 # don't want to depend on hacking for package building
@@ -283,6 +308,9 @@ exit 0
 %{_bindir}/barbican-db-manage
 %{_bindir}/pkcs11-kek-rewrap
 %{_bindir}/pkcs11-key-generation
+%if 0%{?with_doc}
+%{_mandir}/man1/barbican.1.gz
+%endif
 
 %files -n python3-barbican
 %license LICENSE
@@ -319,6 +347,12 @@ exit 0
 %{_bindir}/barbican-retry
 %if 0%{?suse_version}
 %{_sbindir}/rc%{name}-retry
+%endif
+
+%if 0%{?with_doc}
+%files doc
+%license LICENSE
+%doc doc/build/html
 %endif
 
 %changelog

@@ -282,8 +282,10 @@ This package contains the documentation
 %if 0%{?with_doc}
 # generate html docs
 PYTHONPATH=$PWD PBR_VERSION={{ upstream_version }} %sphinx_build --keep-going -b html doc/source doc/build/html
+PYTHONPATH=$PWD PBR_VERSION={{ upstream_version }} %sphinx_build --keep-going -b man doc/source doc/build/man
 # remove the Sphinx-build leftovers
-rm -rf html/.{doctrees,buildinfo}
+rm -rf doc/build/html/.{doctrees,buildinfo}
+rm -rf doc/build/man/.{doctrees,buildinfo}
 %endif
 
 # Generate configuration files
@@ -374,6 +376,12 @@ done
 for service in linuxbridge openvswitch dhcp l3 metadata metering sriov-nic; do
     mkdir -p %{buildroot}/%{_sysconfdir}/{{ pypi_name }}/neutron-$service-agent.conf.d
 done
+
+%if 0%{?with_doc}
+# man pages
+mkdir -p %{buildroot}%{_mandir}/man1
+install -p -D -m 644 doc/build/man/*.1 %{buildroot}%{_mandir}/man1/
+%endif
 
 
 %pre
@@ -541,6 +549,9 @@ python3 -m stestr.cli --test-path neutron/tests/unit run
 %{_datarootdir}/{{ pypi_name }}/rootwrap/netns-cleanup.filters
 %{_datarootdir}/{{ pypi_name }}/rootwrap/linuxbridge-plugin.filters
 %{_datarootdir}/{{ pypi_name }}/rootwrap/privsep.filters
+%if 0%{?with_doc}
+%{_mandir}/man1/neutron.1.gz
+%endif
 
 %files -n python3-{{ pypi_name }}
 %license LICENSE

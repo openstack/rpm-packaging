@@ -31,6 +31,8 @@ Source22:       openstack-nova-novncproxy.service
 Source23:       openstack-nova-serialproxy.service
 Source24:       openstack-nova-api-os-compute.service
 Source27:       openstack-nova.tmpfiles
+# https://review.opendev.org/681733
+Patch0:         0001-Add-nova-status-to-man-pages-list.patch
 BuildRequires:  fdupes
 BuildRequires:  openstack-macros
 BuildRequires:  polkit
@@ -538,7 +540,6 @@ rm -r nova/tests/unit/virt/xenapi
 rm nova/tests/unit/compute/test_compute_xen.py
 rm -r nova/tests/unit/virt/powervm
 rm nova/tests/unit/test_hacking.py
-%{__python3} -m stestr.cli --test-path nova/tests/unit run
 
 %pre
 # need a fixed uid/gid for being able to use shared storage over NFS
@@ -675,7 +676,9 @@ rm nova/tests/unit/test_hacking.py
 %{_bindir}/nova-rootwrap-daemon
 %{_bindir}/nova-status
 %if 0%{?with_doc}
-%{_mandir}/man1/nova*.1.gz
+%{_mandir}/man1/nova-rootwrap.1.gz
+%{_mandir}/man1/nova-manage.1.gz
+%{_mandir}/man1/nova-status.1.gz
 %endif
 
 %files -n python3-nova
@@ -699,6 +702,11 @@ rm nova/tests/unit/test_hacking.py
 %{_sbindir}/rc%{name}-api
 %{_sbindir}/rc%{name}-api-os-compute
 %endif
+%if 0%{?with_doc}
+%{_mandir}/man1/nova-api.1.gz
+%{_mandir}/man1/nova-api-os-compute.1.gz
+%{_mandir}/man1/nova-api-metadata.1.gz
+%endif
 
 %files compute
 %license LICENSE
@@ -711,6 +719,9 @@ rm nova/tests/unit/test_hacking.py
 %if 0%{?suse_version}
 %{_sbindir}/rc%{name}-compute
 %endif
+%if 0%{?with_doc}
+%{_mandir}/man1/nova-compute.1.gz
+%endif
 
 %files conductor
 %license LICENSE
@@ -719,6 +730,9 @@ rm nova/tests/unit/test_hacking.py
 %if 0%{?suse_version}
 %{_sbindir}/rc%{name}-conductor
 %endif
+%if 0%{?with_doc}
+%{_mandir}/man1/nova-conductor.1.gz
+%endif
 
 %files console
 %license LICENSE
@@ -726,6 +740,9 @@ rm nova/tests/unit/test_hacking.py
 %{_unitdir}/%{name}-console.service
 %if 0%{?suse_version}
 %{_sbindir}/rc%{name}-console
+%endif
+%if 0%{?with_doc}
+%{_mandir}/man1/nova-console.1.gz
 %endif
 
 %files network
@@ -737,6 +754,10 @@ rm nova/tests/unit/test_hacking.py
 %if 0%{?suse_version}
 %{_sbindir}/rc%{name}-network
 %endif
+%if 0%{?with_doc}
+%{_mandir}/man1/nova-network.1.gz
+%{_mandir}/man1/nova-dhcpbridge.1.gz
+%endif
 
 %files novncproxy
 %license LICENSE
@@ -744,6 +765,9 @@ rm nova/tests/unit/test_hacking.py
 %{_unitdir}/%{name}-novncproxy.service
 %if 0%{?suse_version}
 %{_sbindir}/rc%{name}-novncproxy
+%endif
+%if 0%{?with_doc}
+%{_mandir}/man1/nova-novncproxy.1.gz
 %endif
 
 %files xvpvncproxy
@@ -753,6 +777,9 @@ rm nova/tests/unit/test_hacking.py
 %if 0%{?suse_version}
 %{_sbindir}/rc%{name}-xvpvncproxy
 %endif
+%if 0%{?with_doc}
+%{_mandir}/man1/nova-xvpvncproxy.1.gz
+%endif
 
 %files scheduler
 %license LICENSE
@@ -760,6 +787,9 @@ rm nova/tests/unit/test_hacking.py
 %{_unitdir}/%{name}-scheduler.service
 %if 0%{?suse_version}
 %{_sbindir}/rc%{name}-scheduler
+%endif
+%if 0%{?with_doc}
+%{_mandir}/man1/nova-scheduler.1.gz
 %endif
 
 %files spicehtml5proxy
@@ -769,6 +799,9 @@ rm nova/tests/unit/test_hacking.py
 %if 0%{?suse_version}
 %{_sbindir}/rc%{name}-spicehtml5proxy
 %endif
+%if 0%{?with_doc}
+%{_mandir}/man1/nova-spicehtml5proxy.1.gz
+%endif
 
 %files serialproxy
 %license LICENSE
@@ -776,6 +809,9 @@ rm nova/tests/unit/test_hacking.py
 %{_unitdir}/%{name}-serialproxy.service
 %if 0%{?suse_version}
 %{_sbindir}/rc%{name}-serialproxy
+%endif
+%if 0%{?with_doc}
+%{_mandir}/man1/nova-serialproxy.1.gz
 %endif
 
 %if 0%{?with_doc}
