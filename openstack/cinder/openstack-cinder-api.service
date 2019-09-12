@@ -1,6 +1,7 @@
 [Unit]
 Description=OpenStack Cinder API Server
 After=syslog.target network.target
+After=mariadb.service postgresql.service rabbitmq-server.service tgtd.service
 
 [Service]
 Type=notify

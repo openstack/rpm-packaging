@@ -1,7 +1,7 @@
 [Unit]
 Description=OpenStack Nova Compute Server
 After=syslog.target network.target
-After=libvirtd.service libvirt-guests.service
+After=rabbitmq-server.service libvirtd.service libvirt-guests.service
 
 [Service]
 Environment=LIBGUESTFS_ATTACH_METHOD=appliance
@@ -10,8 +10,6 @@ NotifyAccess=all
 TimeoutStartSec=0
 Restart=on-failure
 User=nova
-
-
 ExecStart=/usr/bin/nova-compute
 TasksMax=infinity
 

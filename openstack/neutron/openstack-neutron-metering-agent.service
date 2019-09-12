@@ -1,6 +1,7 @@
 [Unit]
 Description=OpenStack Neutron Metering Agent
 After=syslog.target network.target
+After=mariadb.service postgresql.service rabbitmq-server.service
 
 [Service]
 Type=simple

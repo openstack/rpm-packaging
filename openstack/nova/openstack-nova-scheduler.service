@@ -1,6 +1,7 @@
 [Unit]
 Description=OpenStack Nova Scheduler Server
 After=syslog.target network.target
+After=mariadb.service postgresql.service rabbitmq-server.service
 
 [Service]
 Type=notify
@@ -8,8 +9,6 @@ NotifyAccess=all
 TimeoutStartSec=0
 Restart=on-failure
 User=nova
-
-
 PrivateTmp=yes
 ExecStart=/usr/bin/nova-scheduler
 

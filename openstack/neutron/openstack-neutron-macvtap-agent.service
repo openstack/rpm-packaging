@@ -1,6 +1,7 @@
 [Unit]
 Description=OpenStack Neutron macvtap L2 agent
 After=syslog.target
+After=mariadb.service postgresql.service rabbitmq-server.service
 
 [Service]
 Type=simple

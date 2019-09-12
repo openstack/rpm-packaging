@@ -1,6 +1,7 @@
 [Unit]
 Description=OpenStack shared file system service (Manila) - Data
 After=syslog.target network.target
+After=mariadb.service postgresql.service rabbitmq-server.service
 
 [Service]
 Type=notify

@@ -1,6 +1,7 @@
 [Unit]
 Description=OpenStack Nova Network Server
 After=syslog.target network.target
+After=mariadb.service postgresql.service rabbitmq-server.service
 
 [Service]
 Type=notify
@@ -8,11 +9,8 @@ NotifyAccess=all
 TimeoutStartSec=0
 Restart=on-failure
 User=nova
-
-
 PrivateTmp=yes
 ExecStart=/usr/bin/nova-network
-
 # Don't kill dnsmasq on shutdown (#805947)
 KillMode=process
 

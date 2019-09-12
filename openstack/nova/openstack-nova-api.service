@@ -1,6 +1,7 @@
 [Unit]
 Description=OpenStack Nova API Server
-After=syslog.target network.target mysql.service postgresql.service rabbitmq-server.service
+After=syslog.target network.target
+After=mariadb.service postgresql.service rabbitmq-server.service
 
 [Service]
 Type=notify

@@ -1,6 +1,7 @@
 [Unit]
 Description=OpenStack Neutron Linux Bridge Cleanup Utility
 After=syslog.target network.target
+After=mariadb.service postgresql.service rabbitmq-server.service
 Before=openstack-neutron-linuxbridge-agent.service openstack-neutron-dhcp-agent.service openstack-neutron-l3-agent.service
 Before=openstack-nova-compute.service
 

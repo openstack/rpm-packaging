@@ -2,6 +2,7 @@
 Description=OpenStack Neutron Open vSwitch Cleanup Utility
 After=syslog.target network.target
 After=openvswitch.service
+After=mariadb.service postgresql.service rabbitmq-server.service
 Before=openstack-neutron-openvswitch-agent.service openstack-neutron-dhcp-agent.service openstack-neutron-l3-agent.service
 Before=openstack-nova-compute.service
 

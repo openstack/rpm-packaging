@@ -1,6 +1,7 @@
 [Unit]
 Description=OpenStack Neutron Linux Bridge Agent
 After=syslog.target network.target network.service
+After=mariadb.service postgresql.service rabbitmq-server.service
 
 [Service]
 Type=simple
