@@ -2,6 +2,7 @@
 {% set source = fetch_source('https://tarballs.openstack.org/manila/manila-master.tar.gz') %}
 {% set upstream_version = upstream_version() %}
 {% set rpm_release = '1' %}
+%global with_doc 1
 %if 0%{?rhel} || 0%{?fedora}
 %global rdo 1
 %endif
@@ -23,6 +24,8 @@ Source6:        openstack-manila-api.service
 Source7:        openstack-manila-scheduler.service
 Source8:        openstack-manila-share.service
 Source9:        openstack-manila-data.service
+# https://review.opendev.org/681746
+Patch0:         0001-Add-manila-status-to-man-pages-list.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py3('Babel') }}
 BuildRequires:  {{ py3('Paste') }}
@@ -142,6 +145,7 @@ Requires:       sudo
 OpenStack shared file system service.
 This package contains the core Python module of OpenStack Manila.
 
+%if 0%{?with_doc}
 %package doc
 Summary:        OpenStack shared file system service (Manila) - Documentation
 Group:          Documentation/HTML
@@ -151,6 +155,7 @@ BuildRequires:  {{ py3('openstackdocstheme') }}
 %description doc
 OpenStack shared file system service.
 This package contains the Documentation.
+%endif
 
 %package api
 Summary:        OpenStack shared file system service (Manila) - API
@@ -194,9 +199,15 @@ This package contains the OpenStack Manila Data service.
 
 %build
 %{py3_build}
+
+# doc
+%if 0%{?with_doc}
 PYTHONPATH=. PBR_VERSION={{ upstream_version }} %sphinx_build -b html doc/source doc/build/html
+PYTHONPATH=. PBR_VERSION={{ upstream_version }} %sphinx_build -b man doc/source doc/build/man
 # remove the Sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
+rm -rf doc/build/man/.{doctrees,buildinfo}
+%endif
 
 # config file generation
 PYTHONPATH=. oslo-config-generator --config-file etc/oslo-config-generator/manila.conf \
@@ -245,6 +256,12 @@ install -D -m 440 %{SOURCE1} %{buildroot}%{_sysconfdir}/sudoers.d/openstack-mani
 
 ### default configuration
 install -D -m 640 %{SOURCE4} %{buildroot}/%{_sysconfdir}/manila/manila.conf.d/010-manila.conf
+
+# man pages
+%if 0%{?with_doc}
+mkdir -p %{buildroot}%{_mandir}/man1
+install -p -D -m 644 doc/build/man/*.1 %{buildroot}%{_mandir}/man1/
+%endif
 
 %pre
 %openstack_pre_user_group_create manila manila /sbin/nologin
@@ -313,15 +330,21 @@ exit 0
 %{_bindir}/manila-manage
 %{_bindir}/manila-status
 %{_bindir}/manila-rootwrap
+%if 0%{?with_doc}
+%{_mandir}/man1/manila-manage.1.gz
+%{_mandir}/man1/manila-status.1.gz
+%endif
 
 %files -n python3-manila
 %license LICENSE
 %{python3_sitelib}/manila/
 %{python3_sitelib}/manila-*.egg-info
 
+%if 0%{?with_doc}
 %files doc
 %license LICENSE
 %doc doc/build/html
+%endif
 
 %files api
 %license LICENSE

@@ -2,6 +2,7 @@
 {% set source = fetch_source('https://tarballs.openstack.org/keystone/keystone-master.tar.gz') %}
 {% set upstream_version = upstream_version() %}
 {% set rpm_release = '1' %}
+%global with_doc 1
 %if 0%{?rhel} || 0%{?fedora}
 %global rdo 1
 %endif
@@ -129,6 +130,7 @@ Keystone is a Python implementation of the OpenStack
 
 This package contains the Keystone test files.
 
+%if 0%{?with_doc}
 %package doc
 Summary:        Documentation for OpenStack Identity Service
 Group:          Documentation/HTML
@@ -143,6 +145,7 @@ BuildRequires:  {{ py3('sphinxcontrib-seqdiag') }}
 OpenStack Keystone documentaion.
 .
 This package contains the documentation
+%endif
 
 %prep
 %autosetup -p1 -n {{ pypi_name }}-{{upstream_version}}
@@ -157,9 +160,16 @@ sed -i 's#apache2#httpd#' httpd/wsgi-keystone.conf
 
 %build
 %{py3_build}
+
+# doc
+%if 0%{?with_doc}
 PYTHONPATH=. PBR_VERSION={{ upstream_version }} %sphinx_build -b html doc/source doc/build/html
+PYTHONPATH=. PBR_VERSION={{ upstream_version }} %sphinx_build -b man doc/source doc/build/man
 # remove the Sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
+rm -rf doc/build/man/.{doctrees,buildinfo}
+%endif
+
 # config file generation
 PYTHONPATH=. oslo-config-generator --config-file config-generator/keystone.conf \
 --output-file etc/keystone.conf.sample
@@ -191,6 +201,12 @@ rm -rv  %{buildroot}/%{_prefix}%{_sysconfdir}/
 install -p -D -m 755 tools/sample_data.sh %{buildroot}%{_datadir}/keystone/sample_data.sh
 # Install apache configuration files
 install -p -D -m 644 httpd/wsgi-keystone.conf  %{buildroot}%{_datadir}/keystone/
+
+# man pages
+%if 0%{?with_doc}
+mkdir -p %{buildroot}%{_mandir}/man1
+install -p -D -m 644 doc/build/man/*.1 %{buildroot}%{_mandir}/man1/
+%endif
 
 %pre
 %openstack_pre_user_group_create keystone keystone /sbin/nologin
@@ -237,6 +253,9 @@ stestr-3 run --black-regex keystone.tests.unit.test_policy.GeneratePolicyFileTes
 %dir %attr(0750, keystone, keystone) %{_localstatedir}/log/keystone
 %dir %attr(0750, keystone, keystone) %{_localstatedir}/cache/keystone
 %{_sysconfdir}/sysctl.d/openstack-keystone.conf
+%if 0%{?with_doc}
+%{_mandir}/man1/keystone-manage.1.gz
+%endif
 
 %files -n python3-keystone
 %doc README.rst
@@ -249,8 +268,10 @@ stestr-3 run --black-regex keystone.tests.unit.test_policy.GeneratePolicyFileTes
 %license LICENSE
 %{python3_sitelib}/{{ pypi_name }}/tests
 
+%if 0%{?with_doc}
 %files doc
 %license LICENSE
 %doc doc/build/html
+%endif
 
 %changelog

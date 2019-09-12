@@ -214,7 +214,9 @@ popd
 ### documentation
 %if 0%{?with_doc}
 PBR_VERSION={{ upstream_version }} %sphinx_build --keep-going -b html doc/source doc/build/html
+PBR_VERSION={{ upstream_version }} %sphinx_build --keep-going -b man doc/source doc/build/man
 rm -rf doc/build/html/.{doctrees,buildinfo}
+rm -rf doc/build/man/.{doctrees,buildinfo}
 %endif
 
 %install
@@ -259,6 +261,12 @@ ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-engine
 
 ### Install logrotate
 install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/openstack-heat
+
+### man pages
+%if 0%{?with_doc}
+mkdir -p %{buildroot}%{_mandir}/man1
+install -p -D -m 644 doc/build/man/*.1 %{buildroot}%{_mandir}/man1/
+%endif
 
 %pre
 %openstack_pre_user_group_create heat heat /sbin/nologin
@@ -316,6 +324,13 @@ exit 0
 %{_bindir}/heat-keystone-setup
 %{_bindir}/heat-keystone-setup-domain
 %{_bindir}/heat-all
+%if 0%{?with_doc}
+%{_mandir}/man1/heat-db-setup.1.gz
+%{_mandir}/man1/heat-keystone-setup.1.gz
+%{_mandir}/man1/heat-keystone-setup-domain.1.gz
+%{_mandir}/man1/heat-manage.1.gz
+%{_mandir}/man1/heat-status.1.gz
+%endif
 
 %files -n python3-heat
 %license LICENSE
@@ -336,6 +351,9 @@ exit 0
 %if 0%{?suse_version}
 %{_sbindir}/rc%{name}-api
 %endif
+%if 0%{?with_doc}
+%{_mandir}/man1/heat-api.1.gz
+%endif
 
 %files api-cfn
 %license LICENSE
@@ -344,6 +362,9 @@ exit 0
 %if 0%{?suse_version}
 %{_sbindir}/rc%{name}-api-cfn
 %endif
+%if 0%{?with_doc}
+%{_mandir}/man1/heat-api-cfn.1.gz
+%endif
 
 %files engine
 %license LICENSE
@@ -351,6 +372,9 @@ exit 0
 %{_unitdir}/%{name}-engine.service
 %if 0%{?suse_version}
 %{_sbindir}/rc%{name}-engine
+%endif
+%if 0%{?with_doc}
+%{_mandir}/man1/heat-engine.1.gz
 %endif
 
 %files plugin-heat_docker
