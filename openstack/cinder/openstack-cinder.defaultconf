@@ -1,0 +1,6 @@
+[DEFAULT]
+log_dir = /var/log/cinder
+state_path = /var/lib/cinder
+
+[oslo_concurrency]
+lock_path = /run/cinder
