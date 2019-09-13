@@ -22,12 +22,20 @@ BuildRequires:  {{ py2pkg('horizon') }}
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py3('python-magnumclient') }}
 BuildRequires:  {{ py3('pbr') }}
-Requires:       {{ py2pkg('horizon') }}
-Requires:       {{ py3('python-magnumclient') }}
-Requires:       {{ py3('pbr') }}
+Requires:       python3-{{ pypi_name }} = %{version}-%{release}
 BuildArch:      noarch
 
 %description
+OpenStack container orchestration engines (Magnum) management
+plugin for Horizon.
+
+%package -n python3-{{ pypi_name }}
+Summary:        Magnum management plugin for Horizon - Python module
+Requires:       {{ py2pkg('horizon') }}
+Requires:       {{ py3('python-magnumclient') }}
+Requires:       {{ py3('pbr') }}
+
+%description -n python3-{{ pypi_name }}
 OpenStack container orchestration engines (Magnum) management
 plugin for Horizon.
 
@@ -61,6 +69,10 @@ su %{apache_user} -s /bin/sh -c "python3 %{http_dashboard_dir}/manage.py collect
 %{http_dashboard_dir}/openstack_dashboard/enabled
 %doc ChangeLog README.rst
 %license LICENSE
+
+%files -n python3-{{ pypi_name }}
+%license LICENSE
+%doc README.rst
 %{python3_sitelib}/magnum_ui/
 %{python3_sitelib}/magnum_ui-*.egg-info
 
