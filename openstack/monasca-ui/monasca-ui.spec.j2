@@ -3,7 +3,6 @@
 {% set upstream_version = upstream_version() %}
 {% set rpm_release = '1' %}
 
-%global sname {{ pypi_name }}
 %if 0%{?rhel} || 0%{?fedora}
 %global rdo 1
 %global http_dashboard_dir %{_datarootdir}/openstack-dashboard
@@ -23,19 +22,12 @@ BuildRequires:  {{ py2pkg('horizon') }}
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py3('python-monascaclient') }}
 BuildRequires:  {{ py3('pbr') }}
-Requires:       {{ py2pkg('horizon-plugin-monasca-ui') }} = %{version}
+Requires:       {{ py3('Django') }}
+Requires:       {{ py3('python-monascaclient') }}
+Requires:       {{ py3('pbr') }}
 BuildArch:      noarch
 
 %description
-The Monasca UI Horizon plugin adds Monitoring panel to the OpenStack dashboard.
-
-%package -n {{ py2pkg('horizon-plugin-monasca-ui') }}
-Summary:       Monasca Plugin for Horizon - Python module
-Requires:      {{ py3('Django') }}
-Requires:      {{ py3('python-monascaclient') }}
-Requires:      {{ py3('pbr') }}
-
-%description -n {{ py2pkg('horizon-plugin-monasca-ui') }}
 The Monasca UI Horizon plugin adds Monitoring panel to the OpenStack dashboard.
 
 %if 0%{?suse_version}
@@ -50,7 +42,7 @@ panel's Alarms tab links to when generating drilldown links for alarms.
 %endif
 
 %prep
-%autosetup -n %{sname}-{{ upstream_version }}
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
 
 %build
@@ -81,17 +73,13 @@ su %{apache_user} -s /bin/sh -c "python3 %{http_dashboard_dir}/manage.py collect
 %{http_dashboard_dir}/openstack_dashboard/conf/monitoring_policy.json
 %license LICENSE
 %doc ChangeLog README.rst
+%{python3_sitelib}/monitoring
+%{python3_sitelib}/monasca_ui-*.egg-info
 
 %if 0%{?suse_version}
 %files -n grafana-monasca-ui-drilldown
 %license LICENSE
 %{_datadir}/grafana/public/dashboards/drilldown.js
 %endif
-
-%files -n {{ py2pkg('horizon-plugin-monasca-ui') }}
-%license LICENSE
-%doc README.rst
-%{python3_sitelib}/monitoring
-%{python3_sitelib}/monasca_ui-*.egg-info
 
 %changelog
