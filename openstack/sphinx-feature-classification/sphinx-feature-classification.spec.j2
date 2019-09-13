@@ -12,6 +12,8 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://docs.openstack.org/sphinx-feature-classification/latest/
 Source0:        {{ source }}
+# https://review.opendev.org/#/c/679860
+Patch0:         0001-make-sure-destination-dir-exist-before-copying-files.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('ddt', py_versions=['py2', 'py3']) }}

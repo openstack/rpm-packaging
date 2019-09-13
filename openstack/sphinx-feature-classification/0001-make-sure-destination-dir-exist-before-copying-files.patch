@@ -1,0 +1,79 @@
+From 1fb0127663e65dad1c1f000e1dc94e2bc67fed19 Mon Sep 17 00:00:00 2001
+From: Guang Yee <guang.yee@suse.com>
+Date: Tue, 3 Sep 2019 13:32:32 -0700
+Subject: [PATCH] make sure destination dir exist before copying files into it
+
+on_build_finished was operating under the assumption that the
+_static directory always exist. This is not a valid assumption if
+there are no files there for sphinx to copy prior to the execution
+of the 'sphinx_feature_classification.support_matrix' extension.
+
+This patch utilizes the copy_asset() utility to copy files as it
+is consistent with other sphinx extensions.
+
+Change-Id: Iba538f7cb595c58a0a401e54edf50dc83c5a72d2
+---
+ sphinx_feature_classification/support_matrix.py     |  6 +++---
+ .../tests/test_sphinx_feature_classification.py     | 13 +++++++++++++
+ 2 files changed, 16 insertions(+), 3 deletions(-)
+
+diff --git a/sphinx_feature_classification/support_matrix.py b/sphinx_feature_classification/support_matrix.py
+index 44a6429..65b5a13 100644
+--- a/sphinx_feature_classification/support_matrix.py
++++ b/sphinx_feature_classification/support_matrix.py
+@@ -21,12 +21,12 @@ It is used via a single directive in the .rst file
+ 
+ from os import path
+ import re
+-import shutil
+ 
+ from docutils import nodes
+ from docutils.parsers import rst
+ import six
+ from six.moves import configparser
++from sphinx.util.fileutil import copy_asset
+ 
+ KEY_PATTERN = re.compile("[^a-zA-Z0-9_]")
+ DRIVER_PREFIX = "driver."
+@@ -477,8 +477,8 @@ def on_build_finished(app, exc):
+     if exc is None:
+         src = path.join(path.abspath(path.dirname(__file__)),
+                         'support-matrix.css')
+-        dst = path.join(app.outdir, '_static', 'support-matrix.css')
+-        shutil.copyfile(src, dst)
++        dst = path.join(app.outdir, '_static')
++        copy_asset(src, dst)
+ 
+ 
+ def setup(app):
+diff --git a/sphinx_feature_classification/tests/test_sphinx_feature_classification.py b/sphinx_feature_classification/tests/test_sphinx_feature_classification.py
+index f353539..0ccb256 100644
+--- a/sphinx_feature_classification/tests/test_sphinx_feature_classification.py
++++ b/sphinx_feature_classification/tests/test_sphinx_feature_classification.py
+@@ -21,6 +21,7 @@ Tests for `sphinx_feature_classification` module.
+ import os
+ 
+ import ddt
++import fixtures
+ import six
+ from six.moves import configparser
+ 
+@@ -72,3 +73,15 @@ class MatrixTestCase(base.TestCase):
+         fake_implementation = self.matrix.features[0].implementations[key]
+         self.assertEqual(status, fake_implementation.status)
+         self.assertEqual(notes, fake_implementation.notes)
++
++    def test_on_build_finished(self):
++
++        class FakeApp(object):
++            outdir = self.useFixture(fixtures.TempDir()).path
++
++        app = FakeApp()
++        exc = None
++        support_matrix.on_build_finished(app, exc)
++        expected_file = os.path.join(
++            app.outdir, '_static', 'support-matrix.css')
++        self.assertTrue(os.path.isfile(expected_file))
+-- 
+2.23.0
+
