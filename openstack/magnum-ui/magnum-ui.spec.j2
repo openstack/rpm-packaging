@@ -1,0 +1,67 @@
+{% set pypi_name = 'magnum-ui' %}
+{% set source = fetch_source('https://tarballs.openstack.org/magnum-ui/magnum-ui-master.tar.gz') %}
+{% set upstream_version = upstream_version() %}
+{% set rpm_release = '1' %}
+
+%if 0%{?rhel} || 0%{?fedora}
+%global rdo 1
+%global http_dashboard_dir %{_datarootdir}/openstack-dashboard
+%else
+%global http_dashboard_dir /srv/www/openstack-dashboard
+%endif
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
+Summary:        Magnum management plugin for Horizon
+License:        {{ license('Apache-2.0') }}
+Group:          System/Management
+URL:            https://launchpad.net/magnum-ui
+Source0:        {{ source|basename }}
+BuildRequires:  fdupes
+BuildRequires:  {{ py2pkg('horizon') }}
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py3('python-magnumclient') }}
+BuildRequires:  {{ py3('pbr') }}
+Requires:       {{ py2pkg('horizon') }}
+Requires:       {{ py3('python-magnumclient') }}
+Requires:       {{ py3('pbr') }}
+BuildArch:      noarch
+
+%description
+OpenStack container orchestration engines (Magnum) management
+plugin for Horizon.
+
+%prep
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
+%py_req_cleanup
+
+%build
+%py3_build
+
+%install
+%py3_install
+
+# directories
+install -m 0755 -d %{buildroot}%{http_dashboard_dir}/openstack_dashboard/enabled/
+install -m 0755 -d %{buildroot}%{http_dashboard_dir}/openstack_dashboard/conf/
+
+install -m 0755 -d %{buildroot}/srv/www/openstack-dashboard/openstack_dashboard/enabled/
+cp -a magnum_ui/enabled/_1370_project_container_infra_panel_group.py %{buildroot}%{http_dashboard_dir}/openstack_dashboard/enabled/
+cp -a magnum_ui/enabled/_1371_project_container_infra_clusters_panel.py %{buildroot}%{http_dashboard_dir}/openstack_dashboard/enabled/
+cp -a magnum_ui/enabled/_1372_project_container_infra_cluster_templates_panel.py %{buildroot}%{http_dashboard_dir}/openstack_dashboard/enabled/
+
+%post
+su %{apache_user} -s /bin/sh -c "python3 %{http_dashboard_dir}/manage.py collectstatic --noinput --clear > /dev/null"
+
+%postun
+su %{apache_user} -s /bin/sh -c "python3 %{http_dashboard_dir}/manage.py collectstatic --noinput --clear > /dev/null"
+
+%files
+%defattr(-,root,root)
+%{http_dashboard_dir}/openstack_dashboard/enabled
+%doc ChangeLog README.rst
+%license LICENSE
+%{python3_sitelib}/magnum_ui/
+%{python3_sitelib}/magnum_ui-*.egg-info
+
+%changelog
