@@ -106,15 +106,22 @@ Requires:       {{ py2pkg('PrettyTable', py_versions=build_py_versions) }}
 Requires:       {{ py2pkg('SQLAlchemy', py_versions=build_py_versions) }}
 Requires:       {{ py2pkg('WSME', py_versions=build_py_versions) }}
 Requires:       {{ py2pkg('WebOb', py_versions=build_py_versions) }}
+Requires:       {{ py2pkg('python-cinderclient', py_versions=build_py_versions) }}
 Requires:       {{ py2pkg('croniter', py_versions=build_py_versions) }}
 Requires:       {{ py2pkg('enum34', py_versions=build_py_versions) }}
+Requires:       {{ py2pkg('python-glanceclient', py_versions=build_py_versions) }}
 Requires:       {{ py2pkg('gnocchiclient', py_versions=build_py_versions) }}
+Requires:       {{ py2pkg('python-ironicclient', py_versions=build_py_versions) }}
 Requires:       {{ py2pkg('jsonpatch', py_versions=build_py_versions) }}
 Requires:       {{ py2pkg('jsonschema', py_versions=build_py_versions) }}
 Requires:       {{ py2pkg('keystoneauth1', py_versions=build_py_versions) }}
+Requires:       {{ py2pkg('python-keystoneclient', py_versions=build_py_versions) }}
 Requires:       {{ py2pkg('keystonemiddleware', py_versions=build_py_versions) }}
 Requires:       {{ py2pkg('lxml', py_versions=build_py_versions) }}
+Requires:       {{ py2pkg('python-monascaclient', py_versions=build_py_versions) }}
 Requires:       {{ py2pkg('networkx', py_versions=build_py_versions) }}
+Requires:       {{ py2pkg('python-neutronclient', py_versions=build_py_versions) }}
+Requires:       {{ py2pkg('python-novaclient', py_versions=build_py_versions) }}
 Requires:       {{ py2pkg('openstackclient', py_versions=build_py_versions) }}
 Requires:       {{ py2pkg('oslo.cache', py_versions=build_py_versions) }}
 Requires:       {{ py2pkg('oslo.db', py_versions=build_py_versions) }}
@@ -131,6 +138,9 @@ Requires:       {{ py2pkg('six', py_versions=build_py_versions) }}
 Requires:       {{ py2pkg('stevedore', py_versions=build_py_versions) }}
 Requires:       {{ py2pkg('taskflow', py_versions=build_py_versions) }}
 BuildArch:      noarch
+%if ! 0%{?rhel}
+Recommends:     {{ py2pkg('python-ceilometerclient', py_versions=build_py_versions) }}
+%endif
 
 %description -n     python-{{ pypi_name }}
 OpenStack Watcher provides a flexible and scalable resource optimization
