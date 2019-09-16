@@ -11,7 +11,7 @@ LimitNOFILE=131072
 LimitNPROC=131072
 WorkingDirectory=/var/lib/glance
 PrivateTmp=yes
-# the connection parameter might be stored in the glace-api related config files
+# the connection parameter might be stored in the glance-api related config files
 ExecStartPre=-/usr/bin/glance-manage --config-dir=/etc/glance/glance.conf.d/ --config-dir=/etc/glance/glance-api.conf.d/ db sync
 ExecStart=/usr/bin/glance-api
 
