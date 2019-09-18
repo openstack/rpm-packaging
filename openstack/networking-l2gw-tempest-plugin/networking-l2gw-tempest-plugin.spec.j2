@@ -1,0 +1,48 @@
+{% set pypi_name = 'networking-l2gw-tempest-plugin' %}
+{% set source=fetch_source('https://tarballs.openstack.org/networking-l2gw-tempest-plugin/networking-l2gw-tempest-plugin-master.tar.gz') %}
+{% set upstream_version = upstream_version() %}
+{% set rpm_release = '0' %}
+
+%global common_desc \
+This package contains Tempest tests to cover the networking-l2gw project. \
+Additionally it provides a plugin to automatically load these tests into Tempest.
+Name:          {{ py2name() }}
+Version:       {{ py2rpmversion() }}
+Release:       {{ py2rpmrelease() }}
+Summary:       Tempest plugin for the networking-l2gw project
+License:       {{ license('Apache-2.0') }}
+Group:         Development/Languages/Python
+URL:           https://opendev.org/openstack/{{ pypi_name }}
+Source0:       {{ source|basename }}
+BuildRequires: fdupes
+BuildRequires: openstack-macros
+BuildRequires: {{ py2pkg('pbr') }}
+Requires:      {{ py2pkg('tempest') }}
+Requires:      {{ py2pkg('Babel') }}
+Requires:      {{ py2pkg('neutron-lib') }}
+Requires:      {{ py2pkg('python-neutronclient') }}
+Requires:      {{ py2pkg('ovsdbapp') }}
+Requires:      {{ py2pkg('pbr') }}
+BuildArch:     noarch
+
+%description
+%{common_desc}
+
+%prep
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
+%py_req_cleanup
+
+%build
+%{py2_build}
+
+%install
+%{py2_install}
+%fdupes %{buildroot}%{python2_sitelib}
+
+%files
+%license LICENSE
+%doc README.rst
+%{python2_sitelib}/networking_l2gw_tempest_plugin
+%{python2_sitelib}/*.egg-info
+
+%changelog
