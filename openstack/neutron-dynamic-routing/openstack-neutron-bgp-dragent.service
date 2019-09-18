@@ -1,0 +1,16 @@
+[Unit]
+Description=OpenStack Neutron BGP Dynamic Routing Agent
+After=syslog.target network.target mariadb.service postgresql.service rabbitmq-server.service
+
+[Service]
+Type=simple
+User=neutron
+Group=neutron
+WorkingDirectory=/var/lib/neutron
+ExecStart=/usr/bin/neutron-bgp-dragent --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/bgp_dragent.ini
+PrivateTmp=false
+KillMode=process
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
