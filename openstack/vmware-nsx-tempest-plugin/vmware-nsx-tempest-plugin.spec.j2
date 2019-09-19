@@ -1,0 +1,43 @@
+{% set pypi_name = 'vmware-nsx-tempest-plugin' %}
+{% set rpm_release = '1' %}
+{% set source=fetch_source('https://tarballs.openstack.org/vmware-nsx-tempest-plugin/vmware-nsx-tempest-plugin-stable-rocky.tar.gz') %}
+{% set upstream_version = upstream_version() %}
+
+Name:          {{ py2pkg('vmware-nsx-tempest-plugin') }}
+Version:       {{ py2rpmversion() }}
+Release:       {{ py2rpmrelease() }}
+Summary:       Tempest plugin for the vmware-nsx project
+License:       {{ license('Apache-2.0') }}
+Group:         Development/Languages/Python
+URL:           https://opendev.org/x/{{ pypi_name }}
+Source0:       {{ source|basename }}
+BuildRequires: fdupes
+BuildRequires: openstack-macros
+BuildRequires: {{ py2pkg('pbr') }}
+Requires:      {{ py2pkg('tempest') }}
+Requires:      {{ py2pkg('neutron-lib') }}
+Requires:      {{ py2pkg('pbr') }}
+BuildArch:     noarch
+
+%description
+This package contains Tempest tests to cover the vmware-nsx project.
+Additionally it provides a plugin to automatically load these tests into Tempest.
+
+%prep
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
+%py_req_cleanup
+
+%build
+%{py2_build}
+
+%install
+%{py2_install}
+%fdupes %{buildroot}%{python2_sitelib}
+
+%files
+%license LICENSE
+%doc README.rst
+%{python2_sitelib}/vmware_nsx_tempest_plugin
+%{python2_sitelib}/*.egg-info
+
+%changelog
