@@ -104,16 +104,23 @@ Requires:       {{ py3('PrettyTable') }}
 Requires:       {{ py3('SQLAlchemy') }}
 Requires:       {{ py3('WSME') }}
 Requires:       {{ py3('WebOb') }}
+Requires:       {{ py3('python-cinderclient') }}
 Requires:       {{ py3('croniter') }}
 Requires:       {{ py3('enum34') }}
+Requires:       {{ py3('python-glanceclient') }}
 Requires:       {{ py3('gnocchiclient') }}
+Requires:       {{ py3('python-ironicclient') }}
 Requires:       {{ py3('jsonpatch') }}
 Requires:       {{ py3('jsonschema') }}
 Requires:       {{ py3('keystoneauth1') }}
+Requires:       {{ py3('python-keystoneclient') }}
 Requires:       {{ py3('keystonemiddleware') }}
 Requires:       {{ py3('lxml') }}
 Requires:       {{ py3('microversion_parse') }}
+Requires:       {{ py3('python-monascaclient') }}
 Requires:       {{ py3('networkx') }}
+Requires:       {{ py3('python-neutronclient') }}
+Requires:       {{ py3('python-novaclient') }}
 Requires:       {{ py3('openstackclient') }}
 Requires:       {{ py3('oslo.cache') }}
 Requires:       {{ py3('oslo.db') }}
@@ -129,6 +136,7 @@ Requires:       {{ py3('pecan') }}
 Requires:       {{ py3('six') }}
 Requires:       {{ py3('stevedore') }}
 Requires:       {{ py3('taskflow') }}
+Recommends:     {{ py3('python-ceilometerclient') }}
 BuildArch:      noarch
 
 %description -n python3-{{ pypi_name }}
