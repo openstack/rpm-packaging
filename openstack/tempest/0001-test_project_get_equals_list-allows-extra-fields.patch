@@ -1,0 +1,48 @@
+From 8641a707367fd51066e2a59c71977040cef334fa Mon Sep 17 00:00:00 2001
+From: morgan fainberg <morgan.fainberg@gmail.com>
+Date: Sat, 24 Aug 2019 10:21:30 -0700
+Subject: [PATCH] "test_project_get_equals_list" allows extra fields
+
+Keystone is updating the project response to include resource-specific
+options. The test `test_project_get_equals_list` is looking at explicit
+data being returned and prevents the additional field. Keystone does not
+(and currently has not plan) to support microversions. This changes the
+test checking the returned fields to ensure that the expected fields is
+a subset (inclusive) of the returned fields. This allows for Keystone to
+iterate and respond with additional fields for future changes.
+
+Any future fields added become part of the contract and should be added
+to the expected "fields" list in the test after the new field response
+code lands within keystone.
+
+Related-Bug: #1807751
+Required-by: https://review.opendev.org/#/c/678322/
+Change-Id: I266d98503066f3a8027effc43a95f9ad9ff12492
+---
+ tempest/api/identity/admin/v3/test_projects.py | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/tempest/api/identity/admin/v3/test_projects.py b/tempest/api/identity/admin/v3/test_projects.py
+index 0b85b1977..e46145d96 100644
+--- a/tempest/api/identity/admin/v3/test_projects.py
++++ b/tempest/api/identity/admin/v3/test_projects.py
+@@ -230,8 +230,14 @@ class ProjectsTestJSON(base.BaseIdentityV3AdminTest):
+         _projects = self.projects_client.list_projects()['projects']
+         project_list = next(x for x in _projects if x['id'] == project['id'])
+ 
+-        # Assert the list of fields is correct (one is enough to check here)
+-        self.assertSetEqual(set(fields), set(project_get.keys()))
++        # Assert the expected fields exist. More fields than expected may
++        # be in this list. This is for future proofind as keystone does not
++        # and has no plans to support microservices. Any fields in the future
++        # that are added to the response of the API should eventually be added
++        # to the expected fields. The expected fields must be a subset of
++        # the project_get fields (all keys in fields must exist in project_get,
++        # but project_get.keys() may have additional fields)
++        self.assertTrue(set(fields).issubset(project_get.keys()))
+ 
+         # Ensure the set of tags is identical and match the expected one
+         get_tags = set(project_get.pop("tags"))
+-- 
+2.23.0
+

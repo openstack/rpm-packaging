@@ -13,6 +13,8 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/tempest
 Source0:        {{ source }}
 Source1:        openstack-tempest.tmpfiles
+# https://review.opendev.org/678379
+Patch0:         0001-test_project_get_equals_list-allows-extra-fields.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py3('PrettyTable') }}
 BuildRequires:  {{ py3('PyYAML') }}
@@ -93,7 +95,7 @@ deployment.
 This package contains the documentation.
 
 %prep
-%autosetup p1 -n {{ pypi_name }}-{{ upstream_version }}
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
 
 %build
