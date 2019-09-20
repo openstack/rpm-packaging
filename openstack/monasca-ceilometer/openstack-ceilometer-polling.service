@@ -4,12 +4,13 @@ After=syslog.target network.target
 After=mysql.service postgresql.service rabbitmq-server.service
 
 [Service]
-Type=simple
+Type=notify
 User=ceilometer
 Group=ceilometer
 WorkingDirectory=/var/lib/ceilometer
 PrivateTmp=yes
 ExecStart=/usr/bin/ceilometer-polling
+Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target

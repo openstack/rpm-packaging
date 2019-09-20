@@ -30,9 +30,10 @@
 %global rdo 0
 %endif
 Name:           {{ py2name() }}
+Epoch:          {{ epoch('monasca-ceilometer') }}
 Version:        {{ py2rpmversion() }}
 Release:        {{ py2rpmrelease() }}
-Summary:        OpenStack Ceilometer integrated with  Monasca
+Summary:        OpenStack Ceilometer integrated with Monasca
 License:        {{ license('Apache-2.0') }}
 Group:          System/Management
 URL:            https://launchpad.net/monasca
@@ -40,7 +41,8 @@ Source0:        {{ monasca_ceilometer_source|basename }}
 # ceilometer source tar
 Source1:        {{ ceilometer_source|basename }}
 Source2:        %{openstack_ceilometer_name}.logrotate
-Source4:        %{openstack_ceilometer_name}.conf
+Source3:        %{openstack_ceilometer_name}.defaultconf
+Source4:        %{openstack_ceilometer_name}.tmpfiles
 Source5:        %{openstack_ceilometer_name}-polkit.rules
 # systemd service files
 Source12:       %{openstack_ceilometer_name}-polling.service
@@ -51,48 +53,46 @@ Source16:       %{openstack_ceilometer_name}-agent-notification.service
 Source50:       monasca-ceilometer.README.config
 BuildRequires:  crudini
 ## ceilometer dependencies
-BuildRequires:  fdupes
 BuildRequires:  openstack-macros
 # to make orphaned-file-tests happy
 BuildRequires:  polkit
-BuildRequires:  {{ py2pkg('PasteDeploy') }}
-BuildRequires:  {{ py2pkg('WSME') }}
-BuildRequires:  {{ py2pkg('cachetools') }}
-BuildRequires:  {{ py2pkg('cinderclient') }}
-BuildRequires:  {{ py2pkg('cotyledon') }}
-BuildRequires:  {{ py2pkg('glanceclient') }}
-BuildRequires:  {{ py2pkg('gnocchiclient') }}
-BuildRequires:  {{ py2pkg('jsonpath-rw') }}
-BuildRequires:  {{ py2pkg('jsonpath-rw-ext') }}
-BuildRequires:  {{ py2pkg('jsonschema') }}
-BuildRequires:  {{ py2pkg('keystonemiddleware') }}
-BuildRequires:  {{ py2pkg('lxml') }}
-BuildRequires:  {{ py2pkg('msgpack') }}
-BuildRequires:  {{ py2pkg('neutronclient') }}
-BuildRequires:  {{ py2pkg('novaclient') }}
-BuildRequires:  {{ py2pkg('openstackdocstheme') }}
-BuildRequires:  {{ py2pkg('os-xenapi') }}
-BuildRequires:  {{ py2pkg('oslo.config') }}
-BuildRequires:  {{ py2pkg('oslo.db') }}
-BuildRequires:  {{ py2pkg('oslo.messaging') }}
-BuildRequires:  {{ py2pkg('oslo.policy') }}
-BuildRequires:  {{ py2pkg('oslo.privsep') }}
-BuildRequires:  {{ py2pkg('oslo.reports') }}
-BuildRequires:  {{ py2pkg('oslo.serialization') }}
-BuildRequires:  {{ py2pkg('oslo.upgradecheck') }}
-BuildRequires:  {{ py2pkg('oslo.utils') }}
-BuildRequires:  {{ py2pkg('oslo.vmware') }}
-BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('pecan') }}
-BuildRequires:  {{ py2pkg('six') }}
-BuildRequires:  {{ py2pkg('stevedore') }}
-BuildRequires:  {{ py2pkg('swiftclient') }}
-BuildRequires:  {{ py2pkg('tooz') }}
+BuildRequires:  {{ py3('PasteDeploy') }}
+BuildRequires:  {{ py3('WSME') }}
+BuildRequires:  {{ py3('cachetools') }}
+BuildRequires:  {{ py3('python-cinderclient') }}
+BuildRequires:  {{ py3('cotyledon') }}
+BuildRequires:  {{ py3('python-glanceclient') }}
+BuildRequires:  {{ py3('gnocchiclient') }}
+BuildRequires:  {{ py3('jsonpath-rw') }}
+BuildRequires:  {{ py3('jsonpath-rw-ext') }}
+BuildRequires:  {{ py3('jsonschema') }}
+BuildRequires:  {{ py3('keystonemiddleware') }}
+BuildRequires:  {{ py3('lxml') }}
+BuildRequires:  {{ py3('msgpack') }}
+BuildRequires:  {{ py3('python-neutronclient') }}
+BuildRequires:  {{ py3('python-novaclient') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
+BuildRequires:  {{ py3('os-xenapi') }}
+BuildRequires:  {{ py3('oslo.config') }}
+BuildRequires:  {{ py3('oslo.db') }}
+BuildRequires:  {{ py3('oslo.messaging') }}
+BuildRequires:  {{ py3('oslo.policy') }}
+BuildRequires:  {{ py3('oslo.privsep') }}
+BuildRequires:  {{ py3('oslo.reports') }}
+BuildRequires:  {{ py3('oslo.serialization') }}
+BuildRequires:  {{ py3('oslo.upgradecheck') }}
+BuildRequires:  {{ py3('oslo.utils') }}
+BuildRequires:  {{ py3('oslo.vmware') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('pecan') }}
+BuildRequires:  {{ py3('six') }}
+BuildRequires:  {{ py3('stevedore') }}
+BuildRequires:  {{ py3('swiftclient') }}
+BuildRequires:  {{ py3('tooz') }}
 Requires:       logrotate
 Requires:       polkit
-Requires:       python >= 2.7
-Requires:       python-{{ pypi_name }} >= %{version}
-Requires:       {{ py2pkg('pbr') }}
+Requires:       python3-{{ pypi_name }} = %{epoch}:%{version}-%{release}
+Requires:       {{ py3('pbr') }}
 BuildArch:      noarch
 %if 0%{?suse_version}
 BuildRequires:  systemd-rpm-macros
@@ -114,76 +114,74 @@ projects, and agents doing data collections should be independent of the
 overall system.
 Monasca Ceilometer (Ceilosca) is an add-on to Ceilometer which enables the
 metering data to be stored in Monasca Datastore via publisher mechanism as
-monasca metrics.  
+monasca metrics.
 
-%package -n python-{{ pypi_name }}
+%package -n python3-{{ pypi_name }}
 Summary:        OpenStack Metering (Ceilometer) integrated with Monasca - Python module
 Group:          Development/Languages/Python
-Requires:       python >= 2.7
-Requires:       {{ py2pkg('PasteDeploy') }}
-Requires:       {{ py2pkg('PyYAML') }}
-Requires:       {{ py2pkg('SQLAlchemy') }}
-Requires:       {{ py2pkg('WSME') }}
-Requires:       {{ py2pkg('WebOb') }}
-Requires:       {{ py2pkg('cinderclient') }}
-Requires:       {{ py2pkg('cotyledon') }}
-Requires:       {{ py2pkg('debtcollector') }}
-Requires:       {{ py2pkg('futures') }}
-Requires:       {{ py2pkg('futurist') }}
-Requires:       {{ py2pkg('glanceclient') }}
-Requires:       {{ py2pkg('jsonpath-rw') }}
-Requires:       {{ py2pkg('jsonpath-rw-ext') }}
-Requires:       {{ py2pkg('jsonschema') }}
-Requires:       {{ py2pkg('kafka-python') }}
-Requires:       {{ py2pkg('keystoneauth1') }}
-Requires:       {{ py2pkg('keystoneclient') }}
-Requires:       {{ py2pkg('keystonemiddleware') }}
-Requires:       {{ py2pkg('lxml') }}
-Requires:       {{ py2pkg('monotonic') }}
-Requires:       {{ py2pkg('msgpack') }}
-Requires:       {{ py2pkg('neutronclient') }}
-Requires:       {{ py2pkg('novaclient') }}
-Requires:       {{ py2pkg('os-xenapi') }}
-Requires:       {{ py2pkg('oslo.cache') }}
-Requires:       {{ py2pkg('oslo.concurrency') }}
-Requires:       {{ py2pkg('oslo.config') }}
-Requires:       {{ py2pkg('oslo.db') }}
-Requires:       {{ py2pkg('oslo.i18n') }}
-Requires:       {{ py2pkg('oslo.log') }}
-Requires:       {{ py2pkg('oslo.messaging') }}
-Requires:       {{ py2pkg('oslo.middleware') }}
-Requires:       {{ py2pkg('oslo.policy') }}
-Requires:       {{ py2pkg('oslo.privsep') }}
-Requires:       {{ py2pkg('oslo.reports') }}
-Requires:       {{ py2pkg('oslo.rootwrap') }}
-Requires:       {{ py2pkg('oslo.serialization') }}
-Requires:       {{ py2pkg('oslo.upgradecheck') }}
-Requires:       {{ py2pkg('oslo.utils') }}
-Requires:       {{ py2pkg('oslo.vmware') }}
-Requires:       {{ py2pkg('pecan') }}
-Requires:       {{ py2pkg('pymongo') }}
-Requires:       {{ py2pkg('pysnmp') }}
-Requires:       {{ py2pkg('python-dateutil') }}
-Requires:       {{ py2pkg('requests') }}
-Requires:       {{ py2pkg('six') }}
-Requires:       {{ py2pkg('sqlalchemy-migrate') }}
-Requires:       {{ py2pkg('stevedore') }}
-Requires:       {{ py2pkg('swiftclient') }}
-Requires:       {{ py2pkg('tenacity') }}
-Requires:       {{ py2pkg('tooz') }}
+Requires:       {{ py3('PasteDeploy') }}
+Requires:       {{ py3('PyYAML') }}
+Requires:       {{ py3('SQLAlchemy') }}
+Requires:       {{ py3('WSME') }}
+Requires:       {{ py3('WebOb') }}
+Requires:       {{ py3('python-cinderclient') }}
+Requires:       {{ py3('cotyledon') }}
+Requires:       {{ py3('debtcollector') }}
+Requires:       {{ py3('futurist') }}
+Requires:       {{ py3('python-glanceclient') }}
+Requires:       {{ py3('jsonpath-rw') }}
+Requires:       {{ py3('jsonpath-rw-ext') }}
+Requires:       {{ py3('jsonschema') }}
+Requires:       {{ py3('kafka-python') }}
+Requires:       {{ py3('keystoneauth1') }}
+Requires:       {{ py3('python-keystoneclient') }}
+Requires:       {{ py3('keystonemiddleware') }}
+Requires:       {{ py3('lxml') }}
+Requires:       {{ py3('monotonic') }}
+Requires:       {{ py3('msgpack') }}
+Requires:       {{ py3('python-neutronclient') }}
+Requires:       {{ py3('python-novaclient') }}
+Requires:       {{ py3('os-xenapi') }}
+Requires:       {{ py3('oslo.cache') }}
+Requires:       {{ py3('oslo.concurrency') }}
+Requires:       {{ py3('oslo.config') }}
+Requires:       {{ py3('oslo.db') }}
+Requires:       {{ py3('oslo.i18n') }}
+Requires:       {{ py3('oslo.log') }}
+Requires:       {{ py3('oslo.messaging') }}
+Requires:       {{ py3('oslo.middleware') }}
+Requires:       {{ py3('oslo.policy') }}
+Requires:       {{ py3('oslo.privsep') }}
+Requires:       {{ py3('oslo.reports') }}
+Requires:       {{ py3('oslo.rootwrap') }}
+Requires:       {{ py3('oslo.serialization') }}
+Requires:       {{ py3('oslo.upgradecheck') }}
+Requires:       {{ py3('oslo.utils') }}
+Requires:       {{ py3('oslo.vmware') }}
+Requires:       {{ py3('pecan') }}
+Requires:       {{ py3('pymongo') }}
+Requires:       {{ py3('pysnmp') }}
+Requires:       {{ py3('python-dateutil') }}
+Requires:       {{ py3('requests') }}
+Requires:       {{ py3('six') }}
+Requires:       {{ py3('sqlalchemy-migrate') }}
+Requires:       {{ py3('stevedore') }}
+Requires:       {{ py3('python-swiftclient') }}
+Requires:       {{ py3('tenacity') }}
+Requires:       {{ py3('tooz') }}
 # python-monasca-ceilometer cannot exist with openstack-ceilometer
 Conflicts:      %{openstack_ceilometer_name}
 %if ! 0%{?rdo}
-Requires:       {{ py2pkg('requests-aws') }}
+Requires:       {{ py3('requests-aws') }}
 %endif
 
-%description -n python-{{ pypi_name }}
+%description -n python3-{{ pypi_name }}
 This package contains the core Python module of %{name}.
 
 %package polling
 Summary:        OpenStack Metering (Ceilometer) - Polling
 Group:          Development/Languages/Python
-Requires:       %{name} = %{version}-%{release}
+Requires:       openstack-{{ pypi_name }} = %{epoch}:%{version}-%{release}
 # openstack-monasca-ceilometer-polling cannot exist with openstack-ceilometer
 Conflicts:      %{openstack_ceilometer_name}-polling
 
@@ -242,30 +240,21 @@ Requires:       %{name}-agent-central = %{version}-%{release}
 Requires:       %{name}-agent-compute = %{version}-%{release}
 Requires:       %{name}-agent-ipmi = %{version}-%{release}
 Requires:       %{name}-polling = %{version}-%{release}
-Requires:       {{ py2pkg('WebTest') }}
-Requires:       {{ py2pkg('fixtures') }}
-Requires:       {{ py2pkg('gabbi') }}
-Requires:       {{ py2pkg('mock') }}
-Requires:       {{ py2pkg('os-testr') }}
-Requires:       {{ py2pkg('os-win') }}
-Requires:       {{ py2pkg('oslotest') }}
-Requires:       {{ py2pkg('psycopg2') }}
-Requires:       {{ py2pkg('python-subunit') }}
-Requires:       {{ py2pkg('sphinxcontrib-httpdomain') }}
-Requires:       {{ py2pkg('sphinxcontrib-pecanwsme') }}
-Requires:       {{ py2pkg('swiftclient') }}
-Requires:       {{ py2pkg('testrepository') }}
-Requires:       {{ py2pkg('testscenarios') }}
-Requires:       {{ py2pkg('testtools') }}
+Requires:       {{ py3('WebTest') }}
+Requires:       {{ py3('fixtures') }}
+Requires:       {{ py3('gabbi') }}
+Requires:       {{ py3('mock') }}
+Requires:       {{ py3('os-win') }}
+Requires:       {{ py3('oslotest') }}
+Requires:       {{ py3('psycopg2') }}
+Requires:       {{ py3('python-subunit') }}
+Requires:       {{ py3('sphinxcontrib-httpdomain') }}
+Requires:       {{ py3('sphinxcontrib-pecanwsme') }}
+Requires:       {{ py3('python-swiftclient') }}
+Requires:       {{ py3('testscenarios') }}
+Requires:       {{ py3('testtools') }}
 Conflicts:       %{openstack_ceilometer_name}-test
 # openstack-monasca-ceilometer-test cannot exist with openstack-ceilometer
-%if 0%{?suse_version}
-# FIXME: remove this conditional if and when SUSE's Nova spec is switched to
-# the rpm-packaging one, which does not have a -test subpackage.
-Requires:       {{ py2pkg('nova') }}-test >= 12
-%else
-Requires:       {{ py2pkg('nova') }} >= 12
-%endif
 
 %description test
 This package contains testsuite files for %{name}.
@@ -273,7 +262,7 @@ This package contains testsuite files for %{name}.
 %prep
 
 # unpack monasca-ceilometer source
-%autosetup -T  -b 0 -n %{monasca_ceilometer_base}
+%autosetup -T -b 0 -n %{monasca_ceilometer_base}
 %py_req_cleanup
 
 # unpack ceilometer source
@@ -300,7 +289,8 @@ crudini --set %{setup_cfg} entry_points ceilometer.sample.publisher $"$pub_list"
 %build
 #change to ceilometer directory
 cd ../%{ceilometer_name}*/
-python setup.py build
+%{py3_build}
+
 # Currently there exists only a general man-page with the same content as the
 # HTML documenation. Thus we shouldn't build it:
 #python setup.py build_sphinx -b man -s doc/source
@@ -310,7 +300,7 @@ PYTHONPATH=. oslo-config-generator --config-file etc/ceilometer/ceilometer-confi
 %install
 #change to ceilometer directory
 cd ../%{ceilometer_base}
-python setup.py install --skip-build --prefix=%{_prefix} --root=%{buildroot}
+%{py3_install}
 
 ### directories
 install -d -m 755 %{buildroot}%{_localstatedir}/{lib,log}/%{ceilometer_name}
@@ -320,12 +310,13 @@ install -D -m 644 %{SOURCE4} %{buildroot}/%_tmpfilesdir/%{openstack_ceilometer_n
 
 ### configuration files
 install -d -m 0755 %{buildroot}%{_sysconfdir}/%{ceilometer_name}
-cp %{buildroot}%{python_sitelib}/%{ceilometer_name}/pipeline/data/*.yaml %{buildroot}%{_sysconfdir}/%{ceilometer_name}
+cp %{buildroot}%{python3_sitelib}/%{ceilometer_name}/pipeline/data/*.yaml %{buildroot}%{_sysconfdir}/%{ceilometer_name}
+install -p -D -m 640 %{SOURCE3} %{buildroot}%{_sysconfdir}/ceilometer/ceilometer.conf.d/010-ceilometer.conf
 # default to using database publisher instead of gnocchi, which
 # needs to be installed separately
 sed -i 's/gnocchi:\/\//database:\/\//g' %{buildroot}%{_sysconfdir}/%{ceilometer_name}/pipeline.yaml
 install -p -D -m 640 %{SOURCE50} %{buildroot}%{_sysconfdir}/%{ceilometer_name}/README.config
-# delete the ceilometer.conf - we generated out own with oslo-config-generator
+# delete the ceilometer.conf - we generated our own with oslo-config-generator
 rm %{buildroot}%{_prefix}%{_sysconfdir}/ceilometer/ceilometer.conf
 rm %{buildroot}%{_prefix}%{_sysconfdir}/ceilometer/ceilometer-config-generator.conf
 # for whatever reason, upstream installs config files into usr/etc/... (lint added _prefix)
@@ -340,51 +331,39 @@ install -d -m 755 %{buildroot}%{_sysconfdir}/%{ceilometer_name}/%{ceilometer_nam
 install -p -D -m 644 %{SOURCE2} %{buildroot}%{_sysconfdir}/logrotate.d/%{openstack_ceilometer_name}
 
 # Install systemd unit services
-mkdir -p %{buildroot}%{_sbindir} %{buildroot}%{_unitdir}
 install -p -D -m 444 %{SOURCE12} %{buildroot}%{_unitdir}/%{openstack_ceilometer_name}-polling.service
 install -p -D -m 444 %{SOURCE13} %{buildroot}%{_unitdir}/%{openstack_ceilometer_name}-agent-central.service
 install -p -D -m 444 %{SOURCE14} %{buildroot}%{_unitdir}/%{openstack_ceilometer_name}-agent-compute.service
 install -p -D -m 444 %{SOURCE15} %{buildroot}%{_unitdir}/%{openstack_ceilometer_name}-agent-ipmi.service
 install -p -D -m 444 %{SOURCE16} %{buildroot}%{_unitdir}/%{openstack_ceilometer_name}-agent-notification.service
+
+# install symlinks on SUSE
+%if 0%{?suse_version}
+mkdir -p %{buildroot}%{_sbindir}
 ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{openstack_ceilometer_name}-polling
 ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{openstack_ceilometer_name}-agent-central
 ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{openstack_ceilometer_name}-agent-compute
 ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{openstack_ceilometer_name}-agent-ipmi
 ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{openstack_ceilometer_name}-agent-notification
+%endif
 
 ### policy kit
 install -D -m 644 %{SOURCE5} %{buildroot}%{_datadir}/polkit-1/rules.d/11-%{openstack_ceilometer_name}.rules
 
-### documentation
-#install -d %%{buildroot}%%{_mandir}/man1
-#install -m 644 doc/build/man/*.1 %%{buildroot}%%{_mandir}/man1
-
 ### test subpackage
 
-#override openstack_test_package_buildroot_dir and component used by macro openstack_test_package_install
+# override openstack_test_package_buildroot_dir and component used by macro openstack_test_package_install
 %define openstack_test_package_buildroot_dir %{buildroot}%{name}-%{version}/{_localstatedir}/lib/%{name}-test
 %define component ceilometer
 %openstack_test_package_install ceilometer
 # reset component back to monasca-ceilometer
 %define component {{ pypi_name }}
 
-### set default configuration
-%define ceilometer_conf %{buildroot}%{_sysconfdir}/%{ceilometer_name}/%{ceilometer_name}.conf.d/010-%{ceilometer_name}.conf
-crudini --set %{ceilometer_conf} DEFAULT log_dir %{_localstatedir}/log/%{ceilometer_name}
-crudini --set %{ceilometer_conf} DEFAULT lock_path %{_rundir}/%{ceilometer_name}
-
-# monasca-ceilometer configuration
-# turn off workload partitioning
-crudini --set %{ceilometer_conf} DEFAULT notifications workload_partitioning False
-# Disable, otherwise Ceilosca won't process and store event data
-crudini --set %{ceilometer_conf} DEFAULT notification disable_non_metric_meters False
-
-
 ### authentication cache dir
 mkdir -p %{buildroot}%{_localstatedir}/cache/ceilometer
 
 %pre
-%openstack_pre_user_group_create %{username} %{groupname}
+%openstack_pre_user_group_create %{username} %{groupname} /sbin/nologin
 
 %post
 %tmpfiles_create %{_tmpfilesdir}/%{openstack_ceilometer_name}.conf
@@ -460,37 +439,47 @@ mkdir -p %{buildroot}%{_localstatedir}/cache/ceilometer
 %dir %attr(0750, %{username}, %{groupname}) %{_localstatedir}/log/%{ceilometer_name}
 %_tmpfilesdir/%{openstack_ceilometer_name}.conf
 
-%files -n python-{{ pypi_name }}
-%{python_sitelib}/%{ceilometer_name}/
-%{python_sitelib}/%{ceilometer_name}-*.egg-info
+%files -n python3-{{ pypi_name }}
+%{python3_sitelib}/%{ceilometer_name}/
+%{python3_sitelib}/%{ceilometer_name}-*.egg-info
 # Part of test subpackage (except the tempest tests)
-%exclude %{python_sitelib}/%{ceilometer_name}/tests/unit/
+%exclude %{python3_sitelib}/%{ceilometer_name}/tests/unit/
 
 %files polling
 %{_unitdir}/%{openstack_ceilometer_name}-polling.service
+%if 0%{?suse_version}
 %{_sbindir}/rc%{openstack_ceilometer_name}-polling
+%endif
 %{_bindir}/%{ceilometer_name}-polling
 
 %files agent-central
 %{_unitdir}/%{openstack_ceilometer_name}-agent-central.service
+%if 0%{?suse_version}
 %{_sbindir}/rc%{openstack_ceilometer_name}-agent-central
+%endif
 
 %files agent-compute
 %{_unitdir}/%{openstack_ceilometer_name}-agent-compute.service
+%if 0%{?suse_version}
 %{_sbindir}/rc%{openstack_ceilometer_name}-agent-compute
+%endif
 %{_datadir}/polkit-1/rules.d/11-%{openstack_ceilometer_name}.rules
 
 %files agent-ipmi
 %{_unitdir}/%{openstack_ceilometer_name}-agent-ipmi.service
+%if 0%{?suse_version}
 %{_sbindir}/rc%{openstack_ceilometer_name}-agent-ipmi
+%endif
 
 %files agent-notification
 %{_unitdir}/%{openstack_ceilometer_name}-agent-notification.service
+%if 0%{?suse_version}
 %{_sbindir}/rc%{openstack_ceilometer_name}-agent-notification
+%endif
 %{_bindir}/%{ceilometer_name}-agent-notification
 
 %files test
-%{python_sitelib}/%{ceilometer_name}/tests/unit/
+%{python3_sitelib}/%{ceilometer_name}/tests/unit/
 
 %{_localstatedir}/lib/%{name}-test/
 
