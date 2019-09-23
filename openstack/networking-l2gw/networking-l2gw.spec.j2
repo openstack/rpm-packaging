@@ -26,7 +26,6 @@ BuildRequires:  fdupes
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py3('pbr') }}
 BuildRequires:  {{ py3('setuptools') }}
-Requires:       {{ py2name('neutron') }}
 Requires:       python3-{{ pypi_name }} = %{epoch}:%{version}-%{release}
 BuildArch:      noarch
 %if 0%{?suse_version}
@@ -55,6 +54,7 @@ BuildRequires:  {{ py3('testtools') }}
 %package -n python3-{{ pypi_name }}
 Summary:        L2 Gateway service for Neutron - python libraries
 Requires:       {{ py3('Babel') }}
+Requires:       python3-neutron
 Requires:       {{ py3('neutron-lib') }}
 Requires:       {{ py3('python-neutronclient') }}
 Requires:       {{ py3('ovsdbapp') }}
