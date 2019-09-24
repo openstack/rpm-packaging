@@ -164,6 +164,7 @@ BuildRequires:  {{ py3('sphinxcontrib-apidoc') }}
 BuildRequires:  {{ py3('sphinxcontrib-httpdomain') }}
 BuildRequires:  {{ py3('sphinxcontrib-pecanwsme') }}
 BuildRequires:  {{ py3('sphinxcontrib-seqdiag') }}
+BuildRequires:  {{ py3('sphinxcontrib-svg2pdfconverter') }}
 
 %description doc
 OpenStack bare metal provisioning service.
@@ -216,6 +217,9 @@ install -p -D -m 640 %{SOURCE4} %{buildroot}%{_sysconfdir}/ironic/ironic.conf.d/
 mv %{buildroot}%{_prefix}%{_sysconfdir}/ironic/* %{buildroot}%{_sysconfdir}/ironic/
 cp -a etc/ironic/rootwrap.d/ %{buildroot}%{_sysconfdir}/ironic/
 install -p -D -m 640 %{SOURCE5} %{buildroot}%{_sysconfdir}/ironic/README.config
+
+# drop ironic-lib.filters which is in the ironic-lib package (see https://review.opendev.org/684270)
+rm %{buildroot}%{_sysconfdir}/ironic/rootwrap.d/ironic-lib.filters
 
 ### Install systemd service files
 install -p -D -m 644 %{SOURCE6} %{buildroot}%{_unitdir}/%{name}-api.service
@@ -285,7 +289,6 @@ exit 0
 %config %{_sysconfdir}/ironic/rootwrap.conf
 %dir %{_sysconfdir}/ironic/rootwrap.d
 %config(noreplace) %{_sysconfdir}/ironic/rootwrap.d/ironic-images.filters
-%config(noreplace) %{_sysconfdir}/ironic/rootwrap.d/ironic-lib.filters
 %config(noreplace) %{_sysconfdir}/ironic/rootwrap.d/ironic-utils.filters
 %{_bindir}/ironic-status
 %{_bindir}/ironic-rootwrap
