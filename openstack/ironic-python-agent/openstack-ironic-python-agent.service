@@ -1,0 +1,14 @@
+[Unit]
+Description=OpenStack Ironic Python Agent
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+ExecStart=/usr/bin/ironic-python-agent --config-dir /etc/ironic-python-agent --config-dir /etc/ironic-python-agent.conf.d/
+Restart=always
+RestartSec=30s
+StandardOutput=kmsg+console
+StandardError=inherit
+
+[Install]
+WantedBy=multi-user.target

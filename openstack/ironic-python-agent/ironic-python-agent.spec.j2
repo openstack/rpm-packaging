@@ -1,0 +1,180 @@
+{% set pypi_name = 'ironic-python-agent' %}
+{% set source = fetch_source('https://tarballs.openstack.org/ironic-python-agent/ironic-python-agent-master.tar.gz') %}
+{% set upstream_version = upstream_version() %}
+{% set rpm_release = '1' %}
+%global with_doc 1
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
+Summary:        Ironic Python Agent Ramdisk
+License:        {{ license('Apache-2.0') }}
+URL:            https://launchpad.net/ironic-python-agent
+Source0:        {{ source|basename }}
+Source1:        openstack-ironic-python-agent.defaultconf
+Source20:       openstack-ironic-python-agent.service
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py3('Pint') }}
+BuildRequires:  {{ py3('WSME') }}
+BuildRequires:  {{ py3('eventlet') }}
+BuildRequires:  {{ py3('ironic-lib') }}
+BuildRequires:  {{ py3('iso8601') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('netaddr') }}
+BuildRequires:  {{ py3('netifaces') }}
+BuildRequires:  {{ py3('oslo.concurrency') }}
+BuildRequires:  {{ py3('oslo.config') }}
+BuildRequires:  {{ py3('oslo.log') }}
+BuildRequires:  {{ py3('oslo.serialization') }}
+BuildRequires:  {{ py3('oslo.service') }}
+BuildRequires:  {{ py3('oslo.utils') }}
+BuildRequires:  {{ py3('oslotest') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('pecan') }}
+BuildRequires:  {{ py3('psutil') }}
+BuildRequires:  {{ py3('pyudev') }}
+BuildRequires:  {{ py3('requests') }}
+BuildRequires:  {{ py3('rtslib-fb') }}
+BuildRequires:  {{ py3('six') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('stevedore') }}
+Requires:       python3-{{ pypi_name }} = %{version}-%{release}
+BuildArch:      noarch
+%if 0%{?suse_version}
+BuildRequires:  systemd-rpm-macros
+%{?systemd_requires}
+%else
+BuildRequires:  systemd
+Requires(post): systemd
+Requires(postun): systemd
+Requires(preun): systemd
+%endif
+
+%description
+The ironic-python-agent works with the agent driver in Ironic to provision the node.
+Starting with ironic-python-agent running on a ramdisk on the unprovisioned node,
+Ironic makes API calls to ironic-python-agent to provision the machine.
+
+%package -n python3-{{ pypi_name }}
+Summary:        Ironic Python Agent Ramdisk - Python module
+Group:          Development/Languages/Python
+Requires:       {{ py3('Pint') }}
+Requires:       {{ py3('WSME') }}
+Requires:       {{ py3('eventlet') }}
+Requires:       {{ py3('ironic-lib') }}
+Requires:       {{ py3('iso8601') }}
+Requires:       {{ py3('netaddr') }}
+Requires:       {{ py3('netifaces') }}
+Requires:       {{ py3('oslo.concurrency') }}
+Requires:       {{ py3('oslo.config') }}
+Requires:       {{ py3('oslo.log') }}
+Requires:       {{ py3('oslo.serialization') }}
+Requires:       {{ py3('oslo.service') }}
+Requires:       {{ py3('oslo.utils') }}
+Requires:       {{ py3('pbr') }}
+Requires:       {{ py3('pecan') }}
+Requires:       {{ py3('psutil') }}
+Requires:       {{ py3('pyudev') }}
+Requires:       {{ py3('requests') }}
+Requires:       {{ py3('rtslib-fb') }}
+Requires:       {{ py3('six') }}
+Requires:       {{ py3('stevedore') }}
+
+%description -n python3-{{ pypi_name }}
+The ironic-python-agent works with the agent driver in Ironic to provision the node.
+Starting with ironic-python-agent running on a ramdisk on the unprovisioned node,
+Ironic makes API calls to ironic-python-agent to provision the machine.
+
+This package contains the Python module.
+
+%if 0%{?with_doc}
+%package doc
+Summary:        Ironic Python Agent Ramdisk - Documentation
+Group:          Documentation/HTML
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
+BuildRequires:  {{ py3('sphinxcontrib-httpdomain') }}
+BuildRequires:  {{ py3('sphinxcontrib-pecanwsme') }}
+
+%description doc
+The ironic-python-agent works with the agent driver in Ironic to provision the node.
+Starting with ironic-python-agent running on a ramdisk on the unprovisioned node,
+Ironic makes API calls to ironic-python-agent to provision the machine.
+
+This package contains the documentation.
+%endif
+
+%prep
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
+%py_req_cleanup
+
+%build
+%{py3_build}
+
+# config file generation
+PYTHONPATH=. oslo-config-generator --config-file=tools/config/ipa-config-generator.conf
+
+# build documentation
+%if 0%{?with_doc}
+PBR_VERSION={{ upstream_version }} %sphinx_build -b html doc/source doc/build/html
+rm -rf doc/build/html/.{doctrees,buildinfo}
+%endif
+
+%install
+%{py3_install}
+
+# Setup directories
+install -d -m 750 %{buildroot}%{_localstatedir}/{lib,log,cache}/ironic-python-agent
+install -d -m 755 %{buildroot}%{_sysconfdir}/ironic-python-agent
+install -d -m 755 %{buildroot}%{_sysconfdir}/ironic-python-agent/ironic-python-agent.conf.d
+
+# install config files
+install -p -D -m 644 etc/ironic_python_agent/ironic_python_agent.conf.sample %{buildroot}%{_sysconfdir}/ironic-python-agent/ironic-python-agent.conf
+install -p -D -m 640 %{SOURCE1} %{buildroot}%{_sysconfdir}/ironic-python-agent/ironic-python-agent.conf.d/010-ironic-python-agent.conf
+
+# install systemd service files
+install -p -D -m 644 %{SOURCE20} %{buildroot}%{_unitdir}/openstack-ironic-python-agent.service
+
+# install symlinks on SUSE
+%if 0%{?suse_version}
+mkdir -p %{buildroot}%{_sbindir}
+ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}
+%endif
+
+%post
+%systemd_post openstack-ironic-python-agent.service
+
+%preun
+%systemd_preun openstack-ironic-python-agent.service
+
+%postun
+%systemd_postun_with_restart openstack-ironic-python-agent.service
+
+%check
+stestr --test-path ironic_python_agent/tests/unit run
+
+%files
+%license LICENSE
+%dir %attr(0750, root, root) %{_sysconfdir}/ironic-python-agent
+%dir %attr(0750, root, root) %{_sysconfdir}/ironic-python-agent/ironic-python-agent.conf.d
+%config(noreplace) %attr(0640, root, root) %{_sysconfdir}/ironic-python-agent/ironic-python-agent.conf
+%config(noreplace) %attr(0640, root, root) %{_sysconfdir}/ironic-python-agent/ironic-python-agent.conf.d/010-ironic-python-agent.conf
+%{_bindir}/ironic-python-agent
+%{_bindir}/ironic-collect-introspection-data
+%{_unitdir}/openstack-ironic-python-agent.service
+%if 0%{?suse_version}
+%{_sbindir}/rc%{name}
+%endif
+
+%files -n python3-{{ pypi_name }}
+%license LICENSE
+%{python3_sitelib}/ironic_python_agent
+%{python3_sitelib}/ironic_python_agent-*.egg-info
+
+%if 0%{?with_doc}
+%files doc
+%license LICENSE
+%doc doc/build/html
+%endif
+
+%changelog
+

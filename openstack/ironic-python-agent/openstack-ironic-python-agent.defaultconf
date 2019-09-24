@@ -1,0 +1,3 @@
+[DEFAULT]
+use_stderr = True
+use_journal = True
