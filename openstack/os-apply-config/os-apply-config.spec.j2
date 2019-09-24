@@ -1,83 +1,60 @@
-%global sname os-apply-config
-%bcond_with test
-%bcond_with docs
-Name:           {{ py2name('os-apply-config') }}
-Version:        10.4.0
-Release:        0
+{% set pypi_name = 'os-apply-config' %}
+{% set upstream_version = upstream_version('10.4.1') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
 Summary:        OpenStack os-apply-config Configuration Library
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://launchpad.net/%{sname}
-Source0:        https://files.pythonhosted.org/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
+Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('setuptools') }}
-Requires:       {{ py2pkg('PyYAML') }}
-Requires:       {{ py2pkg('anyjson') }}
-Requires:       {{ py2pkg('pbr') }}
-Requires:       {{ py2pkg('pystache') }}
-Requires:       {{ py2pkg('setuptools') }}
-Requires:       {{ py2pkg('six') }}
+BuildRequires:  {{ py3('fixtures') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('pystache') }}
+BuildRequires:  {{ py3('python-subunit') }}
+BuildRequires:  {{ py3('setuptools') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('testscenarios') }}
+BuildRequires:  {{ py3('testtools') }}
+Requires:       {{ py3('PyYAML') }}
+Requires:       {{ py3('anyjson') }}
+Requires:       {{ py3('pbr') }}
+Requires:       {{ py3('pystache') }}
+Requires:       {{ py3('setuptools') }}
+Requires:       {{ py3('six') }}
 BuildArch:      noarch
-%if %{with test}
-BuildRequires:  {{ py2pkg('fixtures') }}
-BuildRequires:  {{ py2pkg('mock') }}
-BuildRequires:  {{ py2pkg('python-subunit') }}
-BuildRequires:  {{ py2pkg('stestr') }}
-BuildRequires:  {{ py2pkg('testscenarios') }}
-BuildRequires:  {{ py2pkg('testtools') }}
-%endif
 
 %description
 os-apply-config is a apply configuration from cloud metadata
 
-%package doc
-Summary:        Documentation for OpenStack Os-apply-config configuration library
-BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
-BuildRequires:  {{ py2pkg('reno') }}
-
-%description doc
-Documentation for the os-apply-config library.
-
 %prep
-%autosetup -n %{sname}-%{version}
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
 
 %build
-%{py2_build}
-
-%if %{with docs}
-# generate html docs
-%{__python2} setup.py build_sphinx
-# remove the sphinx-build leftovers
-rm -rf doc/build/html/.{doctrees,buildinfo}
-%endif
-
+%{py3_build}
 
 %install
-%{py2_install}
+%{py3_install}
 install -d -m 755 %{buildroot}%{_libexecdir}/os-apply-config/templates
 
-%if %{with test}
 %check
-%{__python2} -m stestr.cli run
-%endif
+sed -i 's/\(.*\) python$/\1 python3/g' os_apply_config/tests/templates/%{_sysconfdir}/glance/script.conf
+python3 -m stestr.cli run
 
 %files
 %license LICENSE
 %doc README.rst
 %{_bindir}/os-apply-config
 %{_bindir}/os-config-applier
-%{python2_sitelib}/os_apply_config
-%{python2_sitelib}/*.egg-info
+%{python3_sitelib}/os_apply_config
+%{python3_sitelib}/*.egg-info
 %dir %{_libexecdir}/os-apply-config
 %dir %{_libexecdir}/os-apply-config/templates
-
-%if %{with docs}
-%files doc
-%doc doc/build/html
-%license LICENSE
-%endif
 
 %changelog
