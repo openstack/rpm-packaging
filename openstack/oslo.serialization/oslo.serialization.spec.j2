@@ -1,5 +1,5 @@
 {% set pypi_name = 'oslo.serialization' %}
-{% set upstream_version = upstream_version('2.29.1') %}
+{% set upstream_version = upstream_version('2.29.2') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -12,7 +12,6 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('ipaddress', py_versions=['py2']) }}
 BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('msgpack', py_versions=['py2', 'py3']) }}
@@ -35,8 +34,8 @@ in transmittable and storable formats, such as Base64, JSON and MessagePack.
 
 %package -n python-oslo.serialization-doc
 Summary:        Documentation for OpenStack serialization library
-BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('openstackdocstheme') }}
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
 
 %description -n python-oslo.serialization-doc
 The oslo.serialization library provides support for representing objects
@@ -52,7 +51,7 @@ sed -i -e "s,bandit.*,," test-requirements.txt
 %{python_build}
 
 # generate html docs
-PBR_VERSION=%{version} sphinx-build -b html doc/source doc/build/html
+PBR_VERSION=%{version} %sphinx_build -b html doc/source doc/build/html
 # remove the sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 

@@ -1,5 +1,5 @@
 {% set pypi_name = 'oslo.privsep' %}
-{% set upstream_version = upstream_version('1.33.1') %}
+{% set upstream_version = upstream_version('1.33.3') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -12,13 +12,11 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('Sphinx', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('cffi', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('eventlet', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('greenlet', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('msgpack', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('openstackdocstheme', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('oslo.config', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('oslo.i18n', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('oslo.log', py_versions=['py2', 'py3']) }}
@@ -57,7 +55,9 @@ OpenStack library for privilege separation
 
 %package -n {{ py2name() }}-doc
 Summary:        oslo.privsep documentation
-Requires:       %{name} = %{version}
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
+BuildRequires:  {{ py3('sphinxcontrib-apidoc') }}
 
 %description -n {{ py2name() }}-doc
 Documentation for oslo.privsep
@@ -69,7 +69,7 @@ Documentation for oslo.privsep
 %build
 %python_build
 # generate html docs
-PBR_VERSION=%{version} sphinx-build -b html doc/source doc/build/html
+PBR_VERSION=%{version} %sphinx_build -b html doc/source doc/build/html
 # remove the sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
