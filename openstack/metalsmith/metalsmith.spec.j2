@@ -1,5 +1,5 @@
 {% set pypi_name = 'metalsmith' %}
-{% set upstream_version = upstream_version('0.13.0') %}
+{% set upstream_version = upstream_version('0.15.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -12,6 +12,8 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('PrettyTable', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('enum34', py_versions=['py2']) }}
 BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('openstacksdk', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
@@ -19,6 +21,7 @@ BuildRequires:  {{ py2pkg('setuptools', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('six', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
+Requires:       {{ py2pkg('PrettyTable') }}
 Requires:       {{ py2pkg('openstacksdk') }}
 Requires:       {{ py2pkg('pbr') }}
 Requires:       {{ py2pkg('requests') }}
@@ -32,6 +35,9 @@ Requires(postun): update-alternatives
 Requires(post): chkconfig
 Requires(postun): chkconfig
 %endif
+%ifpython2
+Requires:       {{ py2pkg('enum34') }}
+%endif
 %python_subpackages
 
 %description
@@ -41,8 +47,8 @@ OpenStack Ironic.
 %package -n {{ py2name() }}-doc
 Summary:        Documentation for Metalsmith
 Group:          Documentation/HTML
-BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('sphinxcontrib-apidoc') }}
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('sphinxcontrib-apidoc') }}
 
 %description -n {{ py2name() }}-doc
 Documentation for Metalsmith
@@ -63,7 +69,7 @@ Ansible role for Metalsmith deployment
 %{python_build}
 
 # generate html docs
-PBR_VERSION={{ upstream_version }} sphinx-build -b html doc/source doc/build/html
+PBR_VERSION={{ upstream_version }} %sphinx_build -b html doc/source doc/build/html
 # remove the sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
