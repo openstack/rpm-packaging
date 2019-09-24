@@ -1,5 +1,5 @@
 {% set pypi_name = 'ceilometermiddleware' %}
-{% set upstream_version = upstream_version('1.4.0') %}
+{% set upstream_version = upstream_version('1.5.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -11,28 +11,30 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://docs.openstack.org/developer/ceilometermiddleware
 Source0:        {{ source }}
+# https://review.opendev.org/684214
+Patch0:         0001-Drop-oslosphinx-and-use-openstackdocstheme.patch
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('betamax') }}
-BuildRequires:  {{ py2pkg('keystoneauth1') }}
-BuildRequires:  {{ py2pkg('python-keystoneclient') }}
-BuildRequires:  {{ py2pkg('mock') }}
-BuildRequires:  {{ py2pkg('oslo.config') }}
-BuildRequires:  {{ py2pkg('oslo.messaging') }}
-BuildRequires:  {{ py2pkg('oslo.utils') }}
-BuildRequires:  {{ py2pkg('oslotest') }}
-BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('pycadf') }}
-BuildRequires:  {{ py2pkg('setuptools') }}
-BuildRequires:  {{ py2pkg('stestr') }}
-BuildRequires:  {{ py2pkg('testrepository') }}
-Requires:       {{ py2pkg('keystoneauth1') }}
-Requires:       {{ py2pkg('python-keystoneclient') }}
-Requires:       {{ py2pkg('oslo.config') }}
-Requires:       {{ py2pkg('oslo.messaging') }}
-Requires:       {{ py2pkg('oslo.utils') }}
-Requires:       {{ py2pkg('pbr') }}
-Requires:       {{ py2pkg('pycadf') }}
-Requires:       {{ py2pkg('six') }}
+BuildRequires:  {{ py3('betamax') }}
+BuildRequires:  {{ py3('keystoneauth1') }}
+BuildRequires:  {{ py3('python-keystoneclient') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('oslo.config') }}
+BuildRequires:  {{ py3('oslo.messaging') }}
+BuildRequires:  {{ py3('oslo.utils') }}
+BuildRequires:  {{ py3('oslotest') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('pycadf') }}
+BuildRequires:  {{ py3('setuptools') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('testrepository') }}
+Requires:       {{ py3('keystoneauth1') }}
+Requires:       {{ py3('python-keystoneclient') }}
+Requires:       {{ py3('oslo.config') }}
+Requires:       {{ py3('oslo.messaging') }}
+Requires:       {{ py3('oslo.utils') }}
+Requires:       {{ py3('pbr') }}
+Requires:       {{ py3('pycadf') }}
+Requires:       {{ py3('six') }}
 BuildArch:      noarch
 
 %description
@@ -42,8 +44,8 @@ event data generation to be consumed by Ceilometer.
 %package doc
 Summary:        Documentation for %{name}
 Group:          Documentation/HTML
-BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
 
 %description doc
 This library provides middleware modules designed to enable metric and
@@ -56,24 +58,24 @@ This package contains documentation in HTML format.
 %py_req_cleanup
 
 %build
-%py2_build
+%py3_build
 
 # generate html docs
-%{__python2} setup.py build_sphinx
+PBR_VERSION={{ upstream_version }} %sphinx_build -b html doc/source doc/build/html
 # remove the Sphinx-build leftovers
 rm -rf html/.{doctrees,buildinfo}
 
 %check
-%{__python2} -m stestr.cli run
+%{__python3} -m stestr.cli run
 
 %install
-%py2_install
+%py3_install
 
 %files
 %license LICENSE
 %doc README.rst
-%{python2_sitelib}/{{ pypi_name }}
-%{python2_sitelib}/{{ pypi_name }}-*.egg-info
+%{python3_sitelib}/{{ pypi_name }}
+%{python3_sitelib}/{{ pypi_name }}-*.egg-info
 
 %files doc
 %license LICENSE

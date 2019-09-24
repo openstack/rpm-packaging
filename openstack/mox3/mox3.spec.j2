@@ -1,12 +1,16 @@
-%global pypi_name mox3
-Name:           {{ py2name('mox3') }}
-Version:        0.27.0
-Release:        0
+{% set pypi_name = 'mox3' %}
+{% set upstream_version = upstream_version('0.28.0') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
 Summary:        An unofficial port of the Google mox framework to Python 3
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://bugs.launchpad.net/python-mox3
-Source0:        https://files.pythonhosted.org/packages/source/m/%{pypi_name}/%{pypi_name}-%{version}.tar.gz
+Source0:        {{ source }}
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('coverage', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('fixtures', py_versions=['py2', 'py3']) }}
@@ -31,8 +35,8 @@ enhancements have been made.
 %package -n python-mox3-doc
 Summary:        Documentation for %{name}
 Group:          Documentation/HTML
-BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('openstackdocstheme') }}
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
 
 %description -n python-mox3-doc
 Mox3 is an unofficial port of the Google mox framework to Python 3. It
@@ -43,14 +47,14 @@ enhancements have been made. The library was tested on Python version
 This package contains documentation in HTML format.
 
 %prep
-%autosetup -p1 -n %{pypi_name}-%{version}
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
 
 %build
 %python_build
 
 # generate html docs
-PBR_VERSION=%version PYTHONPATH=. sphinx-build -a -E -d doc/build/doctrees -b html doc/source doc/build/html
+PBR_VERSION={{ upstream_version }} %sphinx_build -b html doc/source doc/build/html
 
 %check
 %python_exec -m stestr.cli run
@@ -61,8 +65,8 @@ PBR_VERSION=%version PYTHONPATH=. sphinx-build -a -E -d doc/build/doctrees -b ht
 %files %{python_files}
 %license COPYING.txt
 %doc README.rst
-%{python2_sitelib}/%{pypi_name}
-%{python2_sitelib}/%{pypi_name}-*.egg-info
+%{python_sitelib}/{{ pypi_name }}
+%{python_sitelib}/{{ pypi_name }}-*.egg-info
 
 %files -n python-mox3-doc
 %license COPYING.txt

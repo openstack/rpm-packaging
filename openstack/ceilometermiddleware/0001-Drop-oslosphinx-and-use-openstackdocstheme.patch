@@ -1,0 +1,78 @@
+From e379747cd842330e92df06af72bf6815f53051fa Mon Sep 17 00:00:00 2001
+From: Thomas Bechtold <tbechtold@suse.com>
+Date: Tue, 24 Sep 2019 09:49:41 +0200
+Subject: [PATCH] Drop oslosphinx and use openstackdocstheme
+
+OpenStack moved to openstackdocstheme so use it here instead of
+oslosphinx.
+Also update the used Sphinx version. This is now in sync with the
+versions from requirements/global-requirements.txt .
+
+Change-Id: I0ffbea9b83abe9d9ae3886e7a427fc01637b36ea
+---
+ doc/source/conf.py    | 8 +++++++-
+ test-requirements.txt | 4 ++--
+ tox.ini               | 2 +-
+ 3 files changed, 10 insertions(+), 4 deletions(-)
+
+diff --git a/doc/source/conf.py b/doc/source/conf.py
+index 989b422..582c805 100644
+--- a/doc/source/conf.py
++++ b/doc/source/conf.py
+@@ -23,7 +23,7 @@ sys.path.insert(0, os.path.abspath('../..'))
+ extensions = [
+     'sphinx.ext.autodoc',
+     #'sphinx.ext.intersphinx',
+-    'oslosphinx'
++    'openstackdocstheme'
+ ]
+ 
+ # autodoc generation is a bit aggressive and a nuisance when doing heavy
+@@ -58,6 +58,8 @@ pygments_style = 'sphinx'
+ # html_theme = '_theme'
+ # html_static_path = ['static']
+ 
++html_theme = 'openstackdocs'
++
+ # Output file base name for HTML help builder.
+ htmlhelp_basename = '%sdoc' % project
+ 
+@@ -73,3 +75,7 @@ latex_documents = [
+ 
+ # Example configuration for intersphinx: refer to the Python standard library.
+ #intersphinx_mapping = {'http://docs.python.org/': None}
++
++# openstackdocstheme options
++repository_name = 'openstack/ceilometermiddleware'
++bug_project = 'http://bugs.launchpad.net/ceilometermiddleware'
+diff --git a/test-requirements.txt b/test-requirements.txt
+index 7ea25fd..6c4ccb0 100644
+--- a/test-requirements.txt
++++ b/test-requirements.txt
+@@ -4,8 +4,8 @@
+ 
+ coverage>=3.6 # Apache-2.0
+ python-subunit>=0.0.18 # Apache-2.0/BSD
+-sphinx!=1.2.0,!=1.3b1,<1.3,>=1.1.2 # BSD
+-oslosphinx!=3.4.0,>=2.5.0 # Apache-2.0
++sphinx!=1.6.6,!=1.6.7,<2.0.0;python_version=='2.7'  # BSD
++sphinx!=1.6.6,!=1.6.7,!=2.1.0;python_version>='3.4'  # BSD
+ openstackdocstheme>=1.17.0  # Apache-2.0
+ oslotest>=1.10.0 # Apache-2.0
+ stestr>=2.0.0 # Apache-2.0
+diff --git a/tox.ini b/tox.ini
+index 5e917c2..3e59420 100644
+--- a/tox.ini
++++ b/tox.ini
+@@ -34,7 +34,7 @@ commands =
+ 
+ [testenv:docs]
+ basepython = python3
+-commands = python setup.py build_sphinx
++commands = sphinx-build -W -b html -d doc/build/doctrees doc/source doc/build/html
+ 
+ [testenv:debug]
+ basepython = python3
+-- 
+2.23.0
+

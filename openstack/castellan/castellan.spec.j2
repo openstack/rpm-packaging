@@ -1,5 +1,5 @@
 {% set pypi_name = 'castellan' %}
-{% set upstream_version = upstream_version('1.3.0') %}
+{% set upstream_version = upstream_version('1.3.1') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -19,7 +19,6 @@ BuildRequires:  {{ py2pkg('oslo.config', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('oslo.log', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('pifpaf', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('python-subunit', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('reno', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('setuptools', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
@@ -34,6 +33,7 @@ Requires:       {{ py2pkg('oslo.context') }}
 Requires:       {{ py2pkg('oslo.i18n') }}
 Requires:       {{ py2pkg('oslo.log') }}
 Requires:       {{ py2pkg('oslo.utils') }}
+Requires:       {{ py2pkg('requests') }}
 Requires:       {{ py2pkg('stevedore') }}
 BuildArch:      noarch
 %python_subpackages
@@ -44,8 +44,8 @@ Generic Key Manager interface for OpenStack.
 %package -n python-castellan-doc
 Summary:        Documentation for castellan
 Group:          Documentation/HTML
-BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('openstackdocstheme', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
 
 %description -n python-castellan-doc
 Castellan is a generic Key Manager interface for OpenStack.
@@ -58,7 +58,7 @@ This package contains the documentation
 %build
 %{python_build}
 # generate html docs
-PBR_VERSION=%{version} sphinx-build -b html doc/source doc/build/html
+PBR_VERSION=%{version} %sphinx_build -b html doc/source doc/build/html
 # remove the sphinx-build leftovers
 rm -rf html/.{doctrees,buildinfo}
 
