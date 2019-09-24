@@ -1,5 +1,5 @@
 {% set pypi_name = 'os-win' %}
-{% set upstream_version = upstream_version('4.3.0') %}
+{% set upstream_version = upstream_version('4.3.2') %}
 {% set rpm_release = '0' %}
 {% set source = url_pypi() %}
 Name:           {{ py2name('os-win') }}
@@ -53,8 +53,8 @@ nova, cinder, networking-hyperv.
 %package -n {{ py2name() }}-doc
 Summary:        Documentation for OpenStack Windows/Hyper-V Library
 Group:          Documentation/HTML
-BuildRequires:  {{ py2pkg('Sphinx', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('openstackdocstheme', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
 
 %description -n {{ py2name() }}-doc
 Documentation for the Hyper-V library.
@@ -68,9 +68,10 @@ rm -f os_win/tests/unit/test_hacking.py
 %build
 %{python_build}
 
-%sphinx_build -b html doc/source doc/build/html
-%sphinx_build -b man doc/source doc/build/man
+PBR_VERSION=%{version} %sphinx_build -b html doc/source doc/build/html
+PBR_VERSION=%{version} %sphinx_build -b man doc/source doc/build/man
 rm -rf doc/build/html/.{doctrees,buildinfo}
+rm -rf doc/build/man/.{doctrees,buildinfo}
 
 %install
 %{python_install}

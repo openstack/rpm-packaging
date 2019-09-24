@@ -1,5 +1,5 @@
 {% set pypi_name = 'oslo.concurrency' %}
-{% set upstream_version = upstream_version('3.29.1') %}
+{% set upstream_version = upstream_version('3.30.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -53,8 +53,9 @@ external processes.
 
 %package -n python-oslo.concurrency-doc
 Summary:        Documentation for OpenStack concurrency library
-BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('openstackdocstheme') }}
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
+BuildRequires:  {{ py3('sphinxcontrib-apidoc') }}
 
 %description -n python-oslo.concurrency-doc
 The oslo.concurrency library has utilities for safely running multi-thread,
@@ -70,7 +71,7 @@ This package contains the documentation.
 %{python_build}
 
 # generate html docs
-PBR_VERSION=%{version} sphinx-build -b html doc/source doc/build/html
+PBR_VERSION=%{version} %sphinx_build -b html doc/source doc/build/html
 # remove the sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 

@@ -1,5 +1,5 @@
 {% set pypi_name = 'oslo.context' %}
-{% set upstream_version = upstream_version('2.22.1') %}
+{% set upstream_version = upstream_version('2.23.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -33,8 +33,8 @@ used by various modules such as logging.
 %package -n python-oslo.context-doc
 Summary:        Documentation for OpenStack common context library
 Group:          Documentation/HTML
-BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('openstackdocstheme') }}
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
 
 %description -n python-oslo.context-doc
 Documentation for the oslo-context library.
@@ -46,7 +46,7 @@ Documentation for the oslo-context library.
 %build
 %{python_build}
 # generate html docs
-PBR_VERSION=%{version} sphinx-build -b html doc/source doc/build/html
+PBR_VERSION=%{version} %sphinx_build -b html doc/source doc/build/html
 # remove the sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 

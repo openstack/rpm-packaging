@@ -1,5 +1,5 @@
 {% set pypi_name = 'os-ken' %}
-{% set upstream_version = upstream_version('0.4.0') %}
+{% set upstream_version = upstream_version('0.4.1') %}
 {% set rpm_release = '0' %}
 {% set source = url_pypi() %}
 Name:           {{ py2name('os-ken') }}
@@ -56,8 +56,8 @@ This is a fork of the Ryu library tailored for OpenStack Neutron.
 %package -n python-osken-doc
 Summary:        A component-based software defined networking framework in OpenStack - Documentation
 Group:          Documentation/HTML
-BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('openstackdocstheme') }}
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
 
 %description -n python-osken-doc
 A component-based software defined networking framework in OpenStack.
@@ -71,7 +71,7 @@ This package contains the documentation.
 
 %build
 %{python_build}
-PBR_VERSION=%{version} sphinx-build -b html doc/source doc/build/html
+PBR_VERSION=%{version} %sphinx_build -b html doc/source doc/build/html
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install

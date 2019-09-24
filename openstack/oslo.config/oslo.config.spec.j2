@@ -1,5 +1,5 @@
 {% set pypi_name = 'oslo.config' %}
-{% set upstream_version = upstream_version('6.11.0') %}
+{% set upstream_version = upstream_version('6.11.1') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -13,7 +13,6 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('PyYAML', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('debtcollector', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('fixtures', py_versions=['py2', 'py3']) }}
@@ -65,8 +64,8 @@ parsing library from the Oslo project.
 %package -n python-oslo.config-doc
 Summary:       Documentation for OpenStack common configuration library
 BuildRequires:  {{ py2pkg('Sphinx', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('openstackdocstheme', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('sphinxcontrib-apidoc', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
+BuildRequires:  {{ py3('sphinxcontrib-apidoc') }}
 
 %description -n python-oslo.config-doc
 Documentation for the oslo-config library.
@@ -79,7 +78,7 @@ Documentation for the oslo-config library.
 %{python_build}
 
 PBR_VERSION={{ upstream_version }} PYTHONPATH=. \
-    sphinx-build -b html doc/source doc/build/html
+    %sphinx_build -b html doc/source doc/build/html
 # remove the sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
