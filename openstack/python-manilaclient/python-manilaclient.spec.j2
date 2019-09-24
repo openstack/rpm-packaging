@@ -1,5 +1,5 @@
 {% set pypi_name = 'python-manilaclient' %}
-{% set upstream_version = upstream_version('1.27.0') %}
+{% set upstream_version = upstream_version('1.29.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -12,11 +12,14 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('ddt', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('fixtures', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('python-openstackclient', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.config', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.log', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.serialization', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.utils', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
@@ -49,9 +52,9 @@ Share API.
 %package -n python-manilaclient-doc
 Summary:        Documentation for OpenStack Share API Client
 Group:          Documentation/HTML
-BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('openstackdocstheme') }}
-BuildRequires:  {{ py2pkg('sphinxcontrib-programoutput') }}
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
+BuildRequires:  {{ py3('sphinxcontrib-programoutput') }}
 
 %description -n python-manilaclient-doc
 Client library and command line utility for interacting with Openstack
@@ -65,7 +68,7 @@ This package contains auto-generated documentation.
 %build
 %{python_build}
 
-PBR_VERSION={{ upstream_version }} sphinx-build -b html doc/source doc/build/html
+PBR_VERSION={{ upstream_version }} %sphinx_build -b html doc/source doc/build/html
 # remove the sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 

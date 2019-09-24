@@ -1,5 +1,5 @@
 {% set pypi_name = 'python-barbicanclient' %}
-{% set upstream_version = upstream_version('4.8.1') %}
+{% set upstream_version = upstream_version('4.9.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -12,7 +12,6 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('cliff', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('keystoneauth1', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
@@ -45,7 +44,6 @@ Requires(postun): chkconfig
 %python_subpackages
 
 %description
-OpenStack Key Management API client - Python 2.x
 This is a client for the Barbican Key Management API. This package includes a
 Python library for accessing the API (the barbicanclient module), and a
 command-line script (barbican).
@@ -55,8 +53,8 @@ This package contains the Python 2.x module.
 %package -n python-barbicanclient-doc
 Summary:        Documentation for OpenStack Key Management API Client
 Group:          Documentation/HTML
-BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('openstackdocstheme') }}
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
 
 %description -n python-barbicanclient-doc
 Documentation for the client library for interacting with
@@ -66,12 +64,13 @@ Openstack Key Management API
 %autosetup -p1 -n %{name}-%{version}
 %py_req_cleanup
 
-# Remove the sphinx-build leftovers
-rm -rf html/.{doctrees,buildinfo}
-
 %build
 %{python_build}
-%{__python2} setup.py build_sphinx
+
+# generate html docs
+PBR_VERSION=%{version} %sphinx_build -b html doc/source doc/build/html
+# Remove the sphinx-build leftovers
+rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
 %{python_install}
