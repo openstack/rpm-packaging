@@ -1,5 +1,5 @@
 {% set pypi_name = 'futurist' %}
-{% set upstream_version = upstream_version('1.8.1') %}
+{% set upstream_version = upstream_version('1.9.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -13,25 +13,25 @@ URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('PrettyTable', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('Sphinx', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('contextlib2', py_versions=['py2']) }}
 BuildRequires:  {{ py2pkg('eventlet', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('futures', py_versions=['py2']) }}
 BuildRequires:  {{ py2pkg('monotonic', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('openstackdocstheme', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('setuptools', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('six', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
 Requires:       {{ py2pkg('PrettyTable') }}
-Requires:       {{ py2pkg('monotonic') }}
 Requires:       {{ py2pkg('six') }}
 BuildArch:      noarch
 %ifpython2
 Requires:       {{ py2pkg('contextlib2') }}
 Requires:       {{ py2pkg('futures') }}
+Requires:       {{ py2pkg('monotonic') }}
 %endif
 %python_subpackages
 
@@ -46,7 +46,7 @@ Useful additions to futures, from the future.
 %{python_build}
 
 # generate html docs
-PBR_VERSION={{ upstream_version }} sphinx-build -b html doc/source doc/build/html
+PBR_VERSION={{ upstream_version }} %sphinx_build -b html doc/source doc/build/html
 # remove the sphinx-build leftovers
 rm -r doc/build/html/.{doctrees,buildinfo}
 

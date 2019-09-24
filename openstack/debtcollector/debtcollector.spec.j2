@@ -1,12 +1,16 @@
-%global pypi_name debtcollector
-Name:           {{ py2name('debtcollector') }}
-Version:        1.21.0
-Release:        0
+{% set pypi_name = 'debtcollector' %}
+{% set upstream_version = upstream_version('1.22.0') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
 Summary:        A collection of Python deprecation patterns and strategies
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://docs.openstack.org/developer/debtcollector/
-Source0:        https://files.pythonhosted.org/packages/source/d/%{pypi_name}/%{pypi_name}-%{version}.tar.gz
+Source0:        {{ source }}
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('fixtures', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('funcsigs', py_versions=['py2']) }}
@@ -38,8 +42,8 @@ future deprecations.
 %package -n python-debtcollector-doc
 Summary:        Documentation for %{name}
 Group:          Documentation/HTML
-BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('openstackdocstheme', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
 
 %description -n python-debtcollector-doc
 A collection of Python deprecation patterns and strategies that help
@@ -55,14 +59,14 @@ future deprecations.
 This package contains documentation in HTML format.
 
 %prep
-%autosetup -n %{pypi_name}-%{version}
+%autosetup -p1 -n {{pypi_name}}-{{ upstream_version }}
 %py_req_cleanup
 
 %build
 %python_build
 
 # generate html doc
-PBR_VERSION=%{version} sphinx-build -b html doc/source doc/build/html
+PBR_VERSION={{ upstream_version }} %sphinx_build -b html doc/source doc/build/html
 # remove the Sphinx-build leftovers
 rm -rf html/.{doctrees,buildinfo}
 
@@ -75,8 +79,8 @@ rm -rf html/.{doctrees,buildinfo}
 %files %{python_files}
 %license LICENSE
 %doc README.rst
-%{python_sitelib}/%{pypi_name}
-%{python_sitelib}/%{pypi_name}-*.egg-info
+%{python_sitelib}/{{ pypi_name }}
+%{python_sitelib}/{{ pypi_name }}-*.egg-info
 
 %files -n python-debtcollector-doc
 %license LICENSE
