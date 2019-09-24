@@ -8,22 +8,21 @@
 Name:           {{ py2name() }}
 Version:        {{ py2rpmversion() }}
 Release:        {{ py2rpmrelease() }}
-Summary:        A library to support Octavia provider drivers.
+Summary:        A library to support Octavia provider drivers
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://git.openstack.org/cgit/openstack/octavia-lib
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.i18n', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.log', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.serialization', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.utils', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('tenacity', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('oslo.i18n') }}
+BuildRequires:  {{ py3('oslo.log') }}
+BuildRequires:  {{ py3('oslo.serialization') }}
+BuildRequires:  {{ py3('oslo.utils') }}
+BuildRequires:  {{ py3('oslotest') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('tenacity') }}
 Requires:       {{ py2pkg('oslo.i18n') }}
 Requires:       {{ py2pkg('oslo.log') }}
 Requires:       {{ py2pkg('oslo.serialization') }}
@@ -31,7 +30,6 @@ Requires:       {{ py2pkg('pbr') }}
 Requires:       {{ py2pkg('six') }}
 Requires:       {{ py2pkg('tenacity') }}
 BuildArch:      noarch
-%python_subpackages
 
 %description
 A library to support Octavia provider drivers.
@@ -44,20 +42,18 @@ developers.
 %py_req_cleanup
 
 %build
-%{python_build}
+%{py3_build}
 
 %install
-%{python_install}
+%{py3_install}
 
 %check
-%{python_expand export PYTHONPATH=.
-$python  -m stestr.cli run
-}
+python3  -m stestr.cli run
 
-%files %{python_files}
+%files
 %license LICENSE
 %doc ChangeLog README.rst
-%{python_sitelib}/octavia_lib
-%{python_sitelib}/octavia_lib*egg-info
+%{python3_sitelib}/octavia_lib
+%{python3_sitelib}/octavia_lib*egg-info
 
 %changelog
