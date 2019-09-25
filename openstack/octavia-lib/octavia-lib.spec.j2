@@ -5,7 +5,7 @@
 %if 0%{?rdo}
 %define skip_python2 1
 %endif
-Name:           {{ py2name() }}
+Name:           {{ py2name(py_versions=['py3']) }}
 Version:        {{ py2rpmversion() }}
 Release:        {{ py2rpmrelease() }}
 Summary:        A library to support Octavia provider drivers
