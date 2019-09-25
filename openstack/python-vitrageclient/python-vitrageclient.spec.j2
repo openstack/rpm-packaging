@@ -1,8 +1,12 @@
 {% set pypi_name = 'python-vitrageclient' %}
-{% set upstream_version = upstream_version('2.7.0') %}
+{% set upstream_version = upstream_version('3.0.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
+# NOTE: RDO does not have the required version of networkx for python2
+%if ! 0%{?suse_version}
+%define skip_python2 1
+%endif
 Name:           {{ py2name() }}
 Version:        {{ py2rpmversion() }}
 Release:        {{ py2rpmrelease() }}
@@ -14,7 +18,6 @@ Source0:        https://pypi.io/packages/source/p/%{name}/%{name}-%{version}.tar
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('cliff', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('keystoneauth1', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('networkx', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('pydot', py_versions=['py2', 'py3']) }}
@@ -35,9 +38,11 @@ Requires:       {{ py2pkg('pbr') }}
 Requires:       {{ py2pkg('pydot') }}
 BuildArch:      noarch
 %if 0%{?suse_version}
+BuildRequires:  {{ py2pkg('networkx', py_versions=['py2', 'py3']) }}
 Requires(post): update-alternatives
 Requires(postun): update-alternatives
 %else
+BuildRequires:  {{ py2pkg('networkx', py_versions=['py3']) }}
 # on RDO, update-alternatives is in chkconfig
 Requires(post): chkconfig
 Requires(postun): chkconfig
@@ -51,8 +56,8 @@ Client library for Vitrage built on the Vitrage API. It provides a Python API
 %package -n {{ py2name() }}-doc
 Summary:        Documentation for OpenStack Vitrage API client libary
 Group:          Documentation
-BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('openstackdocstheme') }}
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
 
 %description -n {{ py2name() }}-doc
 Client library for Vitrage built on the Vitrage API. It provides a Python API
@@ -62,13 +67,12 @@ This package contains the documentation.
 %prep
 %autosetup -p1 -n %{name}-%{version}
 %py_req_cleanup
-sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
 %{python_build}
 
 # Build HTML docs and man page
-%{__python2} setup.py build_sphinx
+PBR_VERSION=%{version} %sphinx_build -b html doc/source doc/build/html
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
@@ -77,8 +81,6 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 install -p -D -m 644 tools/vitrage.bash_completion %{buildroot}%{_sysconfdir}/bash_completion.d/vitrage.bash_completion
 rm %{buildroot}%{_datadir}/vitrage.bash_completion
 %python_clone -a %{buildroot}%{_sysconfdir}/bash_completion.d/vitrage.bash_completion
-
-
 %python_clone -a %{buildroot}%{_bindir}/vitrage
 
 %post
@@ -91,6 +93,7 @@ rm %{buildroot}%{_datadir}/vitrage.bash_completion
 %check
 %{python_expand rm -rf .testrepository
 export OS_TEST_PATH=vitrageclient/tests/unit
+export PYTHON=$python
 $python setup.py testr
 }
 

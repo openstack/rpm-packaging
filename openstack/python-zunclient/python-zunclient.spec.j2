@@ -1,5 +1,5 @@
 {% set pypi_name = 'python-zunclient' %}
-{% set upstream_version = upstream_version('3.4.0') %}
+{% set upstream_version = upstream_version('3.5.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -12,7 +12,6 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('ddt', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('docker', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('fixtures', py_versions=['py2', 'py3']) }}
@@ -56,8 +55,8 @@ Containers API.
 %package -n python-zunclient-doc
 Summary:        Documentation for OpenStack Containers API Client
 Group:          Documentation/HTML
-BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('openstackdocstheme') }}
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
 
 %description -n python-zunclient-doc
 Client library and command line utility for interacting with Openstack
@@ -67,12 +66,11 @@ This package contains auto-generated documentation.
 %prep
 %autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
-sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
 %{python_build}
 
-PBR_VERSION={{ upstream_version }} sphinx-build -b html doc/source doc/build/html
+PBR_VERSION={{ upstream_version }} %sphinx_build -b html doc/source doc/build/html
 # remove the sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 

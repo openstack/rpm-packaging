@@ -1,5 +1,5 @@
 {% set pypi_name = 'python-ironicclient' %}
-{% set upstream_version = upstream_version('2.8.0') %}
+{% set upstream_version = upstream_version('3.0.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -12,9 +12,7 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('Babel', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('PrettyTable', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('PyYAML', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('appdirs', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('dogpile.cache', py_versions=['py2', 'py3']) }}
@@ -32,7 +30,6 @@ BuildRequires:  {{ py2pkg('requests', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('requests-mock', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
-Requires:       {{ py2pkg('PrettyTable') }}
 Requires:       {{ py2pkg('PyYAML') }}
 Requires:       {{ py2pkg('appdirs') }}
 Requires:       {{ py2pkg('dogpile.cache') }}
@@ -47,14 +44,6 @@ Requires:       {{ py2pkg('pbr') }}
 Requires:       {{ py2pkg('requests') }}
 Requires:       {{ py2pkg('six') }}
 BuildArch:      noarch
-%if 0%{?suse_version}
-Requires(post): update-alternatives
-Requires(postun): update-alternatives
-%else
-# on RDO, update-alternatives is in chkconfig
-Requires(post): chkconfig
-Requires(postun): chkconfig
-%endif
 %python_subpackages
 
 %description
@@ -66,10 +55,10 @@ ironicclient module) and a command-line interface (ironic).
 %package -n {{ py2name() }}-doc
 Summary:        Documentation for OpenStack Ironic API Client
 Group:          Documentation/HTML
-BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('openstackdocstheme') }}
-BuildRequires:  {{ py2pkg('reno') }}
-BuildRequires:  {{ py2pkg('sphinxcontrib-apidoc') }}
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
+BuildRequires:  {{ py3('reno') }}
+BuildRequires:  {{ py3('sphinxcontrib-apidoc') }}
 
 %description -n {{ py2name() }}-doc
 This is a client for the OpenStack Ironic API (Bare Metal. There's a
@@ -84,22 +73,12 @@ This package contains auto-generated documentation.
 %build
 %{python_build}
 
-PBR_VERSION={{ upstream_version }} sphinx-build -b html doc/source doc/build/html
+PBR_VERSION={{ upstream_version }} %sphinx_build -b html doc/source doc/build/html
 # remove the sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
 %{python_install}
-# bash completion
-install -p -D -m 644 tools/ironic.bash_completion %{buildroot}%{_sysconfdir}/bash_completion.d/ironic.bash_completion
-%python_clone -a %{buildroot}%{_bindir}/ironic
-%python_clone -a %{buildroot}%{_sysconfdir}/bash_completion.d/ironic.bash_completion
-
-%post
-%{python_install_alternative ironic %{_sysconfdir}/bash_completion.d/ironic.bash_completion}
-
-%postun
-%python_uninstall_alternative ironic
 
 %check
 %python_exec -m stestr.cli run
@@ -109,8 +88,6 @@ install -p -D -m 644 tools/ironic.bash_completion %{buildroot}%{_sysconfdir}/bas
 %doc README.rst
 %{python_sitelib}/ironicclient
 %{python_sitelib}/*.egg-info
-%python_alternative %{_bindir}/ironic
-%python_alternative %{_sysconfdir}/bash_completion.d/ironic.bash_completion
 
 %files -n {{ py2name() }}-doc
 %license LICENSE

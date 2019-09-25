@@ -1,5 +1,5 @@
 {% set pypi_name = 'python-keystoneclient' %}
-{% set upstream_version = upstream_version('3.20.0') %}
+{% set upstream_version = upstream_version('3.21.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -14,7 +14,6 @@ URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
 BuildRequires:  openssl
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('debtcollector', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('keystoneauth1', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('lxml', py_versions=['py2', 'py3']) }}
@@ -48,8 +47,8 @@ Client library for interacting with Openstack Identity API.
 %package -n python-keystoneclient-doc
 Summary:        Documentation for OpenStack Identity API Client
 Group:          Documentation/HTML
-BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('openstackdocstheme') }}
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
 
 %description -n python-keystoneclient-doc
 Documentation for the client library for interacting with Openstack
@@ -65,7 +64,7 @@ echo "intersphinx_mapping = {}" >> doc/source/conf.py
 %{python_build}
 
 # Build HTML docs and man page
-PBR_VERSION=%{version} sphinx-build -b html doc/source doc/build/html
+PBR_VERSION=%{version} %sphinx_build -b html doc/source doc/build/html
 
 %install
 %{python_install}

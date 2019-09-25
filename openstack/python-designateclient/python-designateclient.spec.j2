@@ -1,5 +1,5 @@
 {% set pypi_name = 'python-designateclient' %}
-{% set upstream_version = upstream_version('2.11.0') %}
+{% set upstream_version = upstream_version('3.0.0') %}
 {% set rpm_release = '1' %}
 %global sname python-designateclient
 Name:           {{ py2name() }}
@@ -12,11 +12,11 @@ URL:            https://launchpad.net/%{sname}
 Source0:        https://files.pythonhosted.org/packages/source/p/%{sname}/%{sname}-%{version}.tar.gz
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('jsonschema', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('python-keystoneclient', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('keystoneauth1', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py2pkg('oslo.serialization', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('python-subunit', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('requests-mock', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('setuptools', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
@@ -24,8 +24,8 @@ Requires:       {{ py2pkg('cliff') }}
 Requires:       {{ py2pkg('debtcollector') }}
 Requires:       {{ py2pkg('jsonschema') }}
 Requires:       {{ py2pkg('keystoneauth1') }}
-Requires:       {{ py2pkg('python-keystoneclient') }}
 Requires:       {{ py2pkg('osc-lib') }}
+Requires:       {{ py2pkg('oslo.serialization') }}
 Requires:       {{ py2pkg('oslo.utils') }}
 Requires:       {{ py2pkg('requests') }}
 Requires:       {{ py2pkg('six') }}
@@ -39,8 +39,8 @@ OpenStack DNS as a Service - Client
 %package -n {{ py2name() }}-doc
 Summary:        Documentation for the OpenStack DNS as a Service - Client
 Group:          Documentation/HTML
-BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('openstackdocstheme') }}
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
 
 %description -n {{ py2name() }}-doc
 Documentation for the OpenStack DNS as a Service - Client.
@@ -53,38 +53,24 @@ Documentation for the OpenStack DNS as a Service - Client.
 %python_build
 
 # generate docs
-PYTHONPATH=. PBR_VERSION={{ upstream_version }} sphinx-build -b html doc/source doc/build/html
-PYTHONPATH=. PBR_VERSION={{ upstream_version }} sphinx-build -b man doc/source doc/build/man
+PYTHONPATH=. PBR_VERSION={{ upstream_version }} %sphinx_build -b html doc/source doc/build/html
 # remove the sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
-rm -rf doc/build/man/.{doctrees,buildinfo}
 
 %install
 %python_install
-# man pages
-install -p -D -m 644 doc/build/man/*designateclient.1 %{buildroot}%{_mandir}/man1/designateclient.1
-
-%python_clone -a %{buildroot}%{_bindir}/designate
-
-%post
-%python_install_alternative designate
-
-%postun
-%python_uninstall_alternative designate
 
 %check
 %python_exec -m stestr.cli run
 
 %files %{python_files}
 %license LICENSE
-%doc README.rst ChangeLog
+%doc README.rst
 %{python_sitelib}/designateclient
 %{python_sitelib}/python_designateclient-%{version}-*.egg-info
-%python_alternative %{_bindir}/designate
 
 %files -n {{ py2name() }}-doc
 %license LICENSE
-%doc doc/build/html
-%{_mandir}/man1/designateclient.1.*
+%doc doc/build/html ChangeLog
 
 %changelog
