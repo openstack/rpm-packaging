@@ -1,15 +1,3 @@
-#  Licensed under the Apache License, Version 2.0 (the "License"); you may
-#  not use this file except in compliance with the License. You may obtain
-#  a copy of the License at
-#
-#       http://www.apache.org/licenses/LICENSE-2.0
-#
-#  Unless required by applicable law or agreed to in writing, software
-#  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
-#  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
-#  License for the specific language governing permissions and limitations
-#  under the License.
-
 {% set pypi_name = 'monasca-agent' %}
 {% set source = fetch_source('https://tarballs.openstack.org/monasca-agent/monasca-agent-master.tar.gz') %}
 {% set upstream_version = upstream_version() %}
@@ -43,6 +31,7 @@ BuildRequires:  {{ py2pkg('devel') }}
 BuildRequires:  {{ py2pkg('eventlet') }}
 BuildRequires:  {{ py2pkg('futures') }}
 BuildRequires:  {{ py2pkg('httplib2') }}
+BuildRequires:  {{ py2pkg('python-keystoneclient') }}
 BuildRequires:  {{ py2pkg('mock') }}
 BuildRequires:  {{ py2pkg('monasca-common') }}
 BuildRequires:  {{ py2pkg('python-monascaclient') }}
