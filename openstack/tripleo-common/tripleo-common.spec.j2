@@ -1,5 +1,5 @@
 {% set pypi_name = 'tripleo-common' %}
-{% set upstream_version = upstream_version('10.7.0') %}
+{% set upstream_version = upstream_version('11.2.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -24,6 +24,7 @@ BuildRequires:  {{ py2pkg('mistral-lib') }}
 BuildRequires:  {{ py2pkg('python-mistralclient') }}
 BuildRequires:  {{ py2pkg('oslo.concurrency') }}
 BuildRequires:  {{ py2pkg('oslo.log') }}
+BuildRequires:  {{ py2pkg('oslo.rootwrap') }}
 BuildRequires:  {{ py2pkg('oslotest') }}
 BuildRequires:  {{ py2pkg('paramiko') }}
 BuildRequires:  {{ py2pkg('passlib') }}
@@ -57,6 +58,7 @@ Requires:       {{ py2pkg('python-novaclient') }}
 Requires:       {{ py2pkg('oslo.concurrency') }}
 Requires:       {{ py2pkg('oslo.config') }}
 Requires:       {{ py2pkg('oslo.log') }}
+Requires:       {{ py2pkg('oslo.rootwrap') }}
 Requires:       {{ py2pkg('oslo.utils') }}
 Requires:       {{ py2pkg('paramiko') }}
 Requires:       {{ py2pkg('passlib') }}
@@ -120,9 +122,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %{_bindir}/bootstrap_host_only_exec
 %{_bindir}/bootstrap_host_only_eval
 %{_bindir}/tripleo-container-image-prepare
-%{_bindir}/tripleo-deploy-openshift
 %{_datadir}/tripleo-common
-%{_datadir}/ansible
 
 %files doc
 %license LICENSE
