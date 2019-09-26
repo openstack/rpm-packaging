@@ -26,8 +26,6 @@ Source23:       openstack-designate-agent.service
 Source24:       openstack-designate-producer.service
 Source25:       openstack-designate-worker.service
 Source26:       openstack-designate-mdns.service
-Source27:       openstack-designate-pool-manager.service
-Source28:       openstack-designate-zone-manager.service
 Source50:       openstack-designate.README.config
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py3('keystoneauth1') }}
@@ -216,26 +214,6 @@ Designate is an OpenStack inspired DNSaaS.
 
 This package contains the mdns.
 
-%package pool-manager
-Summary:        OpenStack DNS Service (Designate) - pool manager
-Group:          Development/Languages/Python
-Requires:       python3-{{ pypi_name }} = %{epoch}:%{version}-%{release}
-
-%description pool-manager
-Designate is an OpenStack inspired DNSaaS.
-
-This package contains the pool manager.
-
-%package zone-manager
-Summary:        OpenStack DNS Service (Designate) - zone manager
-Group:          Development/Languages/Python
-Requires:       python3-{{ pypi_name }} = %{epoch}:%{version}-%{release}
-
-%description zone-manager
-Designate is an OpenStack inspired DNSaaS.
-
-This package contains the zone manager.
-
 %prep
 %autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
@@ -295,8 +273,6 @@ install -p -D -m 644 %{SOURCE23} %{buildroot}%{_unitdir}/openstack-designate-age
 install -p -D -m 644 %{SOURCE24} %{buildroot}%{_unitdir}/openstack-designate-producer.service
 install -p -D -m 644 %{SOURCE25} %{buildroot}%{_unitdir}/openstack-designate-worker.service
 install -p -D -m 644 %{SOURCE26} %{buildroot}%{_unitdir}/openstack-designate-mdns.service
-install -p -D -m 644 %{SOURCE27} %{buildroot}%{_unitdir}/openstack-designate-pool-manager.service
-install -p -D -m 644 %{SOURCE28} %{buildroot}%{_unitdir}/openstack-designate-zone-manager.service
 
 # install symlinks on SUSE
 %if 0%{?suse_version}
@@ -308,8 +284,6 @@ ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-agent
 ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-producer
 ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-worker
 ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-mdns
-ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-pool-manager
-ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-zone-manager
 %endif
 
 # man pages
@@ -391,24 +365,6 @@ exit 0
 
 %postun mdns
 %systemd_postun_with_restart %{name}-mdns.service
-
-%post pool-manager
-%systemd_post %{name}-pool-manager.service
-
-%preun pool-manager
-%systemd_preun %{name}-pool-manager.service
-
-%postun pool-manager
-%systemd_postun_with_restart %{name}-pool-manager.service
-
-%post zone-manager
-%systemd_post %{name}-zone-manager.service
-
-%preun zone-manager
-%systemd_preun %{name}-zone-manager.service
-
-%postun zone-manager
-%systemd_postun_with_restart %{name}-zone-manager.service
 
 %files
 %license LICENSE
@@ -503,22 +459,6 @@ exit 0
 %{_unitdir}/openstack-designate-mdns.service
 %if 0%{?suse_version}
 %{_sbindir}/rc%{name}-mdns
-%endif
-
-%files pool-manager
-%license LICENSE
-%{_bindir}/designate-pool-manager
-%{_unitdir}/openstack-designate-pool-manager.service
-%if 0%{?suse_version}
-%{_sbindir}/rc%{name}-pool-manager
-%endif
-
-%files zone-manager
-%license LICENSE
-%{_bindir}/designate-zone-manager
-%{_unitdir}/openstack-designate-zone-manager.service
-%if 0%{?suse_version}
-%{_sbindir}/rc%{name}-zone-manager
 %endif
 
 %changelog
