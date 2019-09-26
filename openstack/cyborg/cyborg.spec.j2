@@ -148,12 +148,9 @@ install -p -D -m 640 etc/cyborg/policy.json.sample %{buildroot}%{_sysconfdir}/cy
 %{_bindir}/cyborg-status
 %{_bindir}/{{pypi_name}}-wsgi-api
 %dir %attr(0750, root, cyborg) %{_sysconfdir}/cyborg/
-%dir %attr(0750, root, cyborg) %{_sysconfdir}/cyborg/rootwrap.d/
 %config(noreplace) %attr(0640, root, cyborg) %{_sysconfdir}/cyborg/cyborg.conf
 %config(noreplace) %attr(0640, root, cyborg) %{_sysconfdir}/cyborg/api-paste.ini
 %config(noreplace) %attr(0640, root, cyborg) %{_sysconfdir}/cyborg/policy.json
-%config(noreplace) %attr(0640, root, cyborg) %{_sysconfdir}/cyborg/rootwrap.conf
-%config(noreplace) %attr(0640, root, cyborg) %{_sysconfdir}/cyborg/rootwrap.d/acceleration.filters
 %dir %attr(0750, cyborg, cyborg) %{_localstatedir}/log/cyborg
 
 %files -n python-{{ pypi_name }}
