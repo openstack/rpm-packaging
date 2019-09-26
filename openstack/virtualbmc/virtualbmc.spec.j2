@@ -1,5 +1,5 @@
 {% set pypi_name = 'virtualbmc' %}
-{% set upstream_version = upstream_version('1.5.0') %}
+{% set upstream_version = upstream_version('1.6.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -14,15 +14,13 @@ Source0:        {{ source }}
 Source1:        virtualbmc.service
 BuildRequires:  fdupes
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
-Requires:       {{ py2pkg('PrettyTable') }}
-Requires:       {{ py2pkg('cliff') }}
-Requires:       {{ py2pkg('libvirt-python') }}
-Requires:       {{ py2pkg('pbr') }}
-Requires:       {{ py2pkg('pyghmi') }}
-Requires:       {{ py2pkg('pyzmq') }}
-Requires:       {{ py2pkg('six') }}
+BuildRequires:  {{ py3('pbr') }}
+Requires:       {{ py3('cliff') }}
+Requires:       {{ py3('libvirt-python') }}
+Requires:       {{ py3('pbr') }}
+Requires:       {{ py3('pyghmi') }}
+Requires:       {{ py3('pyzmq') }}
+Requires:       {{ py3('six') }}
 BuildArch:      noarch
 %if 0%{?suse_version}
 BuildRequires:  systemd-rpm-macros
@@ -41,7 +39,6 @@ Requires(postun): update-alternatives
 Requires(post): chkconfig
 Requires(postun): chkconfig
 %endif
-%python_subpackages
 
 %description
 A virtual BMC for controlling virtual machines using IPMI commands.
@@ -49,15 +46,12 @@ A virtual BMC for controlling virtual machines using IPMI commands.
 %prep
 %autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
-sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
-%python_build
+%py3_build
 
 %install
-%python_install
-%python_clone -a %{buildroot}%{_bindir}/vbmc
-%python_clone -a %{buildroot}%{_bindir}/vbmcd
+%py3_install
 
 # directories
 install -d -m 755 %{buildroot}%{_datadir}/{{ pypi_name }}
@@ -68,24 +62,19 @@ install -d -m 750 %{buildroot}%{_localstatedir}/lib/{{ pypi_name }}
 install -p -D -m 444 %{SOURCE1} %{buildroot}%{_unitdir}/virtualbmc.service
 
 %post
-%python_install_alternative vbmc
-%python_install_alternative vbmcd
 %systemd_post virtualbmc.service
 
 %postun
 %systemd_postun virtualbmc.service
-%python_uninstall_alternative vbmc
-%python_uninstall_alternative vbmcd
 
-%files %{python_files}
+%preun
+%systemd_preun virtualbmc.service
+
+%files
 %license LICENSE
-%{python_sitelib}/*
-%python_alternative %{_bindir}/vbmc
-%python_alternative %{_bindir}/vbmcd
-%if 0%{?suse_version}
-%python3_only %{_unitdir}/virtualbmc.service
-%else
+%{python3_sitelib}/*
+%{_bindir}/vbmc
+%{_bindir}/vbmcd
 %{_unitdir}/virtualbmc.service
-%endif
 
 %changelog
