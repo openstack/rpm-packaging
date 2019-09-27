@@ -79,6 +79,8 @@ BuildRequires:  {{ py2pkg('python-troveclient') }}
 Requires:       python-horizon = %{epoch}:%{version}-%{release}
 Requires:       python-openstack_auth = %{epoch}:%{version}-%{release}
 Provides:       openstack-{{ pypi_name }} = %{version}-%{release}
+# django_openstack_auth was merged into openstack/horizon in Queens release
+Obsoletes:      {{ py2pkg('django_openstack_auth') }}
 BuildArch:      noarch
 %if 0%{?suse_version}
 BuildRequires:  apache2
