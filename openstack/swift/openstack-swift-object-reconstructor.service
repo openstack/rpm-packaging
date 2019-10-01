@@ -1,0 +1,14 @@
+[Unit]
+Description=OpenStack Swift Object Reconstructor
+After=syslog.target network.target
+
+[Service]
+Type=simple
+User=swift
+Group=swift
+WorkingDirectory=/var/lib/swift
+PrivateTmp=yes
+ExecStart=/usr/bin/swift-object-reconstructor /etc/swift/object-server.conf
+
+[Install]
+WantedBy=multi-user.target

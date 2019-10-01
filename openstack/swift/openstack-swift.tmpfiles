@@ -1,0 +1,5 @@
+d /run/swift 0700 swift swift -
+d /run/swift/account-server 0700 swift swift -
+d /run/swift/container-server 0700 swift swift -
+d /run/swift/object-server 0700 swift swift -
+d /run/swift/proxy-server 0700 swift swift -

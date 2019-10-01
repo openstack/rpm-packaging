@@ -1,0 +1,14 @@
+[Unit]
+Description=OpenStack Swift Object Replicator
+After=syslog.target network.target
+
+[Service]
+Type=simple
+User=swift
+Group=swift
+WorkingDirectory=/var/lib/swift
+PrivateTmp=yes
+ExecStart=/usr/bin/swift-object-replicator /etc/swift/object-server.conf
+
+[Install]
+WantedBy=multi-user.target
