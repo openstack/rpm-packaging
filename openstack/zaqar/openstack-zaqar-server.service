@@ -1,0 +1,16 @@
+[Unit]
+Description=OpenStack Zaqar server
+After=syslog.target network.target
+After=mariadb.service postgresql.service rabbitmq-server.service
+
+[Service]
+Type=notify
+User=zaqar
+Group=zaqar
+WorkingDirectory=/var/lib/zaqar
+PrivateTmp=yes
+ExecStart=/usr/bin/zaqar-server
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

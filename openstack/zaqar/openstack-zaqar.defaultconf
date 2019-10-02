@@ -1,0 +1,3 @@
+[DEFAULT]
+log_file = /var/log/zaqar
+

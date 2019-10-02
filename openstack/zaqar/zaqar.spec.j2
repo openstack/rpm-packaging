@@ -1,0 +1,234 @@
+{% set pypi_name = 'zaqar' %}
+{% set source = fetch_source('https://tarballs.openstack.org/zaqar/zaqar-master.tar.gz') %}
+{% set upstream_version = upstream_version() %}
+{% set rpm_release = '1' %}
+%global with_doc 1
+%if 0%{?rhel} || 0%{?fedora}
+%global rdo 1
+%endif
+Name:           {{ py2name() }}
+Epoch:          {{ epoch('zaqar') }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
+Summary:        OpenStack Message Bus (Zaqar)
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+URL:            https://launchpad.net/zaqar
+Source0:        {{ source | basename }}
+Source1:        openstack-zaqar.logrotate
+Source2:        openstack-zaqar.tmpfiles
+Source3:        openstack-zaqar.README.config
+Source4:        openstack-zaqar.defaultconf
+# systemd service files
+Source5:       %{name}-server.service
+Source6:       %{name}-gc.service
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py3('jsonschema') }}
+BuildRequires:  {{ py3('oslo.cache') }}
+BuildRequires:  {{ py3('oslo.config') }}
+BuildRequires:  {{ py3('oslo.log') }}
+BuildRequires:  {{ py3('osprofiler') }}
+BuildRequires:  {{ py3('pbr') }}
+Requires:       python3-{{ pypi_name }} = %{epoch}:%{version}-%{release}
+BuildArch:      noarch
+%if 0%{?suse_version}
+BuildRequires:  systemd-rpm-macros
+Requires:       pwdutils
+%{?systemd_requires}
+%else
+BuildRequires:  systemd
+Requires(post): systemd
+Requires(postun): systemd
+Requires(pre):  shadow-utils
+Requires(preun): systemd
+%endif
+
+%description
+Zaqar is an OpenStack project that provides Identity, Token, Catalog
+and Policy services for use specifically by projects in the OpenStack
+family.
+
+%package -n python3-{{ pypi_name }}
+Summary:        OpenStack Message Bus (Zaqar) - Python module
+Group:          Development/Languages/Python
+Requires:       {{ py3('Babel') }}
+Requires:       {{ py3('WebOb') }}
+Requires:       {{ py3('alembic') }}
+Requires:       {{ py3('falcon') }}
+Requires:       {{ py3('futurist') }}
+Requires:       {{ py3('iso8601') }}
+Requires:       {{ py3('jsonschema') }}
+Requires:       {{ py3('python-keystoneclient') }}
+Requires:       {{ py3('keystonemiddleware') }}
+Requires:       {{ py3('msgpack-python') }}
+Requires:       {{ py3('netaddr') }}
+Requires:       {{ py3('oslo.cache') }}
+Requires:       {{ py3('oslo.config') }}
+Requires:       {{ py3('oslo.context') }}
+Requires:       {{ py3('oslo.db') }}
+Requires:       {{ py3('oslo.i18n') }}
+Requires:       {{ py3('oslo.log') }}
+Requires:       {{ py3('oslo.messaging') }}
+Requires:       {{ py3('oslo.policy') }}
+Requires:       {{ py3('oslo.reports') }}
+Requires:       {{ py3('oslo.serialization') }}
+Requires:       {{ py3('oslo.upgradecheck') }}
+Requires:       {{ py3('oslo.utils') }}
+Requires:       {{ py3('pymongo') }}
+Requires:       {{ py3('python-memcached') }}
+Requires:       {{ py3('requests') }}
+Requires:       {{ py3('six') }}
+Requires:       {{ py3('stevedore') }}
+
+%description -n python3-zaqar
+Zaqar is an OpenStack project that provides Identity, Token, Catalog
+and Policy services for use specifically by projects in the OpenStack
+family.
+
+This package contains the core Python module of OpenStack Zaqar.
+
+%if 0%{?with_doc}
+%package doc
+Summary:        Openstack Message Bus (Zaqar) - Documentation
+Group:          Documentation/HTML
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
+BuildRequires:  {{ py3('sphinxcontrib-apidoc') }}
+
+%description doc
+Zaqar is an OpenStack project that provides Identity, Token, Catalog
+and Policy services for use specifically by projects in the OpenStack
+family.
+
+This package contains the documentation.
+%endif
+
+%package gc
+Summary:        OpenStack Message Bus (Zaqar) - GC
+Group:          System/Management
+Requires:       %{name} = %{epoch}:%{version}-%{release}
+
+%description gc
+This package contains the OpenStack Zaqar GC Service.
+
+%package server
+Summary:        OpenStack Message Bus (Zaqar) - Server
+Group:          System/Management
+Requires:       %{name} = %{epoch}:%{version}-%{release}
+
+%description server
+This package contains the OpenStack Zaqar Server Service.
+
+%prep
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
+%py_req_cleanup
+
+%build
+%{py3_build}
+
+# documentation
+%if 0%{?with_doc}
+PYTHONPATH=. PBR_VERSION={{ upstream_version }} %sphinx_build -b html doc/source doc/build/html
+# remove the Sphinx-build leftovers
+rm -rf doc/build/html/.{doctrees,buildinfo}
+%endif
+
+%install
+%{py3_install}
+
+### directories
+install -d -m 750 %{buildroot}%{_localstatedir}/{lib,log}/zaqar
+install -d -m 755 %{buildroot}%{_sysconfdir}/zaqar
+install -d -m 755 %{buildroot}%{_sysconfdir}/zaqar/zaqar.conf.d/
+
+install -D -m 644 %{SOURCE2} %{buildroot}/%_tmpfilesdir/%{name}.conf
+
+# sample config
+PYTHONPATH=. oslo-config-generator --config-file etc/oslo-config-generator/zaqar.conf --output-file %{buildroot}%{_sysconfdir}/zaqar/zaqar.conf
+
+### configuration files
+install -p -D -m 640 %{SOURCE4} %{buildroot}%{_sysconfdir}/zaqar/zaqar.conf.d/010-zaqar.conf
+install -m 644 etc/logging.conf.sample %{buildroot}%{_sysconfdir}/zaqar/logging.conf
+install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/openstack-zaqar
+install -p -D -m 640 %{SOURCE3} %{buildroot}%{_sysconfdir}/zaqar/README.config
+
+# Install systemd unit services
+install -p -D -m 444 %{SOURCE5} %{buildroot}%{_unitdir}/%{name}-server.service
+install -p -D -m 444 %{SOURCE6} %{buildroot}%{_unitdir}/%{name}-gc.service
+
+# install symlinks on SUSE
+%if 0%{?suse_version}
+mkdir -p %{buildroot}%{_sbindir} %{buildroot}%{_unitdir}
+ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-server
+ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-gc
+%endif
+
+%pre
+%openstack_pre_user_group_create zaqar zaqar /sbin/nologin
+
+%post
+%tmpfiles_create %{_tmpfilesdir}/zaqar.conf
+
+%post gc
+%systemd_post %{name}-gc.service
+
+%preun gc
+%systemd_preun %{name}-gc.service
+
+%postun gc
+%systemd_postun_with_restart %{name}-gc.service
+
+%post server
+%systemd_post %{name}-server.service
+
+%preun server
+%systemd_preun %{name}-server.service
+
+%postun server
+%systemd_postun_with_restart %{name}-server.service
+
+%files
+%doc README.rst
+%license LICENSE
+%_tmpfilesdir/%{name}.conf
+%dir %attr(0750, zaqar, zaqar) %{_localstatedir}/lib/zaqar
+%dir %attr(0750, zaqar, zaqar) %{_localstatedir}/log/zaqar
+%dir %attr(0750, root, zaqar) %{_sysconfdir}/zaqar
+%dir %attr(0750, root, zaqar) %{_sysconfdir}/zaqar/zaqar.conf.d/
+%config(noreplace) %attr(0640, root, zaqar) %{_sysconfdir}/zaqar/zaqar.conf
+%config(noreplace) %attr(0640, root, zaqar) %{_sysconfdir}/zaqar/logging.conf
+%config(noreplace) %attr(0640, root, zaqar) %{_sysconfdir}/zaqar/zaqar.conf.d/010-zaqar.conf
+%config(noreplace) %{_sysconfdir}/logrotate.d/%{name}
+%{_sysconfdir}/zaqar/README.config
+%{_bindir}/zaqar-status
+%{_bindir}/zaqar-sql-db-manage
+%{_bindir}/zaqar-bench
+
+%files -n python3-zaqar
+%license LICENSE
+%{python3_sitelib}/zaqar
+%{python3_sitelib}/zaqar-*.egg-info
+
+%if 0%{?with_doc}
+%files doc
+%license LICENSE
+%doc doc/build/html
+%endif
+
+%files gc
+%license LICENSE
+%{_bindir}/zaqar-gc
+%{_unitdir}/%{name}-gc.service
+%if 0%{?suse_version}
+%{_sbindir}/rc%{name}-gc
+%endif
+
+%files server
+%license LICENSE
+%{_unitdir}/%{name}-server.service
+%if 0%{?suse_version}
+%{_sbindir}/rc%{name}-server
+%endif
+%{_bindir}/zaqar-server
+
+%changelog
