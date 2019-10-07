@@ -1,34 +1,41 @@
-Name:           {{ py2name('python-scciclient') }}
-Version:        0.8.1
-Release:        0
+{% set pypi_name = 'python-scciclient' %}
+{% set upstream_version = upstream_version('0.8.1') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
 Summary:        Python API and CLI for OpenStack Scci
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://launchpad.net/%{name}
-Source0:        https://files.pythonhosted.org/packages/source/p/%{name}/%{name}-%{version}.tar.gz
+Source0:        {{ source }}
+# https://review.opendev.org/687023
+Patch0:         0001-Switch-from-oslosphinx-to-openstackdocstheme.patch
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('fixtures') }}
-BuildRequires:  {{ py2pkg('mock') }}
-BuildRequires:  {{ py2pkg('oslo.serialization') }}
-BuildRequires:  {{ py2pkg('oslo.utils') }}
-BuildRequires:  {{ py2pkg('oslotest') }}
-BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('pyghmi') }}
-BuildRequires:  {{ py2pkg('pysnmp') }}
-BuildRequires:  {{ py2pkg('python-subunit') }}
-BuildRequires:  {{ py2pkg('requests-mock') }}
-BuildRequires:  {{ py2pkg('setuptools') }}
-BuildRequires:  {{ py2pkg('stestr') }}
-BuildRequires:  {{ py2pkg('testscenarios') }}
-BuildRequires:  {{ py2pkg('testtools') }}
-Requires:       {{ py2pkg('Babel') }}
-Requires:       {{ py2pkg('oslo.serialization') }}
-Requires:       {{ py2pkg('oslo.utils') }}
-Requires:       {{ py2pkg('pbr') }}
-Requires:       {{ py2pkg('pyghmi') }}
-Requires:       {{ py2pkg('pysnmp') }}
-Requires:       {{ py2pkg('requests') }}
-Requires:       {{ py2pkg('six') }}
+BuildRequires:  {{ py3('fixtures') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('oslo.serialization') }}
+BuildRequires:  {{ py3('oslo.utils') }}
+BuildRequires:  {{ py3('oslotest') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('pyghmi') }}
+BuildRequires:  {{ py3('pysnmp') }}
+BuildRequires:  {{ py3('python-subunit') }}
+BuildRequires:  {{ py3('requests-mock') }}
+BuildRequires:  {{ py3('setuptools') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('testscenarios') }}
+BuildRequires:  {{ py3('testtools') }}
+Requires:       {{ py3('Babel') }}
+Requires:       {{ py3('oslo.serialization') }}
+Requires:       {{ py3('oslo.utils') }}
+Requires:       {{ py3('pbr') }}
+Requires:       {{ py3('pyghmi') }}
+Requires:       {{ py3('pysnmp') }}
+Requires:       {{ py3('requests') }}
+Requires:       {{ py3('six') }}
 BuildArch:      noarch
 
 %description
@@ -38,8 +45,8 @@ Client library for Scci built on the Scci API. It provides a Python API
 %package doc
 Summary:        Documentation for OpenStack Scci API client libary
 Group:          Documentation/HTML
-BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
 
 %description doc
 Client library for Scci built on the Scci API. It provides a Python API
@@ -47,27 +54,27 @@ Client library for Scci built on the Scci API. It provides a Python API
 This package contains the documentation.
 
 %prep
-%autosetup -n %{name}-%{version}
+%autosetup -p1 -n %{name}-%{version}
 %py_req_cleanup
 
 %build
-%py2_build
+%py3_build
 
 # Build HTML docs and man page
-%{__python2} setup.py build_sphinx
-rm -rf html/.{doctrees,buildinfo}
+PBR_VERSION=%{version} %sphinx_build -b html doc/source doc/build/html
+rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
-%py2_install
+%py3_install
 
 %check
-%{__python2} -m stestr.cli run
+%{__python3} -m stestr.cli run
 
 %files
 %doc README.rst
 %license LICENSE
-%{python2_sitelib}/scciclient
-%{python2_sitelib}/*.egg-info
+%{python3_sitelib}/scciclient
+%{python3_sitelib}/*.egg-info
 
 %files doc
 %doc doc/build/html
