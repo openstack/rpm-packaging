@@ -20,24 +20,24 @@ Source1:        openstack-%{sname}.service
 Source3:        openstack-monasca-notification.logrotate
 BuildRequires:  fdupes
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('Jinja2') }}
-BuildRequires:  {{ py2pkg('SQLAlchemy') }}
-BuildRequires:  {{ py2pkg('keystoneauth1') }}
-BuildRequires:  {{ py2pkg('mock') }}
-BuildRequires:  {{ py2pkg('monasca-common') }}
-BuildRequires:  {{ py2pkg('monasca-statsd') }}
-BuildRequires:  {{ py2pkg('oslo.config') }}
-BuildRequires:  {{ py2pkg('oslo.log') }}
-BuildRequires:  {{ py2pkg('oslotest') }}
-BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('requests') }}
-BuildRequires:  {{ py2pkg('six') }}
-BuildRequires:  {{ py2pkg('stestr') }}
+BuildRequires:  {{ py3('Jinja2') }}
+BuildRequires:  {{ py3('SQLAlchemy') }}
+BuildRequires:  {{ py3('keystoneauth1') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('monasca-common') }}
+BuildRequires:  {{ py3('monasca-statsd') }}
+BuildRequires:  {{ py3('oslo.config') }}
+BuildRequires:  {{ py3('oslo.log') }}
+BuildRequires:  {{ py3('oslotest') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('requests') }}
+BuildRequires:  {{ py3('six') }}
+BuildRequires:  {{ py3('stestr') }}
 Requires:       logrotate
-Requires:       python-%{sname} = %{version}-%{release}
+Requires:       python3-%{sname} = %{version}-%{release}
 BuildArch:      noarch
 %if 0%{?suse_version}
-BuildRequires:  {{ py2pkg('jira') }}
+BuildRequires:  {{ py3('jira') }}
 BuildRequires:  systemd-rpm-macros
 Requires(pre):  pwdutils
 %else
@@ -55,22 +55,22 @@ parallel up to one per available Kafka partition. Zookeeper
 is used to negotiate access to the Kafka partitions
 whenever a new process joins or leaves the working set.
 
-%package -n python-%{sname}
+%package -n python3-%{sname}
 Summary:        Python core module for monasca-notification
 Group:          Development/Languages/Python
-Requires:       {{ py2pkg('Jinja2') }}
-Requires:       {{ py2pkg('PyYAML') }}
-Requires:       {{ py2pkg('SQLAlchemy') }}
-Requires:       {{ py2pkg('debtcollector') }}
-Requires:       {{ py2pkg('keystoneauth1') }}
-Requires:       {{ py2pkg('monasca-common') }}
-Requires:       {{ py2pkg('monasca-statsd') }}
-Requires:       {{ py2pkg('oslo.config') }}
-Requires:       {{ py2pkg('oslo.log') }}
-Requires:       {{ py2pkg('requests') }}
-Requires:       {{ py2pkg('six') }}
+Requires:       {{ py3('Jinja2') }}
+Requires:       {{ py3('PyYAML') }}
+Requires:       {{ py3('SQLAlchemy') }}
+Requires:       {{ py3('debtcollector') }}
+Requires:       {{ py3('keystoneauth1') }}
+Requires:       {{ py3('monasca-common') }}
+Requires:       {{ py3('monasca-statsd') }}
+Requires:       {{ py3('oslo.config') }}
+Requires:       {{ py3('oslo.log') }}
+Requires:       {{ py3('requests') }}
+Requires:       {{ py3('six') }}
 
-%description -n python-%{sname}
+%description -n python3-%{sname}
 This engine reads alarms from Kafka and then notifies the customer using
 their configured notification method.
 Multiple notification and retry engines can run in
@@ -81,11 +81,11 @@ whenever a new process joins or leaves the working set.
 This package contains the core Python module of Monasca-notification
 
 %prep
-%autosetup -n %{sname}-{{ upstream_version }}
+%autosetup -p1 -n %{sname}-{{ upstream_version }}
 %py_req_cleanup
 
 %build
-%py2_build
+%py3_build
 # NOTE: RDO currenty does not have python-jira in the CI
 %if 0%{?suse_version}
 PYTHONPATH=. oslo-config-generator \
@@ -94,7 +94,7 @@ PYTHONPATH=. oslo-config-generator \
 %endif
 
 %install
-%py2_install
+%py3_install
 
 ## usr
 install -d -m 755 %{buildroot}%{_sbindir}
@@ -117,12 +117,12 @@ install -p -D -m 644 %{SOURCE1} %{buildroot}%{_unitdir}/%{name}.service
 ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}
 %endif
 
-%fdupes %{buildroot}%{python2_sitelib}
+%fdupes %{buildroot}%{python3_sitelib}
 
 %check
 # NOTE: RDO currenty does not have python-jira in the CI
 %if 0%{?suse_version}
-%{__python2} -m stestr.cli run
+%{__python3} -m stestr.cli run
 %endif
 
 %pre
@@ -160,9 +160,9 @@ fi
 %{_sbindir}/rc%{name}
 %endif
 
-%files -n python-monasca-notification
+%files -n python3-monasca-notification
 %license LICENSE
-%{python2_sitelib}/monasca_notification
-%{python2_sitelib}/*.egg-info
+%{python3_sitelib}/monasca_notification
+%{python3_sitelib}/*.egg-info
 
 %changelog
