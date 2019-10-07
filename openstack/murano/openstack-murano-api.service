@@ -1,0 +1,17 @@
+[Unit]
+Description=OpenStack Murano API
+After=syslog.target network.target
+After=mariadb.service postgresql.service rabbitmq-server.service
+
+[Service]
+Type=notify
+User=murano
+Group=murano
+WorkingDirectory=/var/lib/murano
+PrivateTmp=yes
+ExecStartPre=-/usr/bin/murano-db-manage upgrade
+ExecStart=/usr/bin/murano-api
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

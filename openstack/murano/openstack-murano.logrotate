@@ -1,0 +1,11 @@
+/var/log/murano/*.log {
+    compress
+    rotate 15
+    size 1M
+    dateext
+    missingok
+    notifempty
+    su murano murano
+    copytruncate
+    sharedscripts
+}
