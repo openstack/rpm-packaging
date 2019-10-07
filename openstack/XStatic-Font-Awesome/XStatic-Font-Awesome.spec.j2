@@ -12,10 +12,9 @@ Group:          Development/Languages/Python
 URL:            https://opendev.org/openstack/xstatic-font-awesome/
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('setuptools', py_versions=['py2', 'py3']) }}
-Requires:       {{ py2pkg('XStatic') }}
+BuildRequires:  {{ py3('setuptools') }}
+Requires:       {{ py3('XStatic') }}
 BuildArch:      noarch
-%python_subpackages
 
 %description
 Font Awesome icons packaged for setuptools (easy_install) / pip.
@@ -25,15 +24,15 @@ Font Awesome icons packaged for setuptools (easy_install) / pip.
 %py_req_cleanup
 
 %build
-%{python_build}
+%{py3_build}
 
 %install
-%{python_install}
+%{py3_install}
 
-%files %{python_files}
+%files
 %doc README.txt
-%{python_sitelib}/xstatic
-%{python_sitelib}/XStatic_Font_Awesome-%{version}-py?.?.egg-info
-%{python_sitelib}/XStatic_Font_Awesome-%{version}-py?.?-nspkg.pth
+%{python3_sitelib}/xstatic
+%{python3_sitelib}/XStatic_Font_Awesome-%{version}-py?.?.egg-info
+%{python3_sitelib}/XStatic_Font_Awesome-%{version}-py?.?-nspkg.pth
 
 %changelog

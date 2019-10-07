@@ -12,10 +12,9 @@ Group:          Development/Languages/Python
 URL:            https://git.openstack.org/cgit/openstack/xstatic-angular-vis/
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('XStatic', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('setuptools', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py3('XStatic') }}
+BuildRequires:  {{ py3('setuptools') }}
 BuildArch:      noarch
-%python_subpackages
 
 %description
 Angular-Vis JavaScript library packaged for setuptools (easy_install) / pip.
@@ -25,14 +24,14 @@ Angular-Vis JavaScript library packaged for setuptools (easy_install) / pip.
 %py_req_cleanup
 
 %build
-%{python_build}
+%{py3_build}
 
 %install
-%{python_install}
+%{py3_install}
 
-%files %{python_files}
+%files
 %doc README.txt
-%{python_sitelib}/xstatic
-%{python_sitelib}/XStatic*
+%{python3_sitelib}/xstatic
+%{python3_sitelib}/XStatic*
 
 %changelog
