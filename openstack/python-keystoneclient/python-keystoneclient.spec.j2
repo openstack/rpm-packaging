@@ -81,8 +81,8 @@ rm -fr html/.doctrees html/.buildinfo
 %files %{python_files}
 %doc README.rst
 %license LICENSE
-%{python2_sitelib}/keystoneclient
-%{python2_sitelib}/*.egg-info
+%{python_sitelib}/keystoneclient
+%{python_sitelib}/*.egg-info
 
 %files -n python-keystoneclient-doc
 %doc doc/build/html
