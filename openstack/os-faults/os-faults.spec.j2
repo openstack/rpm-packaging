@@ -1,5 +1,5 @@
 {% set pypi_name = 'os-faults' %}
-{% set upstream_version = upstream_version('0.2.2') %}
+{% set upstream_version = upstream_version('0.2.5') %}
 {% set rpm_release = '1' %}
 
 Name:           {{ py2name() }}
@@ -10,50 +10,46 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://os-faults.readthedocs.io
 Source0:        https://files.pythonhosted.org/packages/source/o/os-faults/os_faults-%{version}.tar.gz
-BuildRequires:  {{ py2pkg('ansible', ('>=', '2.2')) }}
+BuildRequires:  {{ py3('ansible', ('>=', '2.2')) }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('PyYAML') }}
-BuildRequires:  {{ py2pkg('appdirs') }}
-# rdo only has click version 6.3-1.el7
-#BuildRequires:  {{ py2pkg('click', ('>=', '6.7')) }}
-BuildRequires:  {{ py2pkg('click') }}
-BuildRequires:  {{ py2pkg('ddt') }}
-BuildRequires:  {{ py2pkg('iso8601') }}
-BuildRequires:  {{ py2pkg('jsonschema') }}
-BuildRequires:  {{ py2pkg('libvirt-python') }}
-BuildRequires:  {{ py2pkg('mock') }}
-BuildRequires:  {{ py2pkg('oslo.concurrency') }}
-BuildRequires:  {{ py2pkg('oslo.i18n') }}
-BuildRequires:  {{ py2pkg('oslo.serialization') }}
-BuildRequires:  {{ py2pkg('oslo.utils') }}
-BuildRequires:  {{ py2pkg('oslotest') }}
-BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('pyghmi') }}
-BuildRequires:  {{ py2pkg('pytest') }}
-BuildRequires:  {{ py2pkg('python-subunit') }}
-BuildRequires:  {{ py2pkg('setuptools') }}
-BuildRequires:  {{ py2pkg('six') }}
-BuildRequires:  {{ py2pkg('stestr') }}
-BuildRequires:  {{ py2pkg('testscenarios') }}
-BuildRequires:  {{ py2pkg('testtools') }}
-Requires:       {{ py2pkg('ansible', ('>=', '2.2')) }}
-Requires:       {{ py2pkg('PyYAML') }}
-Requires:       {{ py2pkg('appdirs') }}
-# rdo only has click version 6.3-1.el7
-#Requires:  {{ py2pkg('click', ('>=', '6.7')) }}
-Requires:       {{ py2pkg('click') }}
-Requires:       {{ py2pkg('iso8601') }}
-Requires:       {{ py2pkg('jsonschema') }}
-Requires:       {{ py2pkg('oslo.concurrency') }}
-Requires:       {{ py2pkg('oslo.i18n') }}
-Requires:       {{ py2pkg('oslo.serialization') }}
-Requires:       {{ py2pkg('oslo.utils') }}
-Requires:       {{ py2pkg('pbr') }}
-Requires:       {{ py2pkg('pyghmi') }}
-Requires:       {{ py2pkg('six') }}
+BuildRequires:  {{ py3('PyYAML') }}
+BuildRequires:  {{ py3('appdirs') }}
+BuildRequires:  {{ py3('click') }}
+BuildRequires:  {{ py3('ddt') }}
+BuildRequires:  {{ py3('iso8601') }}
+BuildRequires:  {{ py3('jsonschema') }}
+BuildRequires:  {{ py3('libvirt-python') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('oslo.concurrency') }}
+BuildRequires:  {{ py3('oslo.i18n') }}
+BuildRequires:  {{ py3('oslo.serialization') }}
+BuildRequires:  {{ py3('oslo.utils') }}
+BuildRequires:  {{ py3('oslotest') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('pyghmi') }}
+BuildRequires:  {{ py3('pytest') }}
+BuildRequires:  {{ py3('python-subunit') }}
+BuildRequires:  {{ py3('setuptools') }}
+BuildRequires:  {{ py3('six') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('testscenarios') }}
+BuildRequires:  {{ py3('testtools') }}
+Requires:       {{ py3('ansible', ('>=', '2.2')) }}
+Requires:       {{ py3('PyYAML') }}
+Requires:       {{ py3('appdirs') }}
+Requires:       {{ py3('click') }}
+Requires:       {{ py3('iso8601') }}
+Requires:       {{ py3('jsonschema') }}
+Requires:       {{ py3('oslo.concurrency') }}
+Requires:       {{ py3('oslo.i18n') }}
+Requires:       {{ py3('oslo.serialization') }}
+Requires:       {{ py3('oslo.utils') }}
+Requires:       {{ py3('pbr') }}
+Requires:       {{ py3('pyghmi') }}
+Requires:       {{ py3('six') }}
 BuildArch:      noarch
 %if ! 0%{?rhel}
-Recommends:     {{ py2pkg('libvirt-python') }}
+Recommends:     {{ py3('libvirt-python') }}
 %endif
 
 %description
@@ -65,13 +61,13 @@ IPMI driver).
 %package doc
 Summary:        Documentation for OpenStack faults Library
 Group:          Documentation/HTML
-BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('openstackdocstheme') }}
-BuildRequires:  {{ py2pkg('reno') }}
-BuildRequires:  {{ py2pkg('sphinx_rtd_theme') }}
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
+BuildRequires:  {{ py3('reno') }}
+BuildRequires:  {{ py3('sphinx_rtd_theme') }}
 %if ! 0%{?rdo}
 # this package its dependency js-jquery is not available for RDO
-BuildRequires:  {{ py2pkg('sphinxcontrib-programoutput') }}
+BuildRequires:  {{ py3('sphinxcontrib-programoutput') }}
 %endif
 
 %description doc
@@ -91,26 +87,24 @@ sed -i '/sphinx.ext.autosectionlabel/d' doc/source/conf.py
 %endif
 
 %build
-%{py2_build}
-%{__python2} setup.py build_sphinx --builder=html
+%{py3_build}
+PBR_VERSION={{ upstream_version }} PYTHONPATH=. %sphinx_build -b html doc/source doc/build/html
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
-%{py2_install}
+%{py3_install}
 
 %check
-#%{__python2} setup.py test
-# the below instead of the above is to avoid pulling in requirements for coverage
 export PYTHONPATH=.
 export PATH=$PATH:%{buildroot}%{_bindir}
-py.test -vvvv --durations=10 "os_faults/tests/unit"
+py.test-3 -vvvv --durations=10 "os_faults/tests/unit"
 
 %files
 %doc README.rst ChangeLog
 %license LICENSE
 %{_bindir}/os-inject-fault
 %{_bindir}/os-faults
-%{python2_sitelib}/os_faults*
+%{python3_sitelib}/os_faults*
 
 %files doc
 %if ! 0%{?rdo}
