@@ -135,15 +135,11 @@ install -p -D -m 640 %{SOURCE4} %{buildroot}%{apache_site_dir}/{{ pypi_name }}.c
 install -D -m 755 %{SOURCE5} %{buildroot}%{_bindir}/monasca-api-wsgi.py
 
 # remove duplicates
-%fdupes %{buildroot}%{python2_sitelib}/monasca_api
+%fdupes %{buildroot}%{python3_sitelib}/monasca_api
 
 %check
 find . -type f -name *.pyc -delete
-%if 0%{?suse_version}
-OS_TEST_PATH=./monasca_api/tests PYTHONPATH=. PYTHON=python3 stestr run
-%else
-OS_TEST_PATH=./monasca_api/tests PYTHONPATH=. stestr-3 run
-%endif
+%{__python3} -m stestr.cli --test-path=./monasca_api/tests run
 
 %pre
 %openstack_pre_user_group_create monasca-api monasca /sbin/nologin
