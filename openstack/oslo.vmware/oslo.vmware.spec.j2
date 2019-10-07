@@ -89,8 +89,8 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %files %{python_files}
 %doc README.rst
 %license LICENSE
-%{python2_sitelib}/oslo_vmware
-%{python2_sitelib}/*.egg-info
+%{python_sitelib}/oslo_vmware
+%{python_sitelib}/*.egg-info
 
 %files -n {{ py2name() }}-doc
 %doc doc/build/html
