@@ -15,28 +15,28 @@ URL:            https://launchpad.net/freezer
 Source0:        {{ source|basename }}
 Source1:        openstack-freezer-api.logrotate
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('Paste') }}
-BuildRequires:  {{ py2pkg('PasteDeploy') }}
-BuildRequires:  {{ py2pkg('elasticsearch') }}
-BuildRequires:  {{ py2pkg('falcon') }}
-BuildRequires:  {{ py2pkg('fixtures') }}
-BuildRequires:  {{ py2pkg('jsonschema') }}
-BuildRequires:  {{ py2pkg('keystonemiddleware') }}
-BuildRequires:  {{ py2pkg('mock') }}
-BuildRequires:  {{ py2pkg('oslo.config') }}
-BuildRequires:  {{ py2pkg('oslo.context') }}
-BuildRequires:  {{ py2pkg('oslo.db') }}
-BuildRequires:  {{ py2pkg('oslo.i18n') }}
-BuildRequires:  {{ py2pkg('oslo.log') }}
-BuildRequires:  {{ py2pkg('oslo.middleware') }}
-BuildRequires:  {{ py2pkg('oslo.policy') }}
-BuildRequires:  {{ py2pkg('oslo.upgradecheck') }}
-BuildRequires:  {{ py2pkg('oslotest') }}
-BuildRequires:  {{ py2pkg('reno') }}
-BuildRequires:  {{ py2pkg('six') }}
-BuildRequires:  {{ py2pkg('testrepository') }}
-BuildRequires:  {{ py2pkg('testtools') }}
-Requires:       python-{{ pypi_name }} = %{version}-%{release}
+BuildRequires:  {{ py3('Paste') }}
+BuildRequires:  {{ py3('PasteDeploy') }}
+BuildRequires:  {{ py3('elasticsearch') }}
+BuildRequires:  {{ py3('falcon') }}
+BuildRequires:  {{ py3('fixtures') }}
+BuildRequires:  {{ py3('jsonschema') }}
+BuildRequires:  {{ py3('keystonemiddleware') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('oslo.config') }}
+BuildRequires:  {{ py3('oslo.context') }}
+BuildRequires:  {{ py3('oslo.db') }}
+BuildRequires:  {{ py3('oslo.i18n') }}
+BuildRequires:  {{ py3('oslo.log') }}
+BuildRequires:  {{ py3('oslo.middleware') }}
+BuildRequires:  {{ py3('oslo.policy') }}
+BuildRequires:  {{ py3('oslo.upgradecheck') }}
+BuildRequires:  {{ py3('oslotest') }}
+BuildRequires:  {{ py3('reno') }}
+BuildRequires:  {{ py3('six') }}
+BuildRequires:  {{ py3('testrepository') }}
+BuildRequires:  {{ py3('testtools') }}
+Requires:       python3-{{ pypi_name }} = %{version}-%{release}
 BuildArch:      noarch
 %if 0%{?suse_version}
 BuildRequires:  systemd-rpm-macros
@@ -56,25 +56,25 @@ API service for OpenStack Freeze: an OpenStack Swift incremental
 backup and restore automation tool for file system, MongoDB,
 MySQL. LVM snapshot and encryption support.
 
-%package -n     python-{{ pypi_name }}
+%package -n     python3-{{ pypi_name }}
 Summary:        Freezer API Python library
-Group:          Applications/System
-Requires:       {{ py2pkg('Paste') }}
-Requires:       {{ py2pkg('PasteDeploy') }}
-Requires:       {{ py2pkg('elasticsearch') }}
-Requires:       {{ py2pkg('falcon') }}
-Requires:       {{ py2pkg('jsonschema') }}
-Requires:       {{ py2pkg('keystonemiddleware') }}
-Requires:       {{ py2pkg('oslo.config') }}
-Requires:       {{ py2pkg('oslo.context') }}
-Requires:       {{ py2pkg('oslo.db') }}
-Requires:       {{ py2pkg('oslo.i18n') }}
-Requires:       {{ py2pkg('oslo.log') }}
-Requires:       {{ py2pkg('oslo.middleware') }}
-Requires:       {{ py2pkg('oslo.policy') }}
-Requires:       {{ py2pkg('six') }}
+Group:          Development/Languages/Python
+Requires:       {{ py3('Paste') }}
+Requires:       {{ py3('PasteDeploy') }}
+Requires:       {{ py3('elasticsearch') }}
+Requires:       {{ py3('falcon') }}
+Requires:       {{ py3('jsonschema') }}
+Requires:       {{ py3('keystonemiddleware') }}
+Requires:       {{ py3('oslo.config') }}
+Requires:       {{ py3('oslo.context') }}
+Requires:       {{ py3('oslo.db') }}
+Requires:       {{ py3('oslo.i18n') }}
+Requires:       {{ py3('oslo.log') }}
+Requires:       {{ py3('oslo.middleware') }}
+Requires:       {{ py3('oslo.policy') }}
+Requires:       {{ py3('six') }}
 
-%description -n python-{{ pypi_name }}
+%description -n python3-{{ pypi_name }}
 API service for OpenStack Freezer: an OpenStack Swift incremental
 backup and restore automation tool for file system, MongoDB,
 MySQL. LVM snapshot and encryption support.
@@ -85,10 +85,9 @@ This package contains the Freezer API python libraries.
 Summary:        Documentation for OpenStack Backup Service
 Group:          Documentation/HTML
 BuildRequires:  fdupes
-BuildRequires:  {{ py2pkg('Sphinx') }}
-#BuildRequires:  {{ py2pkg('openstackdocstheme') }}
-BuildRequires:  {{ py2pkg('os-api-ref') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py3('Sphinx') }}
+#BuildRequires: {{ py3('openstackdocstheme') }}
+BuildRequires:  {{ py3('os-api-ref') }}
 
 %description doc
 OpenStack Freezer API documentation.
@@ -98,12 +97,11 @@ This package contains the documentation
 %prep
 %autosetup -p1 -n {{ pypi_name }}-{{upstream_version}}
 %py_req_cleanup
-sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
-%{py2_build}
+%{py3_build}
 
-%{__python2} setup.py build_sphinx --builder=html,man
+%{__python3} setup.py build_sphinx --builder=html,man
 # remove the Sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 %fdupes doc/build/html/
@@ -116,7 +114,7 @@ PYTHONPATH=. oslopolicy-sample-generator --config-file etc/freezer/freezer-polic
     --output-file etc/freezer/freezer-api.policy.yaml
 
 %install
-%{py2_install}
+%{py3_install}
 install -d -m 755 %{buildroot}%{_sysconfdir}/freezer
 install -d -m 755 %{buildroot}%{_sysconfdir}/freezer/freezer-api.conf.d/
 install -d -m 755 %{buildroot}%{_localstatedir}/{lib,log}/freezer
@@ -126,13 +124,13 @@ install -p -D -m 640 etc/freezer/freezer-paste.ini %{buildroot}%{_sysconfdir}/fr
 install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/openstack-freezer-api
 
 # remove duplicates
-%fdupes %{buildroot}%{python2_sitelib}
+%fdupes %{buildroot}%{python3_sitelib}
 
 %pre
 %openstack_pre_user_group_create freezer freezer /sbin/nologin
 
 %check
-OS_PATH_TEST=./freezer_api/tests/unit python setup.py test
+PYTHON=%{__python3} OS_PATH_TEST=./freezer_api/tests/unit %{__python3} setup.py test
 
 %files
 %license LICENSE
@@ -150,11 +148,11 @@ OS_PATH_TEST=./freezer_api/tests/unit python setup.py test
 %dir %attr(0755, freezer, freezer) %{_localstatedir}/lib/freezer
 %dir %attr(0750, freezer, freezer) %{_localstatedir}/log/freezer
 
-%files -n python-{{ pypi_name }}
+%files -n python3-{{ pypi_name }}
 %doc README.rst
 %license LICENSE
-%{python2_sitelib}/freezer_api/
-%{python2_sitelib}/freezer_api*.egg-info
+%{python3_sitelib}/freezer_api/
+%{python3_sitelib}/freezer_api*.egg-info
 
 %files doc
 %license LICENSE
