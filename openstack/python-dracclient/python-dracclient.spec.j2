@@ -1,23 +1,28 @@
-%global sname python-dracclient
-Name:           {{ py2name('python-dracclient') }}
-Version:        3.0.0
-Release:        0
+{% set pypi_name = 'python-dracclient' %}
+{% set upstream_version = upstream_version('3.1.1') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
 Summary:        Library for managing machines with Dell iDRAC cards.
 License:        {{ license('Apache-2.0')}}
 Group:          Development/Languages/Python
 URL:            https://launchpad.net/%{sname}
-Source0:        https://files.pythonhosted.org/packages/source/p/%{sname}/%{sname}-%{version}.tar.gz
+Source0:        {{ source }}
+# https://review.opendev.org/687012
+Patch0:         0001-Switch-from-oslosphinx-to-openstackdocstheme.patch
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('coverage') }}
-BuildRequires:  {{ py2pkg('lxml') }}
-BuildRequires:  {{ py2pkg('mock') }}
-BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('requests') }}
-BuildRequires:  {{ py2pkg('requests-mock') }}
-BuildRequires:  {{ py2pkg('setuptools') }}
-Requires:       {{ py2pkg('lxml') }}
-Requires:       {{ py2pkg('requests') }}
-Requires:       {{ py2pkg('six') }}
+BuildRequires:  {{ py3('lxml') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('requests') }}
+BuildRequires:  {{ py3('requests-mock') }}
+BuildRequires:  {{ py3('setuptools') }}
+Requires:       {{ py3('lxml') }}
+Requires:       {{ py3('requests') }}
+Requires:       {{ py3('six') }}
 BuildArch:      noarch
 
 %description
@@ -26,9 +31,8 @@ Library for managing machines with Dell iDRAC cards.
 %package doc
 Summary:        Documentation for OpenStack Drac API Client
 Group:          Documentation/HTML
-BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
-BuildRequires:  {{ py2pkg('reno') }}
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
 
 %description doc
 This is a client for the OpenStack Drac API and a command-line script (drac).
@@ -36,27 +40,27 @@ Each implements 100% of the OpenStack Drac API.
 This package contains auto-generated documentation.
 
 %prep
-%autosetup -n %{sname}-%{version}
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
 
 %build
-%{py2_build}
+%{py3_build}
 
-%{__python2} setup.py build_sphinx
-# remove the sphinx-build leftovers
+PBR_VERSION=%{version} %sphinx_build -b html doc/source doc/build/html
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
-%{py2_install}
+%{py3_install}
 
 %check
-coverage run --branch --source dracclient --omit "dracclient/tests*" -m unittest discover dracclient.tests
+export PYTHONPATH=.:%{buildroot}%{python3_sitelib}
+%{__python3} -m unittest discover dracclient.tests
 
 %files
 %license LICENSE
 %doc README.rst ChangeLog
-%{python2_sitelib}/dracclient
-%{python2_sitelib}/*.egg-info
+%{python3_sitelib}/dracclient
+%{python3_sitelib}/*.egg-info
 
 %files doc
 %license LICENSE
