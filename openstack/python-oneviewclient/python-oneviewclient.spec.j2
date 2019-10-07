@@ -1,26 +1,33 @@
-Name:           {{ py2name('python-oneviewclient') }}
-Version:        2.6.6
-Release:        0
+{% set pypi_name = 'python-oneviewclient' %}
+{% set upstream_version = upstream_version('2.6.6') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
 Summary:        Python API and CLI for OpenStack Oneview
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://launchpad.net/%{name}
-Source0:        https://files.pythonhosted.org/packages/source/p/%{name}/%{name}-%{version}.tar.gz
+Source0:        {{ source }}
+# https://review.opendev.org/687019
+Patch0:         0001-Switch-from-oslosphinx-to-openstackdocstheme.patch
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('mock') }}
-BuildRequires:  {{ py2pkg('oslo.serialization') }}
-BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('python-subunit') }}
-BuildRequires:  {{ py2pkg('retrying') }}
-BuildRequires:  {{ py2pkg('setuptools') }}
-BuildRequires:  {{ py2pkg('testrepository') }}
-BuildRequires:  {{ py2pkg('testscenarios') }}
-BuildRequires:  {{ py2pkg('testtools') }}
-Requires:       {{ py2pkg('Babel') }}
-Requires:       {{ py2pkg('pbr') }}
-Requires:       {{ py2pkg('retrying') }}
-Requires:       {{ py2pkg('six') }}
-Requires:       {{ py2pkg('stevedore') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('oslo.serialization') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('python-subunit') }}
+BuildRequires:  {{ py3('retrying') }}
+BuildRequires:  {{ py3('setuptools') }}
+BuildRequires:  {{ py3('testrepository') }}
+BuildRequires:  {{ py3('testscenarios') }}
+BuildRequires:  {{ py3('testtools') }}
+Requires:       {{ py3('Babel') }}
+Requires:       {{ py3('pbr') }}
+Requires:       {{ py3('retrying') }}
+Requires:       {{ py3('six') }}
+Requires:       {{ py3('stevedore') }}
 BuildArch:      noarch
 
 %description
@@ -30,8 +37,8 @@ Client library for Oneview built on the Oneview API. It provides a Python API
 %package doc
 Summary:        Documentation for OpenStack Oneview API client libary
 Group:          Documentation/HTML
-BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
 
 %description doc
 Client library for Oneview built on the Oneview API. It provides a Python API
@@ -39,27 +46,27 @@ Client library for Oneview built on the Oneview API. It provides a Python API
 This package contains the documentation.
 
 %prep
-%autosetup -n %{name}-%{version}
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
 
 %build
-%py2_build
+%py3_build
 
 # Build HTML docs and man page
-%{__python2} setup.py build_sphinx
-rm -rf html/.{doctrees,buildinfo}
+PBR_VERSION=%{version} %sphinx_build -b html doc/source doc/build/html
+rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
-%py2_install
+%py3_install
 
 %check
-%{__python2} setup.py testr
+PYTHON=%{__python3} %{__python3} setup.py test
 
 %files
 %doc README.rst
 %license LICENSE
-%{python2_sitelib}/oneview_client
-%{python2_sitelib}/*.egg-info
+%{python3_sitelib}/oneview_client
+%{python3_sitelib}/*.egg-info
 
 %files doc
 %doc doc/build/html
