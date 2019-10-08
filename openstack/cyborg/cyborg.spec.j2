@@ -14,29 +14,28 @@ URL:            https://launchpad.net/cyborg
 Source0:        {{ source|basename }}
 BuildRequires:  fdupes
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('Tempest') }}
-BuildRequires:  {{ py2pkg('coverage') }}
-BuildRequires:  {{ py2pkg('ddt') }}
-BuildRequires:  {{ py2pkg('eventlet') }}
-BuildRequires:  {{ py2pkg('fixtures') }}
-BuildRequires:  {{ py2pkg('jsonpatch') }}
-BuildRequires:  {{ py2pkg('WSME', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('keystoneauth1', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('keystonemiddleware', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.config', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.context', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.db', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.i18n', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.log', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.policy', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.versionedobjects', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslosphinx', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('pecan', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('psutil', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('six', py_versions=['py2', 'py3']) }}
-Requires:       python-{{ pypi_name }} = %{version}-%{release}
+BuildRequires:  {{ py2pkg('tempest') }}
+BuildRequires:  {{ py3('WSME') }}
+BuildRequires:  {{ py3('ddt') }}
+BuildRequires:  {{ py3('eventlet') }}
+BuildRequires:  {{ py3('fixtures') }}
+BuildRequires:  {{ py3('jsonpatch') }}
+BuildRequires:  {{ py3('keystoneauth1') }}
+BuildRequires:  {{ py3('keystonemiddleware') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('oslo.config') }}
+BuildRequires:  {{ py3('oslo.context') }}
+BuildRequires:  {{ py3('oslo.db') }}
+BuildRequires:  {{ py3('oslo.i18n') }}
+BuildRequires:  {{ py3('oslo.log') }}
+BuildRequires:  {{ py3('oslo.policy') }}
+BuildRequires:  {{ py3('oslo.versionedobjects') }}
+BuildRequires:  {{ py3('oslosphinx') }}
+BuildRequires:  {{ py3('oslotest') }}
+BuildRequires:  {{ py3('pecan') }}
+BuildRequires:  {{ py3('psutil') }}
+BuildRequires:  {{ py3('six') }}
+Requires:       python3-{{ pypi_name }} = %{version}-%{release}
 BuildArch:      noarch
 %if 0%{?suse_version}
 BuildRequires:  systemd-rpm-macros
@@ -55,40 +54,40 @@ Requires(preun): systemd
 Cyborg (previously known as Nomad) is an OpenStack project that aims to
 provide a general purpose management framework for acceleration
 resources (i.e. various types of accelerators such as GPU, FPGA, ASIC,
-NP, SoCs, NVMe/NOF SSDs, ODP, DPDK/SPDK and so on). 
+NP, SoCs, NVMe/NOF SSDs, ODP, DPDK/SPDK and so on).
 
-%package -n     python-{{ pypi_name }}
+%package -n     python3-{{ pypi_name }}
 Summary:        Cyborg Python library
 Group:          Applications/System
-Requires:       {{ py2pkg('SQLAlchemy') }}
-Requires:       {{ py2pkg('WSME') }}
-Requires:       {{ py2pkg('alembic') }}
-Requires:       {{ py2pkg('eventlet') }}
-Requires:       {{ py2pkg('jsonpatch') }}
-Requires:       {{ py2pkg('keystoneauth1') }}
-Requires:       {{ py2pkg('keystonemiddleware') }}
-Requires:       {{ py2pkg('oslo.concurrency') }}
-Requires:       {{ py2pkg('oslo.config')}}
-Requires:       {{ py2pkg('oslo.context') }}
-Requires:       {{ py2pkg('oslo.db') }}
-Requires:       {{ py2pkg('oslo.i18n') }}
-Requires:       {{ py2pkg('oslo.log') }}
-Requires:       {{ py2pkg('oslo.messaging') }}
-Requires:       {{ py2pkg('oslo.policy') }}
-Requires:       {{ py2pkg('oslo.service')}}
-Requires:       {{ py2pkg('oslo.utils') }}
-Requires:       {{ py2pkg('oslo.versionedobjects') }}
-Requires:       {{ py2pkg('pbr') }}
-Requires:       {{ py2pkg('pecan') }}
-Requires:       {{ py2pkg('psutil') }}
-Requires:       {{ py2pkg('six') }}
-Requires:       {{ py2pkg('stevedore') }}
+Requires:       {{ py3('SQLAlchemy') }}
+Requires:       {{ py3('WSME') }}
+Requires:       {{ py3('alembic') }}
+Requires:       {{ py3('eventlet') }}
+Requires:       {{ py3('jsonpatch') }}
+Requires:       {{ py3('keystoneauth1') }}
+Requires:       {{ py3('keystonemiddleware') }}
+Requires:       {{ py3('oslo.concurrency') }}
+Requires:       {{ py3('oslo.config')}}
+Requires:       {{ py3('oslo.context') }}
+Requires:       {{ py3('oslo.db') }}
+Requires:       {{ py3('oslo.i18n') }}
+Requires:       {{ py3('oslo.log') }}
+Requires:       {{ py3('oslo.messaging') }}
+Requires:       {{ py3('oslo.policy') }}
+Requires:       {{ py3('oslo.service')}}
+Requires:       {{ py3('oslo.utils') }}
+Requires:       {{ py3('oslo.versionedobjects') }}
+Requires:       {{ py3('pbr') }}
+Requires:       {{ py3('pecan') }}
+Requires:       {{ py3('psutil') }}
+Requires:       {{ py3('six') }}
+Requires:       {{ py3('stevedore') }}
 
-%description -n python-{{ pypi_name }}
+%description -n python3-{{ pypi_name }}
 Cyborg (previously known as Nomad) is an OpenStack project that aims to
 provide a general purpose management framework for acceleration
 resources (i.e. various types of accelerators such as GPU, FPGA, ASIC,
-NP, SoCs, NVMe/NOF SSDs, ODP, DPDK/SPDK and so on). 
+NP, SoCs, NVMe/NOF SSDs, ODP, DPDK/SPDK and so on).
 
 This package contains the Cyborg python libraries.
 
@@ -96,13 +95,12 @@ This package contains the Cyborg python libraries.
 Summary:        Documentation for OpenStack Backup Service
 Group:          Documentation/HTML
 BuildRequires:  fdupes
-BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('openstackdocstheme') }}
-BuildRequires:  {{ py2pkg('os-api-ref') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
-BuildRequires:  {{ py2pkg('sphinx-feature-classification') }}
-BuildRequires:  {{ py2pkg('sphinxcontrib-pecanwsme ') }}
-BuildRequires:  {{ py2pkg('sphinxcontrib-seqdiag ') }}
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
+BuildRequires:  {{ py3('os-api-ref') }}
+BuildRequires:  {{ py3('sphinx-feature-classification') }}
+BuildRequires:  {{ py3('sphinxcontrib-pecanwsme') }}
+BuildRequires:  {{ py3('sphinxcontrib-seqdiag') }}
 
 %description doc
 OpenStack Cyborg documentation.
@@ -112,13 +110,12 @@ This package contains the documentation
 %prep
 %autosetup -p1 -n openstack-{{ pypi_name }}-{{upstream_version}}
 %py_req_cleanup
-sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
-%{py2_build}
+%{py3_build}
 
-PBR_VERSION={{ upstream_version }} sphinx-build -b html doc/source doc/build/html
-PBR_VERSION={{ upstream_version }} sphinx-build -b man doc/source doc/build/man
+PBR_VERSION={{ upstream_version }} %sphinx_build -b html doc/source doc/build/html
+PBR_VERSION={{ upstream_version }} %sphinx_build -b man doc/source doc/build/man
 rm -r doc/build/html/.{doctrees,buildinfo}
 
 # config file generation
@@ -128,13 +125,16 @@ PYTHONPATH=. oslopolicy-sample-generator --config-file tools/config/cyborg-polic
     --output-file etc/cyborg/policy.json.sample
 
 %install
-CFLAGS="%{optflags}" %{__python2} %{py_setup} %{?py_setup_args} install -O1 --skip-build --root %{buildroot} --install-data="/"
+%{py3_install}
 install -d -m 755 %{buildroot}%{_localstatedir}/log/cyborg
+install -d -m 755 %{buildroot}%{_sysconfdir}/cyborg
+
+mv %{buildroot}%{_prefix}%{_sysconfdir}/cyborg/*  %{buildroot}%{_sysconfdir}/cyborg/
 install -p -D -m 640 etc/cyborg/cyborg.conf.sample %{buildroot}%{_sysconfdir}/cyborg/cyborg.conf
 install -p -D -m 640 etc/cyborg/policy.json.sample %{buildroot}%{_sysconfdir}/cyborg/policy.json
 
 # remove duplicates
-%fdupes %{buildroot}%{python2_sitelib}
+%fdupes %{buildroot}%{python3_sitelib}
 
 %pre
 %openstack_pre_user_group_create cyborg cyborg /sbin/nologin
@@ -154,11 +154,11 @@ install -p -D -m 640 etc/cyborg/policy.json.sample %{buildroot}%{_sysconfdir}/cy
 %config(noreplace) %attr(0640, root, cyborg) %{_sysconfdir}/cyborg/policy.json
 %dir %attr(0750, cyborg, cyborg) %{_localstatedir}/log/cyborg
 
-%files -n python-{{ pypi_name }}
+%files -n python3-{{ pypi_name }}
 %doc README.rst
 %license LICENSE
-%{python2_sitelib}/cyborg/
-%{python2_sitelib}/openstack_cyborg*.egg-info
+%{python3_sitelib}/cyborg/
+%{python3_sitelib}/openstack_cyborg*.egg-info
 
 %files doc
 %license LICENSE
