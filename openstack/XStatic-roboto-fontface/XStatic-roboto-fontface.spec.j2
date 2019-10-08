@@ -12,9 +12,9 @@ Group:          Development/Languages/Python
 URL:            https://opendev.org/openstack/xstatic-roboto-fontface/
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('setuptools', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py3('XStatic') }}
+BuildRequires:  {{ py3('setuptools') }}
 BuildArch:      noarch
-%python_subpackages
 
 %description
 roboto-fontface javascript library packaged for setuptools (easy_install) / pip.
@@ -24,18 +24,15 @@ roboto-fontface javascript library packaged for setuptools (easy_install) / pip.
 %py_req_cleanup
 
 %build
-%{python_build}
+%{py3_build}
 
 %install
-%{python_install}
+%{py3_install}
 
-%files %{python_files}
+%files
 %license xstatic/pkg/roboto_fontface/data/LICENSE
 %doc README.txt
-%dir %{python_sitelib}/xstatic
-%dir %{python_sitelib}/xstatic/pkg
-%{python_sitelib}/xstatic/pkg/roboto_fontface
-%{python_sitelib}/*egg-info
-%{python_sitelib}/*pth
+%{python3_sitelib}/xstatic
+%{python3_sitelib}/XStatic*
 
 %changelog

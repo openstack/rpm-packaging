@@ -8,8 +8,8 @@ Group:          Development/Languages/Python
 URL:            https://git.openstack.org/cgit/openstack/xstatic-magic-search/
 Source0:        https://files.pythonhosted.org/packages/source/X/%{sname}/%{sname}-%{version}.tar.gz
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('setuptools') }}
-Requires:       {{ py2pkg('XStatic') }}
+BuildRequires:  {{ py3('setuptools') }}
+Requires:       {{ py3('XStatic') }}
 BuildArch:      noarch
 
 %description
@@ -26,15 +26,15 @@ chmod -x README.txt
 #Remove unneeded files type from source
 find . -name *~ -exec rm -rf {} \;
 
-%{py2_build}
+%{py3_build}
 
 %install
-%{py2_install}
+%{py3_install}
 
 %files
 %doc README.txt
-%{python2_sitelib}/xstatic
-%{python2_sitelib}/XStatic_Magic_Search-%{version}-py?.?.egg-info
-%{python2_sitelib}/XStatic_Magic_Search-%{version}-py?.?-nspkg.pth
+%{python3_sitelib}/xstatic
+%{python3_sitelib}/XStatic_Magic_Search-%{version}-py?.?.egg-info
+%{python3_sitelib}/XStatic_Magic_Search-%{version}-py?.?-nspkg.pth
 
 %changelog
