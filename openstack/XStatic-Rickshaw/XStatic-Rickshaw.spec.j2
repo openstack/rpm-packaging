@@ -4,7 +4,7 @@
 {% set source = url_pypi() %}
 
 %global sname XStatic-Rickshaw
-Name:           {{ py2name() }}
+Name:           {{ py2name(py_versions='py3') }}
 Version:        {{ py2rpmversion() }}
 Release:        {{ py2rpmrelease() }}
 Summary:        Rickshaw %{version} (XStatic packaging standard)

@@ -3,7 +3,7 @@
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
-Name:           {{ py2name() }}
+Name:           {{ py2name(py_versions='py3') }}
 Version:        {{ py2rpmversion() }}
 Release:        {{ py2rpmrelease() }}
 Summary:        Font Awesome %{version} (XStatic packaging standard)

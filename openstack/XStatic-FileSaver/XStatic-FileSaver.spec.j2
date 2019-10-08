@@ -1,6 +1,6 @@
 {% set js_name = 'FileSaver' %}
 %global sname {{ 'XStatic-' + js_name }}
-Name:           {{ py2name('XStatic-' + js_name) }}
+Name:           {{ py2name('XStatic-' + js_name, py_versions='py3') }}
 Version:        1.3.2.0
 Release:        0
 Summary:        {{ js_name }} %{version} (XStatic packaging standard)

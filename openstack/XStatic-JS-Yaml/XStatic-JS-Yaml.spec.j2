@@ -1,6 +1,6 @@
 {% set js_name = 'JS-Yaml' %}
 %global sname {{ 'XStatic-' + js_name }}
-Name:           {{ py2name('XStatic-' + js_name) }}
+Name:           {{ py2name('XStatic-' + js_name, py_versions='py3') }}
 Version:        3.8.1.0
 Release:        0
 Summary:        {{ js_name }} %{version} (XStatic packaging standard)
