@@ -67,7 +67,7 @@ Requires:       {{ py2pkg('ipaddress') }}
 BuildRequires:  {{ py2pkg('prometheus_client', py_versions=['py2', 'py3']) }}
 Requires(post): update-alternatives
 Requires(postun): update-alternatives
-%if 0%{?sle_version} >= 150000
+%if 0%{?sle_version} >= 150000 || 0%{?suse_version} > 1500
 Requires:       mkisofs
 %else
 Requires:       genisoimage
