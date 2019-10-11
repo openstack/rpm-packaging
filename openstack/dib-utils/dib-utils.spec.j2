@@ -1,15 +1,18 @@
-%global sname dib-utils
-Name:           {{ py2name('dib-utils') }}
-Version:        0.0.11
-Release:        0
+{% set pypi_name = 'dib-utils' %}
+{% set upstream_version = upstream_version('0.0.11') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
+Name:           {{ py2name('dib-utils', py_versions='py3') }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
 Summary:        Pieces of diskimage-builder that are useful standalone
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
-URL:            https://launchpad.net/%{sname}
-Source0:        https://tarballs.openstack.org//%{sname}/%{sname}-%{version}.tar.gz
+URL:            https://launchpad.net/{{ pypi_name }}
+Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('d2to1') }}
-BuildRequires:  {{ py2pkg('pbr') }}
+BuildRequires:  {{ py3('pbr') }}
 BuildArch:      noarch
 
 %description
@@ -18,15 +21,14 @@ This allows them to be used without pulling in all of
 diskimage-builder and its dependencies.
 
 %prep
-%autosetup -n %{sname}-%{version}
+%autosetup -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
-sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
-%py2_build
+%{py3_build}
 
 %install
-%py2_install
+%{py3_install}
 
 %check
 tests/run_tests.sh
@@ -35,6 +37,6 @@ tests/run_tests.sh
 %license LICENSE
 %doc README.md
 %{_bindir}/dib-run-parts
-%{python2_sitelib}/*.egg-info
+%{python3_sitelib}/*.egg-info
 
 %changelog
