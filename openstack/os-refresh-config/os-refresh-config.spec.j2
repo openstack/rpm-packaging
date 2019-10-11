@@ -1,54 +1,60 @@
-%global sname os-refresh-config
-Name:           {{ py2name('os-refresh-config') }}
-Version:        10.3.0
-Release:        0
+{% set pypi_name = 'os-refresh-config' %}
+{% set upstream_version = upstream_version('10.3.0') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
+Name:           {{ py2name('os-refresh-config', py_versions='py3') }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
 Summary:        Refresh system configuration
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
-URL:            https://launchpad.net/%{sname}
-Source0:        https://files.pythonhosted.org/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
+URL:            https://launchpad.net/{{ pypi_name }}
+Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('dib-utils') }}
-BuildRequires:  {{ py2pkg('fixtures') }}
-BuildRequires:  {{ py2pkg('mock') }}
-BuildRequires:  {{ py2pkg('pbr') }}
-BuildRequires:  {{ py2pkg('psutil') }}
-BuildRequires:  {{ py2pkg('setuptools') }}
-BuildRequires:  {{ py2pkg('stestr') }}
-BuildRequires:  {{ py2pkg('testscenarios') }}
-BuildRequires:  {{ py2pkg('testtools') }}
-Requires:       {{ py2pkg('dib-utils') }}
-Requires:       {{ py2pkg('pbr') }}
-Requires:       {{ py2pkg('psutil') }}
+BuildRequires:  {{ py3('dib-utils') }}
+BuildRequires:  {{ py3('fixtures') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('psutil') }}
+BuildRequires:  {{ py3('setuptools') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('testscenarios') }}
+BuildRequires:  {{ py3('testtools') }}
+Requires:       {{ py3('dib-utils') }}
+Requires:       {{ py3('pbr') }}
+Requires:       {{ py3('psutil') }}
 BuildArch:      noarch
 
 %description
 Tool to refresh openstack config changes to service.
 
 %prep
-%autosetup -n %{sname}-%{version}
+%autosetup -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
-sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
-%py2_build
+%{py3_build}
 
 %install
-%py2_install
+%{py3_install}
 install -d -m 755 %{buildroot}%{_libexecdir}/os-refresh-config/pre-configure.d
 install -d -m 755 %{buildroot}%{_libexecdir}/os-refresh-config/configure.d
 install -d -m 755 %{buildroot}%{_libexecdir}/os-refresh-config/migration.d
 install -d -m 755 %{buildroot}%{_libexecdir}/os-refresh-config/post-configure.d
 
 %check
-%{__python2} -m stestr.cli run
+# NOTE(jpena): os_refresh_config.py has a wrong shebang, and it is called
+# directly by the tests.
+sed -i 's/#!\/usr\/bin\/env.*/#!\/usr\/bin\/python3/' os_refresh_config/os_refresh_config.py
+python3 -m stestr.cli run
 
 %files
 %license LICENSE
 %doc README.rst
 %{_bindir}/os-refresh-config
-%{python2_sitelib}/os_refresh_config
-%{python2_sitelib}/*.egg-info
+%{python3_sitelib}/os_refresh_config
+%{python3_sitelib}/*.egg-info
 %{_libexecdir}/os-refresh-config
 
 %changelog
