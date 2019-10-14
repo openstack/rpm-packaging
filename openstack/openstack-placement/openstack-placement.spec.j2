@@ -39,9 +39,14 @@ Requires:       logrotate
 Requires:       python3-openstack-placement = %{version}-%{release}
 BuildArch:      noarch
 %if 0%{?suse_version}
+BuildRequires:  systemd-rpm-macros
 Requires(pre):  pwdutils
 %else
+BuildRequires:  systemd
+Requires(post): systemd
+Requires(postun): systemd
 Requires(pre):  shadow-utils
+Requires(preun): systemd
 %endif
 
 %description
@@ -98,6 +103,13 @@ Summary:        OpenStack Compute (Placement) - API
 Group:          System/Management
 Requires:       %{name} = %{version}
 Requires(pre):  %{name} = %{version}
+%if 0%{?suse_version}
+BuildRequires:  apache2-mod_wsgi-python3
+Requires:       apache2-mod_wsgi-python3
+%else
+BuildRequires:  python3-mod_wsgi
+Requires:       python3-mod_wsgi
+%endif
 
 %description api
 This package contains the OpenStack Placement API.
@@ -130,14 +142,18 @@ install -d -m 750 %{buildroot}%{_localstatedir}/log/placement
 install -d -m 700 %{buildroot}%{_rundir}/placement
 install -d -m 700 %{buildroot}%{_localstatedir}/cache/placement
 install -D -m 644 %{SOURCE4} %{buildroot}/%_tmpfilesdir/%name.conf
+%if 0%{?suse_version}
 install -d -m 755 %{buildroot}/srv/www/openstack-placement-api
-install -d %{buildroot}%{_sysconfdir}/apache2/vhosts.d
+%endif
+install -d %{buildroot}%apache_site_dir
 
 # apache vhost sample configs
-install -p -D -m 644 %{SOURCE3} %{buildroot}%{_sysconfdir}/apache2/vhosts.d/
+install -p -D -m 644 %{SOURCE3} %{buildroot}%apache_site_dir
 
 # WSGI
+%if 0%{?suse_version}
 install -p -D -m 644 %{buildroot}/%{_bindir}/placement-api %{buildroot}/srv/www/openstack-placement-api/app.wsgi
+%endif
 
 ### configuration files
 install -d -m 755 %{buildroot}%{_sysconfdir}/placement/
@@ -166,18 +182,14 @@ PYTHONPATH=. python3 -m stestr.cli --test-path placement/tests/unit run
 %post
 %tmpfiles_create %{_tmpfilesdir}/%{name}.conf
 
-%pre api
-%service_add_pre openstack-placement-api.service
-
 %post api
-%service_add_post openstack-placement-api.service
+%systemd_post openstack-placement-api.service
 
 %preun api
-%service_del_preun openstack-placement-api.service
+%systemd_preun openstack-placement-api.service
 
 %postun api
-%restart_on_update openstack-placement-api.service
-%service_del_postun openstack-placement-api.service
+%systemd_postun_with_restart openstack-placement-api.service
 
 %files
 %license LICENSE
@@ -211,11 +223,10 @@ PYTHONPATH=. python3 -m stestr.cli --test-path placement/tests/unit run
 %files api
 %license LICENSE
 %{_bindir}/placement-api
-%{_sysconfdir}/apache2/
-%{_sysconfdir}/apache2/vhosts.d/
-%{_sysconfdir}/apache2/vhosts.d/openstack-placement-api.conf.sample
+%{apache_site_dir}/openstack-placement-api.conf.sample
+%if 0%{?suse_version}
 /srv/www/
 /srv/www/openstack-placement-api/
-##/srv/www/openstack-placement-api/app.wsgi
+%endif
 
 %changelog
