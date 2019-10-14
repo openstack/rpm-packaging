@@ -3,13 +3,13 @@
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
-Name:           {{ py2name() }}
+Name:           {{ py2name('os-apply-config', py_versions='py3') }}
 Version:        {{ py2rpmversion() }}
 Release:        {{ py2rpmrelease() }}
 Summary:        OpenStack os-apply-config Configuration Library
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
-URL:            https://launchpad.net/%{sname}
+URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py3('fixtures') }}
