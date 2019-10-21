@@ -1,13 +1,12 @@
 %global sname keystonemiddleware
 Name:           {{ py2name('keystonemiddleware') }}
-Version:        5.2.0
+Version:        5.2.1
 Release:        0
 Summary:        Middleware for OpenStack Identity
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://launchpad.net/%{sname}
 Source0:        https://files.pythonhosted.org/packages/source/k/%{sname}/%{sname}-%{version}.tar.gz
-Patch0:         0001-Skip-the-services-with-no-endpoints-when-parsing-ser.patch
 BuildRequires:  openssl
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('WebOb', py_versions=['py2', 'py3']) }}
