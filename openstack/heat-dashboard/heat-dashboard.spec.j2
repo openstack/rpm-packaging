@@ -16,6 +16,7 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source|basename }}
+Patch0:         0001-Use-Horizon-project-template-for-django-jobs.patch
 BuildRequires:  fdupes
 BuildRequires:  {{ py3('horizon') }}
 BuildRequires:  openstack-macros
