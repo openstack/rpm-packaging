@@ -11,6 +11,8 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
+# https://review.opendev.org/692323
+Patch0:         0001-Increase-test-timeout-for-2-tests-in-TestImageProxy-.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('PyYAML', py_versions=['py2', 'py3']) }}
