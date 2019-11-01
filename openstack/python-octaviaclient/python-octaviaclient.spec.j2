@@ -1,5 +1,5 @@
 {% set pypi_name = 'python-octaviaclient' %}
-{% set upstream_version = upstream_version('1.10.0') %}
+{% set upstream_version = upstream_version('1.11.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -50,6 +50,7 @@ Group:          Documentation/HTML
 BuildRequires:  {{ py3('Sphinx') }}
 BuildRequires:  {{ py3('openstackdocstheme') }}
 BuildRequires:  {{ py3('reno') }}
+BuildRequires:  {{ py3('sphinxcontrib-svg2pdfconverter') }}
 
 %description -n python-octaviaclient-doc
 The Python Octavia Client (python-octaviaclient) is a command-line client for
