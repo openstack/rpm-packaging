@@ -1,0 +1,44 @@
+commit 3120855d4da209a59ac6069b509b4d2bd6867c2b
+Author: John L. Villalovos <john.l.villalovos@intel.com>
+Date:   Mon Jul 24 17:14:58 2017 -0700
+Source: stable/newton cherry-pick of https://review.opendev.org/#/c/554053/
+
+    Prevent deprecation error messages from pkg_resources
+    
+    Currently pkg_resources is creating this warning message:
+    
+        RuntimeWarning: You have iterated over the result of
+        pkg_resources.parse_version. This is a legacy behavior which is
+        inconsistent with the new version class introduced in setuptools
+        8.0.  In most cases, conversion to a tuple is unnecessary. For
+        comparison of versions, sort the Version instances directly. If
+        you have another use case requiring the tuple, please file a bug
+        with the setuptools project describing that need.
+    
+    Get the major_version directly from the version string passed in
+    instead so that the warning message is not raised.
+    
+    Closes-Bug: #1706394
+    Change-Id: I663ed579c27e48a34fdd9565037110a43e5b5587
+    (cherry picked from commit 47b22208eaa6be2c0352514a66926dd2baeaa025)
+    (cherry picked from commit 229a1690bbfe554e84e63bff9e7e3ce3bef1126f)
+
+diff --git a/oslo_utils/versionutils.py b/oslo_utils/versionutils.py
+index 09953ac8fb97..311965d21606 100644
+--- a/oslo_utils/versionutils.py
++++ b/oslo_utils/versionutils.py
+@@ -42,8 +42,12 @@ def is_compatible(requested_version, current_version, same_major=True):
+     requested_parts = pkg_resources.parse_version(requested_version)
+     current_parts = pkg_resources.parse_version(current_version)
+ 
+-    if same_major and (requested_parts[0] != current_parts[0]):
+-        return False
++    if same_major:
++        # NOTE(jlvillal) pkg_resources issues a warning if we try to access
++        # portions of the version, for example requested_parts[0] will issue a
++        # warning message. So get the major_version from the string instead.
++        if requested_version.split('.')[0] != current_version.split('.')[0]:
++            return False
+ 
+     return current_parts >= requested_parts
+ 
