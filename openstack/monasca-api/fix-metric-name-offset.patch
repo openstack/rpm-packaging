@@ -1,0 +1,43 @@
+commit 2ad973dbc5a32105328c8b543bdae72d22aaf948
+Author: Johannes Grassler <johannes.grassler@suse.com>
+Date:   Mon Nov 18 17:54:36 2019 +0100
+
+    tempest: fix metric names
+    
+    In Tempest 16.0.0 (used for OpenStack Ocata) and greater, the
+    
+      tempest.lib.comm.utils.data_utils.rand_name()
+    
+    function prepends randomly generated names with the string
+    "tempest-". Since SUSE OpenStack Cloud 7 is stable/newton
+    based and ships with Tempest 12.2.1. It draws its Monasca
+    packages from stable/ocata, though. Consequently, metrics are
+    not named as expected and
+    
+      monasca_tempest_tests.tests.api.test_metrics_names.TestMetricsNames.test_list_metrics_names_with_offset_not_in_metrics_names_list
+    
+    will fail due to not finding metrics with the expected names.
+    This patch fixes the issue. Note that it will not be submitted
+    against upstream stable/ocata since SUSE OpenStack cloud is
+    the only distribution with this unique Newton/Ocata mix.
+    
+    Change-Id: I8f446318695ccf04c2dc4df10aff6b21b29180bd
+    Co-Authored-By: Witold Bedyk <wbedyk@suse.com>
+
+diff --git a/monasca_tempest_tests/tests/api/test_metrics_names.py b/monasca_tempest_tests/tests/api/test_metrics_names.py
+index da451d65cdc9..8b98e111d738 100644
+--- a/monasca_tempest_tests/tests/api/test_metrics_names.py
++++ b/monasca_tempest_tests/tests/api/test_metrics_names.py
+@@ -27,9 +27,9 @@ class TestMetricsNames(base.BaseMonascaTest):
+     @classmethod
+     def resource_setup(cls):
+         super(TestMetricsNames, cls).resource_setup()
+-        name1 = data_utils.rand_name('name1')
+-        name2 = data_utils.rand_name('name2')
+-        name3 = data_utils.rand_name('name3')
++        name1 = data_utils.rand_name('tempest-name1')
++        name2 = data_utils.rand_name('tempest-name2')
++        name3 = data_utils.rand_name('tempest-name3')
+         key = data_utils.rand_name()
+         key1 = data_utils.rand_name()
+         value = data_utils.rand_name()
