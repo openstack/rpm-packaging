@@ -36,9 +36,11 @@ Source4:        %{name}.polkit
 Patch1:         libvirt-aggregate-status.patch
 Patch2:         monitor-cassandra-538096.patch
 Patch3:         0001-Avoid-overwriting-sys.path-ip-command.patch
+Patch4:         0001-add-X.509-certificate-check-plugin.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('PyYAML') }}
 BuildRequires:  {{ py2pkg('devel') }}
+BuildRequires:  {{ py2pkg('freezegun') }}
 BuildRequires:  {{ py2pkg('futures') }}
 BuildRequires:  {{ py2pkg('gevent') }}
 BuildRequires:  {{ py2pkg('httplib2') }}
