@@ -16,6 +16,8 @@ Url:            https://wiki.openstack.org/wiki/Monasca
 Source0:        {{ source|basename }}
 Source1:        %{name}.conf
 Source3:        %{name}-wsgi.conf
+# https://review.opendev.org/#/c/679225/
+Patch1:         fix-tempest-region.patch
 
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('fixtures') }}
@@ -73,7 +75,7 @@ monasca-log-api is a RESTful API server receiving logs from the deployed
 log agents.
 
 %prep
-%autosetup -n %{sname}-{{ upstream_version }}
+%autosetup -p 1 -n %{sname}-{{ upstream_version }}
 %py_req_cleanup
 
 %build

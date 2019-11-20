@@ -1,0 +1,66 @@
+commit bd00975ea96b5ba86700010955c29544a93f37ab
+Author: Johannes Grassler <johannes.grassler@suse.com>
+Date:   Wed Nov 13 17:41:52 2019 +0100
+
+    Use region from tempest.conf for clients
+    
+    A few log API tempests are currently failing. This is a backport of Sumit
+    Jamgade's monasca-tempest-plugin patch for fixing the issue:
+    
+      https://review.opendev.org/#/c/679225/
+    
+    Change-Id: I79a63c81ca15e994d83758779ca5c09369ede8ae
+
+diff --git a/monasca_log_api_tempest/services/log_api_v3_client.py b/monasca_log_api_tempest/services/log_api_v3_client.py
+index df1bf06fcd58..2f4c36464238 100644
+--- a/monasca_log_api_tempest/services/log_api_v3_client.py
++++ b/monasca_log_api_tempest/services/log_api_v3_client.py
+@@ -12,9 +12,11 @@
+ # License for the specific language governing permissions and limitations
+ # under the License.
+ 
++from oslo_config import cfg
+ from oslo_serialization import jsonutils as json
+ from tempest.lib.common import rest_client
+ 
++CONF = cfg.CONF
+ 
+ class LogApiV3Client(rest_client.RestClient):
+ 
+@@ -24,7 +26,9 @@ class LogApiV3Client(rest_client.RestClient):
+         super(LogApiV3Client, self).__init__(
+             auth_provider,
+             service,
+-            region
++            region or CONF.monitoring.region or CONF.identity.region,
++            CONF.monitoring.endpoint_type or 'publicURL',
++            'log'
+         )
+ 
+     def get_version(self):
+diff --git a/monasca_log_api_tempest/services/log_search_client.py b/monasca_log_api_tempest/services/log_search_client.py
+index 962d61155602..54f041905bf6 100644
+--- a/monasca_log_api_tempest/services/log_search_client.py
++++ b/monasca_log_api_tempest/services/log_search_client.py
+@@ -13,8 +13,10 @@
+ # under the License.
+ 
+ from oslo_serialization import jsonutils as json
++from oslo_config import cfg
+ from tempest.lib.common import rest_client
+ 
++CONF = cfg.CONF
+ 
+ class LogsSearchClient(rest_client.RestClient):
+     uri_prefix = "/elasticsearch"
+@@ -23,7 +25,9 @@ class LogsSearchClient(rest_client.RestClient):
+         super(LogsSearchClient, self).__init__(
+             auth_provider,
+             service,
+-            region,
++            region or CONF.monitoring.region or CONF.identity.region,
++            CONF.monitoring.endpoint_type or 'publicURL',
++            'logs-search'
+         )
+ 
+     @staticmethod

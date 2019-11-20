@@ -27,8 +27,9 @@ Source2:        api-logging.conf
 Source3:        api-config.ini
 Source4:        api-wsgi.conf
 Source5:        api-wsgi.py
-# https://review.openstack.org/#/c/517739/
-Patch1:         0001-Fix-InfluxDB-repository-list_dimension_values-to-sup.patch
+%if 0%{?suse_version}
+Patch1:         fix-metric-name-offset.patch
+%endif
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('cassandra-driver') }}
 BuildRequires:  {{ py2pkg('coverage') }}
