@@ -14,7 +14,6 @@ WorkingDirectory=/var/lib/neutron
 PrivateTmp=true
 RemainAfterExit=yes
 ExecStart=/usr/bin/neutron-ovs-cleanup --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugin.ini --config-dir /etc/neutron/neutron.conf.d/
-ExecStop=/usr/bin/neutron-ovs-cleanup --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugin.ini --config-dir /etc/neutron/neutron.conf.d/
 
 [Install]
 WantedBy=multi-user.target
