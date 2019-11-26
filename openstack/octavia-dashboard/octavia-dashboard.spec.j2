@@ -1,0 +1,112 @@
+{% set pypi_name = 'octavia-dashboard' %}
+{% set source = fetch_source("https://tarballs.openstack.org/octavia-dashboard/octavia-dashboard-master.tar.gz") %}
+{% set upstream_version = upstream_version() %}
+{% set rpm_release = '1' %}
+
+%if 0%{?rhel} || 0%{?fedora}
+%global http_dashboard_dir %{_datarootdir}/openstack-dashboard
+%else
+%global http_dashboard_dir /srv/www/openstack-dashboard
+%endif
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
+Summary:        Horizon plugin for octavia
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+URL:            https://launchpad.net/{{ pypi_name }}
+Source0:        {{ source|basename }}
+BuildRequires:  fdupes
+BuildRequires:  {{ py3('horizon') }}
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py2pkg('octavia') }}
+BuildRequires:  {{ py3('XStatic-Angular-UUID') }}
+BuildRequires:  {{ py3('XStatic-Angular-Vis') }}
+BuildRequires:  {{ py3('XStatic-FileSaver') }}
+BuildRequires:  {{ py3('XStatic-JS-Yaml') }}
+BuildRequires:  {{ py3('XStatic-Json2yaml') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('python-octaviaclient') }}
+BuildRequires:  {{ py3('oslo.policy') }}
+BuildRequires:  {{ py3('pbr') }}
+Requires:       {{ py3('horizon-plugin-octavia-ui') }} = %{version}
+BuildArch:      noarch
+
+%description
+Octavia dashboard is a horizon plugin for Octavia.
+
+%package -n     {{ py3('horizon-plugin-octavia-ui') }}
+Summary:        Horizon plugin for octavia - Python Module
+Requires:       {{ py3('XStatic-Angular-UUID') }}
+Requires:       {{ py3('XStatic-Angular-Vis') }}
+Requires:       {{ py3('XStatic-FileSaver') }}
+Requires:       {{ py3('XStatic-JS-Yaml') }}
+Requires:       {{ py3('XStatic-Json2yaml') }}
+Requires:       {{ py3('python-octaviaclient') }}
+Requires:       {{ py3('pbr') }}
+
+%description -n {{ py3('horizon-plugin-octavia-ui') }}
+OpenStack Octavia plugin for Horizon.
+
+This package contains the core Python module of the octavia-ui.
+
+%package test
+Summary:       Octavia Management Plugin for Horizon - Testsuite
+Requires:      {{ py3('mock') }}
+Requires:      {{ py3('testtools') }}
+
+%description test
+OpenStack Octavia management plugin for Horizon.
+It is used to verify the functionality of the Octavia UI Plugin.
+
+%prep
+%autosetup -p1 -n {{ pypi_name }}-{{upstream_version}}
+%py_req_cleanup
+
+%build
+%py3_build
+
+%check
+PYTHONPATH=%{http_dashboard_dir} python3 manage.py test octavia_dashboard.tests --settings=octavia_dashboard.tests.settings
+
+%install
+%py3_install
+
+oslopolicy-sample-generator --namespace octavia --format yaml \
+    --output octavia_dashboard/conf/octavia_policy.yaml
+
+install -m 0755 -d %{buildroot}%{http_dashboard_dir}/openstack_dashboard/enabled/
+cp -a %{buildroot}%{python3_sitelib}/octavia_dashboard/enabled/_1482_project_load_balancer_panel.py* %{buildroot}%{http_dashboard_dir}/openstack_dashboard/enabled/
+install -m 0755 -d %{buildroot}%{http_dashboard_dir}/openstack_dashboard/local/local_settings.d/
+cp -a %{buildroot}%{python3_sitelib}/octavia_dashboard/local_settings.d/_1499_load_balancer_settings.py* \
+     %{buildroot}%{http_dashboard_dir}/openstack_dashboard/local/local_settings.d/
+install -m 0755 -d %{buildroot}%{http_dashboard_dir}/openstack_dashboard/conf/
+cp -a octavia_dashboard/conf/octavia_policy.yaml %{buildroot}%{http_dashboard_dir}/openstack_dashboard/conf/
+
+%fdupes %{buildroot}%{python3_sitelib}
+%fdupes %{buildroot}%{http_dashboard_dir}
+
+%post
+su %{apache_user} -s /bin/sh -c "python3 %{http_dashboard_dir}/manage.py collectstatic --noinput --clear > /dev/null"
+
+%postun
+su %{apache_user} -s /bin/sh -c "python3 %{http_dashboard_dir}/manage.py collectstatic --noinput --clear > /dev/null"
+
+%files
+%doc ChangeLog README.rst
+%license LICENSE
+%{http_dashboard_dir}/openstack_dashboard/enabled
+%config(noreplace) %{http_dashboard_dir}/openstack_dashboard/local/local_settings.d/_1499_load_balancer_settings.py*
+%config(noreplace) %{http_dashboard_dir}/openstack_dashboard/conf/octavia_policy.yaml
+
+%files -n {{ py3('horizon-plugin-octavia-ui') }}
+%doc README.rst
+%license LICENSE
+%{python3_sitelib}/octavia_dashboard/
+%{python3_sitelib}/octavia_dashboard-*.egg-info
+%exclude %{python3_sitelib}/octavia_dashboard/tests*
+
+%files test
+%{python3_sitelib}/octavia_dashboard/tests*
+
+%changelog
