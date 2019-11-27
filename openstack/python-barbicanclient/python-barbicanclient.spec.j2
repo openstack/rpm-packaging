@@ -12,26 +12,18 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('cliff', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('keystoneauth1', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.i18n', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.serialization', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.utils', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('requests', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('requests-mock', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
-Requires:       {{ py2pkg('cliff') }}
-Requires:       {{ py2pkg('keystoneauth1') }}
-Requires:       {{ py2pkg('oslo.i18n') }}
-Requires:       {{ py2pkg('oslo.serialization') }}
-Requires:       {{ py2pkg('oslo.utils') }}
-Requires:       {{ py2pkg('pbr') }}
-Requires:       {{ py2pkg('requests') }}
-Requires:       {{ py2pkg('six') }}
+BuildRequires:  {{ py3('cliff') }}
+BuildRequires:  {{ py3('keystoneauth1') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('oslo.i18n') }}
+BuildRequires:  {{ py3('oslo.serialization') }}
+BuildRequires:  {{ py3('oslo.utils') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('requests') }}
+BuildRequires:  {{ py3('requests-mock') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('testscenarios') }}
+BuildRequires:  {{ py3('testtools') }}
 BuildArch:      noarch
 %if 0%{?suse_version}
 Requires(post): update-alternatives
@@ -41,14 +33,29 @@ Requires(postun): update-alternatives
 Requires(post): chkconfig
 Requires(postun): chkconfig
 %endif
-%python_subpackages
 
 %description
 This is a client for the Barbican Key Management API. This package includes a
 Python library for accessing the API (the barbicanclient module), and a
 command-line script (barbican).
 
-This package contains the Python 2.x module.
+%package -n python3-barbicanclient
+Summary:        Client for the Barbican Key Management API
+Requires:       {{ py3('cliff') }}
+Requires:       {{ py3('keystoneauth1') }}
+Requires:       {{ py3('oslo.i18n') }}
+Requires:       {{ py3('oslo.serialization') }}
+Requires:       {{ py3('oslo.utils') }}
+Requires:       {{ py3('pbr') }}
+Requires:       {{ py3('requests') }}
+Requires:       {{ py3('six') }}
+
+%description -n python3-barbicanclient
+This is a client for the Barbican Key Management API. This package includes a
+Python library for accessing the API (the barbicanclient module), and a
+command-line script (barbican).
+
+This package contains the Python 3.x module.
 
 %package -n python-barbicanclient-doc
 Summary:        Documentation for OpenStack Key Management API Client
@@ -65,7 +72,7 @@ Openstack Key Management API
 %py_req_cleanup
 
 %build
-%{python_build}
+%{py3_build}
 
 # generate html docs
 PBR_VERSION=%{version} %sphinx_build -b html doc/source doc/build/html
@@ -73,17 +80,16 @@ PBR_VERSION=%{version} %sphinx_build -b html doc/source doc/build/html
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
-%{python_install}
-%python_clone -a %{buildroot}%{_bindir}/barbican
+%{py3_install}
 
 %check
-%python_exec -m stestr.cli run
+python3 -m stestr.cli run
 
-%files %{python_files}
+%files -n python3-barbicanclient
 %license LICENSE
-%{python_sitelib}/python_barbicanclient-%{version}-py?.?.egg-info
-%{python_sitelib}/barbicanclient
-%python_alternative %{_bindir}/barbican
+%{python3_sitelib}/python_barbicanclient-%{version}-py?.?.egg-info
+%{python3_sitelib}/barbicanclient
+%{_bindir}/barbican
 
 %files -n python-barbicanclient-doc
 %doc README.rst doc/build/html
