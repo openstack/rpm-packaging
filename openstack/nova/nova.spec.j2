@@ -20,10 +20,8 @@ Source9:        openstack-nova.modules
 Source10:       openstack-nova.modprobe
 Source11:       openstack-nova-api.service
 Source12:       openstack-nova-compute.service
-Source13:       openstack-nova-network.service
 Source14:       openstack-nova-scheduler.service
 Source15:       openstack-nova-xvpvncproxy.service
-Source16:       openstack-nova-console.service
 Source18:       openstack-nova-api-metadata.service
 Source19:       openstack-nova-conductor.service
 Source21:       openstack-nova-spicehtml5proxy.service
@@ -264,47 +262,6 @@ standard hardware configurations and seven major hypervisors.
 This package contains the Nova services providing database access for
 the compute service
 
-%package console
-Summary:        OpenStack Nova console access services
-Group:          Applications/System
-Requires:       %{name} = %{epoch}:%{version}-%{release}
-
-%description console
-OpenStack Compute (codename Nova) is open source software designed to
-provision and manage large networks of virtual machines, creating a
-redundant and scalable cloud computing platform. It gives you the
-software, control panels, and APIs required to orchestrate a cloud,
-including running instances, managing networks, and controlling access
-through users and projects. OpenStack Compute strives to be both
-hardware and hypervisor agnostic, currently supporting a variety of
-standard hardware configurations and seven major hypervisors.
-
-This package contains the Nova services providing
-console access services to Virtual Machines.
-
-%package network
-Summary:        OpenStack Nova Network control service
-Group:          Applications/System
-Requires:       %{name} = %{epoch}:%{version}-%{release}
-Requires:       bridge-utils
-Requires:       dnsmasq
-Requires:       dnsmasq-utils
-Requires:       ebtables
-Requires:       iptables
-Requires:       radvd
-
-%description network
-OpenStack Compute (codename Nova) is open source software designed to
-provision and manage large networks of virtual machines, creating a
-redundant and scalable cloud computing platform. It gives you the
-software, control panels, and APIs required to orchestrate a cloud,
-including running instances, managing networks, and controlling access
-through users and projects. OpenStack Compute strives to be both
-hardware and hypervisor agnostic, currently supporting a variety of
-standard hardware configurations and seven major hypervisors.
-
-This package contains the Nova service for controlling networking.
-
 %package novncproxy
 Summary:        OpenStack Nova noVNC proxy service
 Group:          Applications/System
@@ -453,7 +410,6 @@ install -p -D -m 644 doc/build/man/*.1 %{buildroot}%{_mandir}/man1/
 install -d -m 755 %{buildroot}%{_localstatedir}/lib/nova
 install -d -m 755 %{buildroot}%{_localstatedir}/lib/nova/instances
 install -d -m 755 %{buildroot}%{_localstatedir}/lib/nova/keys
-install -d -m 755 %{buildroot}%{_localstatedir}/lib/nova/networks
 install -d -m 755 %{buildroot}%{_localstatedir}/lib/nova/tmp
 install -d -m 750 %{buildroot}%{_localstatedir}/log/nova
 install -d -m 700 %{buildroot}%{_rundir}/nova
@@ -503,10 +459,8 @@ install -p -D -m 440 %{SOURCE7} %{buildroot}%{_sysconfdir}/sudoers.d/%{name}
 # install systemd service files
 install -p -D -m 755 %{SOURCE11} %{buildroot}%{_unitdir}/%{name}-api.service
 install -p -D -m 755 %{SOURCE12} %{buildroot}%{_unitdir}/%{name}-compute.service
-install -p -D -m 755 %{SOURCE13} %{buildroot}%{_unitdir}/%{name}-network.service
 install -p -D -m 755 %{SOURCE14} %{buildroot}%{_unitdir}/%{name}-scheduler.service
 install -p -D -m 755 %{SOURCE15} %{buildroot}%{_unitdir}/%{name}-xvpvncproxy.service
-install -p -D -m 755 %{SOURCE16} %{buildroot}%{_unitdir}/%{name}-console.service
 install -p -D -m 755 %{SOURCE18} %{buildroot}%{_unitdir}/%{name}-api-metadata.service
 install -p -D -m 755 %{SOURCE19} %{buildroot}%{_unitdir}/%{name}-conductor.service
 install -p -D -m 755 %{SOURCE21} %{buildroot}%{_unitdir}/%{name}-spicehtml5proxy.service
@@ -519,10 +473,8 @@ install -p -D -m 755 %{SOURCE24} %{buildroot}%{_unitdir}/%{name}-api-os-compute.
 mkdir -p %{buildroot}%{_sbindir}
 ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-api
 ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-compute
-ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-network
 ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-scheduler
 ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-xvpvncproxy
-ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-console
 ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-api-metadata
 ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-conductor
 ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-spicehtml5proxy
@@ -564,12 +516,6 @@ rm nova/tests/unit/test_hacking.py
 %post conductor
 %systemd_post %{name}-conductor.service
 
-%post console
-%systemd_post %{name}-console.service
-
-%post network
-%systemd_post %{name}-network.service
-
 %post novncproxy
 %systemd_post %{name}-novncproxy.service
 
@@ -596,12 +542,6 @@ rm nova/tests/unit/test_hacking.py
 %preun conductor
 %systemd_preun %{name}-conductor.service
 
-%preun console
-%systemd_preun %{name}-console.service
-
-%preun network
-%systemd_preun %{name}-network.service
-
 %preun novncproxy
 %systemd_preun %{name}-novncproxy.service
 
@@ -627,12 +567,6 @@ rm nova/tests/unit/test_hacking.py
 %postun conductor
 %systemd_postun_with_restart %{name}-conductor.service
 
-%postun console
-%systemd_postun_with_restart %{name}-console.service
-
-%postun network
-%systemd_postun_with_restart %{name}-network.service
-
 %postun novncproxy
 %systemd_postun_with_restart %{name}-novncproxy.service
 
@@ -656,7 +590,6 @@ rm nova/tests/unit/test_hacking.py
 %dir %attr(-, nova, nova) %{_localstatedir}/lib/nova
 %dir %attr(-, nova, nova) %{_localstatedir}/lib/nova/instances
 %dir %attr(-, nova, nova) %{_localstatedir}/lib/nova/keys
-%dir %attr(-, nova, nova) %{_localstatedir}/lib/nova/networks
 %dir %attr(-, nova, nova) %{_localstatedir}/lib/nova/tmp
 %dir %attr(-, nova, root) %{_localstatedir}/log/nova
 %dir %attr(-, nova, nova) %{_localstatedir}/cache/nova
@@ -673,6 +606,7 @@ rm nova/tests/unit/test_hacking.py
 %config(noreplace) %attr(-, root, nova) %{_sysconfdir}/nova/policy.yaml
 %config(noreplace) %attr(-, root, nova) %{_sysconfdir}/nova/rootwrap.conf
 %config(noreplace) %attr(0640, root, nova) %{_sysconfdir}/nova/nova.conf.d/010-nova.conf
+%config %{_sysconfdir}/nova/rootwrap.d/network.filters
 %{_bindir}/nova-manage
 %{_bindir}/nova-policy
 %{_bindir}/nova-rootwrap
@@ -735,31 +669,6 @@ rm nova/tests/unit/test_hacking.py
 %endif
 %if 0%{?with_doc}
 %{_mandir}/man1/nova-conductor.1.gz
-%endif
-
-%files console
-%license LICENSE
-%{_bindir}/nova-console
-%{_unitdir}/%{name}-console.service
-%if 0%{?suse_version}
-%{_sbindir}/rc%{name}-console
-%endif
-%if 0%{?with_doc}
-%{_mandir}/man1/nova-console.1.gz
-%endif
-
-%files network
-%license LICENSE
-%config %{_sysconfdir}/nova/rootwrap.d/network.filters
-%{_bindir}/nova-network
-%{_bindir}/nova-dhcpbridge
-%{_unitdir}/%{name}-network.service
-%if 0%{?suse_version}
-%{_sbindir}/rc%{name}-network
-%endif
-%if 0%{?with_doc}
-%{_mandir}/man1/nova-network.1.gz
-%{_mandir}/man1/nova-dhcpbridge.1.gz
 %endif
 
 %files novncproxy
