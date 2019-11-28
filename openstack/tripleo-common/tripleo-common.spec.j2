@@ -12,59 +12,61 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/tripleo-common
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('GitPython') }}
-BuildRequires:  {{ py2pkg('PyYAML') }}
-BuildRequires:  {{ py2pkg('docker') }}
-BuildRequires:  {{ py2pkg('eventlet') }}
-BuildRequires:  {{ py2pkg('python-heatclient') }}
-BuildRequires:  {{ py2pkg('python-ironic-inspector-client') }}
-BuildRequires:  {{ py2pkg('python-ironicclient') }}
-BuildRequires:  {{ py2pkg('metalsmith') }}
-BuildRequires:  {{ py2pkg('mistral-lib') }}
-BuildRequires:  {{ py2pkg('python-mistralclient') }}
-BuildRequires:  {{ py2pkg('oslo.concurrency') }}
-BuildRequires:  {{ py2pkg('oslo.log') }}
-BuildRequires:  {{ py2pkg('oslo.rootwrap') }}
-BuildRequires:  {{ py2pkg('oslotest') }}
-BuildRequires:  {{ py2pkg('paramiko') }}
-BuildRequires:  {{ py2pkg('passlib') }}
-BuildRequires:  {{ py2pkg('python-subunit') }}
-BuildRequires:  {{ py2pkg('requests-mock') }}
-BuildRequires:  {{ py2pkg('setuptools') }}
-BuildRequires:  {{ py2pkg('stestr') }}
-BuildRequires:  {{ py2pkg('tenacity') }}
-BuildRequires:  {{ py2pkg('testscenarios') }}
-BuildRequires:  {{ py2pkg('testtools') }}
-BuildRequires:  {{ py2pkg('python-zaqarclient') }}
+BuildRequires:  {{ py3('GitPython') }}
+BuildRequires:  {{ py3('PyYAML') }}
+BuildRequires:  {{ py3('docker') }}
+BuildRequires:  {{ py3('eventlet') }}
+BuildRequires:  {{ py3('python-glanceclient') }}
+BuildRequires:  {{ py3('python-heatclient') }}
+BuildRequires:  {{ py3('python-ironic-inspector-client') }}
+BuildRequires:  {{ py3('python-ironicclient') }}
+BuildRequires:  {{ py3('metalsmith') }}
+BuildRequires:  {{ py3('mistral-lib') }}
+BuildRequires:  {{ py3('python-mistralclient') }}
+BuildRequires:  {{ py3('python-novaclient') }}
+BuildRequires:  {{ py3('oslo.concurrency') }}
+BuildRequires:  {{ py3('oslo.log') }}
+BuildRequires:  {{ py3('oslo.rootwrap') }}
+BuildRequires:  {{ py3('oslotest') }}
+BuildRequires:  {{ py3('paramiko') }}
+BuildRequires:  {{ py3('passlib') }}
+BuildRequires:  {{ py3('python-subunit') }}
+BuildRequires:  {{ py3('requests-mock') }}
+BuildRequires:  {{ py3('setuptools') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('tenacity') }}
+BuildRequires:  {{ py3('testscenarios') }}
+BuildRequires:  {{ py3('testtools') }}
+BuildRequires:  {{ py3('python-zaqarclient') }}
 Requires:       ansible
-Requires:       {{ py2pkg('Babel') }}
-Requires:       {{ py2pkg('GitPython') }}
-Requires:       {{ py2pkg('Jinja2') }}
+Requires:       {{ py3('Babel') }}
+Requires:       {{ py3('GitPython') }}
+Requires:       {{ py3('Jinja2') }}
 # FIXME(jpena): specifying a version below is apparently needed for RDO
-Requires:       {{ py2pkg('docker', ('>=', '2.0.0')) }}
-Requires:       {{ py2pkg('eventlet') }}
-Requires:       {{ py2pkg('python-glanceclient') }}
-Requires:       {{ py2pkg('python-heatclient') }}
-Requires:       {{ py2pkg('python-ironic-inspector-client') }}
-Requires:       {{ py2pkg('python-ironicclient') }}
-Requires:       {{ py2pkg('keystoneauth1') }}
-Requires:       {{ py2pkg('python-keystoneclient') }}
-Requires:       {{ py2pkg('metalsmith') }}
-Requires:       {{ py2pkg('mistral-lib') }}
-Requires:       {{ py2pkg('python-mistralclient') }}
-Requires:       {{ py2pkg('netaddr') }}
-Requires:       {{ py2pkg('netifaces') }}
-Requires:       {{ py2pkg('python-novaclient') }}
-Requires:       {{ py2pkg('oslo.concurrency') }}
-Requires:       {{ py2pkg('oslo.config') }}
-Requires:       {{ py2pkg('oslo.log') }}
-Requires:       {{ py2pkg('oslo.rootwrap') }}
-Requires:       {{ py2pkg('oslo.utils') }}
-Requires:       {{ py2pkg('paramiko') }}
-Requires:       {{ py2pkg('passlib') }}
-Requires:       {{ py2pkg('six') }}
-Requires:       {{ py2pkg('tenacity') }}
-Requires:       {{ py2pkg('python-zaqarclient') }}
+Requires:       {{ py3('docker', ('>=', '2.0.0')) }}
+Requires:       {{ py3('eventlet') }}
+Requires:       {{ py3('python-glanceclient') }}
+Requires:       {{ py3('python-heatclient') }}
+Requires:       {{ py3('python-ironic-inspector-client') }}
+Requires:       {{ py3('python-ironicclient') }}
+Requires:       {{ py3('keystoneauth1') }}
+Requires:       {{ py3('python-keystoneclient') }}
+Requires:       {{ py3('metalsmith') }}
+Requires:       {{ py3('mistral-lib') }}
+Requires:       {{ py3('python-mistralclient') }}
+Requires:       {{ py3('netaddr') }}
+Requires:       {{ py3('netifaces') }}
+Requires:       {{ py3('python-novaclient') }}
+Requires:       {{ py3('oslo.concurrency') }}
+Requires:       {{ py3('oslo.config') }}
+Requires:       {{ py3('oslo.log') }}
+Requires:       {{ py3('oslo.rootwrap') }}
+Requires:       {{ py3('oslo.utils') }}
+Requires:       {{ py3('paramiko') }}
+Requires:       {{ py3('passlib') }}
+Requires:       {{ py3('six') }}
+Requires:       {{ py3('tenacity') }}
+Requires:       {{ py3('python-zaqarclient') }}
 BuildArch:      noarch
 
 %description
@@ -73,8 +75,8 @@ Python library for code used by TripleO projects.
 %package doc
 Summary:        Documentation for Python library for code used by TripleO projects
 Group:          Documentation/HTML
-BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('openstackdocstheme') }}
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
 
 %description      doc
 Python library for code used by TripleO projects.
@@ -93,24 +95,24 @@ don't fit in a product.
 %py_req_cleanup
 
 %build
-%{py2_build}
+%{py3_build}
 
-%{__python2} setup.py build_sphinx
+PYTHONPATH=. %sphinx_build -b html doc/source doc/build/html
 # remove the sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
-%{py2_install}
+%{py3_install}
 
 
 %check
-%{__python2} -m stestr.cli run
+%{__python3} -m stestr.cli run
 
 %files
 %doc README.rst ChangeLog
 %license LICENSE
-%{python2_sitelib}/tripleo_common
-%{python2_sitelib}/*.egg-info
+%{python3_sitelib}/tripleo_common
+%{python3_sitelib}/*.egg-info
 %dir %{_prefix}/lib/heat
 %{_prefix}/lib/heat/undercloud_heat_plugins
 %{_bindir}/run-validation
