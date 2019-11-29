@@ -12,25 +12,16 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('fixtures', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('python-openstackclient', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('openstackdocstheme', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('osc-lib', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.concurrency', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('reno', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('requests-mock', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
-Requires:       {{ py2pkg('PyYAML') }}
-Requires:       {{ py2pkg('keystoneauth1') }}
-Requires:       {{ py2pkg('python-openstackclient') }}
-Requires:       {{ py2pkg('osc-lib') }}
-Requires:       {{ py2pkg('oslo.i18n') }}
-Requires:       {{ py2pkg('oslo.utils') }}
-Requires:       {{ py2pkg('requests') }}
-Requires:       {{ py2pkg('six') }}
+BuildRequires:  {{ py3('fixtures') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('python-openstackclient') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
+BuildRequires:  {{ py3('osc-lib') }}
+BuildRequires:  {{ py3('oslo.concurrency') }}
+BuildRequires:  {{ py3('reno') }}
+BuildRequires:  {{ py3('requests-mock') }}
+BuildRequires:  {{ py3('testrepository') }}
 BuildArch:      noarch
-%python_subpackages
 
 %description
 Ironic Inspector is an auxiliary service for discovering hardware properties
@@ -41,6 +32,28 @@ scheduling from a bare metal node, given its power management credentials
 
 This package contains Python client and command line tool for Ironic Inspector.
 
+%package -n python3-ironic-inspector-client
+Summary: Python client and CLI tool for Ironic Inspector
+Requires:       {{ py3('PyYAML') }}
+Requires:       {{ py3('keystoneauth1') }}
+Requires:       {{ py3('python-openstackclient') }}
+Requires:       {{ py3('osc-lib') }}
+Requires:       {{ py3('oslo.i18n') }}
+Requires:       {{ py3('oslo.utils') }}
+Requires:       {{ py3('requests') }}
+Requires:       {{ py3('six') }}
+
+%description -n python3-ironic-inspector-client
+Ironic Inspector is an auxiliary service for discovering hardware properties
+for a node managed by OpenStack Ironic. Hardware introspection or hardware
+properties discovery is a process of getting hardware parameters required for
+scheduling from a bare metal node, given its power management credentials
+(e.g. IPMI address, user name and password).
+
+This package contains Python client and command line tool for Ironic Inspector.
+
+This package contains the Python 3.x module.
+
 %prep
 %autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 sed -i -e 's,hacking.*,,' test-requirements.txt
@@ -49,20 +62,20 @@ sed -i -e 's,doc8.*,,' test-requirements.txt
 %py_req_cleanup
 
 %build
-%python_build
+%py3_build
 
 %install
-%python_install
+%py3_install
 
 %check
 %{python_expand rm -rf .testrepository
-$python -m unittest discover ironic_inspector_client
+python3 -m unittest discover ironic_inspector_client
 }
 
-%files %{python_files}
+%files -n python3-ironic-inspector-client
 %doc README.rst
 %license LICENSE
-%{python_sitelib}/ironic_inspector_client
-%{python_sitelib}/*.egg-info
+%{python3_sitelib}/ironic_inspector_client
+%{python3_sitelib}/*.egg-info
 
 %changelog
