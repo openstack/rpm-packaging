@@ -1,5 +1,5 @@
 {% set pypi_name = 'castellan' %}
-{% set upstream_version = upstream_version('1.3.1') %}
+{% set upstream_version = upstream_version('1.4.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -53,6 +53,7 @@ Summary:        Documentation for castellan
 Group:          Documentation/HTML
 BuildRequires:  {{ py3('Sphinx') }}
 BuildRequires:  {{ py3('openstackdocstheme') }}
+BuildRequires:  {{ py3('sphinxcontrib-svg2pdfconverter') }}
 
 %description -n python-castellan-doc
 Castellan is a generic Key Manager interface for OpenStack.
