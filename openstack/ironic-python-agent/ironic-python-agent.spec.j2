@@ -111,6 +111,7 @@ This package contains the documentation.
 %{py3_build}
 
 # config file generation
+mkdir -p etc/ironic_python_agent
 PYTHONPATH=. oslo-config-generator --config-file=tools/config/ipa-config-generator.conf
 
 # build documentation
