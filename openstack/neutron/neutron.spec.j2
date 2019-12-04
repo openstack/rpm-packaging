@@ -41,6 +41,7 @@ BuildRequires:  {{ py3('WebTest') }}
 BuildRequires:  {{ py3('ddt') }}
 BuildRequires:  {{ py3('python-designateclient') }}
 BuildRequires:  {{ py3('fixtures') }}
+BuildRequires:  {{ py3('futurist') }}
 BuildRequires:  {{ py3('httplib2') }}
 BuildRequires:  {{ py3('python-ironicclient') }}
 BuildRequires:  {{ py3('keystoneauth1') }}
@@ -68,6 +69,7 @@ BuildRequires:  {{ py3('python-subunit') }}
 BuildRequires:  {{ py3('reno') }}
 BuildRequires:  {{ py3('stestr') }}
 BuildRequires:  {{ py3('tenacity') }}
+BuildRequires:  {{ py3('tooz') }}
 BuildRequires:  sudo
 Requires:       python3-{{ pypi_name }} = %{epoch}:%{version}-%{release}
 Requires:       sudo
@@ -101,6 +103,7 @@ Requires:       {{ py3('debtcollector') }}
 Requires:       {{ py3('decorator') }}
 Requires:       {{ py3('python-designateclient') }}
 Requires:       {{ py3('eventlet') }}
+Requires:       {{ py3('futurist') }}
 Requires:       {{ py3('httplib2') }}
 Requires:       {{ py3('python-ironicclient') }}
 Requires:       {{ py3('keystoneauth1') }}
@@ -142,6 +145,7 @@ Requires:       {{ py3('requests') }}
 Requires:       {{ py3('six') }}
 Requires:       {{ py3('stevedore') }}
 Requires:       {{ py3('tenacity') }}
+Requires:       {{ py3('tooz') }}
 
 %description -n   python3-{{ pypi_name }}
 Neutron is a virtual network service for Openstack.
