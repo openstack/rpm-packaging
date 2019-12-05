@@ -13,48 +13,49 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/%{name}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('PrettyTable', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('httplib2', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('keystoneauth1', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('python-mistralclient', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.utils', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('requests', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('requests-mock', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('simplejson', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('sphinxcontrib-apidoc', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('python-swiftclient', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
-Requires:       {{ py2pkg('Babel') }}
-Requires:       {{ py2pkg('PrettyTable') }}
-Requires:       {{ py2pkg('keystoneauth1') }}
-Requires:       {{ py2pkg('python-mistralclient') }}
-Requires:       {{ py2pkg('osc-lib') }}
-Requires:       {{ py2pkg('oslo.i18n') }}
-Requires:       {{ py2pkg('oslo.utils') }}
-Requires:       {{ py2pkg('pbr') }}
-Requires:       {{ py2pkg('requests') }}
-Requires:       {{ py2pkg('simplejson') }}
-Requires:       {{ py2pkg('six') }}
-Requires:       {{ py2pkg('python-swiftclient') }}
+BuildRequires:  {{ py3('PrettyTable') }}
+BuildRequires:  {{ py3('httplib2') }}
+BuildRequires:  {{ py3('keystoneauth1') }}
+BuildRequires:  {{ py3('python-mistralclient') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('oslo.utils') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('requests') }}
+BuildRequires:  {{ py3('requests-mock') }}
+BuildRequires:  {{ py3('simplejson') }}
+BuildRequires:  {{ py3('sphinxcontrib-apidoc') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('python-swiftclient') }}
+BuildRequires:  {{ py3('testscenarios') }}
+BuildRequires:  {{ py3('testtools') }}
 BuildArch:      noarch
-%if 0%{?suse_version}
-Requires(post): update-alternatives
-Requires(postun): update-alternatives
-%else
-# on RDO, update-alternatives is in chkconfig
-Requires(post): chkconfig
-Requires(postun): chkconfig
-%endif
-%python_subpackages
 
 %description
 This is a client for the Trove API. There's a Python API (the
 troveclient module), and a command-line script (trove). Each
 implements 100% (or less ;) ) of the Trove API.
+
+%package -n python3-troveclient
+Summary:        Client library for OpenStack DBaaS API
+Requires:       {{ py3('Babel') }}
+Requires:       {{ py3('PrettyTable') }}
+Requires:       {{ py3('keystoneauth1') }}
+Requires:       {{ py3('python-mistralclient') }}
+Requires:       {{ py3('osc-lib') }}
+Requires:       {{ py3('oslo.i18n') }}
+Requires:       {{ py3('oslo.utils') }}
+Requires:       {{ py3('pbr') }}
+Requires:       {{ py3('requests') }}
+Requires:       {{ py3('simplejson') }}
+Requires:       {{ py3('six') }}
+Requires:       {{ py3('python-swiftclient') }}
+
+%description -n python3-troveclient
+This is a client for the Trove API. There's a Python API (the
+troveclient module), and a command-line script (trove). Each
+implements 100% (or less ;) ) of the Trove API.
+
+This package contains the Python 3.x module.
 
 %package -n python-troveclient-doc
 Summary:        Documentation for OpenStack DBaaS API.
@@ -71,31 +72,24 @@ DBaaS API.
 %py_req_cleanup
 
 %build
-%{python_build}
+%{py3_build}
 # Generate html docs
 PBR_VERSION={{ upstream_version }} %sphinx_build -b html doc/source doc/build/html
 # Remove the Sphinx-build leftovers
 rm -r doc/build/html/.{doctrees,buildinfo}
 
 %install
-%{python_install}
-%python_clone -a %{buildroot}%{_bindir}/trove
+%{py3_install}
 
 %check
-%python_exec -m stestr.cli run
+python3 -m stestr.cli run
 
-%post
-%python_install_alternative trove
-
-%postun
-%python_uninstall_alternative trove
-
-%files %{python_files}
+%files -n python3-troveclient
 %doc README.rst
 %license LICENSE
-%{python_sitelib}/python_troveclient-*.egg-info
-%{python_sitelib}/troveclient
-%python_alternative %{_bindir}/trove
+%{python3_sitelib}/python_troveclient-*.egg-info
+%{python3_sitelib}/troveclient
+%{_bindir}/trove
 
 %files -n python-troveclient-doc
 %doc doc/build/html
