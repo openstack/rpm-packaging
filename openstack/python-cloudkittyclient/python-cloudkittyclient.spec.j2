@@ -12,35 +12,42 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('PrettyTable', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('cliff', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('fixtures', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('python-keystoneclient', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.i18n', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.log', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.serialization', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.utils', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('python-subunit', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('setuptools', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
-Requires:       {{ py2pkg('Babel') }}
-Requires:       {{ py2pkg('PrettyTable') }}
-Requires:       {{ py2pkg('cliff') }}
-Requires:       {{ py2pkg('python-keystoneclient') }}
-Requires:       {{ py2pkg('python-openstackclient') }}
-Requires:       {{ py2pkg('oslo.i18n') }}
-Requires:       {{ py2pkg('oslo.log') }}
-Requires:       {{ py2pkg('oslo.serialization') }}
-Requires:       {{ py2pkg('oslo.utils') }}
-Requires:       {{ py2pkg('pbr') }}
-Requires:       {{ py2pkg('six') }}
-Requires:       {{ py2pkg('stevedore') }}
+BuildRequires:  {{ py3('PrettyTable') }}
+BuildRequires:  {{ py3('cliff') }}
+BuildRequires:  {{ py3('fixtures') }}
+BuildRequires:  {{ py3('python-keystoneclient') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('oslo.i18n') }}
+BuildRequires:  {{ py3('oslo.log') }}
+BuildRequires:  {{ py3('oslo.serialization') }}
+BuildRequires:  {{ py3('oslo.utils') }}
+BuildRequires:  {{ py3('oslotest') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('python-subunit') }}
+BuildRequires:  {{ py3('setuptools') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('testscenarios') }}
+BuildRequires:  {{ py3('testtools') }}
 BuildArch:      noarch
+
+%description
+This is a client library for CloudKitty built on the CloudKitty API.
+It provides a Python API (the cloudkittyclient module).
+
+%package -n python3-cloudkittyclient
+Summary:        Python API for OpenStack Cloudkitty
+Requires:       {{ py3('Babel') }}
+Requires:       {{ py3('PrettyTable') }}
+Requires:       {{ py3('cliff') }}
+Requires:       {{ py3('python-keystoneclient') }}
+Requires:       {{ py3('python-openstackclient') }}
+Requires:       {{ py3('oslo.i18n') }}
+Requires:       {{ py3('oslo.log') }}
+Requires:       {{ py3('oslo.serialization') }}
+Requires:       {{ py3('oslo.utils') }}
+Requires:       {{ py3('pbr') }}
+Requires:       {{ py3('six') }}
+Requires:       {{ py3('stevedore') }}
 %if 0%{?suse_version}
 Requires(post): update-alternatives
 Requires(postun): update-alternatives
@@ -49,17 +56,18 @@ Requires(postun): update-alternatives
 Requires(post): chkconfig
 Requires(postun): chkconfig
 %endif
-%python_subpackages
 
-%description
+%description -n python3-cloudkittyclient
 This is a client library for CloudKitty built on the CloudKitty API.
 It provides a Python API (the cloudkittyclient module).
+
+This package contains the Python 3.x module
 
 %package -n {{ py2name() }}-doc
 Summary:        Documentation for OpenStack Cloudkitty API client libary
 Group:          Documentation/HTML
-BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('openstackdocstheme') }}
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
 
 %description -n {{ py2name() }}-doc
 This is a client library for CloudKitty built on the CloudKitty API.
@@ -72,32 +80,25 @@ This package contains the documentation.
 sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
-%{python_build}
+%{py3_build}
 
 # Build HTML docs and man page
-PBR_VERSION={{ upstream_version }} PYTHONPATH=. sphinx-build -b html doc/source doc/build/html
+PBR_VERSION={{ upstream_version }} PYTHONPATH=. %sphinx_build -b html doc/source doc/build/html
 # remove the Sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
-%{python_install}
-%python_clone -a %{buildroot}%{_bindir}/cloudkitty
-
-%post
-%python_install_alternative cloudkitty
-
-%postun
-%python_uninstall_alternative cloudkitty
+%{py3_install}
 
 %check
-%python_exec -m stestr.cli run
+python3 -m stestr.cli run
 
-%files %{python_files}
+%files -n python3-cloudkittyclient
 %doc README.rst
 %license LICENSE
-%{python_sitelib}/cloudkittyclient
-%{python_sitelib}/*.egg-info
-%python_alternative %{_bindir}/cloudkitty
+%{python3_sitelib}/cloudkittyclient
+%{python3_sitelib}/*.egg-info
+%{_bindir}/cloudkitty
 
 %files -n {{ py2name() }}-doc
 %doc doc/build/html
