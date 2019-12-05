@@ -1,40 +1,48 @@
 {% set pypi_name = 'python-designateclient' %}
 {% set upstream_version = upstream_version('3.0.0') %}
 {% set rpm_release = '1' %}
-%global sname python-designateclient
+{% set source = url_pypi() %}
+
 Name:           {{ py2name() }}
 Version:        {{ py2rpmversion() }}
 Release:        {{ py2rpmrelease() }}
 Summary:        OpenStack DNS as a Service - Client
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
-URL:            https://launchpad.net/%{sname}
-Source0:        https://files.pythonhosted.org/packages/source/p/%{sname}/%{sname}-%{version}.tar.gz
+URL:            https://launchpad.net/{{ pypi_name }}
+Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('jsonschema', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('keystoneauth1', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.serialization', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('requests-mock', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('setuptools', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
-Requires:       {{ py2pkg('cliff') }}
-Requires:       {{ py2pkg('debtcollector') }}
-Requires:       {{ py2pkg('jsonschema') }}
-Requires:       {{ py2pkg('keystoneauth1') }}
-Requires:       {{ py2pkg('osc-lib') }}
-Requires:       {{ py2pkg('oslo.serialization') }}
-Requires:       {{ py2pkg('oslo.utils') }}
-Requires:       {{ py2pkg('requests') }}
-Requires:       {{ py2pkg('six') }}
-Requires:       {{ py2pkg('stevedore') }}
+BuildRequires:  {{ py3('jsonschema') }}
+BuildRequires:  {{ py3('keystoneauth1') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('oslo.serialization') }}
+BuildRequires:  {{ py3('oslotest') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('requests-mock') }}
+BuildRequires:  {{ py3('setuptools') }}
+BuildRequires:  {{ py3('stestr') }}
 BuildArch:      noarch
-%python_subpackages
 
 %description
 OpenStack DNS as a Service - Client
+
+%package -n python3-designateclient
+Summary:        OpenStack DNS as a Service - Client
+Requires:       {{ py3('cliff') }}
+Requires:       {{ py3('debtcollector') }}
+Requires:       {{ py3('jsonschema') }}
+Requires:       {{ py3('keystoneauth1') }}
+Requires:       {{ py3('osc-lib') }}
+Requires:       {{ py3('oslo.serialization') }}
+Requires:       {{ py3('oslo.utils') }}
+Requires:       {{ py3('requests') }}
+Requires:       {{ py3('six') }}
+Requires:       {{ py3('stevedore') }}
+
+%description -n python3-designateclient
+OpenStack DNS as a Service - Client
+
+This package contains the Python 3.x module.
 
 %package -n {{ py2name() }}-doc
 Summary:        Documentation for the OpenStack DNS as a Service - Client
@@ -46,11 +54,11 @@ BuildRequires:  {{ py3('openstackdocstheme') }}
 Documentation for the OpenStack DNS as a Service - Client.
 
 %prep
-%autosetup -n %{sname}-%{version}
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
 
 %build
-%python_build
+%py3_build
 
 # generate docs
 PYTHONPATH=. PBR_VERSION={{ upstream_version }} %sphinx_build -b html doc/source doc/build/html
@@ -58,16 +66,16 @@ PYTHONPATH=. PBR_VERSION={{ upstream_version }} %sphinx_build -b html doc/source
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
-%python_install
+%py3_install
 
 %check
-%python_exec -m stestr.cli run
+python3 -m stestr.cli run
 
-%files %{python_files}
+%files -n python3-designateclient
 %license LICENSE
 %doc README.rst
-%{python_sitelib}/designateclient
-%{python_sitelib}/python_designateclient-%{version}-*.egg-info
+%{python3_sitelib}/designateclient
+%{python3_sitelib}/python_designateclient-%{version}-*.egg-info
 
 %files -n {{ py2name() }}-doc
 %license LICENSE
