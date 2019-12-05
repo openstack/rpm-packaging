@@ -12,40 +12,38 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('ddt', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('fixtures', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('python-openstackclient', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.config', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.log', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.serialization', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.utils', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
-Requires:       {{ py2pkg('Babel') }}
-Requires:       {{ py2pkg('PrettyTable') }}
-Requires:       {{ py2pkg('debtcollector') }}
-Requires:       {{ py2pkg('python-keystoneclient') }}
-Requires:       {{ py2pkg('oslo.config') }}
-Requires:       {{ py2pkg('oslo.log') }}
-Requires:       {{ py2pkg('oslo.serialization') }}
-Requires:       {{ py2pkg('oslo.utils') }}
-Requires:       {{ py2pkg('requests') }}
-Requires:       {{ py2pkg('simplejson') }}
-Requires:       {{ py2pkg('six') }}
+BuildRequires:  {{ py3('ddt') }}
+BuildRequires:  {{ py3('fixtures') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('python-openstackclient') }}
+BuildRequires:  {{ py3('oslo.config') }}
+BuildRequires:  {{ py3('oslo.log') }}
+BuildRequires:  {{ py3('oslo.serialization') }}
+BuildRequires:  {{ py3('oslo.utils') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('testrepository') }}
+BuildRequires:  {{ py3('testtools') }}
 BuildArch:      noarch
-%if 0%{?suse_version}
-Requires(post): update-alternatives
-Requires(postun): update-alternatives
-%else
-# on RDO, update-alternatives is in chkconfig
-Requires(post): chkconfig
-Requires(postun): chkconfig
-%endif
-%python_subpackages
 
 %description
+Client library and command line utility for interacting with Openstack
+Share API.
+
+%package -n python3-manilaclient
+Summary:        Client Library for OpenStack Share API
+Requires:       {{ py3('Babel') }}
+Requires:       {{ py3('PrettyTable') }}
+Requires:       {{ py3('debtcollector') }}
+Requires:       {{ py3('python-keystoneclient') }}
+Requires:       {{ py3('oslo.config') }}
+Requires:       {{ py3('oslo.log') }}
+Requires:       {{ py3('oslo.serialization') }}
+Requires:       {{ py3('oslo.utils') }}
+Requires:       {{ py3('requests') }}
+Requires:       {{ py3('simplejson') }}
+Requires:       {{ py3('six') }}
+
+%description -n python3-manilaclient
 Client library and command line utility for interacting with Openstack
 Share API.
 
@@ -66,7 +64,7 @@ This package contains auto-generated documentation.
 %py_req_cleanup
 
 %build
-%{python_build}
+%{py3_build}
 
 PBR_VERSION={{ upstream_version }} %sphinx_build -b html doc/source doc/build/html
 # remove the sphinx-build leftovers
@@ -74,32 +72,24 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 
 
 %install
-%{python_install}
+%{py3_install}
 # bash completion
 install -p -D -m 644 tools/manila.bash_completion %{buildroot}%{_sysconfdir}/bash_completion.d/manila.bash_completion
-%python_clone -a %{buildroot}%{_bindir}/manila
-%python_clone -a %{buildroot}%{_sysconfdir}/bash_completion.d/manila.bash_completion
-
-%post
-%{python_install_alternative manila %{_sysconfdir}/bash_completion.d/manila.bash_completion}
-
-%postun
-%python_uninstall_alternative manila
 
 %check
 # we dont want to depend on Tempest so remove the relevant tests
 rm -f manilaclient/tests/unit/test_shell.py
 rm -f manilaclient/tests/unit/test_functional_utils.py
 rm -rf manilaclient/tests/functional
-%python_exec -m stestr.cli run
+python3 -m stestr.cli run
 
-%files %{python_files}
+%files -n python3-manilaclient
 %doc README.rst
 %license LICENSE
-%{python_sitelib}/manilaclient
-%{python_sitelib}/*.egg-info
-%python_alternative %{_bindir}/manila
-%python_alternative %{_sysconfdir}/bash_completion.d/manila.bash_completion
+%{python3_sitelib}/manilaclient
+%{python3_sitelib}/*.egg-info
+%{_bindir}/manila
+%{_sysconfdir}/bash_completion.d/manila.bash_completion
 
 %files -n python-manilaclient-doc
 %license LICENSE
