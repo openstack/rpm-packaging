@@ -13,34 +13,41 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/%{name}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('osc-lib', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.i18n', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.log', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.serialization', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.utils', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('requests', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('requests-mock', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('setuptools', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
-Requires:       {{ py2pkg('Babel') }}
-Requires:       {{ py2pkg('keystoneauth1') }}
-Requires:       {{ py2pkg('python-openstackclient') }}
-Requires:       {{ py2pkg('osc-lib') }}
-Requires:       {{ py2pkg('oslo.i18n') }}
-Requires:       {{ py2pkg('oslo.log') }}
-Requires:       {{ py2pkg('oslo.serialization') }}
-Requires:       {{ py2pkg('oslo.utils') }}
-Requires:       {{ py2pkg('requests') }}
-Requires:       {{ py2pkg('six') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('osc-lib') }}
+BuildRequires:  {{ py3('oslo.i18n') }}
+BuildRequires:  {{ py3('oslo.log') }}
+BuildRequires:  {{ py3('oslo.serialization') }}
+BuildRequires:  {{ py3('oslo.utils') }}
+BuildRequires:  {{ py3('oslotest') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('requests') }}
+BuildRequires:  {{ py3('requests-mock') }}
+BuildRequires:  {{ py3('setuptools') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('testrepository') }}
 BuildArch:      noarch
-%python_subpackages
 
 %description
 Python client library for interacting with OpenStack Sahara API.
+
+%package -n python3-saharaclient
+Summary:        Client library for OpenStack Sahara API
+Requires:       {{ py3('Babel') }}
+Requires:       {{ py3('keystoneauth1') }}
+Requires:       {{ py3('python-openstackclient') }}
+Requires:       {{ py3('osc-lib') }}
+Requires:       {{ py3('oslo.i18n') }}
+Requires:       {{ py3('oslo.log') }}
+Requires:       {{ py3('oslo.serialization') }}
+Requires:       {{ py3('oslo.utils') }}
+Requires:       {{ py3('requests') }}
+Requires:       {{ py3('six') }}
+
+%description -n python3-saharaclient
+Python client library for interacting with OpenStack Sahara API.
+
+This package contains the Python 3.x module.
 
 %package -n python-saharaclient-doc
 Summary:        Documentation for Client library for OpenStack Sahara API
@@ -56,10 +63,10 @@ Python client library for interacting with OpenStack Sahara API.
 %py_req_cleanup
 
 %build
-%{python_build}
+%{py3_build}
 
 %install
-%{python_install}
+%{py3_install}
 
 # Build HTML docs and man page
 PYTHONPATH=. PBR_VERSION={{ upstream_version }} %sphinx_build -b html -d doc/build/doctrees doc/source doc/build/html
@@ -69,13 +76,13 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %check
 # we don't want to depend on hacking/flake8/pep8
 rm -v saharaclient/tests/unit/test_hacking.py
-%python_exec -m stestr.cli run
+python3 -m stestr.cli run
 
-%files %{python_files}
+%files -n python3-saharaclient
 %license LICENSE
 %doc ChangeLog README.rst
-%{python_sitelib}/saharaclient
-%{python_sitelib}/*.egg-info
+%{python3_sitelib}/saharaclient
+%{python3_sitelib}/*.egg-info
 
 %files -n python-saharaclient-doc
 %doc doc/build/html
