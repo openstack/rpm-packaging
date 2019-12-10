@@ -1,9 +1,0 @@
-[DEFAULT]
-log_dir = /var/log/ceilometer
-
-[oslo_concurrency]
-lock_path = /run/ceilometer
-
-[notification]
-workload_partitioning = False
-disable_non_metric_meters = False
