@@ -23,10 +23,12 @@ Source4:        %{name}.polkit
 Source5:        %{name}-collector.service
 Source6:        %{name}-forwarder.service
 Source7:        %{name}-statsd.service
+Patch1:         0001-add-X.509-certificate-check-plugin.patch
 BuildRequires:  fdupes
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py3('PyYAML') }}
 BuildRequires:  {{ py3('eventlet') }}
+BuildRequires:  {{ py3('freezegun') }}
 BuildRequires:  {{ py3('httplib2') }}
 BuildRequires:  {{ py3('python-keystoneclient') }}
 BuildRequires:  {{ py3('mock') }}
