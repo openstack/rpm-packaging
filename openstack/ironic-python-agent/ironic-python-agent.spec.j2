@@ -14,10 +14,9 @@ Source1:        openstack-ironic-python-agent.defaultconf
 Source20:       openstack-ironic-python-agent.service
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py3('Pint') }}
-BuildRequires:  {{ py3('WSME') }}
+BuildRequires:  {{ py3('Werkzeug') }}
 BuildRequires:  {{ py3('eventlet') }}
 BuildRequires:  {{ py3('ironic-lib') }}
-BuildRequires:  {{ py3('iso8601') }}
 BuildRequires:  {{ py3('mock') }}
 BuildRequires:  {{ py3('netaddr') }}
 BuildRequires:  {{ py3('netifaces') }}
@@ -29,12 +28,10 @@ BuildRequires:  {{ py3('oslo.service') }}
 BuildRequires:  {{ py3('oslo.utils') }}
 BuildRequires:  {{ py3('oslotest') }}
 BuildRequires:  {{ py3('pbr') }}
-BuildRequires:  {{ py3('pecan') }}
 BuildRequires:  {{ py3('psutil') }}
 BuildRequires:  {{ py3('pyudev') }}
 BuildRequires:  {{ py3('requests') }}
 BuildRequires:  {{ py3('rtslib-fb') }}
-BuildRequires:  {{ py3('six') }}
 BuildRequires:  {{ py3('stestr') }}
 BuildRequires:  {{ py3('stevedore') }}
 Requires:       python3-{{ pypi_name }} = %{version}-%{release}
@@ -58,11 +55,9 @@ Ironic makes API calls to ironic-python-agent to provision the machine.
 Summary:        Ironic Python Agent Ramdisk - Python module
 Group:          Development/Languages/Python
 Requires:       {{ py3('Pint') }}
-Requires:       {{ py3('WSME') }}
+Requires:       {{ py3('Werkzeug') }}
 Requires:       {{ py3('eventlet') }}
 Requires:       {{ py3('ironic-lib') }}
-Requires:       {{ py3('iso8601') }}
-Requires:       {{ py3('netaddr') }}
 Requires:       {{ py3('netifaces') }}
 Requires:       {{ py3('oslo.concurrency') }}
 Requires:       {{ py3('oslo.config') }}
@@ -71,12 +66,10 @@ Requires:       {{ py3('oslo.serialization') }}
 Requires:       {{ py3('oslo.service') }}
 Requires:       {{ py3('oslo.utils') }}
 Requires:       {{ py3('pbr') }}
-Requires:       {{ py3('pecan') }}
 Requires:       {{ py3('psutil') }}
 Requires:       {{ py3('pyudev') }}
 Requires:       {{ py3('requests') }}
 Requires:       {{ py3('rtslib-fb') }}
-Requires:       {{ py3('six') }}
 Requires:       {{ py3('stevedore') }}
 
 %description -n python3-{{ pypi_name }}
