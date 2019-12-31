@@ -45,7 +45,7 @@ Documentation for the Automaton library.
 # generate html docs
 PBR_VERSION=%{version} %sphinx_build -b html doc/source doc/build/html
 # remove the Sphinx-build leftovers
-rm -rf html/.{doctrees,buildinfo}
+rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
 %{python_install}

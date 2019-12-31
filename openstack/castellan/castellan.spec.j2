@@ -60,7 +60,7 @@ This package contains the documentation
 # generate html docs
 PBR_VERSION=%{version} %sphinx_build -b html doc/source doc/build/html
 # remove the sphinx-build leftovers
-rm -rf html/.{doctrees,buildinfo}
+rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
 %{python_install}

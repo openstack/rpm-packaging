@@ -59,6 +59,8 @@ This package contains the documentation.
 %build
 %{python_build}
 PBR_VERSION={{ upstream_version }} %sphinx_build -b html doc/source doc/build/html
+# remove the sphinx-build leftovers
+rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
 %{python_install}
