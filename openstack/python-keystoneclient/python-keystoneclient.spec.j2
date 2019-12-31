@@ -70,12 +70,11 @@ echo "intersphinx_mapping = {}" >> doc/source/conf.py
 
 # Build HTML docs and man page
 PBR_VERSION=%{version} %sphinx_build -b html doc/source doc/build/html
+# remove the Sphinx-build leftovers
+rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
 %{py3_install}
-
-# Fix hidden-file-or-dir warnings
-rm -fr html/.doctrees html/.buildinfo
 
 %check
 python3 -m stestr.cli run

@@ -79,7 +79,7 @@ This package contains documentation in HTML format.
 # generate html doc
 PBR_VERSION={{ upstream_version }} %sphinx_build -b html doc/source doc/build/html
 # remove the Sphinx-build leftovers
-rm -rf html/.{doctrees,buildinfo}
+rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %check
 python3 -m stestr.cli run

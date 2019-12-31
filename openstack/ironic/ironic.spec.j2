@@ -199,7 +199,7 @@ PYTHONPATH=. PBR_VERSION={{ upstream_version }} %sphinx_build --keep-going -b ht
 PYTHONPATH=. PBR_VERSION={{ upstream_version }} %sphinx_build --keep-going -b man doc/source doc/build/man
 # remove the Sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
-rm -rf doc/build/manx/.{doctrees,buildinfo}
+rm -rf doc/build/man/.{doctrees,buildinfo}
 %endif
 
 %install
