@@ -12,40 +12,47 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        https://files.pythonhosted.org/packages/source/p/%{name}/%{name}-%{version}.tar.gz
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('ddt', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('fixtures', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('jsonschema', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('keystoneauth1', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('nose', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('nose-exclude', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('os-client-config', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('osc-lib', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.i18n', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.log', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('python-subunit', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('requests', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('requests-mock', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('setuptools', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
-Requires:       {{ py2pkg('jsonschema') }}
-Requires:       {{ py2pkg('keystoneauth1') }}
-Requires:       {{ py2pkg('osc-lib') }}
-Requires:       {{ py2pkg('oslo.i18n') }}
-Requires:       {{ py2pkg('oslo.log') }}
-Requires:       {{ py2pkg('oslo.utils') }}
-Requires:       {{ py2pkg('pbr') }}
-Requires:       {{ py2pkg('requests') }}
-Requires:       {{ py2pkg('six') }}
-Requires:       {{ py2pkg('stevedore') }}
+BuildRequires:  {{ py3('ddt') }}
+BuildRequires:  {{ py3('fixtures') }}
+BuildRequires:  {{ py3('jsonschema') }}
+BuildRequires:  {{ py3('keystoneauth1') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('nose') }}
+BuildRequires:  {{ py3('nose-exclude') }}
+BuildRequires:  {{ py3('os-client-config') }}
+BuildRequires:  {{ py3('osc-lib') }}
+BuildRequires:  {{ py3('oslo.i18n') }}
+BuildRequires:  {{ py3('oslo.log') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('python-subunit') }}
+BuildRequires:  {{ py3('requests') }}
+BuildRequires:  {{ py3('requests-mock') }}
+BuildRequires:  {{ py3('setuptools') }}
+BuildRequires:  {{ py3('testrepository') }}
+BuildRequires:  {{ py3('testscenarios') }}
+BuildRequires:  {{ py3('testtools') }}
 BuildArch:      noarch
-%python_subpackages
 
 %description
 Python client to Zaqar Queueing API.
+
+%package -n python3-zaqarclient
+Summary:        Client Library for OpenStack Zaqar Queueing API
+Requires:       {{ py3('jsonschema') }}
+Requires:       {{ py3('keystoneauth1') }}
+Requires:       {{ py3('osc-lib') }}
+Requires:       {{ py3('oslo.i18n') }}
+Requires:       {{ py3('oslo.log') }}
+Requires:       {{ py3('oslo.utils') }}
+Requires:       {{ py3('pbr') }}
+Requires:       {{ py3('requests') }}
+Requires:       {{ py3('six') }}
+Requires:       {{ py3('stevedore') }}
+
+%description -n python3-zaqarclient
+Python client to Zaqar Queueing API.
+
+This package contains the Python 3.x module.
 
 %package -n {{ py2name() }}-doc
 Summary:        Documentation for OpenStack Zaqar Queueing API
@@ -62,23 +69,27 @@ Zaqar Queueing API.
 %py_req_cleanup
 
 %build
-%python_build
+%py3_build
 
 # Build HTML docs and man page
 PBR_VERSION=%{version} %sphinx_build -b html doc/source doc/build/html
 rm -r doc/build/html/.{doctrees,buildinfo}
 
 %install
-%python_install
+%py3_install
 
 %check
+%if 0%{?suse_version}
 PYTHONPATH=. nosetests
+%else
+PYTHONPATH=. nosetests-3
+%endif
 
-%files %{python_files}
+%files -n python3-zaqarclient
 %doc README.rst ChangeLog examples
 %license LICENSE
-%{python_sitelib}/zaqarclient
-%{python_sitelib}/python_zaqarclient-*-py?.?.egg-info
+%{python3_sitelib}/zaqarclient
+%{python3_sitelib}/python_zaqarclient-*-py?.?.egg-info
 
 %files -n {{ py2name() }}-doc
 %doc doc/build/html
