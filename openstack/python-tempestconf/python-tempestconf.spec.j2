@@ -18,40 +18,39 @@ URL:            http://git.openstack.org/cgit/openstack/{{ pypi_name }}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('Tempest') }}
-BuildRequires:  {{ py2pkg('openstacksdk', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('setuptools', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
-Requires:       {{ py2pkg('Tempest') }}
-Requires:       {{ py2pkg('PyYAML') }}
-Requires:       {{ py2pkg('castellan') }}
-Requires:       {{ py2pkg('cryptography') }}
-Requires:       {{ py2pkg('openstacksdk') }}
-Requires:       {{ py2pkg('pbr') }}
-Requires:       {{ py2pkg('requests') }}
+BuildRequires:  {{ py3('openstacksdk') }}
+BuildRequires:  {{ py3('oslotest') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('setuptools') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('testscenarios') }}
+BuildRequires:  {{ py3('testtools') }}
 BuildArch:      noarch
-%if 0%{?suse_version}
-Requires(post): update-alternatives
-Requires(postun): update-alternatives
-%else
-# on RDO, update-alternatives is in chkconfig
-Requires(post): chkconfig
-Requires(postun): chkconfig
-%endif
-%python_subpackages
 
 %description
 %{common_desc}
 
+%package -n python3-tempestconf
+Summary:        OpenStack Tempest Config generator
+Requires:       {{ py2pkg('Tempest') }}
+Requires:       {{ py3('PyYAML') }}
+Requires:       {{ py3('castellan') }}
+Requires:       {{ py3('cryptography') }}
+Requires:       {{ py3('openstacksdk') }}
+Requires:       {{ py3('pbr') }}
+Requires:       {{ py3('requests') }}
+
+%description -n python3-tempestconf
+%{common_desc}
+
+This package contains the Python 3.x module.
+
 %if 0%{?with_doc}
 %package -n python-tempestconf-doc
 Summary:    Documentation for python-tempestconf
-BuildRequires: {{ py2pkg('Sphinx') }}
-BuildRequires: {{ py2pkg('openstackdocstheme') }}
-BuildRequires: {{ py2pkg('sphinx-argparse') }}
+BuildRequires: {{ py3('Sphinx') }}
+BuildRequires: {{ py3('openstackdocstheme') }}
+BuildRequires: {{ py3('sphinx-argparse') }}
 
 %description -n python-tempestconf-doc
 It contains the documentation for the python-tempestconf.
@@ -65,19 +64,18 @@ It contains the documentation for the python-tempestconf.
 rm -rf %{module}.egg-info
 
 %build
-%{python_build}
+%{py3_build}
 
 # Generate Docs
 %if 0%{?with_doc}
 export PYTHONPATH="$( pwd ):$PYTHONPATH"
-PBR_VERSION={{ upstream_version }} sphinx-build -b html doc/source doc/build/html
+PBR_VERSION={{ upstream_version }} %sphinx_build -b html doc/source doc/build/html
 # remove the sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 %endif
 
 %install
-%{python_install}
-%python_clone -a %{buildroot}%{_bindir}/discover-tempest-config
+%{py3_install}
 
 # Disabling tests because it's failing for no reason
 # %check
@@ -85,17 +83,11 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 # export OS_TEST_PATH=./config_tempest/tests
 # ostestr
 
-%post
-%python_install_alternative discover-tempest-config
-
-%postun
-%python_uninstall_alternative discover-tempest-config
-
-%files %{python_files}
+%files -n python3-tempestconf
 %license LICENSE
-%python_alternative %{_bindir}/discover-tempest-config
-%{python_sitelib}/config_tempest
-%{python_sitelib}/python_tempestconf-*.egg-info
+%{_bindir}/discover-tempest-config
+%{python3_sitelib}/config_tempest
+%{python3_sitelib}/python_tempestconf-*.egg-info
 
 %if 0%{?with_doc}
 %files -n python-tempestconf-doc
