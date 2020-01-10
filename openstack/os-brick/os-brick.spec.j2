@@ -13,50 +13,60 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('Babel', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('castellan', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('ddt', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('eventlet', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('os-win', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.concurrency', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.i18n', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.log', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.privsep', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.service', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.utils', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.vmware', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('python-subunit', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('reno', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('requests', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('retrying', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('setuptools', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('six', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
-Requires:       %{oldpython}-os-brick-common
-Requires:       {{ py2pkg('Babel') }}
-Requires:       {{ py2pkg('eventlet') }}
-Requires:       {{ py2pkg('os-win') }}
-Requires:       {{ py2pkg('oslo.concurrency') }}
-Requires:       {{ py2pkg('oslo.i18n') }}
-Requires:       {{ py2pkg('oslo.log') }}
-Requires:       {{ py2pkg('oslo.privsep') }}
-Requires:       {{ py2pkg('oslo.service') }}
-Requires:       {{ py2pkg('oslo.utils') }}
-Requires:       {{ py2pkg('requests') }}
-Requires:       {{ py2pkg('retrying') }}
-Requires:       {{ py2pkg('six') }}
+BuildRequires:  {{ py3('Babel') }}
+BuildRequires:  {{ py3('castellan') }}
+BuildRequires:  {{ py3('ddt') }}
+BuildRequires:  {{ py3('eventlet') }}
+BuildRequires:  {{ py3('os-win') }}
+BuildRequires:  {{ py3('oslo.concurrency') }}
+BuildRequires:  {{ py3('oslo.i18n') }}
+BuildRequires:  {{ py3('oslo.log') }}
+BuildRequires:  {{ py3('oslo.privsep') }}
+BuildRequires:  {{ py3('oslo.service') }}
+BuildRequires:  {{ py3('oslo.utils') }}
+BuildRequires:  {{ py3('oslo.vmware') }}
+BuildRequires:  {{ py3('oslotest') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('python-subunit') }}
+BuildRequires:  {{ py3('reno') }}
+BuildRequires:  {{ py3('requests') }}
+BuildRequires:  {{ py3('retrying') }}
+BuildRequires:  {{ py3('setuptools') }}
+BuildRequires:  {{ py3('six') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('testscenarios') }}
+BuildRequires:  {{ py3('testtools') }}
 BuildArch:      noarch
-%python_subpackages
 
 %description
 OpenStack Cinder brick library for managing local volume attaches.
 Features:
 - Discovery of volumes being attached to a host for many transport protocols.
 - Removal of volumes from a host.
+
+%package -n python3-os-brick
+Summary:        OpenStack Cinder brick library for managing local volume attaches
+Requires:       %{oldpython}-os-brick-common
+Requires:       {{ py3('Babel') }}
+Requires:       {{ py3('eventlet') }}
+Requires:       {{ py3('os-win') }}
+Requires:       {{ py3('oslo.concurrency') }}
+Requires:       {{ py3('oslo.i18n') }}
+Requires:       {{ py3('oslo.log') }}
+Requires:       {{ py3('oslo.privsep') }}
+Requires:       {{ py3('oslo.service') }}
+Requires:       {{ py3('oslo.utils') }}
+Requires:       {{ py3('requests') }}
+Requires:       {{ py3('retrying') }}
+Requires:       {{ py3('six') }}
+
+%description -n python3-os-brick
+OpenStack Cinder brick library for managing local volume attaches.
+Features:
+- Discovery of volumes being attached to a host for many transport protocols.
+- Removal of volumes from a host.
+
+This package contains the PYthon 3.x module.
 
 %package -n {{ py2name() }}-doc
 Summary:        Documentation for OpenStack os-brick library
@@ -81,7 +91,7 @@ Configuration files for the OpenStack Cinder brick library.
 %py_req_cleanup
 
 %build
-%{python_build}
+%{py3_build}
 
 # generate html docs
 PBR_VERSION=%{version} %sphinx_build -b html doc/source doc/build/html
@@ -89,19 +99,19 @@ PBR_VERSION=%{version} %sphinx_build -b html doc/source doc/build/html
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
-%{python_install}
+%{py3_install}
 
 # move usr/etc to etc
 mv %{buildroot}%{_prefix}%{_sysconfdir}/* %{buildroot}/%{_sysconfdir}/
 
 %check
-%python_exec -m stestr.cli run --concurrency=1
+python3 -m stestr.cli run --concurrency=1
 
-%files %{python_files}
+%files -n python3-os-brick
 %license LICENSE
 %doc README.rst ChangeLog
-%{python_sitelib}/os_brick
-%{python_sitelib}/*.egg-info
+%{python3_sitelib}/os_brick
+%{python3_sitelib}/*.egg-info
 
 %files -n python-os-brick-common
 %license LICENSE
