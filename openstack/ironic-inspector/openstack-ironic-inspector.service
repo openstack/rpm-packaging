@@ -1,0 +1,12 @@
+[Unit]
+Description=Hardware introspection service for OpenStack Ironic
+After=syslog.target network.target
+
+[Service]
+ExecStart=/usr/bin/ironic-inspector
+User=ironic-inspector
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+Alias=openstack-ironic-inspector.service

@@ -1,0 +1,338 @@
+{% set pypi_name = 'ironic-inspector' %}
+{% set source = fetch_source('https://tarballs.openstack.org/ironic-inspector/ironic-inspector-master.tar.gz') %}
+{% set upstream_version = upstream_version() %}
+{% set rpm_release = '1' %}
+%global with_doc 1
+Name:           {{ py2name() }}
+Epoch:          {{ epoch('ironic-inspector') }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
+Summary:        Hardware introspection service for OpenStack Ironic
+License:        {{ license('Apache-2.0') }}
+URL:            https://launchpad.net/ironic-inspector
+Source0:        {{ source|basename }}
+Source1:        openstack-ironic-inspector.sudoers
+Source2:        openstack-ironic-inspector.logrotate
+Source3:        openstack-ironic-inspector.defaultconf
+Source4:        openstack-ironic-inspector.dnsmasqconf
+# systemd service files
+Source5:        openstack-ironic-inspector.service
+Source6:        openstack-ironic-inspector-dnsmasq.service
+Source7:        openstack-ironic-inspector-conductor.service
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py3('Babel') }}
+BuildRequires:  {{ py3('Flask') }}
+BuildRequires:  {{ py3('SQLAlchemy') }}
+BuildRequires:  {{ py3('alembic') }}
+BuildRequires:  {{ py3('automaton') }}
+BuildRequires:  {{ py3('construct') }}
+BuildRequires:  {{ py3('devel') }}
+BuildRequires:  {{ py3('eventlet') }}
+BuildRequires:  {{ py3('fixtures') }}
+BuildRequires:  {{ py3('futurist') }}
+BuildRequires:  {{ py3('ironic-lib') }}
+BuildRequires:  {{ py3('python-ironicclient') }}
+BuildRequires:  {{ py3('jsonpath-rw') }}
+BuildRequires:  {{ py3('jsonschema') }}
+BuildRequires:  {{ py3('keystoneauth1') }}
+BuildRequires:  {{ py3('keystonemiddleware') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('netaddr') }}
+BuildRequires:  {{ py3('openstacksdk') }}
+BuildRequires:  {{ py3('oslo.concurrency') }}
+BuildRequires:  {{ py3('oslo.config') }}
+BuildRequires:  {{ py3('oslo.context') }}
+BuildRequires:  {{ py3('oslo.db') }}
+BuildRequires:  {{ py3('oslo.i18n') }}
+BuildRequires:  {{ py3('oslo.log') }}
+BuildRequires:  {{ py3('oslo.messaging') }}
+BuildRequires:  {{ py3('oslo.middleware') }}
+BuildRequires:  {{ py3('oslo.policy') }}
+BuildRequires:  {{ py3('oslo.serialization') }}
+BuildRequires:  {{ py3('oslo.utils') }}
+BuildRequires:  {{ py3('oslotest') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('pytz') }}
+BuildRequires:  {{ py3('retrying') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('stevedore') }}
+BuildRequires:  {{ py3('testscenarios') }}
+BuildRequires:  {{ py3('tooz') }}
+BuildRequires:  sudo
+Requires:       logrotate
+Requires:       python3-{{ pypi_name }} = %{epoch}:%{version}-%{release}
+BuildArch:      noarch
+%if 0%{?suse_version}
+BuildRequires:  systemd-rpm-macros
+%{?systemd_requires}
+%else
+BuildRequires:  systemd
+Requires(post): systemd
+Requires(postun): systemd
+Requires(pre):  shadow-utils
+Requires(preun): systemd
+%endif
+
+%description
+Ironic Inspector is an auxiliary service for discovering hardware properties
+for a node managed by OpenStack Ironic. Hardware introspection or hardware
+properties discovery is a process of getting hardware parameters required for
+scheduling from a bare metal node, given its power management credentials
+(e.g. IPMI address, user name and password).
+
+This package contains Python modules and an ironic-inspector service combining
+API and conductor in one binary.
+
+%package -n   python3-{{ pypi_name }}
+Summary:      Hardware introspection service for OpenStack Ironic
+Group:        Development/Languages/Python
+Requires:     openstack-ironic-inspector-dnsmasq
+Requires:     {{ py3('Babel') }}
+Requires:     {{ py3('Flask') }}
+Requires:     {{ py3('SQLAlchemy') }}
+Requires:     {{ py3('alembic') }}
+Requires:     {{ py3('automaton') }}
+Requires:     {{ py3('construct') }}
+Requires:     {{ py3('eventlet') }}
+Requires:     {{ py3('futurist') }}
+Requires:     {{ py3('ironic-lib') }}
+Requires:     {{ py3('python-ironicclient') }}
+Requires:     {{ py3('jsonpath-rw') }}
+Requires:     {{ py3('jsonschema') }}
+Requires:     {{ py3('keystoneauth1') }}
+Requires:     {{ py3('keystonemiddleware') }}
+Requires:     {{ py3('netaddr') }}
+Requires:     {{ py3('openstacksdk') }}
+Requires:     {{ py3('oslo.concurrency') }}
+Requires:     {{ py3('oslo.config') }}
+Requires:     {{ py3('oslo.context') }}
+Requires:     {{ py3('oslo.db') }}
+Requires:     {{ py3('oslo.i18n') }}
+Requires:     {{ py3('oslo.log') }}
+Requires:     {{ py3('oslo.messaging') }}
+Requires:     {{ py3('oslo.middleware') }}
+Requires:     {{ py3('oslo.policy') }}
+Requires:     {{ py3('oslo.rootwrap') }}
+Requires:     {{ py3('oslo.serialization') }}
+Requires:     {{ py3('oslo.service') }}
+Requires:     {{ py3('oslo.utils') }}
+Requires:     {{ py3('pbr') }}
+Requires:     {{ py3('pytz') }}
+Requires:     {{ py3('retrying') }}
+Requires:     {{ py3('stevedore') }}
+Requires:     {{ py3('tooz') }}
+
+%description -n python3-{{ pypi_name }}
+
+Ironic Inspector is an auxiliary service for discovering hardware properties
+for a node managed by OpenStack Ironic. Hardware introspection or hardware
+properties discovery is a process of getting hardware parameters required for
+scheduling from a bare metal node, given its power management credentials
+(e.g. IPMI address, user name and password).
+
+This package contains Python modules and an ironic-inspector service combining
+API and conductor in one binary.
+
+%if 0%{?with_doc}
+%package doc
+Summary:    Documentation for Ironic Inspector
+Group:      Documentation/HTML
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
+BuildRequires:  {{ py3('sphinxcontrib-svg2pdfconverter') }}
+
+%description doc
+Documentation for Ironic Inspector.
+%endif
+
+%package -n openstack-ironic-inspector-dnsmasq
+Summary:    DHCP service for ironic-inspector using dnsmasq
+Requires:   dnsmasq
+Requires:   openstack-{{ pypi_name }} = %{epoch}:%{version}-%{release}
+
+%description -n openstack-ironic-inspector-dnsmasq
+Ironic Inspector is an auxiliary service for discovering hardware properties
+for a node managed by OpenStack Ironic. Hardware introspection or hardware
+properties discovery is a process of getting hardware parameters required for
+scheduling from a bare metal node, given its power management credentials
+(e.g. IPMI address, user name and password).
+
+This package contains a dnsmasq service pre-configured for using with
+ironic-inspector.
+
+%package -n openstack-ironic-inspector-conductor
+Summary:    Conductor service for Ironic Inspector
+Requires:   openstack-{{ pypi_name }} = %{epoch}:%{version}-%{release}
+
+%description -n openstack-ironic-inspector-conductor
+Ironic Inspector is an auxiliary service for discovering hardware properties
+for a node managed by OpenStack Ironic. Hardware introspection or hardware
+properties discovery is a process of getting hardware parameters required for
+scheduling from a bare metal node, given its power management credentials
+(e.g. IPMI address, user name and password).
+
+This package contains an ironic-inspector conductor service, which can be used
+to split ironic-inspector into API and conductor processes.
+
+%package -n openstack-ironic-inspector-api
+Summary:    WSGI service service for Ironic Inspector
+Requires:   openstack-{{ pypi_name }} = %{epoch}:%{version}-%{release}
+
+%description -n openstack-ironic-inspector-api
+Ironic Inspector is an auxiliary service for discovering hardware properties
+for a node managed by OpenStack Ironic. Hardware introspection or hardware
+properties discovery is a process of getting hardware parameters required for
+scheduling from a bare metal node, given its power management credentials
+(e.g. IPMI address, user name and password).
+
+This package contains an ironic-inspector WSGI service, which can be used
+to split ironic-inspector into API and conductor processes.
+
+%prep
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
+%py_req_cleanup
+
+%build
+%{py3_build}
+
+%if 0%{?with_doc}
+export PYTHONPATH=.
+export PBR_VERSION={{ upstream_version }}
+%sphinx_build --keep-going -b html doc/source doc/build/html
+%sphinx_build --keep-going -b man doc/source doc/build/man
+# remove the Sphinx-build leftovers
+rm -rf doc/build/html/.{doctrees,buildinfo}
+rm -rf doc/build/man/.{doctrees,buildinfo}
+%endif
+
+%install
+%{py3_install}
+
+# logs configuration
+install -d -m 750 %{buildroot}%{_localstatedir}/log/ironic-inspector
+install -d -m 750 %{buildroot}%{_localstatedir}/log/ironic-inspector/ramdisk
+install -p -D -m 644 %{SOURCE2} %{buildroot}%{_sysconfdir}/logrotate.d/openstack-ironic-inspector
+
+# install systemd scripts
+mkdir -p %{buildroot}%{_unitdir}
+install -p -D -m 644 %{SOURCE5} %{buildroot}%{_unitdir}
+install -p -D -m 644 %{SOURCE6} %{buildroot}%{_unitdir}
+install -p -D -m 644 %{SOURCE7} %{buildroot}%{_unitdir}
+
+# install sudoers file
+mkdir -p %{buildroot}%{_sysconfdir}/sudoers.d
+install -p -D -m 440 %{SOURCE1} %{buildroot}%{_sysconfdir}/sudoers.d/openstack-ironic-inspector
+
+# install configuration files
+install -d -m 750 %{buildroot}%{_sysconfdir}/ironic-inspector
+install -p -D -m 640 %{SOURCE3} %{buildroot}/%{_sysconfdir}/ironic-inspector/ironic-inspector.conf
+install -p -D -m 640 %{SOURCE4} %{buildroot}/%{_sysconfdir}/ironic-inspector/dnsmasq.conf
+
+# rootwrap configuration
+mkdir -p %{buildroot}%{_sysconfdir}/ironic-inspector/rootwrap.d
+install -p -D -m 640 rootwrap.conf %{buildroot}/%{_sysconfdir}/ironic-inspector/rootwrap.conf
+install -p -D -m 640 rootwrap.d/* %{buildroot}/%{_sysconfdir}/ironic-inspector/rootwrap.d/
+
+### install symlinks on SUSE
+%if 0%{?suse_version}
+mkdir -p %{buildroot}%{_sbindir}
+ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-api
+ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-conductor
+ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-dnsmasq
+%endif
+
+### man pages
+%if 0%{?with_doc}
+mkdir -p %{buildroot}%{_mandir}/man1
+install -p -D -m 644 doc/build/man/ironic-inspector.1 %{buildroot}%{_mandir}/man1/
+%endif
+
+%check
+export LC_ALL=en_US.UTF-8
+python3 -m stestr.cli run
+
+%pre
+%openstack_pre_user_group_create ironic-inspector ironic-inspector /sbin/nologin
+exit 0
+
+%post api
+%systemd_post %{name}.service
+
+%preun api
+%systemd_preun %{name}.service
+
+%postun api
+%systemd_postun %{name}.service
+
+%post dnsmasq
+%systemd_post %{name}-dnsmasq.service
+
+%preun dnsmasq
+%systemd_preun %{name}-dnsmasq.service
+
+%postun dnsmasq
+%systemd_postun %{name}-dnsmasq.service
+
+%post conductor
+%systemd_post %{name}-conductor.service
+
+%preun conductor
+%systemd_preun %{name}-conductor.service
+
+%postun conductor
+%systemd_postun %{name}-conductor.service
+
+
+%files
+%doc README.rst
+%license LICENSE
+%dir %attr(0750, ironic-inspector, ironic-inspector) %{_localstatedir}/log/ironic-inspector
+%dir %{_sysconfdir}/ironic-inspector
+%config(noreplace) %{_sysconfdir}/logrotate.d/openstack-ironic-inspector
+%config(noreplace) %{_sysconfdir}/sudoers.d/openstack-ironic-inspector
+%config(noreplace) %attr(0640, root, ironic-inspector) %{_sysconfdir}/ironic-inspector/ironic-inspector.conf
+%config(noreplace) %attr(0640, root, ironic-inspector) %{_sysconfdir}/ironic-inspector/dnsmasq.conf
+%config %{_sysconfdir}/ironic-inspector/rootwrap.conf
+%dir %{_sysconfdir}/ironic-inspector/rootwrap.d
+%config(noreplace) %{_sysconfdir}/ironic-inspector/rootwrap.d/ironic-inspector.filters
+%{_bindir}/ironic-inspector-rootwrap
+%{_bindir}/ironic-inspector-dbsync
+%{_bindir}/ironic-inspector-migrate-data
+%if 0%{?with_doc}
+%{_mandir}/man1/ironic-inspector.1.gz
+%endif
+
+%files -n python3-ironic-inspector
+%license LICENSE
+%{python3_sitelib}/ironic_inspector/
+%{python3_sitelib}/ironic_inspector*.egg-info
+
+%files doc
+%license LICENSE
+%doc doc/build/html
+
+%files dnsmasq
+%license LICENSE
+%{_unitdir}/%{name}-dnsmasq.service
+%if 0%{?suse_version}
+%{_sbindir}/rc%{name}-dnsmasq
+%endif
+
+%files api
+%license LICENSE
+%{_unitdir}/%{name}.service
+%if 0%{?suse_version}
+%{_sbindir}/rc%{name}-api
+%endif
+%{_bindir}/ironic-inspector
+%{_bindir}/ironic-inspector-api-wsgi
+
+%files conductor
+%license LICENSE
+%{_unitdir}/%{name}-conductor.service
+%if 0%{?suse_version}
+%{_sbindir}/rc%{name}-conductor
+%endif
+%{_bindir}/ironic-inspector-conductor
+
+%changelog
