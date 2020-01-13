@@ -21,7 +21,6 @@ Source10:       openstack-nova.modprobe
 Source11:       openstack-nova-api.service
 Source12:       openstack-nova-compute.service
 Source14:       openstack-nova-scheduler.service
-Source15:       openstack-nova-xvpvncproxy.service
 Source18:       openstack-nova-api-metadata.service
 Source19:       openstack-nova-conductor.service
 Source21:       openstack-nova-spicehtml5proxy.service
@@ -281,25 +280,6 @@ standard hardware configurations and seven major hypervisors.
 This package contains the Nova noVNC Proxy service that can proxy
 VNC traffic over browser websockets connections.
 
-%package xvpvncproxy
-Summary:        OpenStack Nova XVP VNC proxy service
-Group:          Applications/System
-Requires:       %{name} = %{epoch}:%{version}-%{release}
-Requires:       novnc
-
-%description xvpvncproxy
-OpenStack Compute (codename Nova) is open source software designed to
-provision and manage large networks of virtual machines, creating a
-redundant and scalable cloud computing platform. It gives you the
-software, control panels, and APIs required to orchestrate a cloud,
-including running instances, managing networks, and controlling access
-through users and projects. OpenStack Compute strives to be both
-hardware and hypervisor agnostic, currently supporting a variety of
-standard hardware configurations and seven major hypervisors.
-
-This package contains the Nova VNC Proxy service that can proxy
-VNC traffic over browser websockets connections.
-
 %package scheduler
 Summary:        OpenStack Nova VM distribution service
 Group:          Applications/System
@@ -460,7 +440,6 @@ install -p -D -m 440 %{SOURCE7} %{buildroot}%{_sysconfdir}/sudoers.d/%{name}
 install -p -D -m 755 %{SOURCE11} %{buildroot}%{_unitdir}/%{name}-api.service
 install -p -D -m 755 %{SOURCE12} %{buildroot}%{_unitdir}/%{name}-compute.service
 install -p -D -m 755 %{SOURCE14} %{buildroot}%{_unitdir}/%{name}-scheduler.service
-install -p -D -m 755 %{SOURCE15} %{buildroot}%{_unitdir}/%{name}-xvpvncproxy.service
 install -p -D -m 755 %{SOURCE18} %{buildroot}%{_unitdir}/%{name}-api-metadata.service
 install -p -D -m 755 %{SOURCE19} %{buildroot}%{_unitdir}/%{name}-conductor.service
 install -p -D -m 755 %{SOURCE21} %{buildroot}%{_unitdir}/%{name}-spicehtml5proxy.service
@@ -474,7 +453,6 @@ mkdir -p %{buildroot}%{_sbindir}
 ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-api
 ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-compute
 ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-scheduler
-ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-xvpvncproxy
 ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-api-metadata
 ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-conductor
 ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-spicehtml5proxy
@@ -519,9 +497,6 @@ rm nova/tests/unit/test_hacking.py
 %post novncproxy
 %systemd_post %{name}-novncproxy.service
 
-%post xvpvncproxy
-%systemd_post %{name}-xvpvncproxy.service
-
 %post scheduler
 %systemd_post %{name}-scheduler.service
 
@@ -545,9 +520,6 @@ rm nova/tests/unit/test_hacking.py
 %preun novncproxy
 %systemd_preun %{name}-novncproxy.service
 
-%preun xvpvncproxy
-%systemd_preun %{name}-xvpvncproxy.service
-
 %preun scheduler
 %systemd_preun %{name}-scheduler.service
 
@@ -569,9 +541,6 @@ rm nova/tests/unit/test_hacking.py
 
 %postun novncproxy
 %systemd_postun_with_restart %{name}-novncproxy.service
-
-%postun xvpvncproxy
-%systemd_postun_with_restart %{name}-xvpvncproxy.service
 
 %postun scheduler
 %systemd_postun_with_restart %{name}-scheduler.service
@@ -680,17 +649,6 @@ rm nova/tests/unit/test_hacking.py
 %endif
 %if 0%{?with_doc}
 %{_mandir}/man1/nova-novncproxy.1.gz
-%endif
-
-%files xvpvncproxy
-%license LICENSE
-%{_bindir}/nova-xvpvncproxy
-%{_unitdir}/%{name}-xvpvncproxy.service
-%if 0%{?suse_version}
-%{_sbindir}/rc%{name}-xvpvncproxy
-%endif
-%if 0%{?with_doc}
-%{_mandir}/man1/nova-xvpvncproxy.1.gz
 %endif
 
 %files scheduler
