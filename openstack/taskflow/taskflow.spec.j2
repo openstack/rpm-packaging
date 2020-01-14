@@ -12,63 +12,64 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/taskflow
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('PyMySQL', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('SQLAlchemy', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('SQLAlchemy-Utils', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('alembic', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('automaton', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('cachetools', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('eventlet', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('fasteners', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('futurist', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('jsonschema', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('kazoo', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('kombu', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('networkx', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.serialization', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.utils', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('psycopg2', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('pydot', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('pydotplus', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('redis', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('retrying', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('stevedore', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('tenacity', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('zake', py_versions=['py2', 'py3']) }}
-Requires:       {{ py2pkg('automaton') }}
-Requires:       {{ py2pkg('cachetools') }}
-Requires:       {{ py2pkg('debtcollector') }}
-Requires:       {{ py2pkg('fasteners') }}
-Requires:       {{ py2pkg('futurist') }}
-Requires:       {{ py2pkg('jsonschema') }}
-Requires:       {{ py2pkg('kazoo') }}
-Requires:       {{ py2pkg('networkx') }}
-Requires:       {{ py2pkg('oslo.serialization') }}
-Requires:       {{ py2pkg('oslo.utils') }}
-Requires:       {{ py2pkg('six') }}
-Requires:       {{ py2pkg('stevedore') }}
-Requires:       {{ py2pkg('tenacity') }}
+BuildRequires:  {{ py3('PyMySQL') }}
+BuildRequires:  {{ py3('SQLAlchemy') }}
+BuildRequires:  {{ py3('SQLAlchemy-Utils') }}
+BuildRequires:  {{ py3('alembic') }}
+BuildRequires:  {{ py3('automaton') }}
+BuildRequires:  {{ py3('cachetools') }}
+BuildRequires:  {{ py3('devel') }}
+BuildRequires:  {{ py3('eventlet') }}
+BuildRequires:  {{ py3('fasteners') }}
+BuildRequires:  {{ py3('futurist') }}
+BuildRequires:  {{ py3('jsonschema') }}
+BuildRequires:  {{ py3('kazoo') }}
+BuildRequires:  {{ py3('kombu') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('networkx') }}
+BuildRequires:  {{ py3('oslo.serialization') }}
+BuildRequires:  {{ py3('oslo.utils') }}
+BuildRequires:  {{ py3('oslotest') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('psycopg2') }}
+BuildRequires:  {{ py3('pydot') }}
+BuildRequires:  {{ py3('pydotplus') }}
+BuildRequires:  {{ py3('redis') }}
+BuildRequires:  {{ py3('retrying') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('stevedore') }}
+BuildRequires:  {{ py3('tenacity') }}
+BuildRequires:  {{ py3('testrepository') }}
+BuildRequires:  {{ py3('testscenarios') }}
+BuildRequires:  {{ py3('testtools') }}
+BuildRequires:  {{ py3('zake') }}
 BuildArch:      noarch
-%ifpython2
-BuildRequires:  {{ py2pkg('contextlib2') }}
-BuildRequires:  {{ py2pkg('enum34') }}
-Requires:       {{ py2pkg('contextlib2') }}
-Requires:       {{ py2pkg('enum34') }}
-Requires:       {{ py2pkg('futures') }}
-%endif
-%python_subpackages
 
 %description
 A library to do [jobs, tasks, flows] in a HA manner using
 different backends to be used with OpenStack projects.
+
+%package -n python3-taskflow
+Summary:        Taskflow structured state management library
+Requires:       {{ py3('automaton') }}
+Requires:       {{ py3('cachetools') }}
+Requires:       {{ py3('debtcollector') }}
+Requires:       {{ py3('fasteners') }}
+Requires:       {{ py3('futurist') }}
+Requires:       {{ py3('jsonschema') }}
+Requires:       {{ py3('kazoo') }}
+Requires:       {{ py3('networkx') }}
+Requires:       {{ py3('oslo.serialization') }}
+Requires:       {{ py3('oslo.utils') }}
+Requires:       {{ py3('six') }}
+Requires:       {{ py3('stevedore') }}
+Requires:       {{ py3('tenacity') }}
+
+%description -n python3-taskflow
+A library to do [jobs, tasks, flows] in a HA manner using
+different backends to be used with OpenStack projects.
+
+This package contains the Python 3.x module.
 
 %package -n {{ py2name('taskflow') }}-doc
 Summary:        Documentation for Taskflow
@@ -85,32 +86,25 @@ This package contains the associated documentation.
 %autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
 
-%if 0%{?rdo}
-# TODO(jpena) remove once python-networking subpackaging is fixed
-sed -i /networkx.drawing/d taskflow/types/graph.py
-%endif
-
 %build
-%{python_build}
+%{py3_build}
 
 %install
-%{python_install}
+%{py3_install}
 
 # generate html docs
 PBR_VERSION={{ upstream_version }} %sphinx_build -b html doc/source doc/build/html
 # remove the sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
-%if ! 0%{?rdo}
 %check
-%python_exec -m stestr.cli run
-%endif
+python3 -m stestr.cli run
 
-%files %{python_files}
+%files -n python3-taskflow
 %doc README.rst
 %license LICENSE
-%{python_sitelib}/{{ pypi_name }}
-%{python_sitelib}/{{ pypi_name }}-*.egg-info
+%{python3_sitelib}/{{ pypi_name }}
+%{python3_sitelib}/{{ pypi_name }}-*.egg-info
 
 %files -n {{ py2name('taskflow') }}-doc
 %license LICENSE
