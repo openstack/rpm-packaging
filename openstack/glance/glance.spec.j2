@@ -238,6 +238,9 @@ rm -rf doc/build/man/.{doctrees,buildinfo}
 for service in api scrubber cache manage image-import; do
     PYTHONPATH=. oslo-config-generator --config-file etc/oslo-config-generator/glance-$service.conf
 done
+# generate the sample policy
+PYTHONPATH=. oslopolicy-sample-generator --config-file=etc/glance-policy-generator.conf --output etc/policy.json
+rm -f etc/glance-policy-generator.conf
 
 %install
 %{py3_install}
