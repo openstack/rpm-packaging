@@ -14,36 +14,34 @@ URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
 BuildRequires:  fdupes
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('Babel', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('PrettyTable', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.config', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.i18n', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
-Requires:       {{ py2pkg('Babel') }}
-Requires:       {{ py2pkg('PrettyTable') }}
-Requires:       {{ py2pkg('oslo.config') }}
-Requires:       {{ py2pkg('oslo.i18n') }}
+BuildRequires:  {{ py3('Babel') }}
+BuildRequires:  {{ py3('PrettyTable') }}
+BuildRequires:  {{ py3('oslo.config') }}
+BuildRequires:  {{ py3('oslo.i18n') }}
+BuildRequires:  {{ py3('oslotest') }}
+BuildRequires:  {{ py3('stestr') }}
 BuildArch:      noarch
-%ifpython2
-BuildRequires:  {{ py2pkg('enum34') }}
-Requires:       {{ py2pkg('enum34') }}
-%endif
-%if 0%{?suse_version}
-Requires(post): update-alternatives
-Requires(postun): update-alternatives
-%else
-# on RDO, update-alternatives is in chkconfig
-Requires(post): chkconfig
-Requires(postun): chkconfig
-%endif
-%python_subpackages
 
 %description
 This project contains the common code necessary for writing upgrade checks
 in OpenStack projects. It includes a module (oslo_upgradecheck.upgradecheck)
 for the common code as well as an example (oslo_upgradecheck.__main__) of
 integrating that code into a project.
+
+%package -n {{ py2name(py_versions='py3') }}
+Summary:        Common code for writing OpenStack upgrade checks
+Requires:       {{ py3('Babel') }}
+Requires:       {{ py3('PrettyTable') }}
+Requires:       {{ py3('oslo.config') }}
+Requires:       {{ py3('oslo.i18n') }}
+
+%description -n {{ py2name(py_versions='py3') }}
+This project contains the common code necessary for writing upgrade checks
+in OpenStack projects. It includes a module (oslo_upgradecheck.upgradecheck)
+for the common code as well as an example (oslo_upgradecheck.__main__) of
+integrating that code into a project.
+
+This package contains the Python 3.x module.
 
 %package -n python-{{ pypi_name }}-doc
 Summary:        Common code for writing OpenStack upgrade checks
@@ -58,7 +56,7 @@ Documentation for the {{ pypi_name }} library.
 %py_req_cleanup
 
 %build
-%{python_build}
+%{py3_build}
 
 PBR_VERSION={{ upstream_version }} %sphinx_build -b html doc/source doc/build/html
 # remove the sphinx-build leftovers
@@ -66,16 +64,16 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %fdupes doc/build/html/
 
 %install
-%{python_install}
+%{py3_install}
 
 %check
 export PYTHONPATH=`pwd`
-%python_exec -m stestr.cli run
+python3 -m stestr.cli run
 
-%files %{python_files}
+%files -n {{ py2name(py_versions='py3') }}
 %license LICENSE
-%{python_sitelib}/oslo_upgradecheck
-%{python_sitelib}/*.egg-info
+%{python3_sitelib}/oslo_upgradecheck
+%{python3_sitelib}/*.egg-info
 
 %files -n python-{{ pypi_name }}-doc
 %doc doc/build/html README.rst
