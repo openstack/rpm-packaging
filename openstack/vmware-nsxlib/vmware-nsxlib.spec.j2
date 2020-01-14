@@ -2,7 +2,9 @@
 {% set source = fetch_source('https://tarballs.openstack.org/vmware-nsxlib/vmware-nsxlib-master.tar.gz') %}
 {% set upstream_version = upstream_version() %}
 {% set rpm_release = '1' %}
-
+# FIXME(jpena): oslosphinx does not work with sphinx > 2
+# Set this variable to 1 when that is fixed
+%global with_doc 0
 Name:           {{ py2name() }}
 Version:        {{ py2rpmversion() }}
 Release:        {{ py2rpmrelease() }}
@@ -11,82 +13,91 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://launchpad.net/vmware-nsxlib
 Source0:        {{ source|basename }}
+BuildRequires:  fdupes
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('neutron-lib') }}
-BuildRequires:  {{ py2pkg('decorator', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('eventlet', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.log', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.service', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('pyOpenSSL', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('requests-mock', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('tenacity', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testresources', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
-Requires:       {{ py2pkg('decorator') }}
-Requires:       {{ py2pkg('eventlet') }}
-Requires:       {{ py2pkg('netaddr') }}
-Requires:       {{ py2pkg('neutron-lib') }}
-Requires:       {{ py2pkg('oslo.i18n') }}
-Requires:       {{ py2pkg('oslo.log') }}
-Requires:       {{ py2pkg('oslo.serialization') }}
-Requires:       {{ py2pkg('oslo.service') }}
-Requires:       {{ py2pkg('oslo.utils') }}
-Requires:       {{ py2pkg('pyOpenSSL') }}
-Requires:       {{ py2pkg('six') }}
-Requires:       {{ py2pkg('tenacity') }}
+BuildRequires:  {{ py3('decorator') }}
+BuildRequires:  {{ py3('eventlet') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('neutron-lib') }}
+BuildRequires:  {{ py3('oslo.log') }}
+BuildRequires:  {{ py3('oslo.service') }}
+BuildRequires:  {{ py3('oslotest') }}
+BuildRequires:  {{ py3('pyOpenSSL') }}
+BuildRequires:  {{ py3('requests-mock') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('tenacity') }}
+BuildRequires:  {{ py3('testrepository') }}
+BuildRequires:  {{ py3('testresources') }}
+BuildRequires:  {{ py3('testscenarios') }}
+BuildRequires:  {{ py3('testtools') }}
 BuildArch:      noarch
-%ifpython2
-Requires:       {{ py2pkg('enum34') }}
-%endif
-%python_subpackages
 
 %description
 vmware-nsxlib is a python library that interfaces with VMWare NSX
 
+%package -n python3-vmware-nsxlib
+Summary:        VMware NSX python library
+Requires:       {{ py3('decorator') }}
+Requires:       {{ py3('eventlet') }}
+Requires:       {{ py3('netaddr') }}
+Requires:       {{ py3('neutron-lib') }}
+Requires:       {{ py3('oslo.i18n') }}
+Requires:       {{ py3('oslo.log') }}
+Requires:       {{ py3('oslo.serialization') }}
+Requires:       {{ py3('oslo.service') }}
+Requires:       {{ py3('oslo.utils') }}
+Requires:       {{ py3('pyOpenSSL') }}
+Requires:       {{ py3('six') }}
+Requires:       {{ py3('tenacity') }}
+
+%description -n python3-vmware-nsxlib
+vmware-nsxlib is a python library that interfaces with VMWare NSX
+
+This package contains the Python 3.x module.
+
+%if 0%{?with_doc}
 %package -n python-vmware-nsxlib-doc
 Summary:        Documentation for vmware-nsxlib
 Group:          Documentation/HTML
-BuildRequires:  fdupes
-BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('oslosphinx') }}
 
 %description -n python-vmware-nsxlib-doc
 vmware-nsxlib is a python library that interfaces with VMWare NSX
 This package contains the documentation
+%endif
 
 %prep
 %autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
-sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
-%{python_build}
+%{py3_build}
+%if 0%{?with_doc}
 # generate html docs
-PBR_VERSION={{ upstream_version }} sphinx-build -b html doc/source doc/build/html
+PBR_VERSION={{ upstream_version }} %sphinx_build -b html doc/source doc/build/html
 # remove the sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 %fdupes doc/build/html/
+%endif
 
 %install
-%{python_install}
+%{py3_install}
 # remove duplicates
-%fdupes %{buildroot}%{python_sitelib}
+%fdupes %{buildroot}%{python3_sitelib}
 
 %check
-%python_exec -m stestr.cli run
+python3 -m stestr.cli run
 
-%files %{python_files}
+%files -n python3-vmware-nsxlib
 %license LICENSE
-%{python_sitelib}/vmware_nsxlib
-%{python_sitelib}/*.egg-info
+%{python3_sitelib}/vmware_nsxlib
+%{python3_sitelib}/*.egg-info
 
+%if 0%{?with_doc}
 %files -n python-vmware-nsxlib-doc
 %license LICENSE
 %doc README.rst doc/build/html
+%endif
 
 %changelog
