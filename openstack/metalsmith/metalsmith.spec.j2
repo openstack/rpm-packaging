@@ -12,35 +12,29 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('PrettyTable', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('enum34', py_versions=['py2']) }}
-BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('openstacksdk', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('setuptools', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('six', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
-Requires:       {{ py2pkg('PrettyTable') }}
-Requires:       {{ py2pkg('openstacksdk') }}
-Requires:       {{ py2pkg('pbr') }}
-Requires:       {{ py2pkg('requests') }}
-Requires:       {{ py2pkg('six') }}
+BuildRequires:  {{ py3('PrettyTable') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('openstacksdk') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('setuptools') }}
+BuildRequires:  {{ py3('six') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('testtools') }}
 BuildArch:      noarch
-%if 0%{?suse_version}
-Requires(post): update-alternatives
-Requires(postun): update-alternatives
-%else
-# on RDO, update-alternatives is in chkconfig
-Requires(post): chkconfig
-Requires(postun): chkconfig
-%endif
-%ifpython2
-Requires:       {{ py2pkg('enum34') }}
-%endif
-%python_subpackages
 
 %description
+Simple Python library and CLI tool to provision bare metal machines using
+OpenStack Ironic.
+
+%package -n python3-metalsmith
+Summary:        Bare metal provisioner using Ironic
+Requires:       {{ py3('PrettyTable') }}
+Requires:       {{ py3('openstacksdk') }}
+Requires:       {{ py3('pbr') }}
+Requires:       {{ py3('requests') }}
+Requires:       {{ py3('six') }}
+
+%description -n python3-metalsmith
 Simple Python library and CLI tool to provision bare metal machines using
 OpenStack Ironic.
 
@@ -56,7 +50,7 @@ Documentation for Metalsmith
 %package -n ansible-role-{{ py2name() }}-deployment
 Summary:        Ansible role for Metalsmith deployment
 Requires:       ansible
-Requires:       {{ py2pkg('metalsmith') }}
+Requires:       {{ py3('metalsmith') }}
 
 %description -n ansible-role-{{ py2name() }}-deployment
 Ansible role for Metalsmith deployment
@@ -66,7 +60,7 @@ Ansible role for Metalsmith deployment
 %py_req_cleanup
 
 %build
-%{python_build}
+%{py3_build}
 
 # generate html docs
 PBR_VERSION={{ upstream_version }} %sphinx_build -b html doc/source doc/build/html
@@ -74,24 +68,16 @@ PBR_VERSION={{ upstream_version }} %sphinx_build -b html doc/source doc/build/ht
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
-%{python_install}
-%python_clone -a %{buildroot}%{_bindir}/metalsmith
-
-%post
-%{python_install_alternative metalsmith}
-
-%postun
-%python_uninstall_alternative metalsmith
-
+%{py3_install}
 
 %check
-%python_exec -m stestr.cli run
+python3 -m stestr.cli run
 
-%files %{python_files}
+%files -n python3-metalsmith
 %license LICENSE
-%python_alternative %{_bindir}/metalsmith
-%{python_sitelib}/metalsmith
-%{python_sitelib}/*.egg-info
+%{_bindir}/metalsmith
+%{python3_sitelib}/metalsmith
+%{python3_sitelib}/*.egg-info
 
 %files -n {{ py2name() }}-doc
 %license LICENSE
