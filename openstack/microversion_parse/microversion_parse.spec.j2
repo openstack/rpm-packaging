@@ -12,49 +12,54 @@ Group:          Development/Languages/Python
 URL:            https://www.openstack.org/
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('WebOb', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('gabbi', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('setuptools', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py3('WebOb') }}
+BuildRequires:  {{ py3('gabbi') }}
+BuildRequires:  {{ py3('setuptools') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('testtools') }}
 BuildArch:      noarch
-%python_subpackages
 
 %description
 A simple parser for OpenStack microversion headers.
 
+%package -n {{ py2name(py_versions='py3') }}
+Summary:        OpenStack microversion header parser
+
+%description -n {{ py2name(py_versions='py3') }}
+A simple parser for OpenStack microversion headers.
+
 %package -n {{ py2name() }}-doc
 Summary:        Documentation for OpenStack Microversion headers
-BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('oslosphinx') }}
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('oslosphinx') }}
 
 %description -n {{ py2name() }}-doc
 This package contains thedocumentation for OpenStack microversion
 headers parsing library.
 
 %prep
-%autosetup -n microversion_parse-%{version}
+%autosetup -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
 
 %build
-%python_build
+%py3_build
 
 # generate html docs
-PBR_VERSION=%{version} sphinx-build -b html doc/source doc/build/html
+PBR_VERSION={{ upstream_version }} %sphinx_build -b html doc/source doc/build/html
 # remove the sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
-%python_install
+%py3_install
 
 %check
-%python_exec -m stestr.cli run
+python3 -m stestr.cli run
 
-%files %{python_files}
+%files -n {{ py2name(py_versions='py3') }}
 %license LICENSE
 %doc ChangeLog README.rst
-%{python_sitelib}/microversion_parse
-%{python_sitelib}/microversion_parse*egg-info
+%{python3_sitelib}/microversion_parse
+%{python3_sitelib}/microversion_parse*egg-info
 
 %files -n {{ py2name() }}-doc
 %license LICENSE
