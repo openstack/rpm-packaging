@@ -11,16 +11,23 @@ Group:          Development/Languages/Python
 URL:            https://wiki.openstack.org/wiki/Monasca
 Source0:        https://files.pythonhosted.org/packages/source/m/{{ pypi_name }}/{{ pypi_name }}-%{version}.tar.gz
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('six', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
-Requires:       {{ py2pkg('six') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('six') }}
+BuildRequires:  {{ py3('stestr') }}
 BuildArch:      noarch
-%python_subpackages
 
 %description
 Python Statsd library for sending statsd messages via the Monasca Agent
+
+%package -n python3-monasca-statsd
+Summary:        Python Statsd library for sending statsd messages via the Monasca Agent
+Requires:       {{ py3('six') }}
+
+%description -n python3-monasca-statsd
+Python Statsd library for sending statsd messages via the Monasca Agent
+
+This package contains the Python 3.x module.
 
 %prep
 %autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
@@ -28,20 +35,20 @@ Python Statsd library for sending statsd messages via the Monasca Agent
 
 %build
 export LC_ALL=en_US.utf-8
-%{python_build}
+%{py3_build}
 
 %install
 export LC_ALL=en_US.utf-8
-%{python_install}
+%{py3_install}
 
 %check
 export LC_ALL=en_US.utf-8
-%python_exec -m stestr.cli run
+python3 -m stestr.cli run
 
-%files %{python_files}
+%files -n python3-monasca-statsd
 %license LICENSE
 %doc README.rst ChangeLog
-%{python_sitelib}/monascastatsd
-%{python_sitelib}/*.egg-info
+%{python3_sitelib}/monascastatsd
+%{python3_sitelib}/*.egg-info
 
 %changelog
