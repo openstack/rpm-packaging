@@ -575,7 +575,6 @@ rm nova/tests/unit/test_hacking.py
 %config(noreplace) %attr(-, root, nova) %{_sysconfdir}/nova/policy.yaml
 %config(noreplace) %attr(-, root, nova) %{_sysconfdir}/nova/rootwrap.conf
 %config(noreplace) %attr(0640, root, nova) %{_sysconfdir}/nova/nova.conf.d/010-nova.conf
-%config %{_sysconfdir}/nova/rootwrap.d/network.filters
 %{_bindir}/nova-manage
 %{_bindir}/nova-policy
 %{_bindir}/nova-rootwrap
@@ -594,7 +593,6 @@ rm nova/tests/unit/test_hacking.py
 
 %files api
 %license LICENSE
-%config %{_sysconfdir}/nova/rootwrap.d/api-metadata.filters
 %{_bindir}/nova-api-wsgi
 %{_bindir}/nova-metadata-wsgi
 %{_bindir}/nova-api
