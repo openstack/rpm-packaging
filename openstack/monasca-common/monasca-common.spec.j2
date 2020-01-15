@@ -13,35 +13,43 @@ Group:          Development/Languages/Python
 URL:            https://wiki.openstack.org/wiki/Monasca
 Source0:        {{ source|basename }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('PyMySQL', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('confluent-kafka', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('kazoo', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.config', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.context', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.policy', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('pyparsing', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('requests-mock', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('setuptools', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('six', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('ujson', py_versions=['py2', 'py3']) }}
-Requires:       {{ py2pkg('PyMySQL') }}
-Requires:       {{ py2pkg('confluent-kafka') }}
-Requires:       {{ py2pkg('kazoo') }}
-Requires:       {{ py2pkg('oslo.config') }}
-Requires:       {{ py2pkg('oslo.policy') }}
-Requires:       {{ py2pkg('pyparsing') }}
-Requires:       {{ py2pkg('six') }}
-Requires:       {{ py2pkg('ujson') }}
+BuildRequires:  {{ py3('PyMySQL') }}
+BuildRequires:  {{ py3('confluent-kafka') }}
+BuildRequires:  {{ py3('kazoo') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('oslo.config') }}
+BuildRequires:  {{ py3('oslo.context') }}
+BuildRequires:  {{ py3('oslo.policy') }}
+BuildRequires:  {{ py3('oslotest') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('pyparsing') }}
+BuildRequires:  {{ py3('requests-mock') }}
+BuildRequires:  {{ py3('setuptools') }}
+BuildRequires:  {{ py3('six') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('ujson') }}
 BuildArch:      noarch
-%python_subpackages
 
 %description
 Collection of sub-projects containing reusable application and
 platform code for building monitoring related services.
+
+%package -n python3-monasca-common
+Summary:        Reusable code for building monitoring related services.
+Requires:       {{ py3('PyMySQL') }}
+Requires:       {{ py3('confluent-kafka') }}
+Requires:       {{ py3('kazoo') }}
+Requires:       {{ py3('oslo.config') }}
+Requires:       {{ py3('oslo.policy') }}
+Requires:       {{ py3('pyparsing') }}
+Requires:       {{ py3('six') }}
+Requires:       {{ py3('ujson') }}
+
+%description -n python3-monasca-common
+Collection of sub-projects containing reusable application and
+platform code for building monitoring related services.
+
+This package contains the Python 3.x module.
 
 %prep
 %autosetup -n %{sname}-{{ upstream_version }}
@@ -49,22 +57,22 @@ platform code for building monitoring related services.
 
 %build
 export LC_ALL=en_US.utf-8
-%{python_build}
+%{py3_build}
 
 %install
 export LC_ALL=en_US.utf-8
-%{python_install}
+%{py3_install}
 
-%if 0%{?suse_version}
+#%if 0%{?suse_version}
 %check
 export LC_ALL=en_US.utf-8
-%python_exec -m stestr.cli run
-%endif
+python3 -m stestr.cli run
+#%endif
 
-%files %{python_files}
+%files -n python3-monasca-common
 %license LICENSE
 %doc README.rst ChangeLog
-%{python_sitelib}/monasca_common
-%{python_sitelib}/*.egg-info
+%{python3_sitelib}/monasca_common
+%{python3_sitelib}/*.egg-info
 
 %changelog
