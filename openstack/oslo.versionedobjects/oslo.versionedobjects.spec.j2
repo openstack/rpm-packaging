@@ -12,33 +12,20 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('iso8601', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('jsonschema', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.concurrency', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.config', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.context', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.i18n', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.log', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.messaging', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.serialization', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.utils', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
-Requires:       {{ py2pkg('WebOb') }}
-Requires:       {{ py2pkg('iso8601') }}
-Requires:       {{ py2pkg('netaddr') }}
-Requires:       {{ py2pkg('oslo.concurrency') }}
-Requires:       {{ py2pkg('oslo.config') }}
-Requires:       {{ py2pkg('oslo.context') }}
-Requires:       {{ py2pkg('oslo.i18n') }}
-Requires:       {{ py2pkg('oslo.log') }}
-Requires:       {{ py2pkg('oslo.messaging') }}
-Requires:       {{ py2pkg('oslo.serialization') }}
-Requires:       {{ py2pkg('oslo.utils') }}
-Requires:       {{ py2pkg('six') }}
+BuildRequires:  {{ py3('iso8601') }}
+BuildRequires:  {{ py3('jsonschema') }}
+BuildRequires:  {{ py3('oslo.concurrency') }}
+BuildRequires:  {{ py3('oslo.config') }}
+BuildRequires:  {{ py3('oslo.context') }}
+BuildRequires:  {{ py3('oslo.i18n') }}
+BuildRequires:  {{ py3('oslo.log') }}
+BuildRequires:  {{ py3('oslo.messaging') }}
+BuildRequires:  {{ py3('oslo.serialization') }}
+BuildRequires:  {{ py3('oslo.utils') }}
+BuildRequires:  {{ py3('oslotest') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('stestr') }}
 BuildArch:      noarch
-%python_subpackages
 
 %description
 oslo.versionedobjects library deals with DB schema being at different versions
@@ -48,13 +35,38 @@ allows us to support SQL and NoSQL Databases. oslo.versionedobjects is also
 used in RPC APIs, to ensure upgrades happen without spreading version dependent
 code across different services and projects.
 
-%package -n python-oslo.versionedobjects-doc
+%package -n {{ py2name(py_versions='py3') }}
+Summary:        Oslo Versioned Objects library
+Requires:       {{ py3('WebOb') }}
+Requires:       {{ py3('iso8601') }}
+Requires:       {{ py3('netaddr') }}
+Requires:       {{ py3('oslo.concurrency') }}
+Requires:       {{ py3('oslo.config') }}
+Requires:       {{ py3('oslo.context') }}
+Requires:       {{ py3('oslo.i18n') }}
+Requires:       {{ py3('oslo.log') }}
+Requires:       {{ py3('oslo.messaging') }}
+Requires:       {{ py3('oslo.serialization') }}
+Requires:       {{ py3('oslo.utils') }}
+Requires:       {{ py3('six') }}
+
+%description -n {{ py2name(py_versions='py3') }}
+oslo.versionedobjects library deals with DB schema being at different versions
+than the code expects, allowing services to be operated safely during upgrades.
+It enables DB independent schema by providing an abstraction layer, which
+allows us to support SQL and NoSQL Databases. oslo.versionedobjects is also
+used in RPC APIs, to ensure upgrades happen without spreading version dependent
+code across different services and projects.
+
+This package contains the Python 3.x module.
+
+%package -n {{ py2name() }}-doc
 Summary:        osloversionedobjects library - Documentation
 Group:          Documentation/HTML
 BuildRequires:  {{ py3('Sphinx') }}
 BuildRequires:  {{ py3('openstackdocstheme') }}
 
-%description -n python-oslo.versionedobjects-doc
+%description -n {{ py2name() }}-doc
 This package contains documentation files for %{name}.
 
 %prep
@@ -62,23 +74,23 @@ This package contains documentation files for %{name}.
 %py_req_cleanup
 
 %build
-%{python_build}
+%py3_build
 
 PYTHONPATH=. PBR_VERSION=%{version} %sphinx_build -b html doc/source doc/build/html
 rm -r doc/build/html/.{doctrees,buildinfo}
 
 %install
-%{python_install}
+%py3_install
 
 %check
-%python_exec -m stestr.cli run
+python3 -m stestr.cli run
 
-%files %{python_files}
+%files -n {{ py2name(py_versions='py3') }}
 %license LICENSE
-%{python_sitelib}/oslo_versionedobjects
-%{python_sitelib}/*.egg-info
+%{python3_sitelib}/oslo_versionedobjects
+%{python3_sitelib}/*.egg-info
 
-%files -n python-oslo.versionedobjects-doc
+%files -n {{ py2name() }}-doc
 %license LICENSE
 %doc doc/build/html README.rst
 
