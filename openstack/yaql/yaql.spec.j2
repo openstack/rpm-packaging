@@ -13,32 +13,18 @@ URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
 # for testing
-BuildRequires:  {{ py2pkg('Sphinx', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('fixtures', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslosphinx', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('ply', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('python-dateutil', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('python-subunit', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('six', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
-Requires:       {{ py2pkg('Babel') }}
-Requires:       {{ py2pkg('ply') }}
-Requires:       {{ py2pkg('python-dateutil') }}
-Requires:       {{ py2pkg('six') }}
-Conflicts:      %{oldpython}-yaql < %version-%release
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('fixtures') }}
+BuildRequires:  {{ py3('oslosphinx') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('ply') }}
+BuildRequires:  {{ py3('python-dateutil') }}
+BuildRequires:  {{ py3('python-subunit') }}
+BuildRequires:  {{ py3('six') }}
+BuildRequires:  {{ py3('testrepository') }}
+BuildRequires:  {{ py3('testscenarios') }}
+BuildRequires:  {{ py3('testtools') }}
 BuildArch:      noarch
-%if 0%{?suse_version}
-Requires(post): update-alternatives
-Requires(postun): update-alternatives
-%else
-# on RDO, update-alternatives is in chkconfig
-Requires(post): chkconfig
-Requires(postun): chkconfig
-%endif
-%python_subpackages
 
 %description
 YAQL (Yet Another Query Language) is an embeddable and extensible query
@@ -47,33 +33,41 @@ has a vast and comprehensive standard library of frequently used querying
 functions and can be extend even further with user-specified functions. YAQL is
 written in python and is distributed via PyPI.
 
+%package -n {{ py2name(py_versions='py3') }}
+Summary:        YAQL - Yet Another Query Language
+Requires:       {{ py3('Babel') }}
+Requires:       {{ py3('ply') }}
+Requires:       {{ py3('python-dateutil') }}
+Requires:       {{ py3('six') }}
+Conflicts:      %{oldpython}-yaql < %version-%release
+
+%description -n {{ py2name(py_versions='py3') }}
+YAQL (Yet Another Query Language) is an embeddable and extensible query
+language, that allows performing complex queries against arbitrary objects. It
+has a vast and comprehensive standard library of frequently used querying
+functions and can be extend even further with user-specified functions. YAQL is
+written in python and is distributed via PyPI.
+
+This package contains the Python 3.x module.
+
 %prep
 %autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
 
 %build
-%{python_build}
+%{py3_build}
 
 %install
-%{python_install}
-%python_clone -a %{buildroot}%{_bindir}/yaql
-
-%post
-%{python_install_alternative yaql}
-
-%postun
-%python_uninstall_alternative yaql
+%{py3_install}
 
 %check
-%{python_expand rm -rf .testrepository
-$python setup.py testr
-}
+PYTHON=python3 python3 setup.py testr
 
-%files %{python_files}
+%files -n {{ py2name(py_versions='py3') }}
 %license LICENSE
 %doc ChangeLog README.rst
-%python_alternative %{_bindir}/yaql
-%{python_sitelib}/{{ pypi_name }}
-%{python_sitelib}/{{ pypi_name }}*.egg-info
+%{_bindir}/yaql
+%{python3_sitelib}/{{ pypi_name }}
+%{python3_sitelib}/{{ pypi_name }}*.egg-info
 
 %changelog
