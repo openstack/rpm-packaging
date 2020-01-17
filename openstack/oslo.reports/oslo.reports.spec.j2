@@ -12,28 +12,34 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('Jinja2', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('eventlet', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('greenlet', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.config', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.i18n', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.serialization', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.utils', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('psutil', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('six', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
-Requires:       {{ py2pkg('Jinja2') }}
-Requires:       {{ py2pkg('oslo.i18n') }}
-Requires:       {{ py2pkg('oslo.serialization') }}
-Requires:       {{ py2pkg('oslo.utils') }}
-Requires:       {{ py2pkg('psutil') }}
-Requires:       {{ py2pkg('six') }}
+BuildRequires:  {{ py3('Jinja2') }}
+BuildRequires:  {{ py3('eventlet') }}
+BuildRequires:  {{ py3('greenlet') }}
+BuildRequires:  {{ py3('oslo.config') }}
+BuildRequires:  {{ py3('oslo.i18n') }}
+BuildRequires:  {{ py3('oslo.serialization') }}
+BuildRequires:  {{ py3('oslo.utils') }}
+BuildRequires:  {{ py3('oslotest') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('psutil') }}
+BuildRequires:  {{ py3('six') }}
+BuildRequires:  {{ py3('stestr') }}
 BuildArch:      noarch
-%{python_subpackages}
 
 %description
+The project oslo.reports hosts a general purpose error report generation
+framework, known as the "guru meditation report".
+
+%package -n {{ py2name(py_versions='py3') }}
+Summary:        OpenStack oslo.reports library
+Requires:       {{ py3('Jinja2') }}
+Requires:       {{ py3('oslo.i18n') }}
+Requires:       {{ py3('oslo.serialization') }}
+Requires:       {{ py3('oslo.utils') }}
+Requires:       {{ py3('psutil') }}
+Requires:       {{ py3('six') }}
+
+%description -n {{ py2name(py_versions='py3') }}
 The project oslo.reports hosts a general purpose error report generation
 framework, known as the "guru meditation report".
 
@@ -53,7 +59,7 @@ This package contains the documentation.
 %py_req_cleanup
 
 %build
-%{python_build}
+%{py3_build}
 
 # generate html docs
 PBR_VERSION=%{version} %sphinx_build -b html doc/source doc/build/html
@@ -61,16 +67,16 @@ PBR_VERSION=%{version} %sphinx_build -b html doc/source doc/build/html
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
-%{python_install}
+%{py3_install}
 
 %check
-%python_exec -m stestr.cli run
+python3 -m stestr.cli run
 
-%files %{python_files}
+%files -n {{ py2name(py_versions='py3') }}
 %license LICENSE
 %doc README.rst ChangeLog
-%{python_sitelib}/oslo_reports
-%{python_sitelib}/*.egg-info
+%{python3_sitelib}/oslo_reports
+%{python3_sitelib}/*.egg-info
 
 %files -n python-oslo.reports-doc
 %license LICENSE
