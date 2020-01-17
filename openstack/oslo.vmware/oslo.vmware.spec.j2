@@ -12,44 +12,27 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('Babel', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('ddt', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('eventlet', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('fixtures', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('lxml', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('mox3', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('netaddr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.concurrency', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.context', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.i18n', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.utils', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('python-subunit', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('requests', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('suds-jurko', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('urllib3', py_versions=['py2', 'py3']) }}
-Requires:       {{ py2pkg('PyYAML') }}
-Requires:       {{ py2pkg('eventlet') }}
-Requires:       {{ py2pkg('lxml') }}
-Requires:       {{ py2pkg('netaddr') }}
-Requires:       {{ py2pkg('oslo.concurrency') }}
-Requires:       {{ py2pkg('oslo.context') }}
-Requires:       {{ py2pkg('oslo.i18n') }}
-Requires:       {{ py2pkg('oslo.utils') }}
-Requires:       {{ py2pkg('requests') }}
-Requires:       {{ py2pkg('six') }}
-Requires:       {{ py2pkg('stevedore') }}
-Requires:       {{ py2pkg('suds-jurko') }}
-Requires:       {{ py2pkg('urllib3') }}
+BuildRequires:  {{ py3('Babel') }}
+BuildRequires:  {{ py3('ddt') }}
+BuildRequires:  {{ py3('eventlet') }}
+BuildRequires:  {{ py3('fixtures') }}
+BuildRequires:  {{ py3('lxml') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('mox3') }}
+BuildRequires:  {{ py3('netaddr') }}
+BuildRequires:  {{ py3('oslo.concurrency') }}
+BuildRequires:  {{ py3('oslo.context') }}
+BuildRequires:  {{ py3('oslo.i18n') }}
+BuildRequires:  {{ py3('oslo.utils') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('python-subunit') }}
+BuildRequires:  {{ py3('requests') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('suds-jurko') }}
+BuildRequires:  {{ py3('testscenarios') }}
+BuildRequires:  {{ py3('testtools') }}
+BuildRequires:  {{ py3('urllib3') }}
 BuildArch:      noarch
-%ifpython3
-BuildRequires:  python3-dbm
-%endif
-%python_subpackages
 
 %description
 The Oslo project intends to produce a python library containing infrastructure
@@ -58,6 +41,32 @@ high quality, stable, consistent and generally useful.
 
 The Oslo VMware library offers session and API call management for VMware ESX/VC
 server.
+
+%package -n {{ py2name(py_versions='py3') }}
+Summary:        Oslo VMware library for OpenStack projects
+Requires:       {{ py3('PyYAML') }}
+Requires:       {{ py3('eventlet') }}
+Requires:       {{ py3('lxml') }}
+Requires:       {{ py3('netaddr') }}
+Requires:       {{ py3('oslo.concurrency') }}
+Requires:       {{ py3('oslo.context') }}
+Requires:       {{ py3('oslo.i18n') }}
+Requires:       {{ py3('oslo.utils') }}
+Requires:       {{ py3('requests') }}
+Requires:       {{ py3('six') }}
+Requires:       {{ py3('stevedore') }}
+Requires:       {{ py3('suds-jurko') }}
+Requires:       {{ py3('urllib3') }}
+
+%description -n {{ py2name(py_versions='py3') }}
+The Oslo project intends to produce a python library containing infrastructure
+code shared by OpenStack projects. The APIs provided by the project should be
+high quality, stable, consistent and generally useful.
+
+The Oslo VMware library offers session and API call management for VMware ESX/VC
+server.
+
+This package contains the Python 3.x module.
 
 %package        -n {{ py2name() }}-doc
 Summary:        Documentation for OpenStack common VMware library
@@ -73,7 +82,7 @@ Documentation for OpenStack common VMware library.
 %py_req_cleanup
 
 %build
-%python_build
+%py3_build
 
 # generate html docs
 PBR_VERSION=%{version} %sphinx_build -b html doc/source doc/build/html
@@ -81,16 +90,16 @@ PBR_VERSION=%{version} %sphinx_build -b html doc/source doc/build/html
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
-%python_install
+%py3_install
 
 %check
-%python_exec -m stestr.cli run
+python3 -m stestr.cli run
 
-%files %{python_files}
+%files -n {{ py2name(py_versions='py3') }}
 %doc README.rst
 %license LICENSE
-%{python_sitelib}/oslo_vmware
-%{python_sitelib}/*.egg-info
+%{python3_sitelib}/oslo_vmware
+%{python3_sitelib}/*.egg-info
 
 %files -n {{ py2name() }}-doc
 %doc doc/build/html
