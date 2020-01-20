@@ -12,15 +12,21 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('setuptools', py_versions=['py2', 'py3']) }}
-Requires:       {{ py2pkg('pbr') }}
-Requires:       {{ py2pkg('requests') }}
-Requires:       {{ py2pkg('six') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('setuptools') }}
 BuildArch:      noarch
-%python_subpackages
 
 %description
+The Oslo Sphinx library provides an OpenStack common
+layer of Sphinx plugins.
+
+%package -n {{ py2name(py_versions='py3') }}
+Summary:        OpenStack Sphinx
+Requires:       {{ py3('pbr') }}
+Requires:       {{ py3('requests') }}
+Requires:       {{ py3('six') }}
+
+%description -n {{ py2name(py_versions='py3') }}
 The Oslo Sphinx library provides an OpenStack common
 layer of Sphinx plugins.
 
@@ -29,15 +35,15 @@ layer of Sphinx plugins.
 %py_req_cleanup
 
 %build
-%{python_build}
+%py3_build
 
 %install
-%{python_install}
+%py3_install
 
-%files %{python_files}
+%files -n {{ py2name(py_versions='py3') }}
 %doc README.rst
 %license LICENSE
-%{python_sitelib}/{{ pypi_name }}
-%{python_sitelib}/*.egg-info
+%{python3_sitelib}/{{ pypi_name }}
+%{python3_sitelib}/*.egg-info
 
 %changelog
