@@ -12,29 +12,37 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/%{sname}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('dogpile.cache', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.config', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.i18n', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.log', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.utils', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('pymongo', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('python-memcached', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('six', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
-Requires:       {{ py2pkg('dogpile.cache') }}
-Requires:       {{ py2pkg('oslo.config') }}
-Requires:       {{ py2pkg('oslo.i18n') }}
-Requires:       {{ py2pkg('oslo.log') }}
-Requires:       {{ py2pkg('oslo.utils') }}
-Requires:       {{ py2pkg('python-memcached') }}
-Requires:       {{ py2pkg('six') }}
+BuildRequires:  {{ py3('dogpile.cache') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('oslo.config') }}
+BuildRequires:  {{ py3('oslo.i18n') }}
+BuildRequires:  {{ py3('oslo.log') }}
+BuildRequires:  {{ py3('oslo.utils') }}
+BuildRequires:  {{ py3('oslotest') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('pymongo') }}
+BuildRequires:  {{ py3('python-memcached') }}
+BuildRequires:  {{ py3('six') }}
+BuildRequires:  {{ py3('stestr') }}
 BuildArch:      noarch
-%python_subpackages
 
 %description
+oslo.cache aims to provide a generic caching mechanism for OpenStack projects
+by wrapping the dogpile.cache library. The dogpile.cache library provides
+support memoization, key value storage and interfaces to common caching
+backends such as Memcached.
+
+%package -n {{ py2name(py_versions='py3') }}
+Summary:        Cache storage for Openstack projects
+Requires:       {{ py3('dogpile.cache') }}
+Requires:       {{ py3('oslo.config') }}
+Requires:       {{ py3('oslo.i18n') }}
+Requires:       {{ py3('oslo.log') }}
+Requires:       {{ py3('oslo.utils') }}
+Requires:       {{ py3('python-memcached') }}
+Requires:       {{ py3('six') }}
+
+%description -n {{ py2name(py_versions='py3') }}
 oslo.cache aims to provide a generic caching mechanism for OpenStack projects
 by wrapping the dogpile.cache library. The dogpile.cache library provides
 support memoization, key value storage and interfaces to common caching
@@ -54,10 +62,10 @@ Documentation for the OpenStack Oslo cache library.
 %py_req_cleanup
 
 %build
-%{python_build}
+%{py3_build}
 
 %install
-%{python_install}
+%{py3_install}
 
 # generate html docs
 PBR_VERSION={{ upstream_version }} %sphinx_build -b html doc/source doc/build/html
@@ -65,13 +73,13 @@ PBR_VERSION={{ upstream_version }} %sphinx_build -b html doc/source doc/build/ht
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %check
-%python_exec -m stestr.cli run
+python3 -m stestr.cli run
 
-%files %{python_files}
+%files -n {{ py2name(py_versions='py3') }}
 %license LICENSE
 %doc README.rst ChangeLog
-%{python_sitelib}/oslo_cache
-%{python_sitelib}/*.egg-info
+%{python3_sitelib}/oslo_cache
+%{python3_sitelib}/*.egg-info
 
 %files -n {{ py2name() }}-doc
 %license LICENSE
