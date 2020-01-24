@@ -1,4 +1,4 @@
-From fb369bcf6764ad480cfd564c303edbe6158ac003 Mon Sep 17 00:00:00 2001
+From 89f96f408ac3988d455b0394b50082395b7643a8 Mon Sep 17 00:00:00 2001
 From: Thomas Bechtold <tbechtold@suse.com>
 Date: Wed, 11 Sep 2019 10:11:13 +0200
 Subject: [PATCH] Use sys.executable instead of 'python'
@@ -12,10 +12,10 @@ Change-Id: Iae44aa2f1c336a0f5501312af05b0133193c5462
 ---
  neutron/agent/linux/daemon.py                 |  2 +-
  .../agent/linux/test_process_monitor.py       |  3 +-
- .../functional/cmd/test_netns_cleanup.py      |  7 +++--
+ .../functional/cmd/test_netns_cleanup.py      |  8 +++--
  .../unit/agent/common/test_async_process.py   |  3 +-
  neutron/tests/unit/agent/linux/test_daemon.py | 29 ++++++++++---------
- 5 files changed, 25 insertions(+), 19 deletions(-)
+ 5 files changed, 26 insertions(+), 19 deletions(-)
 
 diff --git a/neutron/agent/linux/daemon.py b/neutron/agent/linux/daemon.py
 index 97194c3a00..0b52c3f980 100644
@@ -52,7 +52,7 @@ index 92d683c693..cd8e82e5de 100644
                         "--pid_file=%s" % pidfile]
              return cmdline
 diff --git a/neutron/tests/functional/cmd/test_netns_cleanup.py b/neutron/tests/functional/cmd/test_netns_cleanup.py
-index d60ea6212e..56312f0bf7 100644
+index 495b98989e..9026e60bb5 100644
 --- a/neutron/tests/functional/cmd/test_netns_cleanup.py
 +++ b/neutron/tests/functional/cmd/test_netns_cleanup.py
 @@ -14,6 +14,7 @@
@@ -61,28 +61,29 @@ index d60ea6212e..56312f0bf7 100644
  import os
 +import sys
  
+ import eventlet
  import mock
- from neutron_lib import constants as n_const
-@@ -100,19 +101,19 @@ class NetnsCleanupTest(base.BaseSudoTestCase):
+@@ -110,19 +111,20 @@ class NetnsCleanupTest(base.BaseSudoTestCase):
          to test the cleanup functionality which will issue a SIGKILL
          to all remaining processes after the SIGTERM attempt
          """
 -        commands = [['python', process_spawn.__file__,
-+        commands = [[sys.executable, process_spawn.__file__,
++        python_exec = os.path.basename(sys.executable)
++        commands = [[python_exec, process_spawn.__file__,
                       '-n', NUM_SUBPROCESSES,
                       '-f', n_const.IPv4,
                       '-p', n_const.PROTO_NAME_TCP,
                       '--noignore_sigterm',
                       '--parent_listen'],
 -                    ['python', process_spawn.__file__,
-+                    [sys.executable, process_spawn.__file__,
++                    [python_exec, process_spawn.__file__,
                       '-n', NUM_SUBPROCESSES,
                       '-f', process_spawn.UNIX_FAMILY,
                       '-p', n_const.PROTO_NAME_TCP,
                       '--noignore_sigterm',
                       '--noparent_listen'],
 -                    ['python', process_spawn.__file__,
-+                    [sys.executable, process_spawn.__file__,
++                    [python_exec, process_spawn.__file__,
                       '-n', NUM_SUBPROCESSES,
                       '-f', n_const.IPv4,
                       '-p', n_const.PROTO_NAME_UDP,
@@ -203,5 +204,5 @@ index f6ef0d68ef..7c0bb9caff 100644
  
      def test_fork_parent(self):
 -- 
-2.23.0
+2.21.1
 

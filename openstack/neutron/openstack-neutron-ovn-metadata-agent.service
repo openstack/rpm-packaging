@@ -1,0 +1,16 @@
+[Unit]
+Description=OpenStack Neutron OVN Metadata Agent
+After=syslog.target network.target
+After=mariadb.service postgresql.service rabbitmq-server.service
+
+[Service]
+Type=simple
+User=neutron
+Group=neutron
+WorkingDirectory=/var/lib/neutron
+KillMode=process
+Restart=on-failure
+ExecStart=/usr/bin/neutron-ovn-metadata-agent --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/ovn_metadata_agent.ini
+
+[Install]
+WantedBy=multi-user.target

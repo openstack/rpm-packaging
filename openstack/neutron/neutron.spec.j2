@@ -29,6 +29,7 @@ Source12:       openstack-neutron-rpc-server.service
 Source13:       openstack-neutron-netns-cleanup.service
 Source14:       openstack-neutron-linuxbridge-cleanup.service
 Source15:       openstack-neutron-ovs-cleanup.service
+Source16:       openstack-neutron-ovn-metadata-agent.service
 Source20:       openstack-neutron-server.defaultconf
 Source21:       openstack-neutron.tmpfiles
 Source22:       openstack-neutron-l2-agents.modules
@@ -207,6 +208,15 @@ Neutron is a virtual network service for Openstack.
 
 This package contains the Neutron metadata Agent.
 
+%package ovn-metadata-agent
+Summary:        Neutron OVN metadata Agent
+Requires:       {{ py2name() }} = %{epoch}:%{version}-%{release}
+
+%description ovn-metadata-agent
+Neutron is a virtual network service for Openstack.
+
+This package contains the Neutron OVN metadata Agent.
+
 %package metering-agent
 Summary:        Neutron metering Agent
 Requires:       iptables
@@ -268,6 +278,7 @@ Summary:        Documentation for OpenStack Networking Service
 Group:          Documentation/HTML
 BuildRequires:  {{ py3('Sphinx') }}
 BuildRequires:  {{ py3('openstackdocstheme') }}
+BuildRequires:  {{ py3('sphinx-feature-classification') }}
 BuildRequires:  {{ py3('tenacity') }}
 
 %description doc
@@ -318,6 +329,7 @@ install -p -D -m 640 etc/api-paste.ini %{buildroot}%{_sysconfdir}/{{ pypi_name }
 install -p -D -m 640 etc/l3_agent.ini %{buildroot}%{_sysconfdir}/{{ pypi_name }}/l3_agent.ini
 install -p -D -m 640 etc/dhcp_agent.ini %{buildroot}%{_sysconfdir}/{{ pypi_name }}/dhcp_agent.ini
 install -p -D -m 640 etc/metadata_agent.ini %{buildroot}%{_sysconfdir}/{{ pypi_name }}/metadata_agent.ini
+install -p -D -m 640 etc/neutron_ovn_metadata_agent.ini %{buildroot}%{_sysconfdir}/{{ pypi_name }}/ovn_metadata_agent.ini
 install -d -m 755 %{buildroot}%{_sysconfdir}/{{ pypi_name }}.conf.d
 install -D -m 640 %{SOURCE20} %{buildroot}/%{_sysconfdir}/{{ pypi_name }}/{{ pypi_name }}.conf.d/010-neutron.conf
 install -D -m 440 %{SOURCE90} %{buildroot}/%{_sysconfdir}/{{ pypi_name }}/README.config
@@ -371,13 +383,14 @@ install -p -D -m 644 %{SOURCE12} %{buildroot}%{_unitdir}/openstack-neutron-rpc-s
 install -p -D -m 644 %{SOURCE13} %{buildroot}%{_unitdir}/openstack-neutron-netns-cleanup.service
 install -p -D -m 644 %{SOURCE14} %{buildroot}%{_unitdir}/openstack-neutron-linuxbridge-cleanup.service
 install -p -D -m 644 %{SOURCE15} %{buildroot}%{_unitdir}/openstack-neutron-ovs-cleanup.service
+install -p -D -m 644 %{SOURCE16} %{buildroot}%{_unitdir}/openstack-neutron-ovn-metadata-agent.service
 
 # Create config dirs for all services that can be populated by users with custom *.conf files
 for service in server rpc-server ovs-cleanup netns-cleanup linuxbridge-cleanup macvtap-agent; do
     mkdir -p %{buildroot}/%{_sysconfdir}/{{ pypi_name }}/neutron-$service.conf.d
 done
 # Create config dirs for all agents that can be populated by users with custom *.conf files
-for service in linuxbridge openvswitch dhcp l3 metadata metering sriov-nic; do
+for service in linuxbridge openvswitch dhcp l3 metadata metering ovn-metadata sriov-nic; do
     mkdir -p %{buildroot}/%{_sysconfdir}/{{ pypi_name }}/neutron-$service-agent.conf.d
 done
 
@@ -458,6 +471,15 @@ python3 -m stestr.cli --test-path neutron/tests/unit run
 %postun metadata-agent
 %systemd_postun_with_restart openstack-neutron-metadata-agent.service
 
+%post ovn-metadata-agent
+%systemd_post openstack-neutron-ovn-metadata-agent.service
+
+%preun ovn-metadata-agent
+%systemd_preun openstack-neutron-ovn-metadata-agent.service
+
+%postun ovn-metadata-agent
+%systemd_postun_with_restart openstack-neutron-ovn-metadata-agent.service
+
 %post metering-agent
 %systemd_post openstack-neutron-metering-agent.service
 
@@ -513,7 +535,6 @@ python3 -m stestr.cli --test-path neutron/tests/unit run
 %{_bindir}/neutron-pd-notify
 %{_bindir}/neutron-rootwrap
 %{_bindir}/neutron-rootwrap-daemon
-%{_bindir}/neutron-rootwrap-xen-dom0
 %{_bindir}/neutron-sanity-check
 %{_bindir}/neutron-status
 %{_bindir}/neutron-usage-audit
@@ -527,6 +548,7 @@ python3 -m stestr.cli --test-path neutron/tests/unit run
 %config(noreplace) %attr(0640, root, {{ pypi_name }}) %{_sysconfdir}/{{ pypi_name }}/dhcp_agent.ini
 %config(noreplace) %attr(0640, root, {{ pypi_name }}) %{_sysconfdir}/{{ pypi_name }}/l3_agent.ini
 %config(noreplace) %attr(0640, root, {{ pypi_name }}) %{_sysconfdir}/{{ pypi_name }}/metadata_agent.ini
+%config(noreplace) %attr(0640, root, {{ pypi_name }}) %{_sysconfdir}/{{ pypi_name }}/ovn_metadata_agent.ini
 %config(noreplace) %attr(0640, root, {{ pypi_name }}) %{_sysconfdir}/{{ pypi_name }}/metering_agent.ini
 %config(noreplace) %attr(0640, root, {{ pypi_name }}) %{_sysconfdir}/{{ pypi_name }}/rootwrap.conf
 %config(noreplace) %attr(0640, root, {{ pypi_name }}) %{_sysconfdir}/{{ pypi_name }}/{{ pypi_name }}.conf
@@ -602,6 +624,12 @@ python3 -m stestr.cli --test-path neutron/tests/unit run
 %{_bindir}/neutron-metadata-agent
 %{_unitdir}/openstack-neutron-metadata-agent.service
 %dir %{_sysconfdir}/{{ pypi_name }}/neutron-metadata-agent.conf.d
+
+%files ovn-metadata-agent
+%license LICENSE
+%{_bindir}/neutron-ovn-metadata-agent
+%{_unitdir}/openstack-neutron-ovn-metadata-agent.service
+%dir %{_sysconfdir}/{{ pypi_name }}/neutron-ovn-metadata-agent.conf.d
 
 %files metering-agent
 %license LICENSE
