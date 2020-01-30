@@ -12,20 +12,27 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('PrettyTable', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
-Requires:       {{ py2pkg('PrettyTable') }}
-Requires:       {{ py2pkg('pbr') }}
-Requires:       {{ py2pkg('six') }}
+BuildRequires:  {{ py3('PrettyTable') }}
+BuildRequires:  {{ py3('devel') }}
+BuildRequires:  {{ py3('oslotest') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('testtools') }}
 BuildArch:      noarch
-%python_subpackages
 
 %description
 Friendly state machines for python.
+
+%package -n {{ py2name(py_versions='py3') }}
+Summary:        Friendly state machines for python
+Requires:       {{ py3('PrettyTable') }}
+Requires:       {{ py3('pbr') }}
+Requires:       {{ py3('six') }}
+
+%description -n {{ py2name(py_versions='py3') }}
+Friendly state machines for python.
+
+This package contains the Python 3.x module.
 
 %package -n python-automaton-doc
 Summary:        Documentation for the Automaton Library
@@ -40,7 +47,7 @@ Documentation for the Automaton library.
 %py_req_cleanup
 
 %build
-%{python_build}
+%{py3_build}
 
 # generate html docs
 PBR_VERSION=%{version} %sphinx_build -b html doc/source doc/build/html
@@ -48,16 +55,16 @@ PBR_VERSION=%{version} %sphinx_build -b html doc/source doc/build/html
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
-%{python_install}
+%{py3_install}
 
 %check
-%python_exec -m stestr.cli run
+python3 -m stestr.cli run
 
-%files %{python_files}
+%files -n {{ py2name(py_versions='py3') }}
 %doc README.rst
 %license LICENSE
-%{python_sitelib}/automaton
-%{python_sitelib}/*.egg-info
+%{python3_sitelib}/automaton
+%{python3_sitelib}/*.egg-info
 
 %files -n python-automaton-doc
 %license LICENSE
