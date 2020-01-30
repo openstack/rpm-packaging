@@ -13,39 +13,38 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        https://files.pythonhosted.org/packages/source/r/{{ pypi_name }}/{{ pypi_name }}-%{version}.tar.gz
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('Jinja2', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('ddt', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('packaging', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('pymod2pkg', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
-Requires:       {{ py2pkg('Jinja2') }}
-Requires:       {{ py2pkg('PyYAML') }}
-Requires:       {{ py2pkg('packaging') }}
-Requires:       {{ py2pkg('pymod2pkg') }}
-Requires:       {{ py2pkg('six') }}
-Conflicts:      %{oldpython}-renderspec < %{version}
+BuildRequires:  {{ py3('Jinja2') }}
+BuildRequires:  {{ py3('ddt') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('packaging') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('pymod2pkg') }}
+BuildRequires:  {{ py3('stestr') }}
 BuildArch:      noarch
-%if 0%{?suse_version}
-Requires(post): update-alternatives
-Requires(postun): update-alternatives
-%else
-# on RDO, update-alternatives is in chkconfig
-Requires(post): chkconfig
-Requires(postun): chkconfig
-%endif
-%python_subpackages
 
 %description
 renderspec is a tool to convert a .spec.j2 Jinja2 template to
 a rpm .spec file which is usable for different distributions
 and follow their policies and processes.
 
+%package -n {{ py2name(py_versions='py3') }}
+Summary:        Generate spec files from Jinja2 templates
+Requires:       {{ py3('Jinja2') }}
+Requires:       {{ py3('PyYAML') }}
+Requires:       {{ py3('packaging') }}
+Requires:       {{ py3('pymod2pkg') }}
+Requires:       {{ py3('six') }}
+Conflicts:      %{oldpython}-renderspec < %{version}
+
+%description -n {{ py2name(py_versions='py3') }}
+renderspec is a tool to convert a .spec.j2 Jinja2 template to
+a rpm .spec file which is usable for different distributions
+and follow their policies and processes.
+
 %package -n {{ py2name() }}-doc
 Summary:        Documentation for the renderspec utility
-BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('openstackdocstheme') }}
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
 Requires:       %{name} = %{version}
 
 %description -n {{ py2name() }}-doc
@@ -57,28 +56,24 @@ a spec.j2 Jinja2 template into a rpm .spec file.
 %py_req_cleanup
 
 %build
-%{python_build}
+%{py3_build}
 
-PBR_VERSION={{ upstream_version }} sphinx-build -b html doc/source doc/build/html
+PBR_VERSION={{ upstream_version }} %sphinx_build -b html doc/source doc/build/html
 # remove the sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
-%{python_install}
+%{py3_install}
 
 %check
-%python_exec -m stestr.cli run
+python3 -m stestr.cli run
 
-%files %{python_files}
+%files -n {{ py2name(py_versions='py3') }}
 %license LICENSE
 %doc README.rst ChangeLog
-%if 0%{?suse_version}
-%python3_only %{_bindir}/{{ pypi_name }}
-%else
 %{_bindir}/{{ pypi_name }}
-%endif
-%{python_sitelib}/{{ pypi_name }}
-%{python_sitelib}/*.egg-info
+%{python3_sitelib}/{{ pypi_name }}
+%{python3_sitelib}/*.egg-info
 
 %files -n {{ py2name() }}-doc
 %doc doc/build/html
