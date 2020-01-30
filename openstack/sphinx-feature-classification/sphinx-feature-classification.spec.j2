@@ -13,25 +13,31 @@ Group:          Development/Languages/Python
 URL:            https://docs.openstack.org/sphinx-feature-classification/latest/
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('ddt', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
-Requires:       {{ py2pkg('docutils') }}
-Requires:       {{ py2pkg('pbr') }}
+BuildRequires:  {{ py3('ddt') }}
+BuildRequires:  {{ py3('devel') }}
+BuildRequires:  {{ py3('oslotest') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('testrepository') }}
+BuildRequires:  {{ py3('testtools') }}
 BuildArch:      noarch
-%python_subpackages
 
 %description
 This is a Sphinx directive that allows creating matrices of drivers
 a project contains and which features they support.
 
+%package -n {{ py2name(py_versions='py3') }}
+Summary:        OpenStack sphinx-feature-classification library
+Requires:       {{ py3('docutils') }}
+Requires:       {{ py3('pbr') }}
+
+%description -n {{ py2name(py_versions='py3') }}
+This is a Sphinx directive that allows creating matrices of drivers
+a project contains and which features they support.
+
 %package -n python-sphinx-feature-classification-doc
 Summary:       Documentation for the OpenStack sphinx-feature-classification library
-BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('openstackdocstheme') }}
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
 
 %description -n python-sphinx-feature-classification-doc
 Documentation for the OpenStack sphinx-feature-classification library.
@@ -39,27 +45,24 @@ Documentation for the OpenStack sphinx-feature-classification library.
 %prep
 %autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
-sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
-%{python_build}
+%{py3_build}
 
-PYTHONPATH=. sphinx-build -b html doc/source doc/build/html
+PYTHONPATH=. %sphinx_build -b html doc/source doc/build/html
 # remove the sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
-%{python_install}
+%{py3_install}
 
 %check
-%{python_expand rm -rf .testrepository
-$python setup.py test
-}
+PYTHON=python3 python3 setup.py test
 
-%files %{python_files}
+%files -n {{ py2name(py_versions='py3') }}
 %license LICENSE
-%{python_sitelib}/sphinx_feature_classification
-%{python_sitelib}/*.egg-info
+%{python3_sitelib}/sphinx_feature_classification
+%{python3_sitelib}/*.egg-info
 
 %files -n python-sphinx-feature-classification-doc
 %doc doc/build/html README.rst
