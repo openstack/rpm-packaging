@@ -12,17 +12,25 @@ Group:          Development/Libraries/Python
 URL:            https://wiki.openstack.org/wiki/Rpm-packaging
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testresources', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
-Requires:       {{ py2pkg('pbr') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('testresources') }}
+BuildRequires:  {{ py3('testtools') }}
 BuildArch:      noarch
-%python_subpackages
 
 %description
 pymod2pkg is a simple python module for translating python module names to
 corresponding package names which is a common problem in the packaging world.
+
+%package -n {{ py2name(py_versions='py3') }}
+Summary:        OpenStack Packaging - python module name to package name map
+Requires:       {{ py3('pbr') }}
+
+%description -n {{ py2name(py_versions='py3') }}
+pymod2pkg is a simple python module for translating python module names to
+corresponding package names which is a common problem in the packaging world.
+
+This package contains the Python 3.x module.
 
 %package -n {{ py2name() }}-doc
 Summary:        Documentation for python module name to package name map library
@@ -37,7 +45,7 @@ Documentation for python module name to package name map library.
 %py_req_cleanup
 
 %build
-%{python_build}
+%{py3_build}
 
 # generate html docs
 %sphinx_build -b html doc/source doc/build/html
@@ -45,23 +53,16 @@ Documentation for python module name to package name map library.
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
-%{python_install}
-%python_clone -a %{buildroot}%{_bindir}/pymod2pkg
+%{py3_install}
 
 %check
-%python_exec -m stestr.cli run
+python3 -m stestr.cli run
 
-%post
-%python_install_alternative pymod2pkg
-
-%postun
-%python_uninstall_alternative pymod2pkg
-
-%files %{python_files}
+%files -n {{ py2name(py_versions='py3') }}
 %license LICENSE
 %doc README*
-%python_alternative %{_bindir}/pymod2pkg
-%{python_sitelib}/*
+%{_bindir}/pymod2pkg
+%{python3_sitelib}/*
 
 %files -n {{ py2name() }}-doc
 %doc doc/build/html
