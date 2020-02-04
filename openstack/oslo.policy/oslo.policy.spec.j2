@@ -12,43 +12,43 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('PyYAML', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.config', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.context', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.i18n', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.serialization', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('requests', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('requests-mock', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
-Requires:       {{ py2pkg('PyYAML') }}
-Requires:       {{ py2pkg('oslo.config') }}
-Requires:       {{ py2pkg('oslo.context') }}
-Requires:       {{ py2pkg('oslo.i18n') }}
-Requires:       {{ py2pkg('oslo.serialization') }}
-Requires:       {{ py2pkg('requests') }}
-Requires:       {{ py2pkg('six') }}
-Requires:       {{ py2pkg('stevedore') }}
+BuildRequires:  {{ py3('PyYAML') }}
+BuildRequires:  {{ py3('oslo.config') }}
+BuildRequires:  {{ py3('oslo.context') }}
+BuildRequires:  {{ py3('oslo.i18n') }}
+BuildRequires:  {{ py3('oslo.serialization') }}
+BuildRequires:  {{ py3('oslotest') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('requests') }}
+BuildRequires:  {{ py3('requests-mock') }}
+BuildRequires:  {{ py3('stestr') }}
 BuildArch:      noarch
-%if 0%{?suse_version}
-Requires(post): update-alternatives
-Requires(postun): update-alternatives
-%else
-# on RDO, update-alternatives is in chkconfig
-Requires(post): chkconfig
-Requires(postun): chkconfig
-%endif
-%python_subpackages
 
 %description
 The OpenStack Oslo Policy library.
 RBAC policy enforcement library for OpenStack.
 
+%package -n {{ py2name(py_versions='py3') }}
+Summary:        OpenStack Oslo Policy library
+Requires:       {{ py3('PyYAML') }}
+Requires:       {{ py3('oslo.config') }}
+Requires:       {{ py3('oslo.context') }}
+Requires:       {{ py3('oslo.i18n') }}
+Requires:       {{ py3('oslo.serialization') }}
+Requires:       {{ py3('requests') }}
+Requires:       {{ py3('six') }}
+Requires:       {{ py3('stevedore') }}
+
+%description -n {{ py2name(py_versions='py3') }}
+The OpenStack Oslo Policy library.
+RBAC policy enforcement library for OpenStack.
+
+This package contains the Python 3.x module.
+
 %package -n python-oslo.policy-doc
 Summary:        Documentation for the Oslo Policy library
 Group:          Documentation/HTML
-BuildRequires:  {{ py2pkg('Sphinx', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py3('Sphinx') }}
 BuildRequires:  {{ py3('openstackdocstheme') }}
 BuildRequires:  {{ py3('sphinxcontrib-apidoc') }}
 
@@ -60,7 +60,7 @@ Documentation for the Oslo Policy library.
 %py_req_cleanup
 
 %build
-%{python_build}
+%{py3_build}
 
 # generate html docs
 PBR_VERSION=%{version} %sphinx_build -b html doc/source doc/build/html
@@ -68,32 +68,21 @@ PBR_VERSION=%{version} %sphinx_build -b html doc/source doc/build/html
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
-%{python_install}
-%python_clone -a %{buildroot}%{_bindir}/oslopolicy-checker
-%python_clone -a %{buildroot}%{_bindir}/oslopolicy-list-redundant
-%python_clone -a %{buildroot}%{_bindir}/oslopolicy-policy-generator
-%python_clone -a %{buildroot}%{_bindir}/oslopolicy-sample-generator
-%python_clone -a %{buildroot}%{_bindir}/oslopolicy-policy-upgrade
-
-%post
-%{python_install_alternative oslopolicy-checker oslopolicy-list-redundant oslopolicy-policy-generator oslopolicy-sample-generator}
-
-%postun
-%python_uninstall_alternative oslopolicy-checker
+%{py3_install}
 
 %check
-%python_exec -m stestr.cli run
+python3 -m stestr.cli run
 
-%files %{python_files}
+%files  -n {{ py2name(py_versions='py3') }}
 %license LICENSE
 %doc README.rst
-%python_alternative %{_bindir}/oslopolicy-checker
-%python_alternative %{_bindir}/oslopolicy-list-redundant
-%python_alternative %{_bindir}/oslopolicy-policy-generator
-%python_alternative %{_bindir}/oslopolicy-sample-generator
-%python_alternative %{_bindir}/oslopolicy-policy-upgrade
-%{python_sitelib}/oslo_policy
-%{python_sitelib}/*.egg-info
+%{_bindir}/oslopolicy-checker
+%{_bindir}/oslopolicy-list-redundant
+%{_bindir}/oslopolicy-policy-generator
+%{_bindir}/oslopolicy-sample-generator
+%{_bindir}/oslopolicy-policy-upgrade
+%{python3_sitelib}/oslo_policy
+%{python3_sitelib}/*.egg-info
 
 %files -n python-oslo.policy-doc
 %license LICENSE
