@@ -2,8 +2,6 @@
 {% set upstream_version = upstream_version('2.10.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
-# NOTE(jpena): This is required to prevent singlespec macros from changing the requires
-%global oldpython python
 Name:           {{ py2name() }}
 Version:        {{ py2rpmversion() }}
 Release:        {{ py2rpmrelease() }}
@@ -13,31 +11,38 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/pycadf
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('fixtures', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.config', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.serialization', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('setuptools', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
-Requires:       %{oldpython}-pycadf-common
-Requires:       {{ py2pkg('debtcollector') }}
-Requires:       {{ py2pkg('oslo.config') }}
-Requires:       {{ py2pkg('oslo.serialization') }}
-Requires:       {{ py2pkg('pytz') }}
-Requires:       {{ py2pkg('six') }}
+BuildRequires:  {{ py3('fixtures') }}
+BuildRequires:  {{ py3('oslo.config') }}
+BuildRequires:  {{ py3('oslo.serialization') }}
+BuildRequires:  {{ py3('oslotest') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('setuptools') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('testscenarios') }}
+BuildRequires:  {{ py3('testtools') }}
 BuildArch:      noarch
-%python_subpackages
 
 %description
 DMTF Cloud Audit (CADF) data model
 
+%package -n {{ py2name(py_versions='py3') }}
+Summary:        DMTF Cloud Audit (CADF) data model
+Requires:       python-pycadf-common
+Requires:       {{ py3('debtcollector') }}
+Requires:       {{ py3('oslo.config') }}
+Requires:       {{ py3('oslo.serialization') }}
+Requires:       {{ py3('pytz') }}
+Requires:       {{ py3('six') }}
+
+%description -n {{ py2name(py_versions='py3') }}
+DMTF Cloud Audit (CADF) data model
+
+This package contains the Python 3.x module.
+
 %package -n python-pycadf-doc
 Summary:        Documentation for the DMTF Cloud Audit (CADF) data model
-BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('openstackdocstheme') }}
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
 
 %description -n python-pycadf-doc
 Documentation for the DMTF Cloud Audit (CADF) data model.
@@ -50,31 +55,30 @@ Configuration files for the DMTF Cloud Audit (CADF) data model.
 
 %prep
 %autosetup -n {{ pypi_name }}-{{ upstream_version }}
-sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 %py_req_cleanup
 
 %build
-%{python_build}
+%{py3_build}
 
 # generate html docs
-%{__python2} setup.py build_sphinx
+PBR_VERSION={{ upstream_version }} %sphinx_build -b html doc/source doc/build/html
 # remove the sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
-%{python_install}
+%{py3_install}
 # FIXME: pbr/wheel bug installing onfiguration files in /usr/etc
 mkdir -p %{buildroot}/%{_sysconfdir}
 mv %{buildroot}%{_prefix}%{_sysconfdir}/{{ pypi_name }} %{buildroot}/%{_sysconfdir}/
 
 %check
-%python_exec -m stestr.cli run
+python3 -m stestr.cli run
 
-%files %{python_files}
+%files -n {{ py2name(py_versions='py3') }}
 %doc README.rst
 %license LICENSE
-%{python_sitelib}/{{ pypi_name }}
-%{python_sitelib}/{{ pypi_name }}-*-py?.?.egg-info
+%{python3_sitelib}/{{ pypi_name }}
+%{python3_sitelib}/{{ pypi_name }}-*-py?.?.egg-info
 
 %files -n python-pycadf-common
 %license LICENSE
