@@ -1,36 +1,35 @@
+{% set pypi_name = 'os-client-config' %}
+{% set upstream_version = upstream_version('1.33.0') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
 %global sname os-client-config
 %bcond_with test
 %bcond_with docs
-Name:           {{ py2name('os-client-config') }}
-Version:        1.33.0
-Release:        0
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
 Summary:        OpenStack Client Configuration Library
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
-URL:            https://launchpad.net/%{sname}
-Source0:        https://files.pythonhosted.org/packages/source/o/%{sname}/%{sname}-%{version}.tar.gz
+URL:            https://launchpad.net/%{name}
+Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('setuptools', py_versions=['py2', 'py3']) }}
-Requires:       {{ py2pkg('PyYAML') }}
-Requires:       {{ py2pkg('appdirs') }}
-Requires:       {{ py2pkg('keystoneauth1') }}
-Requires:       {{ py2pkg('requestsexceptions') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('setuptools') }}
 BuildArch:      noarch
 %if %{with test}
-BuildRequires:  {{ py2pkg('extras') }}
-BuildRequires:  {{ py2pkg('fixtures') }}
-BuildRequires:  {{ py2pkg('python-glanceclient') }}
-BuildRequires:  {{ py2pkg('jsonschema') }}
-BuildRequires:  {{ py2pkg('python-keystoneclient') }}
-BuildRequires:  {{ py2pkg('mock') }}
-BuildRequires:  {{ py2pkg('oslotest') }}
-BuildRequires:  {{ py2pkg('python-subunit') }}
-BuildRequires:  {{ py2pkg('stestr') }}
-BuildRequires:  {{ py2pkg('testscenarios') }}
-BuildRequires:  {{ py2pkg('testtools') }}
+BuildRequires:  {{ py3('extras') }}
+BuildRequires:  {{ py3('fixtures') }}
+BuildRequires:  {{ py3('python-glanceclient') }}
+BuildRequires:  {{ py3('jsonschema') }}
+BuildRequires:  {{ py3('python-keystoneclient') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('oslotest') }}
+BuildRequires:  {{ py3('python-subunit') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('testscenarios') }}
+BuildRequires:  {{ py3('testtools') }}
 %endif
-%python_subpackages
 
 %description
 os-client-config is a library for collecting client configuration for
@@ -40,45 +39,61 @@ to put in a config file. It will read environment variables and config
 files, and it also contains some vendor specific default values so that
 you don't have to know extra info to use OpenStack.
 
+%package -n {{ py2name(py_versions='py3') }}
+Summary:        OpenStack Client Configuration Library
+Requires:       {{ py3('PyYAML') }}
+Requires:       {{ py3('appdirs') }}
+Requires:       {{ py3('keystoneauth1') }}
+Requires:       {{ py3('requestsexceptions') }}
+
+%description -n {{ py2name(py_versions='py3') }}
+os-client-config is a library for collecting client configuration for
+using an OpenStack cloud in a consistent and comprehensive manner.
+It will find cloud config for as few as 1 cloud and as many as you want
+to put in a config file. It will read environment variables and config
+files, and it also contains some vendor specific default values so that
+you don't have to know extra info to use OpenStack.
+
+This package contains the Python 3.x module.
+
 %if %{with docs}
 %package -n python-os-client-config-doc
 Summary:        Documentation for OpenStack client configuration library
-BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('openstackdocstheme') }}
-BuildRequires:  {{ py2pkg('reno') }}
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
+BuildRequires:  {{ py3('reno') }}
 
 %description -n python-os-client-config-doc
 Documentation for the os-client-config library.
 %endif
 
 %prep
-%autosetup -n %{sname}-%{version}
+%autosetup -p1 -n %{sname}-%{version}
 %py_req_cleanup
-sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
 %build
-%python_build
+%py3_build
 %if %{with docs}
 # generate html docs
-%{__python2} setup.py build_sphinx
+PBR_VERSION=%{version} %sphinx_build -b html doc/source doc/build/html
 # remove the sphinx-build leftovers
-rm -rf html/.{doctrees,buildinfo}
+rm -rf doc/build/html/.{doctrees,buildinfo}
 %endif
 
 %install
-%python_install
+%py3_install
 
 %if %{with test}
 %check
-export PYTHONPATH="%{python2_sitearch}:%{python2_sitelib}:%{buildroot}%{python2_sitelib}"
-python2 -m stestr.cli run
+export PYTHONPATH="%{python3_sitearch}:%{python3_sitelib}:%{buildroot}%{python3_sitelib}"
+python3 -m stestr.cli run
 %endif
 
-%files %{python_files}
+%files -n {{ py2name(py_versions='py3') }}
 %license LICENSE
 %doc README.rst
-%{python_sitelib}/os_client_config
-%{python_sitelib}/*.egg-info
+%{python3_sitelib}/os_client_config
+%{python3_sitelib}/*.egg-info
 
 %if %{with docs}
 %files -n python-os-client-config-doc
