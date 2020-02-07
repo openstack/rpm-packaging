@@ -12,41 +12,42 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('PrettyTable', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('ddt', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('fixtures', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('keystoneauth1', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.serialization', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.utils', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('requests', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('requests-mock', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
-Requires:       {{ py2pkg('Babel') }}
-Requires:       {{ py2pkg('PrettyTable') }}
-Requires:       {{ py2pkg('keystoneauth1') }}
-Requires:       {{ py2pkg('oslo.i18n') }}
-Requires:       {{ py2pkg('oslo.utils') }}
-Requires:       {{ py2pkg('requests') }}
-Requires:       {{ py2pkg('simplejson') }}
-Requires:       {{ py2pkg('six') }}
+BuildRequires:  {{ py3('PrettyTable') }}
+BuildRequires:  {{ py3('ddt') }}
+BuildRequires:  {{ py3('fixtures') }}
+BuildRequires:  {{ py3('keystoneauth1') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('oslo.serialization') }}
+BuildRequires:  {{ py3('oslo.utils') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('requests') }}
+BuildRequires:  {{ py3('requests-mock') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('testtools') }}
 BuildArch:      noarch
-%if 0%{?suse_version}
-Requires(post): update-alternatives
-Requires(postun): update-alternatives
-%else
-# on RDO, update-alternatives is in chkconfig
-Requires(post): chkconfig
-Requires(postun): chkconfig
-%endif
-%python_subpackages
 
 %description
 This is a client for the OpenStack Cinder API (Block Storage. There's a
 Python API (the cinderclient module), and a command-line script (cinder).
 Each implements 100% of the OpenStack Cinder API.
+
+%package -n {{ py2name(py_versions='py3') }}
+Summary:        Python API and CLI for OpenStack Cinder
+Requires:       {{ py3('Babel') }}
+Requires:       {{ py3('PrettyTable') }}
+Requires:       {{ py3('keystoneauth1') }}
+Requires:       {{ py3('oslo.i18n') }}
+Requires:       {{ py3('oslo.utils') }}
+Requires:       {{ py3('requests') }}
+Requires:       {{ py3('simplejson') }}
+Requires:       {{ py3('six') }}
+
+%description -n {{ py2name(py_versions='py3') }}
+This is a client for the OpenStack Cinder API (Block Storage. There's a
+Python API (the cinderclient module), and a command-line script (cinder).
+Each implements 100% of the OpenStack Cinder API.
+
+This package contains the Python 3.x module.
 
 %package -n python-cinderclient-doc
 Summary:        Documentation for OpenStack Cinder API Client
@@ -66,7 +67,7 @@ This package contains auto-generated documentation.
 %py_req_cleanup
 
 %build
-%{python_build}
+%{py3_build}
 
 PBR_VERSION={{ upstream_version }} %sphinx_build -b html doc/source doc/build/html
 PBR_VERSION={{ upstream_version }} %sphinx_build -b man doc/source doc/build/man
@@ -74,33 +75,24 @@ PBR_VERSION={{ upstream_version }} %sphinx_build -b man doc/source doc/build/man
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
-%{python_install}
+%{py3_install}
 # man page
 install -p -D -m 644 doc/build/man/cinder.1 %{buildroot}%{_mandir}/man1/cinder.1
 # bash completion
 install -p -D -m 644 tools/cinder.bash_completion %{buildroot}%{_sysconfdir}/bash_completion.d/cinder.bash_completion
-%python_clone -a %{buildroot}%{_bindir}/cinder
-%python_clone -a %{buildroot}%{_mandir}/man1/cinder.1
-%python_clone -a %{buildroot}%{_sysconfdir}/bash_completion.d/cinder.bash_completion
-
-%post
-%{python_install_alternative cinder cinder.1 %{_sysconfdir}/bash_completion.d/cinder.bash_completion}
-
-%postun
-%python_uninstall_alternative cinder
 
 %check
 rm cinderclient/tests/unit/test_shell.py
-%python_exec -m stestr.cli run
+python3 -m stestr.cli run
 
-%files %{python_files}
+%files -n {{ py2name(py_versions='py3') }}
 %license LICENSE
 %doc README.rst ChangeLog
-%{python_sitelib}/cinderclient
-%{python_sitelib}/*.egg-info
-%python_alternative %{_bindir}/cinder
-%python_alternative %{_mandir}/man1/cinder.1
-%python_alternative %{_sysconfdir}/bash_completion.d/cinder.bash_completion
+%{python3_sitelib}/cinderclient
+%{python3_sitelib}/*.egg-info
+%{_bindir}/cinder
+%{_mandir}/man1/cinder.1*
+%{_sysconfdir}/bash_completion.d/cinder.bash_completion
 
 %files -n python-cinderclient-doc
 %license LICENSE
