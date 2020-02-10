@@ -12,53 +12,54 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('monotonic', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.config', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.context', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.i18n', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.serialization', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.utils', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('pyinotify', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('python-dateutil', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('six', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
-Requires:       {{ py2pkg('debtcollector') }}
-Requires:       {{ py2pkg('monotonic') }}
-Requires:       {{ py2pkg('oslo.config') }}
-Requires:       {{ py2pkg('oslo.context') }}
-Requires:       {{ py2pkg('oslo.i18n') }}
-Requires:       {{ py2pkg('oslo.serialization') }}
-Requires:       {{ py2pkg('oslo.utils') }}
-Requires:       {{ py2pkg('pyinotify') }}
-Requires:       {{ py2pkg('python-dateutil') }}
-Requires:       {{ py2pkg('six') }}
-Requires:       {{ py2pkg('systemd') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('monotonic') }}
+BuildRequires:  {{ py3('oslo.config') }}
+BuildRequires:  {{ py3('oslo.context') }}
+BuildRequires:  {{ py3('oslo.i18n') }}
+BuildRequires:  {{ py3('oslo.serialization') }}
+BuildRequires:  {{ py3('oslo.utils') }}
+BuildRequires:  {{ py3('oslotest') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('pyinotify') }}
+BuildRequires:  {{ py3('python-dateutil') }}
+BuildRequires:  {{ py3('six') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('testtools') }}
 BuildArch:      noarch
-%if 0%{?suse_version}
-Requires(post): update-alternatives
-Requires(postun): update-alternatives
-%else
-# on RDO, update-alternatives is in chkconfig
-Requires(post): chkconfig
-Requires(postun): chkconfig
-%endif
-%python_subpackages
 
 %description
 OpenStack logging configuration library provides standardized configuration
 for all openstack projects.It also provides custom formatters, handlers and
 support for context specific logging (like resource id's etc).
 
-%package -n python-oslo.log-doc
+%package -n {{ py2name(py_versions='py3') }}
+Summary:        OpenStack log library
+Requires:       {{ py3('debtcollector') }}
+Requires:       {{ py3('monotonic') }}
+Requires:       {{ py3('oslo.config') }}
+Requires:       {{ py3('oslo.context') }}
+Requires:       {{ py3('oslo.i18n') }}
+Requires:       {{ py3('oslo.serialization') }}
+Requires:       {{ py3('oslo.utils') }}
+Requires:       {{ py3('pyinotify') }}
+Requires:       {{ py3('python-dateutil') }}
+Requires:       {{ py3('six') }}
+Requires:       {{ py3('systemd') }}
+
+%description -n {{ py2name(py_versions='py3') }}
+OpenStack logging configuration library provides standardized configuration
+for all openstack projects.It also provides custom formatters, handlers and
+support for context specific logging (like resource id's etc).
+
+This package contains the Python 3.x module.
+
+%package -n {{ py2name() }}-doc
 Summary:        Documentation for OpenStack log library
 BuildRequires:  {{ py3('Sphinx') }}
 BuildRequires:  {{ py3('openstackdocstheme') }}
 
-%description -n python-oslo.log-doc
+%description -n {{ py2name() }}-doc
 Documentation for the oslo.log library.
 
 %prep
@@ -66,33 +67,26 @@ Documentation for the oslo.log library.
 %py_req_cleanup
 
 %build
-%{python_build}
+%{py3_build}
 
 # generate html docs
 PYTHONPATH=. PBR_VERSION={{ upstream_version }} %sphinx_build -b html doc/source doc/build/html
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
-%{python_install}
-%python_clone -a %{buildroot}%{_bindir}/convert-json
-
-%post
-%python_install_alternative convert-json
-
-%postun
-%python_uninstall_alternative convert-json
+%{py3_install}
 
 %check
-%python_exec -m stestr.cli run
+python3 -m stestr.cli run
 
-%files %{python_files}
+%files -n {{ py2name(py_versions='py3') }}
 %license LICENSE
 %doc ChangeLog README.rst
-%{python_sitelib}/oslo_log
-%{python_sitelib}/*.egg-info
-%python_alternative %{_bindir}/convert-json
+%{python3_sitelib}/oslo_log
+%{python3_sitelib}/*.egg-info
+%{_bindir}/convert-json
 
-%files -n python-oslo.log-doc
+%files -n {{ py2name() }}-doc
 %license LICENSE
 %doc doc/build/html
 
