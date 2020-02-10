@@ -12,35 +12,46 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/python-{{ pypi_name }}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('PrettyTable', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('PyYAML', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('cmd2', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('docutils', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('python-subunit', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('setuptools', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('stevedore', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('unicodecsv', py_versions=['py2']) }}
-Requires:       {{ py2pkg('PrettyTable') }}
-Requires:       {{ py2pkg('PyYAML') }}
-Requires:       {{ py2pkg('cmd2') }}
-Requires:       {{ py2pkg('pyparsing') }}
-Requires:       {{ py2pkg('six') }}
-Requires:       {{ py2pkg('stevedore') }}
+BuildRequires:  {{ py3('PrettyTable') }}
+BuildRequires:  {{ py3('PyYAML') }}
+BuildRequires:  {{ py3('cmd2') }}
+BuildRequires:  {{ py3('docutils') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('python-subunit') }}
+BuildRequires:  {{ py3('setuptools') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('stevedore') }}
+BuildRequires:  {{ py3('testscenarios') }}
+BuildRequires:  {{ py3('testtools') }}
+Requires:       {{ py3('PrettyTable') }}
+Requires:       {{ py3('PyYAML') }}
+Requires:       {{ py3('cmd2') }}
+Requires:       {{ py3('pyparsing') }}
+Requires:       {{ py3('six') }}
+Requires:       {{ py3('stevedore') }}
 BuildArch:      noarch
-%ifpython2
-Requires:       {{ py2pkg('unicodecsv') }}
-%endif
-%python_subpackages
 
 %description
 cliff is a framework for building command line programs. It uses
 setuptools entry points to provide subcommands, output formatters, and
 other extensions.
+
+%package -n {{ py2name(py_versions='py3') }}
+Summary:        Command Line Interface Formulation Framework
+Requires:       {{ py3('PrettyTable') }}
+Requires:       {{ py3('PyYAML') }}
+Requires:       {{ py3('cmd2') }}
+Requires:       {{ py3('pyparsing') }}
+Requires:       {{ py3('six') }}
+Requires:       {{ py3('stevedore') }}
+
+%description -n {{ py2name(py_versions='py3') }}
+cliff is a framework for building command line programs. It uses
+setuptools entry points to provide subcommands, output formatters, and
+other extensions.
+
+This package contains the Python 3.x module.
 
 %package -n python-cliff-doc
 Summary:        %{summary} - Documentation
@@ -58,25 +69,24 @@ This package contains documentation files for %{name}.
 
 %prep
 %autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
-
 %py_req_cleanup
 
 %build
-%python_build
+%py3_build
 PBR_VERSION={{ upstream_version }} PYTHONPATH=. %sphinx_build -b html doc/source doc/build/html
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
-%python_install
+%py3_install
 
 %check
-%python_exec -m stestr.cli run
+python3 -m stestr.cli run
 
-%files %{python_files}
+%files -n {{ py2name(py_versions='py3') }}
 %license LICENSE
 %doc ChangeLog README.rst
-%{python_sitelib}/{{ pypi_name }}
-%{python_sitelib}/*.egg-info
+%{python3_sitelib}/{{ pypi_name }}
+%{python3_sitelib}/*.egg-info
 
 %files -n python-cliff-doc
 %license LICENSE
