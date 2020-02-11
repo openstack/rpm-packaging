@@ -13,43 +13,39 @@ URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
 BuildRequires:  python-devel
-BuildRequires:  {{ py2pkg('enum34', py_versions=['py2']) }}
-BuildRequires:  {{ py2pkg('eventlet', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('fasteners', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('fixtures', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('futures', py_versions=['py2']) }}
-BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.config', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.i18n', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.utils', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
-Requires:       {{ py2pkg('fasteners') }}
-Requires:       {{ py2pkg('oslo.config') }}
-Requires:       {{ py2pkg('oslo.i18n') }}
-Requires:       {{ py2pkg('oslo.utils') }}
-Requires:       {{ py2pkg('six') }}
+BuildRequires:  {{ py3('eventlet') }}
+BuildRequires:  {{ py3('fasteners') }}
+BuildRequires:  {{ py3('fixtures') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('oslo.config') }}
+BuildRequires:  {{ py3('oslo.i18n') }}
+BuildRequires:  {{ py3('oslo.utils') }}
+BuildRequires:  {{ py3('oslotest') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('testscenarios') }}
+BuildRequires:  {{ py3('testtools') }}
 BuildArch:      noarch
-%ifpython2
-Requires:       {{ py2pkg('enum34') }}
-%endif
-%if 0%{?suse_version}
-Requires(post): update-alternatives
-Requires(postun): update-alternatives
-%else
-# on RDO, update-alternatives is in chkconfig
-Requires(post): chkconfig
-Requires(postun): chkconfig
-%endif
-%python_subpackages
 
 %description
 The oslo.concurrency library has utilities for safely running multi-thread,
 multi-process applications using locking mechanisms and for running
 external processes.
+
+%package -n {{ py2name(py_versions='py3') }}
+Summary:        OpenStack oslo.concurrency library
+Requires:       {{ py3('fasteners') }}
+Requires:       {{ py3('oslo.config') }}
+Requires:       {{ py3('oslo.i18n') }}
+Requires:       {{ py3('oslo.utils') }}
+Requires:       {{ py3('six') }}
+
+%description -n {{ py2name(py_versions='py3') }}
+The oslo.concurrency library has utilities for safely running multi-thread,
+multi-process applications using locking mechanisms and for running
+external processes.
+
+This package contains the Python 3.x module.
 
 %package -n python-oslo.concurrency-doc
 Summary:        Documentation for OpenStack concurrency library
@@ -68,7 +64,7 @@ This package contains the documentation.
 %py_req_cleanup
 
 %build
-%{python_build}
+%{py3_build}
 
 # generate html docs
 PBR_VERSION=%{version} %sphinx_build -b html doc/source doc/build/html
@@ -76,26 +72,17 @@ PBR_VERSION=%{version} %sphinx_build -b html doc/source doc/build/html
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
-%{python_install}
-%python_clone -a %{buildroot}%{_bindir}/lockutils-wrapper
-
-%post
-%python_install_alternative lockutils-wrapper
-
-%postun
-%python_uninstall_alternative lockutils-wrapper
+%{py3_install}
 
 %check
-if [ "%_lib" = "lib64" ]; then
-%python_exec -m stestr.cli run
-fi
+python3 -m stestr.cli run
 
-%files %{python_files}
+%files -n {{ py2name(py_versions='py3') }}
 %license LICENSE
 %doc README.rst ChangeLog
-%python_alternative %{_bindir}/lockutils-wrapper
-%{python_sitelib}/oslo_concurrency
-%{python_sitelib}/*.egg-info
+%{_bindir}/lockutils-wrapper
+%{python3_sitelib}/oslo_concurrency
+%{python3_sitelib}/*.egg-info
 
 %files -n python-oslo.concurrency-doc
 %license LICENSE
