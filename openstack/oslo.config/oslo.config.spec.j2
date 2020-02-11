@@ -13,44 +13,23 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('PyYAML', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('debtcollector', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('fixtures', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('netaddr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.i18n', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('requests', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('requests-mock', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('rfc3986', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('six', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('stevedore', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
-Requires:       {{ py2pkg('PyYAML') }}
-Requires:       {{ py2pkg('debtcollector') }}
-Requires:       {{ py2pkg('netaddr') }}
-Requires:       {{ py2pkg('oslo.i18n') }}
-Requires:       {{ py2pkg('requests') }}
-Requires:       {{ py2pkg('rfc3986') }}
-Requires:       {{ py2pkg('six') }}
-Requires:       {{ py2pkg('stevedore') }}
+BuildRequires:  {{ py3('PyYAML') }}
+BuildRequires:  {{ py3('debtcollector') }}
+BuildRequires:  {{ py3('fixtures') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('netaddr') }}
+BuildRequires:  {{ py3('oslo.i18n') }}
+BuildRequires:  {{ py3('oslotest') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('requests') }}
+BuildRequires:  {{ py3('requests-mock') }}
+BuildRequires:  {{ py3('rfc3986') }}
+BuildRequires:  {{ py3('six') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('stevedore') }}
+BuildRequires:  {{ py3('testscenarios') }}
+BuildRequires:  {{ py3('testtools') }}
 BuildArch:      noarch
-%ifpython2
-BuildRequires:  {{ py2pkg('enum34', py_versions=['py2']) }}
-Requires:       {{ py2pkg('enum34') }}
-%endif
-%if 0%{?suse_version}
-Requires(post): update-alternatives
-Requires(postun): update-alternatives
-%else
-# on RDO, update-alternatives is in chkconfig
-Requires(post): chkconfig
-Requires(postun): chkconfig
-%endif
-%python_subpackages
 
 %description
 The Oslo project intends to produce a python library containing
@@ -61,9 +40,31 @@ useful.
 The oslo-config library is a command line and configuration file
 parsing library from the Oslo project.
 
+%package -n {{ py2name(py_versions='py3') }}
+Summary:        OpenStack common configuration library
+Requires:       {{ py3('PyYAML') }}
+Requires:       {{ py3('debtcollector') }}
+Requires:       {{ py3('netaddr') }}
+Requires:       {{ py3('oslo.i18n') }}
+Requires:       {{ py3('requests') }}
+Requires:       {{ py3('rfc3986') }}
+Requires:       {{ py3('six') }}
+Requires:       {{ py3('stevedore') }}
+
+%description -n {{ py2name(py_versions='py3') }}
+The Oslo project intends to produce a python library containing
+infrastructure code shared by OpenStack projects. The APIs provided
+by the project should be high quality, stable, consistent and generally
+useful.
+
+The oslo-config library is a command line and configuration file
+parsing library from the Oslo project.
+
+This package contains the Python 3.x module.
+
 %package -n python-oslo.config-doc
 Summary:       Documentation for OpenStack common configuration library
-BuildRequires:  {{ py2pkg('Sphinx', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py3('Sphinx') }}
 BuildRequires:  {{ py3('openstackdocstheme') }}
 BuildRequires:  {{ py3('sphinxcontrib-apidoc') }}
 
@@ -75,7 +76,7 @@ Documentation for the oslo-config library.
 %py_req_cleanup
 
 %build
-%{python_build}
+%{py3_build}
 
 PBR_VERSION={{ upstream_version }} PYTHONPATH=. \
     %sphinx_build -b html doc/source doc/build/html
@@ -83,27 +84,19 @@ PBR_VERSION={{ upstream_version }} PYTHONPATH=. \
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
-%{python_install}
-%python_clone -a %{buildroot}%{_bindir}/oslo-config-generator
-%python_clone -a %{buildroot}%{_bindir}/oslo-config-validator
-
-%post
-%{python_install_alternative oslo-config-generator oslo-config-validator}
-
-%postun
-%python_uninstall_alternative oslo-config-generator
+%{py3_install}
 
 %check
 # Requires oslo.log which we can't depend on for build cycle reasons
 rm -v oslo_config/tests/test_cfg.py
-%python_exec -m stestr.cli run
+python3 -m stestr.cli run
 
-%files %{python_files}
+%files -n {{ py2name(py_versions='py3') }}
 %license LICENSE
-%python_alternative %{_bindir}/oslo-config-generator
-%python_alternative %{_bindir}/oslo-config-validator
-%{python_sitelib}/oslo_config
-%{python_sitelib}/*.egg-info
+%{_bindir}/oslo-config-generator
+%{_bindir}/oslo-config-validator
+%{python3_sitelib}/oslo_config
+%{python3_sitelib}/*.egg-info
 
 %files -n python-oslo.config-doc
 %doc doc/build/html README.rst
