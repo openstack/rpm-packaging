@@ -12,16 +12,13 @@ Group:          Development/Languages/Python
 URL:            https://docs.openstack.org/developer/stevedore/
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('docutils', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('pytest', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('setuptools', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
-Requires:       {{ py2pkg('pbr') }}
-Requires:       {{ py2pkg('six') }}
+BuildRequires:  {{ py3('docutils') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('pytest') }}
+BuildRequires:  {{ py3('setuptools') }}
+BuildRequires:  {{ py3('testtools') }}
 BuildArch:      noarch
-%python_subpackages
 
 %description
 Python makes loading code dynamically easy, allowing you to configure
@@ -34,10 +31,28 @@ for managing entry points tends to be repetitive, though, so stevedore
 provides manager classes for implementing common patterns for using
 dynamically loaded extensions.
 
+%package -n {{ py2name(py_versions='py3') }}
+Summary:        Manage dynamic plugins for Python applications
+Requires:       {{ py3('pbr') }}
+Requires:       {{ py3('six') }}
+
+%description -n {{ py2name(py_versions='py3') }}
+Python makes loading code dynamically easy, allowing you to configure
+and extend your application by discovering and loading extensions
+(plugins) at runtime. Many applications implement their own
+library for doing this, using ``__import__`` or ``importlib``.
+stevedore avoids creating yet another extension
+mechanism by building on top of setuptools entry points. The code
+for managing entry points tends to be repetitive, though, so stevedore
+provides manager classes for implementing common patterns for using
+dynamically loaded extensions.
+
+This package contains the Python 3.x module
+
 %package -n python-stevedore-doc
 Summary:        Documentation for %{name}
 Group:          Documentation/HTML
-BuildRequires:  {{ py2pkg('Sphinx', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py3('Sphinx') }}
 Provides:       %{python_module stevedore-doc = %{version}}
 
 %description -n python-stevedore-doc
@@ -58,7 +73,7 @@ This package contains documentation in HTML format.
 %py_req_cleanup
 
 %build
-%python_build
+%py3_build
 
 # generate html docs
 PBR_VERSION={{ upstream_version }} PYTHONPATH=. %sphinx_build -b html doc/source doc/build/html
@@ -66,17 +81,17 @@ PBR_VERSION={{ upstream_version }} PYTHONPATH=. %sphinx_build -b html doc/source
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
-%python_install
+%py3_install
 
 %check
 # use pytest instead of stestr to break a build cycle between python-cliff, python-stestr and python-stevedore
-%python_exec -m pytest stevedore/tests
+python3 -m pytest stevedore/tests
 
-%files %{python_files}
+%files -n {{ py2name(py_versions='py3') }}
 %license LICENSE
 %doc README.rst
-%{python_sitelib}/{{ pypi_name }}
-%{python_sitelib}/{{ pypi_name }}-*.egg-info
+%{python3_sitelib}/{{ pypi_name }}
+%{python3_sitelib}/{{ pypi_name }}-*.egg-info
 
 %files -n python-stevedore-doc
 %license LICENSE
