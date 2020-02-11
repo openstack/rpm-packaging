@@ -1,41 +1,34 @@
-%global sname keystoneauth1
-Name:           {{ py2name('keystoneauth1') }}
-Version:        3.18.0
-Release:        0
+{% set pypi_name = 'keystoneauth1' %}
+{% set upstream_version = upstream_version('3.18.0') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
 Summary:        OpenStack authenticating tools
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://launchpad.net/keystoneauth
-Source0:        https://files.pythonhosted.org/packages/source/k/%{sname}/%{sname}-%{version}.tar.gz
+Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('PyYAML', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('betamax', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('fixtures', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('iso8601', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('lxml', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oauthlib', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('os-service-types', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.config', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.utils', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('requests-kerberos', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('requests-mock', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testresources', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
-Requires:       {{ py2pkg('PyYAML') }}
-Requires:       {{ py2pkg('iso8601') }}
-Requires:       {{ py2pkg('lxml') }}
-Requires:       {{ py2pkg('oauthlib') }}
-Requires:       {{ py2pkg('os-service-types') }}
-Requires:       {{ py2pkg('requests') }}
-Requires:       {{ py2pkg('requests-kerberos') }}
-Requires:       {{ py2pkg('six') }}
-Requires:       {{ py2pkg('stevedore') }}
+BuildRequires:  {{ py3('PyYAML') }}
+BuildRequires:  {{ py3('betamax') }}
+BuildRequires:  {{ py3('fixtures') }}
+BuildRequires:  {{ py3('iso8601') }}
+BuildRequires:  {{ py3('lxml') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('oauthlib') }}
+BuildRequires:  {{ py3('os-service-types') }}
+BuildRequires:  {{ py3('oslo.config') }}
+BuildRequires:  {{ py3('oslo.utils') }}
+BuildRequires:  {{ py3('oslotest') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('requests-kerberos') }}
+BuildRequires:  {{ py3('requests-mock') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('testresources') }}
+BuildRequires:  {{ py3('testtools') }}
 BuildArch:      noarch
-%python_subpackages
 
 %description
 Tools for authenticating to an OpenStack-based cloud. These tools include:
@@ -43,6 +36,27 @@ Tools for authenticating to an OpenStack-based cloud. These tools include:
 * Discovery mechanisms to determine API version support
 * A session that is used to maintain client settings across requests
   (based on the requests Python library)
+
+%package -n {{ py2name(py_versions='py3') }}
+Summary:        OpenStack authenticating tools
+Requires:       {{ py3('PyYAML') }}
+Requires:       {{ py3('iso8601') }}
+Requires:       {{ py3('lxml') }}
+Requires:       {{ py3('oauthlib') }}
+Requires:       {{ py3('os-service-types') }}
+Requires:       {{ py3('requests') }}
+Requires:       {{ py3('requests-kerberos') }}
+Requires:       {{ py3('six') }}
+Requires:       {{ py3('stevedore') }}
+
+%description -n {{ py2name(py_versions='py3') }}
+Tools for authenticating to an OpenStack-based cloud. These tools include:
+* Authentication plugins (password, token, and federation based)
+* Discovery mechanisms to determine API version support
+* A session that is used to maintain client settings across requests
+  (based on the requests Python library)
+
+This package contains the Python 3.x module.
 
 %package -n python-keystoneauth1-doc
 Summary:        Documentation for OpenStack authenticating tools
@@ -54,17 +68,17 @@ BuildRequires:  {{ py3('sphinxcontrib-apidoc') }}
 Documentation for OpenStack authenticating tools.
 
 %prep
-%autosetup -p1 -n %{sname}-%{version}
+%autosetup -p1 -n {{ pypi_name }}-%{version}
 %py_req_cleanup
 
 # cleanup intersphinx (we have no network during build)
 echo "intersphinx_mapping = {}" >> doc/source/conf.py
 
 %build
-%{python_build}
+%{py3_build}
 
 %install
-%{python_install}
+%{py3_install}
 
 # generate html docs
 PBR_VERSION=%{version} %sphinx_build -b html doc/source doc/build/html
@@ -73,13 +87,13 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %check
 rm -v keystoneauth1/tests/unit/test_hacking_checks.py
-%python_exec -m stestr.cli run
+python3 -m stestr.cli run
 
-%files %{python_files}
+%files -n {{ py2name(py_versions='py3') }}
 %license LICENSE
 %doc ChangeLog README.rst
-%{python_sitelib}/%{sname}
-%{python_sitelib}/*.egg-info
+%{python3_sitelib}/{{ pypi_name }}
+%{python3_sitelib}/*.egg-info
 
 %files -n python-keystoneauth1-doc
 %doc doc/build/html
