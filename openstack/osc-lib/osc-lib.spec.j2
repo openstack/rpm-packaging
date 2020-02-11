@@ -12,39 +12,47 @@ Group:          Development/Languages/Python
 URL:            https://docs.openstack.org/developer/osc-lib
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('Babel', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('cliff', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('fixtures', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('keystoneauth1', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('openstacksdk', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.i18n', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.utils', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('osprofiler', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('requests-mock', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('simplejson', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('six', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('stevedore', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
-Requires:       {{ py2pkg('Babel') }}
-Requires:       {{ py2pkg('cliff') }}
-Requires:       {{ py2pkg('keystoneauth1') }}
-Requires:       {{ py2pkg('openstacksdk') }}
-Requires:       {{ py2pkg('oslo.i18n') }}
-Requires:       {{ py2pkg('oslo.utils') }}
-Requires:       {{ py2pkg('pbr') }}
-Requires:       {{ py2pkg('simplejson') }}
-Requires:       {{ py2pkg('six') }}
-Requires:       {{ py2pkg('stevedore') }}
+BuildRequires:  {{ py3('Babel') }}
+BuildRequires:  {{ py3('cliff') }}
+BuildRequires:  {{ py3('fixtures') }}
+BuildRequires:  {{ py3('keystoneauth1') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('openstacksdk') }}
+BuildRequires:  {{ py3('oslo.i18n') }}
+BuildRequires:  {{ py3('oslo.utils') }}
+BuildRequires:  {{ py3('oslotest') }}
+BuildRequires:  {{ py3('osprofiler') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('requests-mock') }}
+BuildRequires:  {{ py3('simplejson') }}
+BuildRequires:  {{ py3('six') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('stevedore') }}
+BuildRequires:  {{ py3('testtools') }}
 BuildArch:      noarch
-%python_subpackages
 
 %description
 OpenStackClient (aka OSC) is a command-line client for OpenStack.  osc-lib
 is a package of common support modules for writing OSC plugins.
+
+%package -n {{ py2name(py_versions='py3') }}
+Summary:        OpenStackClient Library
+Requires:       {{ py3('Babel') }}
+Requires:       {{ py3('cliff') }}
+Requires:       {{ py3('keystoneauth1') }}
+Requires:       {{ py3('openstacksdk') }}
+Requires:       {{ py3('oslo.i18n') }}
+Requires:       {{ py3('oslo.utils') }}
+Requires:       {{ py3('pbr') }}
+Requires:       {{ py3('simplejson') }}
+Requires:       {{ py3('six') }}
+Requires:       {{ py3('stevedore') }}
+
+%description -n {{ py2name(py_versions='py3') }}
+OpenStackClient (aka OSC) is a command-line client for OpenStack.  osc-lib
+is a package of common support modules for writing OSC plugins.
+
+This package contains the Python 3.x module.
 
 %package -n python-osc-lib-doc
 Summary:        Documentation for the OpenStack client library
@@ -61,10 +69,10 @@ Documentation for the OpenStack client library.
 %py_req_cleanup
 
 %build
-%{python_build}
+%{py3_build}
 
 %install
-%{python_install}
+%{py3_install}
 
 # generate html docs
 PBR_VERSION=%{version} PYTHONPATH=. %sphinx_build -a -E -d doc/build/doctrees -b html doc/source doc/build/html
@@ -72,13 +80,13 @@ PBR_VERSION=%{version} PYTHONPATH=. %sphinx_build -a -E -d doc/build/doctrees -b
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %check
-%python_exec -m stestr.cli run
+python3 -m stestr.cli run
 
-%files %{python_files}
+%files -n {{ py2name(py_versions='py3') }}
 %license LICENSE
 %doc README.rst ChangeLog
-%{python_sitelib}/osc_lib
-%{python_sitelib}/*.egg-info
+%{python3_sitelib}/osc_lib
+%{python3_sitelib}/*.egg-info
 
 %files -n python-osc-lib-doc
 %license LICENSE
