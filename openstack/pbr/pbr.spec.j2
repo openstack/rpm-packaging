@@ -15,18 +15,25 @@ Group:          Development/Languages/Python
 URL:            https://pypi.org/project/pbr
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('setuptools', py_versions=['py2', 'py3']) }}
-Requires:       {{ py2pkg('setuptools') }}
+BuildRequires:  {{ py3('setuptools') }}
 BuildArch:      noarch
-%ifpython2
-%if 0%{?rdo}
-Provides:        python2-pbr = %{version}-%{release}
-Obsoletes:       python2-pbr < %{version}-%{release}
-%endif
-%endif
-%python_subpackages
 
 %description
+PBR is a library that injects some useful and sensible default behaviors into
+your setuptools run. It started off life as the chunks of code that were copied
+between all of the OpenStack projects. Around the time that OpenStack hit 18
+different projects each with at least 3 active branches, it seems like a good
+time to make that code into a proper re-usable library.
+
+%package -n {{ py2name(py_versions='py3') }}
+Summary:        Python Build Reasonableness
+Requires:       {{ py3('setuptools') }}
+%if 0%{?rdo}
+Obsoletes:       python-pbr < %{version}-%{release}
+Obsoletes:       python2-pbr < %{version}-%{release}
+%endif
+
+%description -n {{ py2name(py_versions='py3') }}
 PBR is a library that injects some useful and sensible default behaviors into
 your setuptools run. It started off life as the chunks of code that were copied
 between all of the OpenStack projects. Around the time that OpenStack hit 18
@@ -49,7 +56,7 @@ behaviors into your setuptools run.
 
 %build
 export SKIP_PIP_INSTALL=1
-%python_build
+%py3_build
 
 # generate html docs
 PYTHONPATH=$PWD PBR_VERSION={{ upstream_version }} %sphinx_build -b html doc/source doc/build/html
@@ -57,21 +64,14 @@ PYTHONPATH=$PWD PBR_VERSION={{ upstream_version }} %sphinx_build -b html doc/sou
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
-%python_install
-%python_clone -a %{buildroot}%{_bindir}/pbr
+%py3_install
 
-%post
-%python_install_alternative pbr
-
-%postun
-%python_uninstall_alternative pbr
-
-%files %{python_files}
-%python_alternative %{_bindir}/pbr
+%files -n {{ py2name(py_versions='py3') }}
+%{_bindir}/pbr
 %doc README.rst
 %license LICENSE
-%{python_sitelib}/{{ pypi_name }}
-%{python_sitelib}/{{ pypi_name }}-*-py?.?.egg-info
+%{python3_sitelib}/{{ pypi_name }}
+%{python3_sitelib}/{{ pypi_name }}-*-py?.?.egg-info
 
 %files -n python-pbr-doc
 %license LICENSE
