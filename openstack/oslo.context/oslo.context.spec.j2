@@ -13,16 +13,14 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
-Requires:       {{ py2pkg('debtcollector') }}
+BuildRequires:  {{ py3('pbr') }}
 BuildArch:      noarch
 %if %{with test}
-BuildRequires:  {{ py2pkg('debtcollector', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('fixtures', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py3('debtcollector') }}
+BuildRequires:  {{ py3('fixtures') }}
+BuildRequires:  {{ py3('oslotest') }}
+BuildRequires:  {{ py3('stestr') }}
 %endif
-%python_subpackages
 
 %description
 The Oslo context library has helpers to maintain useful information
@@ -30,13 +28,25 @@ about a request context.
 The request context is usually populated in the WSGI pipeline and
 used by various modules such as logging.
 
-%package -n python-oslo.context-doc
+%package -n {{ py2name(py_versions='py3') }}
+Summary:        OpenStack Oslo context library
+Requires:       {{ py3('debtcollector') }}
+
+%description -n {{ py2name(py_versions='py3') }}
+The Oslo context library has helpers to maintain useful information
+about a request context.
+The request context is usually populated in the WSGI pipeline and
+used by various modules such as logging.
+
+This package contains the Python 3.x module.
+
+%package -n {{ py2name() }}-doc
 Summary:        Documentation for OpenStack common context library
 Group:          Documentation/HTML
 BuildRequires:  {{ py3('Sphinx') }}
 BuildRequires:  {{ py3('openstackdocstheme') }}
 
-%description -n python-oslo.context-doc
+%description -n {{ py2name() }}-doc
 Documentation for the oslo-context library.
 
 %prep
@@ -44,27 +54,27 @@ Documentation for the oslo-context library.
 %py_req_cleanup
 
 %build
-%{python_build}
+%{py3_build}
 # generate html docs
 PBR_VERSION=%{version} %sphinx_build -b html doc/source doc/build/html
 # remove the sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
-%{python_install}
+%{py3_install}
 
 %if %{with test}
 %check
-%python_exec -m stestr.cli run
+python3 -m stestr.cli run
 %endif
 
-%files %{python_files}
+%files -n {{ py2name(py_versions='py3') }}
 %license LICENSE
 %doc README.rst
-%{python_sitelib}/oslo_context
-%{python_sitelib}/*.egg-info
+%{python3_sitelib}/oslo_context
+%{python3_sitelib}/*.egg-info
 
-%files -n python-oslo.context-doc
+%files -n {{ py2name() }}-doc
 %license LICENSE
 %doc doc/build/html
 
