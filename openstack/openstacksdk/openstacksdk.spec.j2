@@ -12,74 +12,41 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('PyYAML', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('appdirs', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('beautifulsoup4', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('ddt', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('decorator', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('deprecation', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('dogpile.cache', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('extras', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('fixtures', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('futures', py_versions=['py2']) }}
-BuildRequires:  {{ py2pkg('ipaddress', py_versions=['py2']) }}
-BuildRequires:  {{ py2pkg('jmespath', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('jsonpatch', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('jsonschema', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('keystoneauth1', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('munch', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('netifaces', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('os-service-types', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.config', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('python-subunit', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('requests-mock', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('requestsexceptions', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('six', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('statsd', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('stevedore', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
-Requires:       {{ py2pkg('PyYAML') }}
-Requires:       {{ py2pkg('appdirs') }}
-Requires:       {{ py2pkg('cryptography') }}
-Requires:       {{ py2pkg('decorator') }}
-Requires:       {{ py2pkg('dogpile.cache') }}
-Requires:       {{ py2pkg('iso8601') }}
-Requires:       {{ py2pkg('jmespath') }}
-Requires:       {{ py2pkg('jsonpatch') }}
-Requires:       {{ py2pkg('keystoneauth1') }}
-Requires:       {{ py2pkg('munch') }}
-Requires:       {{ py2pkg('netifaces') }}
-Requires:       {{ py2pkg('os-service-types') }}
-Requires:       {{ py2pkg('requestsexceptions') }}
-Requires:       {{ py2pkg('six') }}
+BuildRequires:  {{ py3('PyYAML') }}
+BuildRequires:  {{ py3('appdirs') }}
+BuildRequires:  {{ py3('beautifulsoup4') }}
+BuildRequires:  {{ py3('ddt') }}
+BuildRequires:  {{ py3('decorator') }}
+BuildRequires:  {{ py3('deprecation') }}
+BuildRequires:  {{ py3('devel') }}
+BuildRequires:  {{ py3('dogpile.cache') }}
+BuildRequires:  {{ py3('extras') }}
+BuildRequires:  {{ py3('fixtures') }}
+BuildRequires:  {{ py3('jmespath') }}
+BuildRequires:  {{ py3('jsonpatch') }}
+BuildRequires:  {{ py3('jsonschema') }}
+BuildRequires:  {{ py3('keystoneauth1') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('munch') }}
+BuildRequires:  {{ py3('netifaces') }}
+BuildRequires:  {{ py3('os-service-types') }}
+BuildRequires:  {{ py3('oslo.config') }}
+BuildRequires:  {{ py3('oslotest') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('python-subunit') }}
+BuildRequires:  {{ py3('requests-mock') }}
+BuildRequires:  {{ py3('requestsexceptions') }}
+BuildRequires:  {{ py3('six') }}
+BuildRequires:  {{ py3('statsd') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('stevedore') }}
+BuildRequires:  {{ py3('testscenarios') }}
+BuildRequires:  {{ py3('testtools') }}
 BuildArch:      noarch
-%ifpython2
-Requires:       {{ py2pkg('futures') }}
-Requires:       {{ py2pkg('ipaddress') }}
-%endif
 %if 0%{?suse_version}
 # RDO does not package prometheus_client
-BuildRequires:  {{ py2pkg('prometheus_client', py_versions=['py2', 'py3']) }}
-Requires(post): update-alternatives
-Requires(postun): update-alternatives
-%if 0%{?sle_version} >= 150000 || 0%{?suse_version} > 1500
-Requires:       mkisofs
-%else
-Requires:       genisoimage
+BuildRequires:  {{ py3('prometheus_client') }}
 %endif
-%else
-Requires:       genisoimage
-# on RDO, update-alternatives is in chkconfig
-Requires(post): chkconfig
-Requires(postun): chkconfig
-%endif
-%python_subpackages
 
 %description
 The openstacksdk is a library for building applications to work
@@ -88,13 +55,47 @@ The project aims to provide a consistent and complete set of
 interactions with OpenStack's many services, along with complete
 documentation, examples, and tools.
 
+%package -n {{ py2name(py_versions='py3') }}
+Summary:        An SDK for building applications to work with OpenStack
+Requires:       {{ py3('PyYAML') }}
+Requires:       {{ py3('appdirs') }}
+Requires:       {{ py3('cryptography') }}
+Requires:       {{ py3('decorator') }}
+Requires:       {{ py3('dogpile.cache') }}
+Requires:       {{ py3('iso8601') }}
+Requires:       {{ py3('jmespath') }}
+Requires:       {{ py3('jsonpatch') }}
+Requires:       {{ py3('keystoneauth1') }}
+Requires:       {{ py3('munch') }}
+Requires:       {{ py3('netifaces') }}
+Requires:       {{ py3('os-service-types') }}
+Requires:       {{ py3('requestsexceptions') }}
+Requires:       {{ py3('six') }}
+%if 0%{?suse_version}
+%if 0%{?sle_version} >= 150000 || 0%{?suse_version} > 1500
+Requires:       mkisofs
+%else
+Requires:       genisoimage
+%endif
+%else
+Requires:       genisoimage
+%endif
+
+%description -n {{ py2name(py_versions='py3') }}
+The openstacksdk is a library for building applications to work
+with OpenStack clouds.
+The project aims to provide a consistent and complete set of
+interactions with OpenStack's many services, along with complete
+documentation, examples, and tools.
+
+This package contains the Python 3.x module
+
 %package -n python-openstacksdk-doc
 Summary:        %{summary} - Documentation
 Group:          Documentation/HTML
 BuildRequires:  {{ py3('Sphinx') }}
 BuildRequires:  {{ py3('openstackdocstheme') }}
 BuildRequires:  {{ py3('sphinxcontrib-svg2pdfconverter') }}
-Requires:       %{name} = %{version}
 
 %description -n python-openstacksdk-doc
 The openstacksdk is a library for building applications to work
@@ -117,31 +118,24 @@ rm openstack/tests/unit/test_stats.py
 %endif
 
 %build
-%python_build
+%py3_build
 PBR_VERSION={{ upstream_version }} %sphinx_build -b html doc/source doc/build/html
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
-%python_install
-%python_clone -a %{buildroot}%{_bindir}/openstack-inventory
-
-%post
-%python_install_alternative openstack-inventory
-
-%postun
-%python_uninstall_alternative openstack-inventory
+%py3_install
 
 %check
 export OS_LOG_CAPTURE=true
 export OS_TEST_TIMEOUT=30
-%python_exec -m stestr.cli run
+python3 -m stestr.cli run
 
-%files %{python_files}
+%files -n {{ py2name(py_versions='py3') }}
 %license LICENSE
 %doc ChangeLog README.rst
-%python_alternative %{_bindir}/openstack-inventory
-%{python_sitelib}/openstack
-%{python_sitelib}/*.egg-info
+%{_bindir}/openstack-inventory
+%{python3_sitelib}/openstack
+%{python3_sitelib}/*.egg-info
 
 %files -n python-openstacksdk-doc
 %license LICENSE
