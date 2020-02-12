@@ -65,7 +65,7 @@ This package contains the documentation.
 rm os_service_types/tests/test_remote.py
 
 %build
-%{python_build}
+%{py3_build}
 
 # generate html docs
 PBR_VERSION=%{version} %sphinx_build -b html doc/source doc/build/html
