@@ -23,13 +23,15 @@ BuildRequires:  {{ py3('mock') }}
 BuildRequires:  {{ py3('oslo.serialization') }}
 BuildRequires:  {{ py3('oslo.utils') }}
 BuildRequires:  {{ py3('pbr') }}
-BuildRequires:  {{ py3('pifpaf') }}
 BuildRequires:  {{ py3('pymemcache') }}
 BuildRequires:  {{ py3('stevedore') }}
 BuildRequires:  {{ py3('tenacity') }}
 BuildRequires:  {{ py3('testtools') }}
 BuildRequires:  {{ py3('voluptuous') }}
 BuildArch:      noarch
+%if ! 0%{?rdo}
+BuildRequires:  {{ py3('pifpaf') }}
+%endif
 
 %description
 The Tooz project aims at centralizing the most common distributed primitives

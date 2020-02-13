@@ -34,7 +34,6 @@ BuildRequires:  {{ py3('oslo.service') }}
 BuildRequires:  {{ py3('oslo.utils') }}
 BuildRequires:  {{ py3('oslotest') }}
 BuildRequires:  {{ py3('pbr') }}
-BuildRequires:  {{ py3('pifpaf') }}
 BuildRequires:  {{ py3('pyngus') }}
 BuildRequires:  {{ py3('six') }}
 BuildRequires:  {{ py3('stestr') }}
@@ -106,6 +105,8 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %py3_install
 
 %check
+# NOTE(jpena): we do not want to run functional tests, just unit tests
+rm -rf oslo_messaging/tests/functional
 python3 -m stestr.cli run
 
 %files -n {{ py2name(py_versions='py3') }}
