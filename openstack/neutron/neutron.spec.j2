@@ -35,8 +35,6 @@ Source21:       openstack-neutron.tmpfiles
 Source22:       openstack-neutron-l2-agents.modules
 Source23:       openstack-neutron-l2-agents.sysctl
 Source90:       openstack-neutron-server.README.config
-# https://review.opendev.org/681400
-Patch0:         0001-Use-sys.executable-instead-of-python.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py3('WebTest') }}
 BuildRequires:  {{ py3('ddt') }}
@@ -532,6 +530,8 @@ python3 -m stestr.cli --test-path neutron/tests/unit run
 %{_bindir}/neutron-ipset-cleanup
 %{_bindir}/neutron-keepalived-state-change
 %{_bindir}/neutron-netns-cleanup
+%{_bindir}/neutron-ovn-db-sync-util
+%{_bindir}/neutron-ovn-migration-mtu
 %{_bindir}/neutron-pd-notify
 %{_bindir}/neutron-rootwrap
 %{_bindir}/neutron-rootwrap-daemon
