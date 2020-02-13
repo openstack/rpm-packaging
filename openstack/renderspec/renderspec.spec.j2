@@ -45,7 +45,7 @@ and follow their policies and processes.
 Summary:        Documentation for the renderspec utility
 BuildRequires:  {{ py3('Sphinx') }}
 BuildRequires:  {{ py3('openstackdocstheme') }}
-Requires:       %{name} = %{version}
+Requires:       {{ py2name(py_versions='py3') }} = %{version}
 
 %description -n {{ py2name() }}-doc
 Documentation for the renderspec tool which is a tool to convert
