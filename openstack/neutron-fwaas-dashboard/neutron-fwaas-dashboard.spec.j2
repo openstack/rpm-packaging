@@ -74,7 +74,11 @@ PYTHONPATH=%{http_dashboard_dir} python3 ../manage.py compilemessages
 popd
 
 %check
-PYTHONPATH=%{http_dashboard_dir} python3 manage.py test neutron_fwaas_dashboard --settings=neutron_fwaas_dashboard.test.settings
+# Depends on Selenium integration tests, we just want unit tests
+rm -rf neutron_fwaas_dashboard/test/integration
+PYTHONPATH=%{http_dashboard_dir} python3 manage.py test neutron_fwaas_dashboard \
+    --settings=neutron_fwaas_dashboard.test.settings \
+    --exclude-tag integration
 
 %install
 %{py3_install}
