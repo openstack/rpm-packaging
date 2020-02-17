@@ -95,7 +95,7 @@ export LANG=en_US.UTF-8
 %{py3_build}
 
 # copy, compile and create a zip file to be fed to spark
-python -m compileall monasca_transform
+python3 -m compileall monasca_transform
 zip -r %{sname}.zip monasca_transform -i '*.pyc'
 
 %install
