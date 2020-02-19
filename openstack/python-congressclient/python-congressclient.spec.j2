@@ -2,7 +2,7 @@
 {% set upstream_version = upstream_version('1.13.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
-Name:           {{ py2name(py_versions='py3') }}
+Name:           {{ py2name() }}
 Version:        {{ py2rpmversion() }}
 Release:        {{ py2rpmrelease() }}
 Summary:        Client library for Congress
@@ -21,15 +21,6 @@ BuildRequires:  {{ py3('pbr') }}
 BuildRequires:  {{ py3('requests-mock') }}
 BuildRequires:  {{ py3('sphinxcontrib-apidoc') }}
 BuildRequires:  {{ py3('stestr') }}
-Requires:       {{ py3('Babel') }}
-Requires:       {{ py3('cliff') }}
-Requires:       {{ py3('keystoneauth1') }}
-Requires:       {{ py3('oslo.i18n') }}
-Requires:       {{ py3('oslo.log') }}
-Requires:       {{ py3('oslo.serialization') }}
-Requires:       {{ py3('pbr') }}
-Requires:       {{ py3('requests') }}
-Requires:       {{ py3('six') }}
 BuildArch:      noarch
 
 %description
@@ -41,6 +32,21 @@ feeds input data from those services into its policy
 engine where Congress verifies that the cloud's actual
 state abides by the cloud operator's policies. Congress
 is designed to work with any policy and any cloud service.
+
+%package -n {{ py2name(py_versions='py3') }}
+Summary:        Client library for OpenStack Congress
+Requires:       {{ py3('Babel') }}
+Requires:       {{ py3('cliff') }}
+Requires:       {{ py3('keystoneauth1') }}
+Requires:       {{ py3('oslo.i18n') }}
+Requires:       {{ py3('oslo.log') }}
+Requires:       {{ py3('oslo.serialization') }}
+Requires:       {{ py3('pbr') }}
+Requires:       {{ py3('requests') }}
+Requires:       {{ py3('six') }}
+
+%description -n {{ py2name(py_versions='py3') }}
+Client library for interacting with Openstack Congress API.
 
 %package doc
 Summary:        Documentation for OpenStack Congress API client libary
@@ -76,7 +82,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %check
 %{__python3} -m stestr.cli run
 
-%files
+%files -n {{ py2name(py_versions='py3') }}
 %doc README.rst
 %license LICENSE
 %{python3_sitelib}/congressclient
