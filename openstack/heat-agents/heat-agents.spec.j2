@@ -24,6 +24,13 @@ Heat Agents are python hooks for deploying software configurations using heat.
 %autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
 
+# Replace "env python" shebag to the correct python executable
+# if we don't do that brp-mangle-shebangs will choke on CentOS 8
+for python_script in $(grep "%{_bindir}/env python" . -rl)
+do
+    sed -i "s#%{_bindir}/env python.*#%{_bindir}/python3#g" $python_script
+done
+
 %build
 
 %install
