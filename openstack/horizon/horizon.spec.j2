@@ -189,6 +189,9 @@ for the OpenStack Dashboard (Horizon).
 %autosetup -p1 -n {{ pypi_name }}-{{upstream_version}}
 %py_req_cleanup
 
+# Fix manage.py shebang
+sed -i 's#%{_bindir}/env python#%{_bindir}/python3#' manage.py
+
 %build
 # compile mo files before build
 pushd horizon
