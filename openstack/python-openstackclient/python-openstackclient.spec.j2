@@ -53,14 +53,6 @@ Requires:       {{ py3('osc-lib') }}
 Requires:       {{ py3('oslo.i18n') }}
 Requires:       {{ py3('oslo.utils') }}
 Requires:       {{ py3('six') }}
-%if 0%{?suse_version}
-Requires(post): update-alternatives
-Requires(postun): update-alternatives
-%else
-# on RDO, update-alternatives is in chkconfig
-Requires(post): chkconfig
-Requires(postun): chkconfig
-%endif
 
 %description -n python3-openstackclient
 python-openstackclient is a unified command-line client for the OpenStack APIs.
@@ -112,14 +104,6 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %{py3_install}
 # man page
 install -p -D -m 644 doc/build/man/openstack.1 %{buildroot}%{_mandir}/man1/openstack.1
-%python_clone -a %{buildroot}%{_bindir}/openstack
-%python_clone -a %{buildroot}%{_mandir}/man1/openstack.1
-
-%post
-%{python_install_alternative openstack openstack.1}
-
-%postun
-%python_uninstall_alternative openstack
 
 %check
 python3 -m stestr.cli run
@@ -129,8 +113,8 @@ python3 -m stestr.cli run
 %license LICENSE
 %{python3_sitelib}/openstackclient
 %{python3_sitelib}/*.egg-info
-%python_alternative %{_bindir}/openstack*
-%python_alternative %{_mandir}/man1/openstack*.1
+%{_bindir}/openstack
+%{_mandir}/man1/openstack.1.gz
 
 %files -n python-openstackclient-doc
 %license LICENSE
