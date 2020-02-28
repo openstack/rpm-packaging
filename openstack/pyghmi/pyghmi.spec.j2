@@ -1,5 +1,5 @@
 {% set pypi_name = 'pyghmi' %}
-{% set upstream_version = upstream_version('1.4.1') %}
+{% set upstream_version = upstream_version('1.5.8') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -16,7 +16,11 @@ BuildRequires:  {{ py3('cryptography') }}
 BuildRequires:  {{ py3('devel') }}
 BuildRequires:  {{ py3('openstackdocstheme') }}
 BuildRequires:  {{ py3('oslotest') }}
+BuildRequires:  {{ py3('python-dateutil') }}
 BuildRequires:  {{ py3('stestr') }}
+Requires:       {{ py3('cryptography') }}
+Requires:       {{ py3('python-dateutil') }}
+Requires:       {{ py3('six') }}
 BuildArch:      noarch
 
 %description
