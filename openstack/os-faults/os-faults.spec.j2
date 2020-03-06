@@ -97,7 +97,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %check
 export PYTHONPATH=.
 export PATH=$PATH:%{buildroot}%{_bindir}
-py.test-3 -vvvv --durations=10 "os_faults/tests/unit"
+python3 -m pytest -vvvv --durations=10 "os_faults/tests/unit"
 
 %files
 %doc README.rst ChangeLog
