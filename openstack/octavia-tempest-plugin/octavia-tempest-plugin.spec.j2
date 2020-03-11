@@ -3,7 +3,7 @@
 {% set upstream_version = upstream_version() %}
 {% set rpm_release = '1' %}
 
-Name:          {{ py2pkg('octavia-tempest-plugin') }}
+Name:          {{ py2name(py_versions='py3') }}
 Version:       {{ py2rpmversion() }}
 Release:       {{ py2rpmrelease() }}
 Summary:       Tempest plugin for the Octavia project
@@ -12,24 +12,23 @@ Group:         Development/Languages/Python
 URL:           https://git.openstack.org/cgit/openstack/{{ pypi_name }}
 Source0:       {{ source|basename }}
 BuildRequires: openstack-macros
-BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py3('pbr') }}
 Requires:      {{ py2pkg('Tempest') }}
-Requires:      {{ py2pkg('cryptography') }}
-Requires:      {{ py2pkg('oslo.config') }}
-Requires:      {{ py2pkg('oslo.log') }}
-Requires:      {{ py2pkg('oslo.utils') }}
-Requires:      {{ py2pkg('oslotest') }}
-Requires:      {{ py2pkg('pbr') }}
-Requires:      {{ py2pkg('python-dateutil') }}
-Requires:      {{ py2pkg('requests') }}
-Requires:      {{ py2pkg('six') }}
-Requires:      {{ py2pkg('tenacity') }}
+Requires:      {{ py3('cryptography') }}
+Requires:      {{ py3('oslo.config') }}
+Requires:      {{ py3('oslo.log') }}
+Requires:      {{ py3('oslo.utils') }}
+Requires:      {{ py3('oslotest') }}
+Requires:      {{ py3('pbr') }}
+Requires:      {{ py3('python-dateutil') }}
+Requires:      {{ py3('requests') }}
+Requires:      {{ py3('six') }}
+Requires:      {{ py3('tenacity') }}
 %if 0%{?suse_version}
 BuildRequires:  golang-packaging
 %else
 BuildRequires:  golang
 %endif
-%python_subpackages
 
 %description
 This project contains the Tempest plugin for the Octavia project for
@@ -45,15 +44,15 @@ pushd octavia_tempest_plugin/contrib/httpd
 rm -f httpd.bin
 go build -ldflags '-linkmode=external' -o httpd.bin httpd.go
 popd
-%{python_build}
+%{py3_build}
 
 %install
-%{python_install}
+%{py3_install}
 
-%files %{python_files}
+%files
 %license LICENSE
 %doc README.rst
-%{python_sitelib}/octavia_tempest_plugin
-%{python_sitelib}/*.egg-info
+%{python3_sitelib}/octavia_tempest_plugin
+%{python3_sitelib}/*.egg-info
 
 %changelog
