@@ -3,7 +3,7 @@
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
-Name:           {{ py2name(py_versions='py3') }}
+Name:           {{ py2name() }}
 Version:        {{ py2rpmversion() }}
 Release:        {{ py2rpmrelease() }}
 Summary:        Murano package validator tool
@@ -23,15 +23,21 @@ BuildRequires:  {{ py3('stestr') }}
 BuildRequires:  {{ py3('stevedore') }}
 BuildRequires:  {{ py3('testscenarios') }}
 BuildRequires:  {{ py3('yaql') }}
+BuildArch:      noarch
+
+%description
+Murano package validator tool
+
+%package -n {{ py2name(py_versions='py3') }}
+Summary:        Murano package validator tool
 Requires:       {{ py3('PyYAML') }}
 Requires:       {{ py3('oslo.i18n') }}
 Requires:       {{ py3('semantic_version') }}
 Requires:       {{ py3('six') }}
 Requires:       {{ py3('stevedore') }}
 Requires:       {{ py3('yaql') }}
-BuildArch:      noarch
 
-%description
+%description -n {{ py2name(py_versions='py3') }}
 Murano package validator tool
 
 %prep
@@ -47,7 +53,7 @@ Murano package validator tool
 %check
 %{__python3} -m stestr.cli --test-path=./muranopkgcheck/tests/ run
 
-%files
+%files -n {{ py2name(py_versions='py3') }}
 %doc README.rst
 %license LICENSE
 %{_bindir}/murano-pkg-check
