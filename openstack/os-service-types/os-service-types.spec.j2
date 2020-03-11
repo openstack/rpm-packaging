@@ -11,15 +11,13 @@ Group:          Development/Languages/Python
 URL:            https://docs.openstack.org/developer/os-service-types
 Source0:        https://files.pythonhosted.org/packages/source/o/{{ pypi_name }}/{{ pypi_name }}-%{version}.tar.gz
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('python-subunit', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('requests-mock', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
-Requires:       {{ py2pkg('pbr') }}
+BuildRequires:  {{ py3('oslotest') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('python-subunit') }}
+BuildRequires:  {{ py3('requests-mock') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('testscenarios') }}
 BuildArch:      noarch
-%python_subpackages
 
 %description
 The OpenStack Service Types Authority contains information about official
@@ -29,10 +27,24 @@ library exists to allow for easy consumption of the data, along with a built-in
 version of the data to use in case network access is for some reason not
 possible and local caching of the fetched data.
 
+%package -n {{ py2name(py_versions='py3') }}
+Summary:        Python library for consuming OpenStack sevice-types-authority data
+Requires:       {{ py3('pbr') }}
+
+%description -n {{ py2name(py_versions='py3') }}
+The OpenStack Service Types Authority contains information about official
+OpenStack services and their historical service-type aliases.
+The data is in JSON and the latest data should always be used. This simple
+library exists to allow for easy consumption of the data, along with a built-in
+version of the data to use in case network access is for some reason not
+possible and local caching of the fetched data.
+
+This package contains the Python 3.x module.
+
 %package -n {{ pypi_name }}-doc
 Summary:        Documentation for OpenStack os-service-types library
-BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('openstackdocstheme') }}
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
 
 %description -n {{ pypi_name }}-doc
 The OpenStack Service Types Authority contains information about official
@@ -56,22 +68,22 @@ rm os_service_types/tests/test_remote.py
 %{python_build}
 
 # generate html docs
-PBR_VERSION=%{version} sphinx-build -b html doc/source doc/build/html
+PBR_VERSION=%{version} %sphinx_build -b html doc/source doc/build/html
 # remove the sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
-%{python_install}
+%{py3_install}
 
 %check
 export OS_TEST_PATH=os_service_types/tests
-%python_exec -m stestr.cli run
+python3 -m stestr.cli run
 
-%files %{python_files}
+%files -n {{ py2name(py_versions='py3') }}
 %license LICENSE
 %doc README.rst ChangeLog
-%{python_sitelib}/os_service_types
-%{python_sitelib}/*.egg-info
+%{python3_sitelib}/os_service_types
+%{python3_sitelib}/*.egg-info
 
 %files -n {{ pypi_name }}-doc
 %license LICENSE
