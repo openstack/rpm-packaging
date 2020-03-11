@@ -11,18 +11,13 @@ Group:          Development/Languages/Python
 URL:            http://www.openstack.org/
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('eventlet', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.log', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.serialization', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
-Requires:       {{ py2pkg('eventlet') }}
-Requires:       {{ py2pkg('oslo.log') }}
-Requires:       {{ py2pkg('oslo.serialization') }}
-Requires:       {{ py2pkg('pbr') }}
+BuildRequires:  {{ py3('eventlet') }}
+BuildRequires:  {{ py3('oslo.log') }}
+BuildRequires:  {{ py3('oslo.serialization') }}
+BuildRequires:  {{ py3('oslotest') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('testtools') }}
 BuildArch:       noarch
-%python_subpackages
 
 %description
 This library contains data types, exceptions, functions and
@@ -32,23 +27,40 @@ repositories.
 This library also contains the public interfaces for 3rd party integration
 (e.g. Actions API, YAQL functions API, etc.)
 
+%package -n python3-mistral-lib
+Summary:        Mistral shared routings and utilities
+Requires:       {{ py3('eventlet') }}
+Requires:       {{ py3('oslo.log') }}
+Requires:       {{ py3('oslo.serialization') }}
+Requires:       {{ py3('pbr') }}
+
+%description -n python3-mistral-lib
+This library contains data types, exceptions, functions and
+utilities common to Mistral, python-mistralclient and mistral-extra
+repositories.
+
+This library also contains the public interfaces for 3rd party integration
+(e.g. Actions API, YAQL functions API, etc.)
+
+This package contains the Python 3.x module.
+
 %prep
 %autosetup -p1 -n {{ pypi_name }}-%{version}
 %py_req_cleanup
 
 %build
-%{python_build}
+%{py3_build}
 
 %install
-%{python_install}
+%{py3_install}
 
 %check
-%python_exec -m stestr.cli run
+python3 -m stestr.cli run
 
-%files %{python_files}
+%files -n python3-mistral-lib
 %license LICENSE
 %doc README.rst ChangeLog
-%{python_sitelib}/mistral_lib
-%{python_sitelib}/*.egg-info
+%{python3_sitelib}/mistral_lib
+%{python3_sitelib}/*.egg-info
 
 %changelog
