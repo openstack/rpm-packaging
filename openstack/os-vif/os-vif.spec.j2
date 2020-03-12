@@ -12,40 +12,26 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        https://files.pythonhosted.org/packages/source/o/os-vif/os_vif-%{version}.tar.gz
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('netaddr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.concurrency', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.config', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.i18n', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.log', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.privsep', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.versionedobjects', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('ovsdbapp', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('pyroute2', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('python-subunit', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('six', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('stevedore', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testrepository', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
-Requires:       {{ py2pkg('debtcollector') }}
-Requires:       {{ py2pkg('netaddr') }}
-Requires:       {{ py2pkg('oslo.concurrency') }}
-Requires:       {{ py2pkg('oslo.config') }}
-Requires:       {{ py2pkg('oslo.i18n') }}
-Requires:       {{ py2pkg('oslo.log') }}
-Requires:       {{ py2pkg('oslo.privsep') }}
-Requires:       {{ py2pkg('oslo.versionedobjects') }}
-Requires:       {{ py2pkg('ovsdbapp') }}
-Requires:       {{ py2pkg('pbr') }}
-Requires:       {{ py2pkg('pyroute2') }}
-Requires:       {{ py2pkg('six') }}
-Requires:       {{ py2pkg('stevedore') }}
+BuildRequires:  {{ py3('devel') }}
+BuildRequires:  {{ py3('netaddr') }}
+BuildRequires:  {{ py3('oslo.concurrency') }}
+BuildRequires:  {{ py3('oslo.config') }}
+BuildRequires:  {{ py3('oslo.i18n') }}
+BuildRequires:  {{ py3('oslo.log') }}
+BuildRequires:  {{ py3('oslo.privsep') }}
+BuildRequires:  {{ py3('oslo.versionedobjects') }}
+BuildRequires:  {{ py3('oslotest') }}
+BuildRequires:  {{ py3('ovsdbapp') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('pyroute2') }}
+BuildRequires:  {{ py3('python-subunit') }}
+BuildRequires:  {{ py3('six') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('stevedore') }}
+BuildRequires:  {{ py3('testrepository') }}
+BuildRequires:  {{ py3('testscenarios') }}
+BuildRequires:  {{ py3('testtools') }}
 BuildArch:      noarch
-%python_subpackages
 
 %description
 A library for plugging and unplugging virtual interfaces in OpenStack.
@@ -53,11 +39,35 @@ Features:
 * A base VIF plugin class that supplies a plug() and unplug() interface
 * Versioned objects that represent a virtual interface and its components
 
+%package -n python3-os-vif
+Summary:        A library for plugging and unplugging virtual interfaces in OpenStack
+Requires:       {{ py3('debtcollector') }}
+Requires:       {{ py3('netaddr') }}
+Requires:       {{ py3('oslo.concurrency') }}
+Requires:       {{ py3('oslo.config') }}
+Requires:       {{ py3('oslo.i18n') }}
+Requires:       {{ py3('oslo.log') }}
+Requires:       {{ py3('oslo.privsep') }}
+Requires:       {{ py3('oslo.versionedobjects') }}
+Requires:       {{ py3('ovsdbapp') }}
+Requires:       {{ py3('pbr') }}
+Requires:       {{ py3('pyroute2') }}
+Requires:       {{ py3('six') }}
+Requires:       {{ py3('stevedore') }}
+
+%description -n python3-os-vif
+A library for plugging and unplugging virtual interfaces in OpenStack.
+Features:
+* A base VIF plugin class that supplies a plug() and unplug() interface
+* Versioned objects that represent a virtual interface and its components
+
+This package contains the Python 3.x module.
+
 %package -n python-os-vif-doc
 Summary:        Documentation for a library for plugging and unplugging virtual interfaces in OpenStack
-BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('openstackdocstheme') }}
-BuildRequires:  {{ py2pkg('reno') }}
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
+BuildRequires:  {{ py3('reno') }}
 
 %description -n python-os-vif-doc
 Documentation for a library for plugging and unplugging virtual interfaces
@@ -68,28 +78,28 @@ in OpenStack.
 %py_req_cleanup
 
 %build
-%{python_build}
+%{py3_build}
 
 %install
-%{python_install}
+%{py3_install}
 
 # generate html docs
-PBR_VERSION={{ upstream_version }} sphinx-build -b html doc/source doc/build/html
+PBR_VERSION={{ upstream_version }} %sphinx_build -b html doc/source doc/build/html
 # remove the sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %check
 export OS_TEST_PATH="os_vif/tests/unit"
-%python_exec -m stestr.cli run
+python3 -m stestr.cli run
 
-%files %{python_files}
+%files -n python3-os-vif
 %license LICENSE
 %doc README.rst ChangeLog
-%{python_sitelib}/os_vif
-%{python_sitelib}/vif_plug_ovs
-%{python_sitelib}/vif_plug_linux_bridge
-%{python_sitelib}/vif_plug_noop
-%{python_sitelib}/*.egg-info
+%{python3_sitelib}/os_vif
+%{python3_sitelib}/vif_plug_ovs
+%{python3_sitelib}/vif_plug_linux_bridge
+%{python3_sitelib}/vif_plug_noop
+%{python3_sitelib}/*.egg-info
 
 %files -n python-os-vif-doc
 %license LICENSE
