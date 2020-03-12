@@ -12,32 +12,39 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('ipaddress', py_versions=['py2']) }}
-BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('msgpack', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('netaddr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.i18n', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.utils', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
-Requires:       {{ py2pkg('msgpack') }}
-Requires:       {{ py2pkg('oslo.utils') }}
-Requires:       {{ py2pkg('pytz') }}
-Requires:       {{ py2pkg('six') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('msgpack') }}
+BuildRequires:  {{ py3('netaddr') }}
+BuildRequires:  {{ py3('oslo.i18n') }}
+BuildRequires:  {{ py3('oslo.utils') }}
+BuildRequires:  {{ py3('oslotest') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('stestr') }}
 BuildArch:      noarch
-%python_subpackages
 
 %description
 The oslo.serialization library provides support for representing objects
 in transmittable and storable formats, such as Base64, JSON and MessagePack.
 
-%package -n python-oslo.serialization-doc
+%package -n {{ py2name(py_versions='py3') }}
+Summary:        OpenStack serialization library
+Requires:       {{ py3('msgpack') }}
+Requires:       {{ py3('oslo.utils') }}
+Requires:       {{ py3('pytz') }}
+Requires:       {{ py3('six') }}
+
+%description -n {{ py2name(py_versions='py3') }}
+The oslo.serialization library provides support for representing objects
+in transmittable and storable formats, such as Base64, JSON and MessagePack.
+
+This package contains the Python 3.x module.
+
+%package -n {{ py2name() }}-doc
 Summary:        Documentation for OpenStack serialization library
 BuildRequires:  {{ py3('Sphinx') }}
 BuildRequires:  {{ py3('openstackdocstheme') }}
 
-%description -n python-oslo.serialization-doc
+%description -n {{ py2name() }}-doc
 The oslo.serialization library provides support for representing objects
 in transmittable and storable formats, such as Base64, JSON and MessagePack.
 This package contains the documentation.
@@ -48,7 +55,7 @@ sed -i -e "s,bandit.*,," test-requirements.txt
 %py_req_cleanup
 
 %build
-%{python_build}
+%{py3_build}
 
 # generate html docs
 PBR_VERSION=%{version} %sphinx_build -b html doc/source doc/build/html
@@ -56,18 +63,18 @@ PBR_VERSION=%{version} %sphinx_build -b html doc/source doc/build/html
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
-%{python_install}
+%{py3_install}
 
 %check
-%python_exec -m stestr.cli run
+python3 -m stestr.cli run
 
-%files %{python_files}
+%files -n {{ py2name(py_versions='py3') }}
 %license LICENSE
 %doc README.rst ChangeLog
-%{python_sitelib}/oslo_serialization
-%{python_sitelib}/*.egg-info
+%{python3_sitelib}/oslo_serialization
+%{python3_sitelib}/*.egg-info
 
-%files -n python-oslo.serialization-doc
+%files -n {{ py2name() }}-doc
 %license LICENSE
 %doc doc/build/html
 
