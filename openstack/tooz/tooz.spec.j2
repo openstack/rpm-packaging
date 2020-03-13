@@ -16,41 +16,44 @@ URL:            https://docs.openstack.org/developer/tooz/
 Source0:        {{ source }}
 BuildRequires:  memcached
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('enum34', py_versions=['py2']) }}
-BuildRequires:  {{ py2pkg('fasteners', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('fixtures', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('futures', py_versions=['py2']) }}
-BuildRequires:  {{ py2pkg('futurist', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.serialization', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.utils', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('pifpaf', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('pymemcache', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('stevedore', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('tenacity', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('voluptuous', py_versions=['py2', 'py3']) }}
-Requires:       {{ py2pkg('fasteners') }}
-Requires:       {{ py2pkg('futurist') }}
-Requires:       {{ py2pkg('msgpack') }}
-Requires:       {{ py2pkg('oslo.serialization') }}
-Requires:       {{ py2pkg('oslo.utils') }}
-Requires:       {{ py2pkg('six') }}
-Requires:       {{ py2pkg('stevedore') }}
-Requires:       {{ py2pkg('tenacity') }}
-Requires:       {{ py2pkg('voluptuous') }}
+BuildRequires:  {{ py3('fasteners') }}
+BuildRequires:  {{ py3('fixtures') }}
+BuildRequires:  {{ py3('futurist') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('oslo.serialization') }}
+BuildRequires:  {{ py3('oslo.utils') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('pifpaf') }}
+BuildRequires:  {{ py3('pymemcache') }}
+BuildRequires:  {{ py3('stevedore') }}
+BuildRequires:  {{ py3('tenacity') }}
+BuildRequires:  {{ py3('testtools') }}
+BuildRequires:  {{ py3('voluptuous') }}
 BuildArch:      noarch
-%ifpython2
-Requires:       {{ py2pkg('enum34') }}
-Requires:       {{ py2pkg('futures') }}
-%endif
-%python_subpackages
 
 %description
 The Tooz project aims at centralizing the most common distributed primitives
 like group membership protocol, lock service and leader election by providing
 a coordination API helping developers to build distributed applications.
+
+%package -n python3-tooz
+Summary:        Coordination library for distributed systems
+Requires:       {{ py3('fasteners') }}
+Requires:       {{ py3('futurist') }}
+Requires:       {{ py3('msgpack') }}
+Requires:       {{ py3('oslo.serialization') }}
+Requires:       {{ py3('oslo.utils') }}
+Requires:       {{ py3('six') }}
+Requires:       {{ py3('stevedore') }}
+Requires:       {{ py3('tenacity') }}
+Requires:       {{ py3('voluptuous') }}
+
+%description -n python3-tooz
+The Tooz project aims at centralizing the most common distributed primitives
+like group membership protocol, lock service and leader election by providing
+a coordination API helping developers to build distributed applications.
+
+This package contains the Python 3.x module.
 
 %package -n python-tooz-doc
 Summary:        Documentation for %{name}
@@ -70,7 +73,7 @@ This package contains documentation in HTML format.
 %py_req_cleanup
 
 %build
-%{python_build}
+%{py3_build}
 
 # generate html docs
 PYTHONPATH=. \
@@ -87,12 +90,12 @@ bash run-tests.sh
 %endif
 
 %install
-%{python_install}
+%{py3_install}
 
-%files %{python_files}
+%files -n python3-tooz
 %license LICENSE
-%{python_sitelib}/{{ pypi_name }}
-%{python_sitelib}/{{ pypi_name }}-*.egg-info
+%{python3_sitelib}/{{ pypi_name }}
+%{python3_sitelib}/{{ pypi_name }}-*.egg-info
 
 %files -n python-tooz-doc
 %license LICENSE
