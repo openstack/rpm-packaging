@@ -60,8 +60,8 @@ This package contains the Python 3.x module.
 
 %package -n python-keystoneauth1-doc
 Summary:        Documentation for OpenStack authenticating tools
-BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('openstackdocstheme', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
 
 %description -n python-keystoneauth1-doc
 Documentation for OpenStack authenticating tools.
