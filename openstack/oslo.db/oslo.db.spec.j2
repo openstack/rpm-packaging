@@ -12,44 +12,29 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('PyMySQL', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('alembic', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('debtcollector', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('eventlet', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('fixtures', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.config', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.context', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.i18n', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.utils', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('psycopg2', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('python-subunit', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('reno', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('six', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('sqlalchemy-migrate', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testresources', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
-Requires:       {{ py2pkg('PyMySQL') }}
-Requires:       {{ py2pkg('SQLAlchemy') }}
-Requires:       {{ py2pkg('alembic') }}
-Requires:       {{ py2pkg('debtcollector') }}
-Requires:       {{ py2pkg('oslo.config') }}
-Requires:       {{ py2pkg('oslo.context') }}
-Requires:       {{ py2pkg('oslo.i18n') }}
-Requires:       {{ py2pkg('oslo.utils') }}
-Requires:       {{ py2pkg('psycopg2') }}
-Requires:       {{ py2pkg('six') }}
-Requires:       {{ py2pkg('sqlalchemy-migrate') }}
-Requires:       {{ py2pkg('stevedore') }}
-Requires:       {{ py2pkg('testresources') }}
-Requires:       {{ py2pkg('testscenarios') }}
+BuildRequires:  {{ py3('PyMySQL') }}
+BuildRequires:  {{ py3('alembic') }}
+BuildRequires:  {{ py3('debtcollector') }}
+BuildRequires:  {{ py3('devel') }}
+BuildRequires:  {{ py3('eventlet') }}
+BuildRequires:  {{ py3('fixtures') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('oslo.config') }}
+BuildRequires:  {{ py3('oslo.context') }}
+BuildRequires:  {{ py3('oslo.i18n') }}
+BuildRequires:  {{ py3('oslo.utils') }}
+BuildRequires:  {{ py3('oslotest') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('psycopg2') }}
+BuildRequires:  {{ py3('python-subunit') }}
+BuildRequires:  {{ py3('reno') }}
+BuildRequires:  {{ py3('six') }}
+BuildRequires:  {{ py3('sqlalchemy-migrate') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('testresources') }}
+BuildRequires:  {{ py3('testscenarios') }}
+BuildRequires:  {{ py3('testtools') }}
 BuildArch:      noarch
-%python_subpackages
 
 %description
 The OpenStack Oslo database handling library. Provides database connectivity
@@ -58,12 +43,38 @@ to the different backends and helper utils.
 * Source: http://git.openstack.org/cgit/openstack/oslo.db
 * Bugs: https://bugs.launchpad.net/oslo
 
+%package -n {{ py2name(py_versions='py3') }}
+Summary:        OpenStack oslo.db library
+Requires:       {{ py3('PyMySQL') }}
+Requires:       {{ py3('SQLAlchemy') }}
+Requires:       {{ py3('alembic') }}
+Requires:       {{ py3('debtcollector') }}
+Requires:       {{ py3('oslo.config') }}
+Requires:       {{ py3('oslo.context') }}
+Requires:       {{ py3('oslo.i18n') }}
+Requires:       {{ py3('oslo.utils') }}
+Requires:       {{ py3('psycopg2') }}
+Requires:       {{ py3('six') }}
+Requires:       {{ py3('sqlalchemy-migrate') }}
+Requires:       {{ py3('stevedore') }}
+Requires:       {{ py3('testresources') }}
+Requires:       {{ py3('testscenarios') }}
+
+%description -n {{ py2name(py_versions='py3') }}
+The OpenStack Oslo database handling library. Provides database connectivity
+to the different backends and helper utils.
+* Documentation: https://docs.openstack.org/developer/oslo.db
+* Source: http://git.openstack.org/cgit/openstack/oslo.db
+* Bugs: https://bugs.launchpad.net/oslo
+
+This package contains the Python 3.x module.
+
 %package -n {{ py2name() }}-doc
 Summary:        Documentation for the Oslo database handling library
 Group:          Documentation/HTML
-BuildRequires:  {{ py2pkg('Sphinx') }}
-BuildRequires:  {{ py2pkg('openstackdocstheme', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('sphinxcontrib-apidoc', py_versions=['py2', 'py3']) }}
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
+BuildRequires:  {{ py3('sphinxcontrib-apidoc') }}
 
 %description -n {{ py2name() }}-doc
 Documentation for the Oslo database handling library.
@@ -73,24 +84,24 @@ Documentation for the Oslo database handling library.
 %py_req_cleanup
 
 %build
-%{python_build}
+%{py3_build}
 
 # generate html docs
-PBR_VERSION=%{version} sphinx-build -b html doc/source doc/build/html
+PBR_VERSION=%{version} %sphinx_build -b html doc/source doc/build/html
 # remove the sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
-%{python_install}
+%{py3_install}
 
 %check
-%python_exec -m stestr.cli run
+python3 -m stestr.cli run
 
-%files %{python_files}
+%files -n {{ py2name(py_versions='py3') }}
 %license LICENSE
 %doc README.rst ChangeLog
-%{python_sitelib}/oslo_db
-%{python_sitelib}/*.egg-info
+%{python3_sitelib}/oslo_db
+%{python3_sitelib}/*.egg-info
 
 %files -n {{ py2name() }}-doc
 %license LICENSE
