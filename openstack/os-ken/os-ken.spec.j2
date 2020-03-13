@@ -12,46 +12,46 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('Routes', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('WebOb', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('eventlet', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('lxml', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('msgpack', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('netaddr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('nose', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslo.config', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('ovs', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('six', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('tinyrpc', py_versions=['py2', 'py3']) }}
-Requires:       {{ py2pkg('Routes') }}
-Requires:       {{ py2pkg('WebOb') }}
-Requires:       {{ py2pkg('eventlet') }}
-Requires:       {{ py2pkg('msgpack') }}
-Requires:       {{ py2pkg('netaddr') }}
-Requires:       {{ py2pkg('oslo.config') }}
-Requires:       {{ py2pkg('ovs') }}
-Requires:       {{ py2pkg('pbr') }}
-Requires:       {{ py2pkg('six') }}
-Requires:       {{ py2pkg('tinyrpc') }}
+BuildRequires:  {{ py3('Routes') }}
+BuildRequires:  {{ py3('WebOb') }}
+BuildRequires:  {{ py3('devel') }}
+BuildRequires:  {{ py3('eventlet') }}
+BuildRequires:  {{ py3('lxml') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('msgpack') }}
+BuildRequires:  {{ py3('netaddr') }}
+BuildRequires:  {{ py3('nose') }}
+BuildRequires:  {{ py3('oslo.config') }}
+BuildRequires:  {{ py3('oslotest') }}
+BuildRequires:  {{ py3('ovs') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('six') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('tinyrpc') }}
 BuildArch:      noarch
-%if 0%{?suse_version}
-Requires(post): update-alternatives
-Requires(postun): update-alternatives
-%else
-# on RDO, update-alternatives is in chkconfig
-Requires(post): chkconfig
-Requires(postun): chkconfig
-%endif
-%python_subpackages
 
 %description
 A component-based software defined networking framework in OpenStack.
 This is a fork of the Ryu library tailored for OpenStack Neutron.
+
+%package -n {{ py2name(py_versions='py3') }}
+Summary:        A component-based software defined networking framework in OpenStack
+Requires:       {{ py3('Routes') }}
+Requires:       {{ py3('WebOb') }}
+Requires:       {{ py3('eventlet') }}
+Requires:       {{ py3('msgpack') }}
+Requires:       {{ py3('netaddr') }}
+Requires:       {{ py3('oslo.config') }}
+Requires:       {{ py3('ovs') }}
+Requires:       {{ py3('pbr') }}
+Requires:       {{ py3('six') }}
+Requires:       {{ py3('tinyrpc') }}
+
+%description -n {{ py2name(py_versions='py3') }}
+A component-based software defined networking framework in OpenStack.
+This is a fork of the Ryu library tailored for OpenStack Neutron.
+
+This package contains the Python 3.x module.
 
 %package -n python-osken-doc
 Summary:        A component-based software defined networking framework in OpenStack - Documentation
@@ -70,31 +70,23 @@ This package contains the documentation.
 %py_req_cleanup
 
 %build
-%{python_build}
+%{py3_build}
 PBR_VERSION=%{version} %sphinx_build -b html doc/source doc/build/html
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %install
-%{python_install}
-%python_clone -a %{buildroot}%{_bindir}/osken
-%python_clone -a %{buildroot}%{_bindir}/osken-manager
-
-%post
-%{python_install_alternative osken osken-manager}
-
-%postun
-%python_uninstall_alternative osken
+%{py3_install}
 
 %check
-%python_expand PYTHON=python%{$python_version} ./run_tests.sh -N -P
+PYTHON=python3 ./run_tests.sh -N -P
 
-%files %{python_files}
+%files -n {{ py2name(py_versions='py3') }}
 %doc README.rst ChangeLog
 %license LICENSE
-%{python_sitelib}/os_ken*
-%{python_sitelib}/*.egg-info
-%python_alternative %{_bindir}/osken
-%python_alternative %{_bindir}/osken-manager
+%{python3_sitelib}/os_ken*
+%{python3_sitelib}/*.egg-info
+%{_bindir}/osken
+%{_bindir}/osken-manager
 
 %files -n python-osken-doc
 %doc doc/build/html
