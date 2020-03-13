@@ -12,73 +12,60 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/oslotest
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('debtcollector', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('fixtures', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('mox3', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('python-subunit', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('six', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
-Requires:       {{ py2pkg('debtcollector') }}
-Requires:       {{ py2pkg('fixtures') }}
-Requires:       {{ py2pkg('mock') }}
-Requires:       {{ py2pkg('mox3') }}
-# NOTE: python-os-client-config is only needed for functional testing
-# Requires:       {{ py2pkg('os-client-config') }}
-Requires:       {{ py2pkg('python-subunit') }}
-Requires:       {{ py2pkg('six') }}
-Requires:       {{ py2pkg('stestr') }}
-Requires:       {{ py2pkg('testtools') }}
+BuildRequires:  {{ py3('debtcollector') }}
+BuildRequires:  {{ py3('fixtures') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('mox3') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('python-subunit') }}
+BuildRequires:  {{ py3('six') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('testtools') }}
 BuildArch:      noarch
-%if 0%{?suse_version}
-Requires(post): update-alternatives
-Requires(postun): update-alternatives
-%else
-# on RDO, update-alternatives is in chkconfig
-Requires(post): chkconfig
-Requires(postun): chkconfig
-%endif
-%python_subpackages
 
 %description
 The Oslo Test framework provides common fixtures, support for debugging, and
 better support for mocking results.
+
+%package -n {{ py2name(py_versions='py3') }}
+Summary:        OpenStack test framework
+Requires:       {{ py3('debtcollector') }}
+Requires:       {{ py3('fixtures') }}
+Requires:       {{ py3('mock') }}
+Requires:       {{ py3('mox3') }}
+# NOTE: python-os-client-config is only needed for functional testing
+# Requires:       {{ py3('os-client-config') }}
+Requires:       {{ py3('python-subunit') }}
+Requires:       {{ py3('six') }}
+Requires:       {{ py3('stestr') }}
+Requires:       {{ py3('testtools') }}
+
+%description -n {{ py2name(py_versions='py3') }}
+The Oslo Test framework provides common fixtures, support for debugging, and
+better support for mocking results.
+
+This package contains the Python 3.x module.
 
 %prep
 %autosetup -p1 -n oslotest-%{version}
 %py_req_cleanup
 
 %build
-%python_build
+%py3_build
 
 %install
-%python_install
-%python_clone -a %{buildroot}%{_bindir}/oslo_debug_helper
-%python_clone -a %{buildroot}%{_bindir}/oslo_run_cross_tests
-%python_clone -a %{buildroot}%{_bindir}/oslo_run_pre_release_tests
-
-%post
-%python_install_alternative oslo_debug_helper
-%python_install_alternative oslo_run_cross_tests
-%python_install_alternative oslo_run_pre_release_tests
-
-%postun
-%python_uninstall_alternative oslo_debug_helper
-%python_uninstall_alternative oslo_run_cross_tests
-%python_uninstall_alternative oslo_run_pre_release_tests
+%py3_install
 
 %check
-%python_exec -m stestr.cli run
+python3 -m stestr.cli run
 
-%files %{python_files}
+%files -n {{ py2name(py_versions='py3') }}
 %license LICENSE
 %doc ChangeLog README.rst
-%python_alternative %{_bindir}/oslo_debug_helper
-%python_alternative %{_bindir}/oslo_run_cross_tests
-%python_alternative %{_bindir}/oslo_run_pre_release_tests
-%{python_sitelib}/oslotest
-%{python_sitelib}/oslotest*egg-info
+%{_bindir}/oslo_debug_helper
+%{_bindir}/oslo_run_cross_tests
+%{_bindir}/oslo_run_pre_release_tests
+%{python3_sitelib}/oslotest
+%{python3_sitelib}/oslotest*egg-info
 
 %changelog
