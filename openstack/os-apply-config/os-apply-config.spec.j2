@@ -35,6 +35,7 @@ os-apply-config is a apply configuration from cloud metadata
 %prep
 %autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
+sed -i 's#%{_bindir}/env python$#%{_bindir}/python3#g' os_apply_config/tests/templates%{_sysconfdir}/glance/script.conf
 
 %build
 %{py3_build}
@@ -44,7 +45,6 @@ os-apply-config is a apply configuration from cloud metadata
 install -d -m 755 %{buildroot}%{_libexecdir}/os-apply-config/templates
 
 %check
-sed -i 's/\(.*\) python$/\1 python3/g' os_apply_config/tests/templates/%{_sysconfdir}/glance/script.conf
 python3 -m stestr.cli run
 
 %files
