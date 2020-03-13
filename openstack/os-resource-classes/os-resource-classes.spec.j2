@@ -12,13 +12,11 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
-Requires:       {{ py2pkg('pbr') }}
+BuildRequires:  {{ py3('oslotest') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('testtools') }}
 BuildArch:      noarch
-%python_subpackages
 
 %description
 A list of standardized resource classes for OpenStack.
@@ -31,6 +29,24 @@ There also exists a concept of custom resource classes. These are countable
 types that are custom to a particular environment. The OpenStack placement
 API provides a way to create these. A custom resource class always begins
 with a CUSTOM_ prefix.
+
+%package -n {{ py2name(py_versions='py3') }}
+Summary:        Resource Classes for OpenStack
+Requires:       {{ py3('pbr') }}
+
+%description -n {{ py2name(py_versions='py3') }}
+A list of standardized resource classes for OpenStack.
+A resource class is a distinct type of inventory that exists in a cloud
+environment, for example VCPU, DISK_GB. They are upper case with underscores.
+They often include a unit in their name.
+This package provides a collection of symbols representing those standard
+resource classes which are expected to be available in any OpenStack deployment.
+There also exists a concept of custom resource classes. These are countable
+types that are custom to a particular environment. The OpenStack placement
+API provides a way to create these. A custom resource class always begins
+with a CUSTOM_ prefix.
+
+This package contains the Python 3.x module
 
 %package -n python-os-resource-classes-doc
 Summary:        Documentation for Resource Classes for OpenStack
@@ -57,20 +73,20 @@ This package contains the documentation.
 %py_req_cleanup
 
 %build
-%{python_build}
+%{py3_build}
 PBR_VERSION={{ upstream_version }} %sphinx_build -b html doc/source doc/build/html
 
 %install
-%{python_install}
+%{py3_install}
 
 %check
-%python_exec -m stestr.cli run
+python3 -m stestr.cli run
 
-%files %{python_files}
+%files -n {{ py2name(py_versions='py3') }}
 %doc README.rst ChangeLog
 %license LICENSE
-%{python_sitelib}/os_resource_classes*
-%{python_sitelib}/*.egg-info
+%{python3_sitelib}/os_resource_classes*
+%{python3_sitelib}/*.egg-info
 
 %files -n python-os-resource-classes-doc
 %doc doc/build/html
