@@ -12,25 +12,31 @@ Group:          Development/Languages/Python
 URL:            https://bugs.launchpad.net/python-mox3
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('coverage', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('fixtures', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('python-subunit', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('setuptools', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testtools', py_versions=['py2', 'py3']) }}
-Requires:       {{ py2pkg('fixtures') }}
-Requires:       {{ py2pkg('pbr') }}
+BuildRequires:  {{ py3('coverage') }}
+BuildRequires:  {{ py3('fixtures') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('python-subunit') }}
+BuildRequires:  {{ py3('setuptools') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('testtools') }}
 BuildArch:      noarch
-%ifpython3
-BuildRequires:  python3-dbm
-%endif
-%python_subpackages
 
 %description
 Mox3 is an unofficial port of the Google mox framework to Python 3. It
 was meant to be as compatible with mox as possible, but small
 enhancements have been made.
+
+%package -n {{ py2name(py_versions='py3') }}
+Summary:        An unofficial port of the Google mox framework to Python 3
+Requires:       {{ py3('fixtures') }}
+Requires:       {{ py3('pbr') }}
+
+%description -n {{ py2name(py_versions='py3') }}
+Mox3 is an unofficial port of the Google mox framework to Python 3. It
+was meant to be as compatible with mox as possible, but small
+enhancements have been made.
+
+This package contains the Python 3.x module.
 
 %package -n python-mox3-doc
 Summary:        Documentation for %{name}
@@ -51,22 +57,22 @@ This package contains documentation in HTML format.
 %py_req_cleanup
 
 %build
-%python_build
+%py3_build
 
 # generate html docs
 PBR_VERSION={{ upstream_version }} %sphinx_build -b html doc/source doc/build/html
 
 %check
-%python_exec -m stestr.cli run
+python3 -m stestr.cli run
 
 %install
-%python_install
+%py3_install
 
-%files %{python_files}
+%files -n {{ py2name(py_versions='py3') }}
 %license COPYING.txt
 %doc README.rst
-%{python_sitelib}/{{ pypi_name }}
-%{python_sitelib}/{{ pypi_name }}-*.egg-info
+%{python3_sitelib}/{{ pypi_name }}
+%{python3_sitelib}/{{ pypi_name }}-*.egg-info
 
 %files -n python-mox3-doc
 %license COPYING.txt
