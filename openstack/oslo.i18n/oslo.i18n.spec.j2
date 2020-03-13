@@ -12,28 +12,37 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('Babel', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('mock', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('oslotest', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('testscenarios', py_versions=['py2', 'py3']) }}
-Requires:       {{ py2pkg('Babel') }}
-Requires:       {{ py2pkg('six') }}
+BuildRequires:  {{ py3('Babel') }}
+BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('oslotest') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('testscenarios') }}
 BuildArch:      noarch
-%python_subpackages
 
 %description
 The oslo.i18n library contain utilities for working with internationalization
 (i18n) features, especially translation for text strings in an application
 or library.
 
-%package -n python-oslo.i18n-doc
+%package -n {{ py2name(py_versions='py3') }}
+Summary:        OpenStack i18n library
+Requires:       {{ py3('Babel') }}
+Requires:       {{ py3('six') }}
+
+%description -n {{ py2name(py_versions='py3') }}
+The oslo.i18n library contain utilities for working with internationalization
+(i18n) features, especially translation for text strings in an application
+or library.
+
+This package contains the Python 3.x module.
+
+%package -n {{ py2name() }}-doc
 Summary:        Documentation for OpenStack i18n library
 BuildRequires:  {{ py3('Sphinx') }}
 BuildRequires:  {{ py3('openstackdocstheme') }}
 
-%description -n python-oslo.i18n-doc
+%description -n {{ py2name() }}-doc
 Documentation for the oslo.i18n library.
 
 %prep
@@ -41,10 +50,10 @@ Documentation for the oslo.i18n library.
 %py_req_cleanup
 
 %build
-%{python_build}
+%{py3_build}
 
 %install
-%{python_install}
+%{py3_install}
 
 # generate html docs
 PBR_VERSION=%{version} %sphinx_build -b html doc/source doc/build/html
@@ -52,14 +61,14 @@ PBR_VERSION=%{version} %sphinx_build -b html doc/source doc/build/html
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %check
-%python_exec -m stestr.cli run
+python3 -m stestr.cli run
 
-%files %{python_files}
+%files -n {{ py2name(py_versions='py3') }}
 %license LICENSE
-%{python_sitelib}/oslo_i18n
-%{python_sitelib}/*egg-info
+%{python3_sitelib}/oslo_i18n
+%{python3_sitelib}/*egg-info
 
-%files -n python-oslo.i18n-doc
+%files -n {{ py2name() }}-doc
 %doc doc/build/html ChangeLog CONTRIBUTING.rst README.rst
 %license LICENSE
 
