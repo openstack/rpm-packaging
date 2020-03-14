@@ -12,21 +12,13 @@ Group:          Development/Languages/Python
 URL:            https://docs.openstack.org/developer/debtcollector/
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py2pkg('fixtures', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('funcsigs', py_versions=['py2']) }}
-BuildRequires:  {{ py2pkg('pbr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('python-subunit', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('setuptools', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('stestr', py_versions=['py2', 'py3']) }}
-BuildRequires:  {{ py2pkg('wrapt', py_versions=['py2', 'py3']) }}
-Requires:       {{ py2pkg('pbr') }}
-Requires:       {{ py2pkg('six') }}
-Requires:       {{ py2pkg('wrapt') }}
+BuildRequires:  {{ py3('fixtures') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('python-subunit') }}
+BuildRequires:  {{ py3('setuptools') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('wrapt') }}
 BuildArch:      noarch
-%ifpython2
-Requires:       {{ py2pkg('funcsigs') }}
-%endif
-%python_subpackages
 
 %description
 A collection of Python deprecation patterns and strategies that help
@@ -38,6 +30,25 @@ these patterns is to apply the warnings module to emit
 DeprecationWarning or PendingDeprecationWarning or similar derivative
 to developers using libraries (or potentially applications) about
 future deprecations.
+
+%package -n {{ py2name(py_versions='py3') }}
+Summary:        A collection of Python deprecation patterns and strategies
+Requires:       {{ py3('pbr') }}
+Requires:       {{ py3('six') }}
+Requires:       {{ py3('wrapt') }}
+
+%description -n {{ py2name(py_versions='py3') }}
+A collection of Python deprecation patterns and strategies that help
+you collect your technical debt in a non-destructive manner. The goal
+of this library is to provide well documented developer facing
+deprecation patterns that start of with a basic set and can expand
+into a larger set of patterns as time goes on. The desired output of
+these patterns is to apply the warnings module to emit
+DeprecationWarning or PendingDeprecationWarning or similar derivative
+to developers using libraries (or potentially applications) about
+future deprecations.
+
+This package contains the Python 3.x module.
 
 %package -n python-debtcollector-doc
 Summary:        Documentation for %{name}
@@ -63,7 +74,7 @@ This package contains documentation in HTML format.
 %py_req_cleanup
 
 %build
-%python_build
+%py3_build
 
 # generate html doc
 PBR_VERSION={{ upstream_version }} %sphinx_build -b html doc/source doc/build/html
@@ -71,16 +82,16 @@ PBR_VERSION={{ upstream_version }} %sphinx_build -b html doc/source doc/build/ht
 rm -rf html/.{doctrees,buildinfo}
 
 %check
-%python_exec -m stestr.cli run
+python3 -m stestr.cli run
 
 %install
-%python_install
+%py3_install
 
-%files %{python_files}
+%files -n {{ py2name(py_versions='py3') }}
 %license LICENSE
 %doc README.rst
-%{python_sitelib}/{{ pypi_name }}
-%{python_sitelib}/{{ pypi_name }}-*.egg-info
+%{python3_sitelib}/{{ pypi_name }}
+%{python3_sitelib}/{{ pypi_name }}-*.egg-info
 
 %files -n python-debtcollector-doc
 %license LICENSE
