@@ -11,6 +11,8 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
+# https://review.opendev.org/#/c/713337/
+Patch1:         0001-Disable-logger-validation-during-unit-testing.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py3('cffi') }}
 BuildRequires:  {{ py3('eventlet') }}
