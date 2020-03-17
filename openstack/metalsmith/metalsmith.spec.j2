@@ -42,7 +42,9 @@ OpenStack Ironic.
 Summary:        Documentation for Metalsmith
 Group:          Documentation/HTML
 BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
 BuildRequires:  {{ py3('sphinxcontrib-apidoc') }}
+BuildRequires:  {{ py3('sphinxcontrib-svg2pdfconverter') }}
 
 %description -n {{ py2name() }}-doc
 Documentation for Metalsmith
