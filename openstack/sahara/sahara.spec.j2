@@ -21,6 +21,8 @@ Source5:        openstack-sahara.README.config
 # systemd service files
 Source6:        openstack-sahara-api.service
 Source7:        openstack-sahara-engine.service
+# https://review.opendev.org/#/c/710658/
+Patch1:         0001-Fix-syntax-error-in-image-widths.patch
 BuildRequires:  openssh
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py3('Babel') }}
