@@ -286,6 +286,9 @@ pub_list=`crudini --get %{setup_cfg} entry_points ceilometer.sample.publisher`
 pub_list="$pub_list"$'\n'"monasca = ceilometer.publisher.monasca:MonascaPublisher"
 crudini --set %{setup_cfg} entry_points ceilometer.sample.publisher $"$pub_list"
 
+# Fix send_test_data.py shebang
+sed -i 's#%{_bindir}/env python#%{_bindir}/python3#' tools/send_test_data.py
+
 %build
 #change to ceilometer directory
 cd ../%{ceilometer_name}*/
