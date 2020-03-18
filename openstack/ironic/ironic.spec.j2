@@ -218,9 +218,6 @@ mv %{buildroot}%{_prefix}%{_sysconfdir}/ironic/* %{buildroot}%{_sysconfdir}/iron
 cp -a etc/ironic/rootwrap.d/ %{buildroot}%{_sysconfdir}/ironic/
 install -p -D -m 640 %{SOURCE5} %{buildroot}%{_sysconfdir}/ironic/README.config
 
-# drop ironic-lib.filters which is in the ironic-lib package (see https://review.opendev.org/684270)
-rm %{buildroot}%{_sysconfdir}/ironic/rootwrap.d/ironic-lib.filters
-
 ### Install systemd service files
 install -p -D -m 644 %{SOURCE6} %{buildroot}%{_unitdir}/%{name}-api.service
 install -p -D -m 644 %{SOURCE7} %{buildroot}%{_unitdir}/%{name}-conductor.service
