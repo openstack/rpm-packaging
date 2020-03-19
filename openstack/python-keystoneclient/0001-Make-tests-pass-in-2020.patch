@@ -1,0 +1,257 @@
+From b8ab3e95b5dca13f7133d86903df0bbe43ac786e Mon Sep 17 00:00:00 2001
+From: "Bernhard M. Wiedemann" <bwiedemann@suse.de>
+Date: Thu, 28 Feb 2019 14:06:22 +0100
+Subject: [PATCH] Make tests pass in 2020
+
+Without this patch, build failed after 2019-12-31 with
+Traceback (most recent call last):
+  File "keystoneclient/tests/unit/v3/test_auth.py", line 226, in test_authenticate_success_password_unscoped
+    self.assertRequestBodyIs(json=self.TEST_REQUEST_BODY)
+  File "keystoneclient/tests/unit/utils.py", line 72, in assertRequestBodyIs
+    self.assertEqual(json, val)
+
+NOTE: in addition to the orginal backport, this patch also fix bandit
+complains. The literal 'sha256' is the default hash algorithm, not a sensitive
+password. Marking it as false positive so bandit can stop chirping.
+
+Change-Id: I0e44d9896c5970f0ca07438c372aec826aeb5c77
+(cherry picked from commit acc21ff06154e16de16583fe6994207d689ed054)
+---
+ keystoneclient/common/cms.py                  |  2 +-
+ .../tests/unit/auth/test_identity_v2.py       |  2 +-
+ .../tests/unit/auth/test_identity_v3.py       |  2 +-
+ keystoneclient/tests/unit/client_fixtures.py  | 28 +++++++++----------
+ keystoneclient/tests/unit/test_discovery.py   |  4 +--
+ keystoneclient/tests/unit/v2_0/test_auth.py   |  4 +--
+ keystoneclient/tests/unit/v3/test_auth.py     |  2 +-
+ 7 files changed, 22 insertions(+), 22 deletions(-)
+
+diff --git a/keystoneclient/common/cms.py b/keystoneclient/common/cms.py
+index 9c3e0bd..601d9c9 100644
+--- a/keystoneclient/common/cms.py
++++ b/keystoneclient/common/cms.py
+@@ -38,7 +38,7 @@ PKI_ASN1_PREFIX = 'MII'
+ PKIZ_PREFIX = 'PKIZ_'
+ PKIZ_CMS_FORM = 'DER'
+ PKI_ASN1_FORM = 'PEM'
+-DEFAULT_TOKEN_DIGEST_ALGORITHM = 'sha256'
++DEFAULT_TOKEN_DIGEST_ALGORITHM = 'sha256'  # nosec
+ 
+ 
+ # The openssl cms command exits with these status codes.
+diff --git a/keystoneclient/tests/unit/auth/test_identity_v2.py b/keystoneclient/tests/unit/auth/test_identity_v2.py
+index 8ef87c4..a180135 100644
+--- a/keystoneclient/tests/unit/auth/test_identity_v2.py
++++ b/keystoneclient/tests/unit/auth/test_identity_v2.py
+@@ -84,7 +84,7 @@ class V2IdentityPlugin(utils.TestCase):
+         self.TEST_RESPONSE_DICT = {
+             "access": {
+                 "token": {
+-                    "expires": "2020-01-01T00:00:10.000123Z",
++                    "expires": "2999-01-01T00:00:10.000123Z",
+                     "id": self.TEST_TOKEN,
+                     "tenant": {
+                         "id": self.TEST_TENANT_ID
+diff --git a/keystoneclient/tests/unit/auth/test_identity_v3.py b/keystoneclient/tests/unit/auth/test_identity_v3.py
+index 534e997..776551b 100644
+--- a/keystoneclient/tests/unit/auth/test_identity_v3.py
++++ b/keystoneclient/tests/unit/auth/test_identity_v3.py
+@@ -129,7 +129,7 @@ class V3IdentityPlugin(utils.TestCase):
+                     "password"
+                 ],
+ 
+-                "expires_at": "2020-01-01T00:00:10.000123Z",
++                "expires_at": "2999-01-01T00:00:10.000123Z",
+                 "project": {
+                     "domain": {
+                         "id": self.TEST_DOMAIN_ID,
+diff --git a/keystoneclient/tests/unit/client_fixtures.py b/keystoneclient/tests/unit/client_fixtures.py
+index 6da259c..cc07726 100644
+--- a/keystoneclient/tests/unit/client_fixtures.py
++++ b/keystoneclient/tests/unit/client_fixtures.py
+@@ -399,7 +399,7 @@ class Examples(fixtures.Fixture):
+                 'access': {
+                     'token': {
+                         'id': self.UUID_TOKEN_DEFAULT,
+-                        'expires': '2020-01-01T00:00:10.000123Z',
++                        'expires': '2999-01-01T00:00:10.000123Z',
+                         'tenant': {
+                             'id': 'tenant_id1',
+                             'name': 'tenant_name1',
+@@ -420,7 +420,7 @@ class Examples(fixtures.Fixture):
+                 'access': {
+                     'token': {
+                         'id': self.VALID_DIABLO_TOKEN,
+-                        'expires': '2020-01-01T00:00:10.000123Z',
++                        'expires': '2999-01-01T00:00:10.000123Z',
+                         'tenantId': 'tenant_id1',
+                     },
+                     'user': {
+@@ -437,7 +437,7 @@ class Examples(fixtures.Fixture):
+                 'access': {
+                     'token': {
+                         'id': self.UUID_TOKEN_UNSCOPED,
+-                        'expires': '2020-01-01T00:00:10.000123Z',
++                        'expires': '2999-01-01T00:00:10.000123Z',
+                     },
+                     'user': {
+                         'id': 'user_id1',
+@@ -453,7 +453,7 @@ class Examples(fixtures.Fixture):
+                 'access': {
+                     'token': {
+                         'id': 'valid-token',
+-                        'expires': '2020-01-01T00:00:10.000123Z',
++                        'expires': '2999-01-01T00:00:10.000123Z',
+                         'tenant': {
+                             'id': 'tenant_id1',
+                             'name': 'tenant_name1',
+@@ -474,7 +474,7 @@ class Examples(fixtures.Fixture):
+                     'token': {
+                         'bind': {'kerberos': self.KERBEROS_BIND},
+                         'id': self.UUID_TOKEN_BIND,
+-                        'expires': '2020-01-01T00:00:10.000123Z',
++                        'expires': '2999-01-01T00:00:10.000123Z',
+                         'tenant': {
+                             'id': 'tenant_id1',
+                             'name': 'tenant_name1',
+@@ -496,7 +496,7 @@ class Examples(fixtures.Fixture):
+                     'token': {
+                         'bind': {'FOO': 'BAR'},
+                         'id': self.UUID_TOKEN_UNKNOWN_BIND,
+-                        'expires': '2020-01-01T00:00:10.000123Z',
++                        'expires': '2999-01-01T00:00:10.000123Z',
+                         'tenant': {
+                             'id': 'tenant_id1',
+                             'name': 'tenant_name1',
+@@ -515,7 +515,7 @@ class Examples(fixtures.Fixture):
+             },
+             self.v3_UUID_TOKEN_DEFAULT: {
+                 'token': {
+-                    'expires_at': '2020-01-01T00:00:10.000123Z',
++                    'expires_at': '2999-01-01T00:00:10.000123Z',
+                     'methods': ['password'],
+                     'user': {
+                         'id': 'user_id1',
+@@ -542,7 +542,7 @@ class Examples(fixtures.Fixture):
+             },
+             self.v3_UUID_TOKEN_UNSCOPED: {
+                 'token': {
+-                    'expires_at': '2020-01-01T00:00:10.000123Z',
++                    'expires_at': '2999-01-01T00:00:10.000123Z',
+                     'methods': ['password'],
+                     'user': {
+                         'id': 'user_id1',
+@@ -556,7 +556,7 @@ class Examples(fixtures.Fixture):
+             },
+             self.v3_UUID_TOKEN_DOMAIN_SCOPED: {
+                 'token': {
+-                    'expires_at': '2020-01-01T00:00:10.000123Z',
++                    'expires_at': '2999-01-01T00:00:10.000123Z',
+                     'methods': ['password'],
+                     'user': {
+                         'id': 'user_id1',
+@@ -581,7 +581,7 @@ class Examples(fixtures.Fixture):
+                 'access': {
+                     'token': {
+                         'id': self.SIGNED_TOKEN_SCOPED_KEY,
+-                        'expires': '2020-01-01T00:00:10.000123Z',
++                        'expires': '2999-01-01T00:00:10.000123Z',
+                     },
+                     'user': {
+                         'id': 'user_id1',
+@@ -599,7 +599,7 @@ class Examples(fixtures.Fixture):
+                 'access': {
+                     'token': {
+                         'id': self.SIGNED_TOKEN_UNSCOPED_KEY,
+-                        'expires': '2020-01-01T00:00:10.000123Z',
++                        'expires': '2999-01-01T00:00:10.000123Z',
+                     },
+                     'user': {
+                         'id': 'user_id1',
+@@ -613,7 +613,7 @@ class Examples(fixtures.Fixture):
+             },
+             self.SIGNED_v3_TOKEN_SCOPED_KEY: {
+                 'token': {
+-                    'expires_at': '2020-01-01T00:00:10.000123Z',
++                    'expires_at': '2999-01-01T00:00:10.000123Z',
+                     'methods': ['password'],
+                     'user': {
+                         'id': 'user_id1',
+@@ -642,7 +642,7 @@ class Examples(fixtures.Fixture):
+                 'token': {
+                     'bind': {'kerberos': self.KERBEROS_BIND},
+                     'methods': ['password'],
+-                    'expires_at': '2020-01-01T00:00:10.000123Z',
++                    'expires_at': '2999-01-01T00:00:10.000123Z',
+                     'user': {
+                         'id': 'user_id1',
+                         'name': 'user_name1',
+@@ -669,7 +669,7 @@ class Examples(fixtures.Fixture):
+             self.v3_UUID_TOKEN_UNKNOWN_BIND: {
+                 'token': {
+                     'bind': {'FOO': 'BAR'},
+-                    'expires_at': '2020-01-01T00:00:10.000123Z',
++                    'expires_at': '2999-01-01T00:00:10.000123Z',
+                     'methods': ['password'],
+                     'user': {
+                         'id': 'user_id1',
+diff --git a/keystoneclient/tests/unit/test_discovery.py b/keystoneclient/tests/unit/test_discovery.py
+index f9d5dbf..6f85ea9 100644
+--- a/keystoneclient/tests/unit/test_discovery.py
++++ b/keystoneclient/tests/unit/test_discovery.py
+@@ -87,7 +87,7 @@ V2_VERSION.updated_str = UPDATED
+ V2_AUTH_RESPONSE = jsonutils.dumps({
+     "access": {
+         "token": {
+-            "expires": "2020-01-01T00:00:10.000123Z",
++            "expires": "2999-01-01T00:00:10.000123Z",
+             "id": 'fakeToken',
+             "tenant": {
+                 "id": '1'
+@@ -113,7 +113,7 @@ V3_AUTH_RESPONSE = jsonutils.dumps({
+             "password"
+         ],
+ 
+-        "expires_at": "2020-01-01T00:00:10.000123Z",
++        "expires_at": "2999-01-01T00:00:10.000123Z",
+         "project": {
+             "domain": {
+                 "id": '1',
+diff --git a/keystoneclient/tests/unit/v2_0/test_auth.py b/keystoneclient/tests/unit/v2_0/test_auth.py
+index 64f2ea0..b733524 100644
+--- a/keystoneclient/tests/unit/v2_0/test_auth.py
++++ b/keystoneclient/tests/unit/v2_0/test_auth.py
+@@ -28,7 +28,7 @@ class AuthenticateAgainstKeystoneTests(utils.TestCase):
+         self.TEST_RESPONSE_DICT = {
+             "access": {
+                 "token": {
+-                    "expires": "2020-01-01T00:00:10.000123Z",
++                    "expires": "2999-01-01T00:00:10.000123Z",
+                     "id": self.TEST_TOKEN,
+                     "tenant": {
+                         "id": self.TEST_TENANT_ID
+@@ -61,7 +61,7 @@ class AuthenticateAgainstKeystoneTests(utils.TestCase):
+ 
+         # Build a new response
+         TEST_TOKEN = "abcdef"
+-        resp_b['access']['token']['expires'] = '2020-01-01T00:00:10.000123Z'
++        resp_b['access']['token']['expires'] = '2999-01-01T00:00:10.000123Z'
+         resp_b['access']['token']['id'] = TEST_TOKEN
+ 
+         # return expired first, and then the new response
+diff --git a/keystoneclient/tests/unit/v3/test_auth.py b/keystoneclient/tests/unit/v3/test_auth.py
+index 6549080..9f87977 100644
+--- a/keystoneclient/tests/unit/v3/test_auth.py
++++ b/keystoneclient/tests/unit/v3/test_auth.py
+@@ -28,7 +28,7 @@ class AuthenticateAgainstKeystoneTests(utils.TestCase):
+                     "password"
+                 ],
+ 
+-                "expires_at": "2020-01-01T00:00:10.000123Z",
++                "expires_at": "2999-01-01T00:00:10.000123Z",
+                 "project": {
+                     "domain": {
+                         "id": self.TEST_DOMAIN_ID,
+-- 
+2.25.1
+
