@@ -1,5 +1,5 @@
 {% set pypi_name = 'ironic-lib' %}
-{% set upstream_version = upstream_version('2.21.0') %}
+{% set upstream_version = upstream_version('4.1.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -52,7 +52,8 @@ python3 -m stestr.cli run
 %{py3_install}
 
 install -p -m 755 -d %{buildroot}/%{_sysconfdir}/ironic/rootwrap.d
-install -p -m 640 etc/rootwrap.d/*.filters %{buildroot}/%{_sysconfdir}/ironic/rootwrap.d
+install -p -m 640 etc/ironic/rootwrap.d/*.filters %{buildroot}/%{_sysconfdir}/ironic/rootwrap.d/
+rm -rf %{buildroot}/%{_prefix}/%{_sysconfdir}/ironic/rootwrap.d
 
 %files
 %license LICENSE
@@ -60,6 +61,7 @@ install -p -m 640 etc/rootwrap.d/*.filters %{buildroot}/%{_sysconfdir}/ironic/ro
 %{python3_sitelib}/ironic_lib
 %{python3_sitelib}/ironic_lib*egg-info
 %dir %{_sysconfdir}/ironic
-%{_sysconfdir}/ironic/rootwrap.d
+%dir %{_sysconfdir}/ironic/rootwrap.d
+%{_sysconfdir}/ironic/rootwrap.d/*.filters
 
 %changelog
