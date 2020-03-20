@@ -30,6 +30,9 @@ Summary:        General Hardware Management Initiative (IPMI and others)
 Requires:       {{ py3('cryptography')  }}
 Requires:       {{ py3('python-dateutil') }}
 Requires:       {{ py3('six') }}
+%if 0%{?suse_version}
+Obsoletes:      {{ py2name(py_versions='py2') }} < 1.6.0
+%endif
 
 %description -n {{ py2name(py_versions='py3') }}
 This is a pure python implementation of IPMI protocol.

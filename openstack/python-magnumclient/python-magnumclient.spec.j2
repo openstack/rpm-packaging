@@ -55,6 +55,9 @@ Requires:       {{ py3('pbr') }}
 Requires:       {{ py3('requests') }}
 Requires:       {{ py3('six') }}
 Requires:       {{ py3('stevedore') }}
+%if 0%{?suse_version}
+Obsoletes:      {{ py2name(py_versions='py2') }} < 2.17.0
+%endif
 
 %description -n python3-magnumclient
 Client library for Magnum built on the Magnum API. It provides a Python API

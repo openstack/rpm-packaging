@@ -65,6 +65,9 @@ Requires:       {{ py3('oslo.service') }}
 Requires:       {{ py3('oslo.utils') }}
 Requires:       {{ py3('six') }}
 Requires:       {{ py3('stevedore') }}
+%if 0%{?suse_version}
+Obsoletes:      {{ py2name(py_versions='py2') }} < 12.0.0
+%endif
 
 %description -n {{ py2name(py_versions='py3') }}
 The Oslo messaging API supports RPC and notifications over a number

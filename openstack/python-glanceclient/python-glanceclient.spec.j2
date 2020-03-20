@@ -45,6 +45,9 @@ Requires:       {{ py3('requests') }}
 Requires:       {{ py3('six') }}
 Requires:       {{ py3('warlock') }}
 Requires:       {{ py3('wrapt') }}
+%if 0%{?suse_version}
+Obsoletes:      {{ py2name(py_versions='py2') }} < 2.18.0
+%endif
 
 %description -n {{ py2name(py_versions='py3') }}
 This is a client for the OpenStack Glance API. There's a Python API (the
