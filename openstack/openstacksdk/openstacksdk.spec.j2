@@ -73,6 +73,9 @@ Requires:       {{ py3('os-service-types') }}
 Requires:       {{ py3('requestsexceptions') }}
 Requires:       {{ py3('six') }}
 %if 0%{?suse_version}
+Obsoletes:      {{ py2name(py_versions='py2') }} < 1.0.0
+%endif
+%if 0%{?suse_version}
 %if 0%{?sle_version} >= 150000 || 0%{?suse_version} > 1500
 Requires:       mkisofs
 %else

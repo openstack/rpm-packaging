@@ -46,6 +46,9 @@ Requires:       {{ py3('pyinotify') }}
 Requires:       {{ py3('python-dateutil') }}
 Requires:       {{ py3('six') }}
 Requires:       {{ py3('systemd') }}
+%if 0%{?suse_version}
+Obsoletes:      {{ py2name(py_versions='py2') }} < 4.0.0
+%endif
 
 %description -n {{ py2name(py_versions='py3') }}
 OpenStack logging configuration library provides standardized configuration
