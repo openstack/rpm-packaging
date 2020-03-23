@@ -41,6 +41,9 @@ Requires:       {{ py3('oslo.utils') }}
 Requires:       {{ py3('requests') }}
 Requires:       {{ py3('simplejson') }}
 Requires:       {{ py3('six') }}
+%if 0%{?suse_version}
+Obsoletes:      {{ py2name(py_versions='py2') }} < 6.0.0
+%endif
 
 %description -n {{ py2name(py_versions='py3') }}
 This is a client for the OpenStack Cinder API (Block Storage. There's a

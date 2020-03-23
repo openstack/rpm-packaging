@@ -42,6 +42,9 @@ Requires:       {{ py3('oslo.config') }}
 Requires:       {{ py3('oslo.i18n') }}
 Requires:       {{ py3('oslo.log') }}
 Requires:       {{ py3('oslo.utils') }}
+%if 0%{?suse_version}
+Obsoletes:      {{ py2name(py_versions='py2') }} < 2.0.0
+%endif
 
 %description -n {{ py2name(py_versions='py3') }}
 OpenStack library for privilege separation

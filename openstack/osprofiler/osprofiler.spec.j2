@@ -47,6 +47,9 @@ Requires:       {{ py3('oslo.config') }}
 Requires:       {{ py3('oslo.log') }}
 Requires:       {{ py3('oslo.utils') }}
 Requires:       {{ py3('six') }}
+%if 0%{?suse_version}
+Obsoletes:      {{ py2name(py_versions='py2') }} < 3.0.0
+%endif
 
 %description -n {{ py2name(py_versions='py3') }}
 OSProfiler provides a tiny but powerful library that is used by

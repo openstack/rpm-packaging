@@ -61,6 +61,9 @@ Requires:       {{ py3('oslo.utils') }}
 Requires:       {{ py3('requests') }}
 Requires:       {{ py3('six') }}
 Requires:       {{ py3('python-swiftclient') }}
+%if 0%{?suse_version}
+Obsoletes:      {{ py2name(py_versions='py2') }} < 2.0.0
+%endif
 
 %description -n python3-heatclient
 This is a client for the OpenStack Heat API. There's a Python API (the
