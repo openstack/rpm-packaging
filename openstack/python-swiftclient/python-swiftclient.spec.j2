@@ -24,12 +24,15 @@ BuildArch:      noarch
 This is a python client for the Swift API. There's a Python API (the
 swiftclient module), and a command-line script (swift).
 
-%package -n python3-swiftclient
+%package -n {{ py2name(py_versions='py3') }}
 Summary:        OpenStack Object Storage API Client Library
 Requires:       {{ py3('requests') }}
 Requires:       {{ py3('six') }}
+%if 0%{?suse_version}
+Obsoletes:      {{ py2name(py_versions='py2') }} < 3.9.0
+%endif
 
-%description -n python3-swiftclient
+%description -n {{ py2name(py_versions='py3') }}
 This is a python client for the Swift API. There's a Python API (the
 swiftclient module), and a command-line script (swift).
 
@@ -62,7 +65,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %check
 python3 -m stestr.cli run
 
-%files -n python3-swiftclient
+%files -n {{ py2name(py_versions='py3') }}
 %license LICENSE
 %doc ChangeLog README.rst
 %{python3_sitelib}/swiftclient

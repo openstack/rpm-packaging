@@ -42,6 +42,9 @@ Requires:       {{ py3('oslo.utils') }}
 Requires:       {{ py3('requests') }}
 Requires:       {{ py3('simplejson') }}
 Requires:       {{ py3('six') }}
+%if 0%{?suse_version}
+Obsoletes:      {{ py2name(py_versions='py2') }} < 2.0.0
+%endif
 
 %description -n python3-manilaclient
 Client library and command line utility for interacting with Openstack

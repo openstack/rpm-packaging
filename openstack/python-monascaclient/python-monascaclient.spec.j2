@@ -47,6 +47,9 @@ Requires:       {{ py3('oslo.utils') }}
 Requires:       {{ py3('pbr') }}
 Requires:       {{ py3('requests') }}
 Requires:       {{ py3('six') }}
+%if 0%{?suse_version}
+Obsoletes:      {{ py2name(py_versions='py2') }} < 2.0.0
+%endif
 
 %description -n python3-monascaclient
 This is a client library for Monasca built to interface with the Monasca API. It
