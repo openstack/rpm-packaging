@@ -38,6 +38,9 @@ Requires:       {{ py3('oslo.serialization') }}
 Requires:       {{ py3('requests') }}
 Requires:       {{ py3('six') }}
 Requires:       {{ py3('stevedore') }}
+%if 0%{?suse_version}
+Obsoletes:      {{ py2name(py_versions='py2') }} < 2.4.1
+%endif
 
 %description -n {{ py2name(py_versions='py3') }}
 The OpenStack Oslo Policy library.
