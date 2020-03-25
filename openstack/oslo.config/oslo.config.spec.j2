@@ -50,6 +50,9 @@ Requires:       {{ py3('requests') }}
 Requires:       {{ py3('rfc3986') }}
 Requires:       {{ py3('six') }}
 Requires:       {{ py3('stevedore') }}
+%if 0%{?suse_version}
+Obsoletes:      {{ py2name(py_versions='py2') }} < 8.0.1
+%endif
 
 %description -n {{ py2name(py_versions='py3') }}
 The Oslo project intends to produce a python library containing

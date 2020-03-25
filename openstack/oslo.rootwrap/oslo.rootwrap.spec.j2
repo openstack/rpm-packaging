@@ -34,6 +34,9 @@ from OpenStack services.
 %package -n {{ py2name(py_versions='py3') }}
 Summary:        Filtering shell commands to run as root from OpenStack services
 Requires:       {{ py3('six') }}
+%if 0%{?suse_version}
+Obsoletes:      {{ py2name(py_versions='py2') }} < 6.0.1
+%endif
 
 %description -n {{ py2name(py_versions='py3') }}
 oslo.rootwrap allows fine-grained filtering of shell commands to run as root
