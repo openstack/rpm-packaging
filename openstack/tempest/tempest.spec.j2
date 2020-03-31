@@ -1,5 +1,5 @@
 {% set pypi_name = 'tempest' %}
-{% set upstream_version = upstream_version('21.0.0') %}
+{% set upstream_version = upstream_version('22.1.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -13,8 +13,6 @@ Group:          Development/Languages/Python
 URL:            https://launchpad.net/tempest
 Source0:        {{ source }}
 Source1:        openstack-tempest.tmpfiles
-# https://review.opendev.org/678379
-Patch0:         0001-test_project_get_equals_list-allows-extra-fields.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py3('PrettyTable') }}
 BuildRequires:  {{ py3('PyYAML') }}
@@ -86,6 +84,7 @@ This package contains the python module.
 Summary:        Documentation for the OpenStack Integration Test Suite
 BuildRequires:  {{ py3('Sphinx') }}
 BuildRequires:  {{ py3('openstackdocstheme') }}
+BuildRequires:  {{ py3('sphinxcontrib-svg2pdfconverter') }}
 
 %description doc
 Tempest is a set of integration tests to be run against a live OpenStack
