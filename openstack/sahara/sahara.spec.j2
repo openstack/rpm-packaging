@@ -216,6 +216,8 @@ install -p -D -m 644 %{SOURCE2} %{buildroot}%{_sysconfdir}/logrotate.d/openstack
 %check
 # don't want to depend on hacking for package building
 rm sahara/tests/unit/utils/test_hacking.py
+# TODO: undo after https://storyboard.openstack.org/#!/story/2007450
+rm -v sahara/tests/unit/service/health/test_verification_base.py
 
 %{__python3} -m stestr.cli run
 
