@@ -1,6 +1,6 @@
 %global sname pymod2pkg
 {% set pypi_name = 'pymod2pkg' %}
-{% set upstream_version = upstream_version('0.22.2') %}
+{% set upstream_version = upstream_version('0.23.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 Name:           {{ py2name() }}
@@ -12,6 +12,7 @@ Group:          Development/Libraries/Python
 URL:            https://wiki.openstack.org/wiki/Rpm-packaging
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
+BuildRequires:  {{ py3('distro') }}
 BuildRequires:  {{ py3('pbr') }}
 BuildRequires:  {{ py3('stestr') }}
 BuildRequires:  {{ py3('testresources') }}
@@ -24,6 +25,7 @@ corresponding package names which is a common problem in the packaging world.
 
 %package -n {{ py2name(py_versions='py3') }}
 Summary:        OpenStack Packaging - python module name to package name map
+Requires:       {{ py3('distro') }}
 Requires:       {{ py3('pbr') }}
 
 %description -n {{ py2name(py_versions='py3') }}
