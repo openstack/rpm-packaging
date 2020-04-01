@@ -1,0 +1,150 @@
+From c678e21b5e0d0aec2d014a40ceadcd573bac08f9 Mon Sep 17 00:00:00 2001
+From: Goutham Pacha Ravi <gouthampravi@gmail.com>
+Date: Fri, 20 Mar 2020 11:13:47 -0700
+Subject: [PATCH] Fix export locations tests
+
+The tempest tests
+- api.admin.test_export_locations.ExportLocationsTest#test_list_share_export_locations_by_member
+- api.admin.test_export_locations.ExportLocationsTest#test_get_share_export_location_by_member
+
+were both written with the assumption that a user within a
+project creates a share, and the share's export locations
+are available to other users in the project. In this specific
+context, the user creating the share has an "admin" role -
+but that is just circumstantial. Any user with the ability
+to create shares in a project can do so, and expect that
+those shares are accessible to other users by virtue of default
+policy.
+
+However, tempest test projects each have only one user,
+and the private share in both these test cases is created
+within the original user's project, and is not supposed to
+be accessible across projects. This behavior is called out in
+LP bug #1654598.
+
+So, enhance the test infra to create a user within the same
+project applying roles specified within tempest.conf and test
+accessibility with such a user.
+
+Once bug #1654598 has been resolved, we can use the existing
+test behavior of testing access via a different project as
+negative test cases (See: https://review.opendev.org/710661/)
+
+Related-Bug: #1654598
+Partial-Bug: #1655427
+Change-Id: I12a1df36e8d928c54c03ed644dd60557f349ddb3
+Signed-off-by: Goutham Pacha Ravi <gouthampravi@gmail.com>
+---
+
+diff --git a/manila_tempest_tests/tests/api/admin/test_export_locations.py b/manila_tempest_tests/tests/api/admin/test_export_locations.py
+index 67c200e..96a0d9d 100644
+--- a/manila_tempest_tests/tests/api/admin/test_export_locations.py
++++ b/manila_tempest_tests/tests/api/admin/test_export_locations.py
+@@ -39,7 +39,7 @@
+     def resource_setup(cls):
+         super(ExportLocationsTest, cls).resource_setup()
+         cls.admin_client = cls.admin_shares_v2_client
+-        cls.member_client = cls.shares_v2_client
++        cls.member_client = cls.admin_project_member_client.shares_v2_client
+         # create share type
+         cls.share_type = cls._create_share_type()
+         cls.share_type_id = cls.share_type['id']
+diff --git a/manila_tempest_tests/tests/api/base.py b/manila_tempest_tests/tests/api/base.py
+index 232b15a..89f2e92 100644
+--- a/manila_tempest_tests/tests/api/base.py
++++ b/manila_tempest_tests/tests/api/base.py
+@@ -24,6 +24,7 @@
+ from tempest.common import credentials_factory as common_creds
+ 
+ from tempest import config
++from tempest.lib.common import cred_client
+ from tempest.lib.common import dynamic_creds
+ from tempest.lib.common.utils import data_utils
+ from tempest.lib import exceptions
+@@ -1258,6 +1259,21 @@
+     """Base test case class for all Shares API tests with all user roles."""
+     credentials = ('primary', 'alt', 'admin')
+ 
++    # Will be cleaned up in resource_cleanup if the class
++    class_project_users_created = []
++
++    @classmethod
++    def resource_cleanup(cls):
++        cls.clear_project_users(cls.class_project_users_created)
++        super(BaseSharesMixedTest, cls).resource_cleanup()
++
++    @classmethod
++    def clear_project_users(cls, users=None):
++        users = users or cls.class_project_users_created
++        for user in users:
++            with handle_cleanup_exceptions():
++                cls.os_admin.creds_client.delete_user(user['id'])
++
+     @classmethod
+     def setup_clients(cls):
+         super(BaseSharesMixedTest, cls).setup_clients()
+@@ -1269,6 +1285,18 @@
+         # Initialise network clients
+         cls.os_admin.networks_client = cls.os_admin.network.NetworksClient()
+         cls.os_alt.networks_client = cls.os_alt.network.NetworksClient()
++        # Initialise identity clients
++        cls.admin_project = cls.os_admin.auth_provider.auth_data[1]['project']
++        identity_clients = getattr(
++            cls.os_admin, 'identity_%s' % CONF.identity.auth_version)
++        cls.os_admin.identity_client = identity_clients.IdentityClient()
++        cls.os_admin.projects_client = identity_clients.ProjectsClient()
++        cls.os_admin.users_client = identity_clients.UsersClient()
++        cls.os_admin.roles_client = identity_clients.RolesClient()
++        cls.os_admin.domains_client = (
++            cls.os_admin.identity_v3.DomainsClient() if
++            CONF.identity.auth_version == 'v3' else None)
++        cls.admin_project_member_client = cls.create_user_and_get_client()
+ 
+         if CONF.share.multitenancy_enabled:
+             admin_share_network_id = cls.provide_share_network(
+@@ -1289,6 +1317,43 @@
+             cls.class_resources.insert(0, resource)
+ 
+     @classmethod
++    def create_user_and_get_client(cls, project=None):
++        """Create a user in specified project & set share clients for user
++
++        The user will have all roles specified in tempest.conf
++        :param: project: a dictionary with project ID and name, if not
++            specified, the value will be cls.admin_project
++        """
++        project_domain_name = (
++            cls.os_admin.identity_client.auth_provider.credentials.get(
++                'project_domain_name', 'Default'))
++        cls.os_admin.creds_client = cred_client.get_creds_client(
++            cls.os_admin.identity_client, cls.os_admin.projects_client,
++            cls.os_admin.users_client, cls.os_admin.roles_client,
++            cls.os_admin.domains_client, project_domain_name)
++
++        # User info
++        project = project or cls.admin_project
++        username = data_utils.rand_name('manila_%s' % project['id'])
++        password = data_utils.rand_password()
++        email = '%s@example.org' % username
++
++        user = cls.os_admin.creds_client.create_user(
++            username, password, project, email)
++        cls.class_project_users_created.append(user)
++
++        for conf_role in CONF.auth.tempest_roles:
++            cls.os_admin.creds_client.assign_user_role(
++                user, project, conf_role)
++
++        user_creds = cls.os_admin.creds_client.get_credentials(
++            user, project, password)
++        os = clients.Clients(user_creds)
++        os.shares_v1_client = os.share_v1.SharesClient()
++        os.shares_v2_client = os.share_v2.SharesV2Client()
++        return os
++
++    @classmethod
+     def _create_share_type(cls, specs=None):
+         name = data_utils.rand_name("unique_st_name")
+         extra_specs = cls.add_extra_specs_to_dict(specs)
+
+

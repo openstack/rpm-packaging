@@ -20,6 +20,8 @@ Source0:       {{ source|basename }}
 Patch0:        0001-Fix-CIFS-access-for-non-multitenant-setup.patch
 # https://review.opendev.org/664434
 Patch1:        0002-Skip-read-only-test-for-CIFS.patch
+# PATCH-FIX-UPSTREAM 0002-Fix-export-locations-tests.patch -- https://review.opendev.org/714181
+Patch2:        0002-Fix-export-locations-tests.patch
 BuildRequires: openstack-macros
 BuildRequires: {{ py2pkg('devel') }}
 BuildRequires: {{ py2pkg('pbr') }}
