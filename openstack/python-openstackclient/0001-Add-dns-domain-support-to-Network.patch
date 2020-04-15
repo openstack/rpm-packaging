@@ -1,0 +1,325 @@
+From e7a8687a2c87a507ce25e042014d6a918e95d035 Mon Sep 17 00:00:00 2001
+From: Pierre Hanselmann <pierre.hanselmann@gmail.com>
+Date: Tue, 31 Oct 2017 15:35:10 +0100
+Subject: [PATCH] Add dns-domain support to Network object
+
+Add "dns-domain" parameter to Network class. Also check
+backend extensions and send an error message in case of
+an argument (like dns-domain) is sent and the extension is
+missing (dns-integration in this case).
+
+Change-Id: I7303658c27d9b9f2d8381ccea0b29e96909cab54
+Closes-Bug: 1633214
+Partial-Bug: 1547736
+(cherry picked from commit b8754e15e7adc9a04587f67c83febaf49b64f18c)
+---
+
+diff --git a/doc/source/cli/command-objects/network.rst b/doc/source/cli/command-objects/network.rst
+index 220fbf3..75113f8 100644
+--- a/doc/source/cli/command-objects/network.rst
++++ b/doc/source/cli/command-objects/network.rst
+@@ -33,6 +33,7 @@
+         [--provider-segment <provider-segment>]
+         [--qos-policy <qos-policy>]
+         [--transparent-vlan | --no-transparent-vlan]
++        [--dns-domain <dns-domain>]
+         [--tag <tag> | --no-tag]
+         <name>
+ 
+@@ -172,6 +173,10 @@
+     Do not make the network VLAN transparent
+ 
+     *Network version 2 only*
++
++.. option:: --dns-domain <dns-domain>
++
++    Set DNS domain for this network (requires DNS integration extension).
+ 
+ .. option:: --tag <tag>
+ 
+@@ -367,6 +372,7 @@
+         [--provider-physical-network <provider-physical-network>]
+         [--provider-segment <provider-segment>]
+         [--qos-policy <qos-policy> | --no-qos-policy]
++        [--dns-domain <dns-domain>]
+         [--tag <tag>] [--no-tag]
+         <network>
+ 
+@@ -446,6 +452,10 @@
+ 
+     Remove the QoS policy attached to this network
+ 
++.. option:: --dns-domain <dns-domain>
++
++    Set DNS domain for this network (requires DNS integration extension).
++
+ .. option:: --tag <tag>
+ 
+     Tag to be added to the network (repeat option to set multiple tags)
+diff --git a/openstackclient/network/common.py b/openstackclient/network/common.py
+index 37bf140..d22b2ca 100644
+--- a/openstackclient/network/common.py
++++ b/openstackclient/network/common.py
+@@ -12,6 +12,7 @@
+ #
+ 
+ import abc
++import contextlib
+ import logging
+ 
+ import openstack.exceptions
+@@ -24,6 +25,30 @@
+ 
+ LOG = logging.getLogger(__name__)
+ 
++_required_opt_extensions_map = {
++    'allowed_address_pairs': 'allowed-address-pairs',
++    'dns_domain': 'dns-integration',
++    'dns_name': 'dns-integration',
++    'extra_dhcp_opts': 'extra_dhcp_opt',
++    'qos_policy_id': 'qos',
++    'security_groups': 'security-groups',
++}
++
++
++@contextlib.contextmanager
++def check_missing_extension_if_error(client_manager, attrs):
++    # If specified option requires extension, then try to
++    # find out if it exists. If it does not exist,
++    # then an exception with the appropriate message
++    # will be thrown from within client.find_extension
++    try:
++        yield
++    except openstack.exceptions.HttpException:
++        for opt, ext in _required_opt_extensions_map.items():
++            if opt in attrs:
++                client_manager.find_extension(ext, ignore_missing=False)
++        raise
++
+ 
+ @six.add_metaclass(abc.ABCMeta)
+ class NetworkAndComputeCommand(command.Command):
+diff --git a/openstackclient/network/v2/network.py b/openstackclient/network/v2/network.py
+index 2ce22c2..f512393 100644
+--- a/openstackclient/network/v2/network.py
++++ b/openstackclient/network/v2/network.py
+@@ -134,6 +134,9 @@
+         attrs['qos_policy_id'] = _qos_policy.id
+     if 'no_qos_policy' in parsed_args and parsed_args.no_qos_policy:
+         attrs['qos_policy_id'] = None
++    # Update DNS network options
++    if parsed_args.dns_domain:
++        attrs['dns_domain'] = parsed_args.dns_domain
+     return attrs
+ 
+ 
+@@ -171,6 +174,13 @@
+         dest='segmentation_id',
+         help=_("VLAN ID for VLAN networks or Tunnel ID for "
+                "GENEVE/GRE/VXLAN networks"))
++    parser.add_argument(
++        '--dns-domain',
++        metavar='<dns-domain>',
++        dest='dns_domain',
++        help=_("Set DNS domain for this network "
++               "(requires DNS integration extension)")
++    )
+ 
+ 
+ # TODO(sindhu): Use the SDK resource mapped attribute names once the
+@@ -308,8 +318,10 @@
+             attrs['vlan_transparent'] = True
+         if parsed_args.no_transparent_vlan:
+             attrs['vlan_transparent'] = False
++        with common.check_missing_extension_if_error(
++                self.app.client_manager.network, attrs):
++            obj = client.create_network(**attrs)
+ 
+-        obj = client.create_network(**attrs)
+         # tags cannot be set when created, so tags need to be set later.
+         _tag.update_tags_for_set(client, obj, parsed_args)
+         display_columns, columns = _get_columns_network(obj)
+@@ -690,7 +702,9 @@
+ 
+         attrs = _get_attrs_network(self.app.client_manager, parsed_args)
+         if attrs:
+-            client.update_network(obj, **attrs)
++            with common.check_missing_extension_if_error(
++                    self.app.client_manager.network, attrs):
++                client.update_network(obj, **attrs)
+ 
+         # tags is a subresource and it needs to be updated separately.
+         _tag.update_tags_for_set(client, obj, parsed_args)
+diff --git a/openstackclient/network/v2/port.py b/openstackclient/network/v2/port.py
+index c6d4894..4cbb7ac 100644
+--- a/openstackclient/network/v2/port.py
++++ b/openstackclient/network/v2/port.py
+@@ -25,6 +25,7 @@
+ 
+ from openstackclient.i18n import _
+ from openstackclient.identity import common as identity_common
++from openstackclient.network import common
+ from openstackclient.network import sdk_utils
+ from openstackclient.network.v2 import _tag
+ 
+@@ -281,8 +282,8 @@
+     )
+     parser.add_argument(
+         '--dns-name',
+-        metavar='dns-name',
+-        help=_("Set DNS name to this port "
++        metavar='<dns-name>',
++        help=_("Set DNS name for this port "
+                "(requires DNS integration extension)")
+     )
+ 
+@@ -437,7 +438,10 @@
+         if parsed_args.qos_policy:
+             attrs['qos_policy_id'] = client.find_qos_policy(
+                 parsed_args.qos_policy, ignore_missing=False).id
+-        obj = client.create_port(**attrs)
++        with common.check_missing_extension_if_error(
++                self.app.client_manager.network, attrs):
++            obj = client.create_port(**attrs)
++
+         # tags cannot be set when created, so tags need to be set later.
+         _tag.update_tags_for_set(client, obj, parsed_args)
+         display_columns, columns = _get_columns(obj)
+@@ -790,7 +794,9 @@
+             attrs['data_plane_status'] = parsed_args.data_plane_status
+ 
+         if attrs:
+-            client.update_port(obj, **attrs)
++            with common.check_missing_extension_if_error(
++                    self.app.client_manager.network, attrs):
++                client.update_port(obj, **attrs)
+ 
+         # tags is a subresource and it needs to be updated separately.
+         _tag.update_tags_for_set(client, obj, parsed_args)
+diff --git a/openstackclient/tests/unit/network/v2/fakes.py b/openstackclient/tests/unit/network/v2/fakes.py
+index 4539212..aec7402 100644
+--- a/openstackclient/tests/unit/network/v2/fakes.py
++++ b/openstackclient/tests/unit/network/v2/fakes.py
+@@ -335,6 +335,7 @@
+             'name': 'network-name-' + uuid.uuid4().hex,
+             'status': 'ACTIVE',
+             'description': 'network-description-' + uuid.uuid4().hex,
++            'dns_domain': 'example.org.',
+             'mtu': '1350',
+             'tenant_id': 'project-id-' + uuid.uuid4().hex,
+             'admin_state_up': True,
+diff --git a/openstackclient/tests/unit/network/v2/test_network.py b/openstackclient/tests/unit/network/v2/test_network.py
+index 9f4a6ac..0f57f0e 100644
+--- a/openstackclient/tests/unit/network/v2/test_network.py
++++ b/openstackclient/tests/unit/network/v2/test_network.py
+@@ -60,6 +60,7 @@
+         'availability_zone_hints',
+         'availability_zones',
+         'description',
++        'dns_domain',
+         'id',
+         'ipv4_address_scope',
+         'ipv6_address_scope',
+@@ -84,6 +85,7 @@
+         utils.format_list(_network.availability_zone_hints),
+         utils.format_list(_network.availability_zones),
+         _network.description,
++        _network.dns_domain,
+         _network.id,
+         _network.ipv4_address_scope_id,
+         _network.ipv6_address_scope_id,
+@@ -162,6 +164,7 @@
+             "--qos-policy", self.qos_policy.id,
+             "--transparent-vlan",
+             "--enable-port-security",
++            "--dns-domain", "example.org.",
+             self._network.name,
+         ]
+         verifylist = [
+@@ -181,6 +184,7 @@
+             ('transparent_vlan', True),
+             ('enable_port_security', True),
+             ('name', self._network.name),
++            ('dns_domain', 'example.org.'),
+         ]
+ 
+         parsed_args = self.check_parser(self.cmd, arglist, verifylist)
+@@ -204,6 +208,7 @@
+             'qos_policy_id': self.qos_policy.id,
+             'vlan_transparent': True,
+             'port_security_enabled': True,
++            'dns_domain': 'example.org.',
+         })
+         self.assertEqual(self.columns, columns)
+         self.assertEqual(self.data, data)
+@@ -287,6 +292,7 @@
+         'availability_zone_hints',
+         'availability_zones',
+         'description',
++        'dns_domain',
+         'id',
+         'ipv4_address_scope',
+         'ipv6_address_scope',
+@@ -311,6 +317,7 @@
+         utils.format_list(_network.availability_zone_hints),
+         utils.format_list(_network.availability_zones),
+         _network.description,
++        _network.dns_domain,
+         _network.id,
+         _network.ipv4_address_scope_id,
+         _network.ipv6_address_scope_id,
+@@ -901,6 +908,7 @@
+             '--name', 'noob',
+             '--share',
+             '--description', self._network.description,
++            '--dns-domain', 'example.org.',
+             '--external',
+             '--default',
+             '--provider-network-type', 'vlan',
+@@ -922,6 +930,7 @@
+             ('segmentation_id', '400'),
+             ('enable_port_security', True),
+             ('qos_policy', self.qos_policy.name),
++            ('dns_domain', 'example.org.'),
+         ]
+ 
+         parsed_args = self.check_parser(self.cmd, arglist, verifylist)
+@@ -939,6 +948,7 @@
+             'provider:segmentation_id': '400',
+             'port_security_enabled': True,
+             'qos_policy_id': self.qos_policy.id,
++            'dns_domain': 'example.org.',
+         }
+         self.network.update_network.assert_called_once_with(
+             self._network, **attrs)
+@@ -1026,6 +1036,7 @@
+         'availability_zone_hints',
+         'availability_zones',
+         'description',
++        'dns_domain',
+         'id',
+         'ipv4_address_scope',
+         'ipv6_address_scope',
+@@ -1050,6 +1061,7 @@
+         utils.format_list(_network.availability_zone_hints),
+         utils.format_list(_network.availability_zones),
+         _network.description,
++        _network.dns_domain,
+         _network.id,
+         _network.ipv4_address_scope_id,
+         _network.ipv6_address_scope_id,
+diff --git a/releasenotes/notes/network_dns_integration-5914b2c2be474a41.yaml b/releasenotes/notes/network_dns_integration-5914b2c2be474a41.yaml
+new file mode 100644
+index 0000000..ede5674
+--- /dev/null
++++ b/releasenotes/notes/network_dns_integration-5914b2c2be474a41.yaml
+@@ -0,0 +1,9 @@
++---
++features:
++  - |
++    Add dns-domain support for network commands.
++    The new parameter ``--dns-domain`` is added to the ``network create``
++    and ``network set`` commands. This parameter sets
++    the domain name for the network.
++    Check backend available extension and return an error
++    message if it is missing (instead of a Bad Request HTTP 400).

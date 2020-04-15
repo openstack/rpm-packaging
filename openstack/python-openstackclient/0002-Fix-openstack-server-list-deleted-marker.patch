@@ -1,0 +1,173 @@
+From 30c40430aff1f60d248f90a5f955d174ba80d8cc Mon Sep 17 00:00:00 2001
+From: KeithMnemonic <keith.berger@suse.com>
+Date: Thu, 24 Oct 2019 14:39:50 -0400
+Subject: [PATCH] Fix openstack server list --deleted --marker option
+
+This patch removes using the "name" option for a marker when
+--deleted is also used. The find_resource() function
+that is being called does not correctly handle using the marker
+as the "name" in the search when also using deleted=True.
+One simple way to fix this is force the marker to only be an ID
+when --deleted is used. This is how the nova client works.
+
+Using the --deleted option is available to users with the admin
+role by default. If you're an admin listing --deleted servers
+with a marker by name, find_resource() is going to fail to find
+it since it doesn't apply the --deleted filter to find_resource().
+
+The find_resource() function is trying to find the marker server
+by name if it's not found by id, and to find it by name it's
+listing servers with the given marker as the name, but not
+applying the --deleted filter so it doesn't get back any results.
+
+In the story it was suggested modifying find_resource to include
+the deleted query param when it's specified on the command line but
+that didn't work because it still results in something like this:
+
+http://192.168.1.123/compute/v2.1/servers?deleted=True&name=4cecd49f-bc25-4a7e-826e-4aea6f9267d9
+
+It seems like there are bugs in find_resource().
+
+Restricting the marker to be the server ID when listing deleted servers
+is probably OK since if you're using --deleted you're an admin and you could
+be listing across all projects and if you're filtering by a server across all
+projects anyway (not that you have to, I'm just saying if you are), or even
+showing a server in another project, you have to do it by id rather than name
+because find_resource() won't find the server in another project by name, only ID.
+
+story: 2006761
+Task: 37258
+
+The server test case was removed from the cherry-pick as it used
+features of the openstack client that are not in stable/stein
+
+Change-Id: Ib878982b1d469212ca3483dcfaf407a8e1d2b417
+(cherry picked from commit c42c27aa926e93a2507e686eeaf0c5510a29d245)
+---
+
+diff --git a/openstackclient/compute/v2/server.py b/openstackclient/compute/v2/server.py
+index 9da3448..481d592 100644
+--- a/openstackclient/compute/v2/server.py
++++ b/openstackclient/compute/v2/server.py
+@@ -1110,7 +1110,8 @@
+             default=None,
+             help=_('The last server of the previous page. Display '
+                    'list of servers after marker. Display all servers if not '
+-                   'specified. (name or ID)')
++                   'specified. When used with ``--deleted``, the marker must '
++                   'be an ID, otherwise a name or ID can be used.'),
+         )
+         parser.add_argument(
+             '--limit',
+@@ -1268,9 +1269,17 @@
+             mixed_case_fields = []
+ 
+         marker_id = None
++
+         if parsed_args.marker:
+-            marker_id = utils.find_resource(compute_client.servers,
+-                                            parsed_args.marker).id
++            # Check if both "--marker" and "--deleted" are used.
++            # In that scenario a lookup is not needed as the marker
++            # needs to be an ID, because find_resource does not
++            # handle deleted resources
++            if parsed_args.deleted:
++                marker_id = parsed_args.marker
++            else:
++                marker_id = utils.find_resource(compute_client.servers,
++                                                parsed_args.marker).id
+ 
+         data = compute_client.servers.list(search_opts=search_opts,
+                                            marker=marker_id,
+diff --git a/openstackclient/tests/functional/compute/v2/test_server.py b/openstackclient/tests/functional/compute/v2/test_server.py
+index 3cb72d9..8aba882 100644
+--- a/openstackclient/tests/functional/compute/v2/test_server.py
++++ b/openstackclient/tests/functional/compute/v2/test_server.py
+@@ -64,6 +64,73 @@
+         self.assertNotIn(name1, col_name)
+         self.assertIn(name2, col_name)
+ 
++    def test_server_list_with_marker_and_deleted(self):
++        """Test server list with deleted and marker"""
++        cmd_output = self.server_create(cleanup=False)
++        name1 = cmd_output['name']
++        cmd_output = self.server_create(cleanup=False)
++        name2 = cmd_output['name']
++        id2 = cmd_output['id']
++        self.wait_for_status(name1, "ACTIVE")
++        self.wait_for_status(name2, "ACTIVE")
++
++        # Test list --marker with ID
++        cmd_output = json.loads(self.openstack(
++            'server list -f json --marker ' + id2
++        ))
++        col_name = [x["Name"] for x in cmd_output]
++        self.assertIn(name1, col_name)
++
++        # Test list --marker with Name
++        cmd_output = json.loads(self.openstack(
++            'server list -f json --marker ' + name2
++        ))
++        col_name = [x["Name"] for x in cmd_output]
++        self.assertIn(name1, col_name)
++
++        self.openstack('server delete --wait ' + name1)
++        self.openstack('server delete --wait ' + name2)
++
++        # Test list --deleted --marker with ID
++        cmd_output = json.loads(self.openstack(
++            'server list -f json --deleted --marker ' + id2
++        ))
++        col_name = [x["Name"] for x in cmd_output]
++        self.assertIn(name1, col_name)
++
++        # Test list --deleted --marker with Name
++        try:
++            cmd_output = json.loads(self.openstack(
++                'server list -f json --deleted --marker ' + name2
++            ))
++        except exceptions.CommandFailed as e:
++            self.assertIn('marker [%s] not found (HTTP 400)' % (name2),
++                          e.stderr.decode('utf-8'))
++
++    def test_server_list_with_changes_since(self):
++        """Test server list.
++
++        Getting the servers list with updated_at time equal or
++        later than changes-since.
++        """
++        cmd_output = self.server_create()
++        server_name1 = cmd_output['name']
++        cmd_output = self.server_create()
++        server_name2 = cmd_output['name']
++        updated_at2 = cmd_output['updated']
++        cmd_output = self.server_create()
++        server_name3 = cmd_output['name']
++
++        cmd_output = json.loads(self.openstack(
++            'server list -f json '
++            '--changes-since ' + updated_at2
++        ))
++
++        col_updated = [server["Name"] for server in cmd_output]
++        self.assertNotIn(server_name1, col_updated)
++        self.assertIn(server_name2, col_updated)
++        self.assertIn(server_name3, col_updated)
++
+     def test_server_set(self):
+         """Test server create, delete, set, show"""
+         cmd_output = self.server_create()
+diff --git a/releasenotes/notes/bug-2006761-9041d1b25e845cfb.yaml b/releasenotes/notes/bug-2006761-9041d1b25e845cfb.yaml
+new file mode 100644
+index 0000000..e647cf2
+--- /dev/null
++++ b/releasenotes/notes/bug-2006761-9041d1b25e845cfb.yaml
+@@ -0,0 +1,8 @@
++---
++fixes:
++  - |
++    Fixes the "No server with a name or ID of 'id' exists" error when running
++    ``server list --deleted --marker``. The fix removes using a name for
++    the marker when both ``--deleted`` and ``--marker`` are used. In
++    this scenario an ID must be supplied for the marker.
++    [Story `2006761 <https://storyboard.openstack.org/#!/story/2006761>`_]
