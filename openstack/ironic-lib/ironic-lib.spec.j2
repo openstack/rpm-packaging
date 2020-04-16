@@ -1,5 +1,5 @@
 {% set pypi_name = 'ironic-lib' %}
-{% set upstream_version = upstream_version('4.1.0') %}
+{% set upstream_version = upstream_version('4.2.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -30,7 +30,6 @@ Requires:       {{ py3('oslo.serialization') }}
 Requires:       {{ py3('oslo.service') }}
 Requires:       {{ py3('oslo.utils') }}
 Requires:       {{ py3('requests') }}
-Requires:       {{ py3('six') }}
 Requires:       {{ py3('zeroconf') }}
 BuildArch:      noarch
 
