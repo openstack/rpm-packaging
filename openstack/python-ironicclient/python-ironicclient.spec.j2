@@ -1,5 +1,5 @@
 {% set pypi_name = 'python-ironicclient' %}
-{% set upstream_version = upstream_version('4.0.0') %}
+{% set upstream_version = upstream_version('4.1.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -52,7 +52,6 @@ Requires:       {{ py3('oslo.serialization') }}
 Requires:       {{ py3('oslo.utils') }}
 Requires:       {{ py3('pbr') }}
 Requires:       {{ py3('requests') }}
-Requires:       {{ py3('six') }}
 
 %description -n python3-ironicclient
 OpenStack Bare Metal Provisioning API Client Library.
@@ -98,6 +97,7 @@ python3 -m stestr.cli run
 %doc README.rst
 %{python3_sitelib}/ironicclient
 %{python3_sitelib}/*.egg-info
+%{_bindir}/baremetal
 
 %files -n {{ py2name() }}-doc
 %license LICENSE
