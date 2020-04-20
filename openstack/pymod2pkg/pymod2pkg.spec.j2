@@ -27,6 +27,9 @@ corresponding package names which is a common problem in the packaging world.
 Summary:        OpenStack Packaging - python module name to package name map
 Requires:       {{ py3('distro') }}
 Requires:       {{ py3('pbr') }}
+%if 0%{?suse_version}
+Obsoletes:      {{ py2name(py_versions='py2') }} < 0.23.0
+%endif
 
 %description -n {{ py2name(py_versions='py3') }}
 pymod2pkg is a simple python module for translating python module names to
