@@ -1,5 +1,5 @@
 {% set pypi_name = 'octavia-lib' %}
-{% set upstream_version = upstream_version('1.5.0') %}
+{% set upstream_version = upstream_version('2.0.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 %if 0%{?rdo}
@@ -27,7 +27,6 @@ Requires:       {{ py3('oslo.i18n') }}
 Requires:       {{ py3('oslo.log') }}
 Requires:       {{ py3('oslo.serialization') }}
 Requires:       {{ py3('pbr') }}
-Requires:       {{ py3('six') }}
 Requires:       {{ py3('tenacity') }}
 BuildArch:      noarch
 
@@ -48,6 +47,8 @@ developers.
 %{py3_install}
 
 %check
+# we don't want to depend on hacking
+rm -rf octavia_lib/tests/unit/hacking
 python3  -m stestr.cli run
 
 %files
