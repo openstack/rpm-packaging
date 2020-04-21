@@ -215,6 +215,15 @@ Neutron is a virtual network service for Openstack.
 
 This package contains the Neutron OVN metadata Agent.
 
+%package ovn-migration-tool
+Summary:        networking-ovn ML2/OVS to OVN migration tool
+Requires:       {{ py2name() }} = %{epoch}:%{version}-%{release}
+
+%description ovn-migration-tool
+
+This package provides the necessary tools to update an existing ML2/OVS
+OpenStack to OVN based backend.
+
 %package metering-agent
 Summary:        Neutron metering Agent
 Requires:       iptables
@@ -630,6 +639,12 @@ python3 -m stestr.cli --test-path neutron/tests/unit run
 %{_bindir}/neutron-ovn-metadata-agent
 %{_unitdir}/openstack-neutron-ovn-metadata-agent.service
 %dir %{_sysconfdir}/{{ pypi_name }}/neutron-ovn-metadata-agent.conf.d
+
+%files ovn-migration-tool
+%license LICENSE
+%{_bindir}/neutron-ovn-migration-mtu
+%{_bindir}/ovn_migration.sh
+%{_datadir}/ansible/neutron-ovn-migration/
 
 %files metering-agent
 %license LICENSE
