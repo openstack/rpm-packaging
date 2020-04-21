@@ -101,7 +101,7 @@ This package contains the documentation
 %build
 %{py3_build}
 
-%{__python3} setup.py build_sphinx --builder=html,man
+PBR_VERSION=%{version} %sphinx_build -b html doc/source doc/build/html
 # remove the Sphinx-build leftovers
 rm -rf doc/build/html/.{doctrees,buildinfo}
 %fdupes doc/build/html/
