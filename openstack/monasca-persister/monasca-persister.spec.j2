@@ -24,6 +24,7 @@ BuildRequires:  {{ py3('oslo.config') }}
 BuildRequires:  {{ py3('oslo.log') }}
 BuildRequires:  {{ py3('oslotest') }}
 BuildRequires:  {{ py3('setuptools') }}
+BuildRequires:  {{ py3('simplejson') }}
 BuildRequires:  {{ py3('six') }}
 BuildRequires:  {{ py3('stestr') }}
 Requires:       logrotate
@@ -53,6 +54,7 @@ Requires:       {{ py3('influxdb') }}
 Requires:       {{ py3('monasca-common') }}
 Requires:       {{ py3('oslo.config') }}
 Requires:       {{ py3('oslo.log') }}
+Requires:       {{ py3('simplejson') }}
 Requires:       {{ py3('six') }}
 
 %description -n python3-{{ pypi_name }}
