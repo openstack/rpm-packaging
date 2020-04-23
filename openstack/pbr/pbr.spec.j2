@@ -28,10 +28,8 @@ time to make that code into a proper re-usable library.
 %package -n {{ py2name(py_versions='py3') }}
 Summary:        Python Build Reasonableness
 Requires:       {{ py3('setuptools') }}
-%if 0%{?rdo}
 Obsoletes:       python-pbr < %{version}-%{release}
 Obsoletes:       python2-pbr < %{version}-%{release}
-%endif
 
 %description -n {{ py2name(py_versions='py3') }}
 PBR is a library that injects some useful and sensible default behaviors into
