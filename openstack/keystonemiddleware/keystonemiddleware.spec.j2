@@ -1,5 +1,5 @@
 {% set pypi_name = 'keystonemiddleware' %}
-{% set upstream_version = upstream_version('7.0.1') %}
+{% set upstream_version = upstream_version('9.0.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -75,6 +75,7 @@ Summary:        Documentation for Middleware for OpenStack Identity
 BuildRequires:  {{ py3('Sphinx') }}
 BuildRequires:  {{ py3('openstackdocstheme') }}
 BuildRequires:  {{ py3('sphinxcontrib-apidoc') }}
+BuildRequires:  {{ py3('sphinxcontrib-svg2pdfconverter') }}
 
 %description -n {{ py2name('keystonemiddleware') }}-doc
 Documentation for Middleware for OpenStack Identity.
