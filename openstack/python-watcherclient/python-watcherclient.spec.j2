@@ -1,5 +1,5 @@
 {% set pypi_name = 'python-watcherclient' %}
-{% set upstream_version = upstream_version('2.5.0') %}
+{% set upstream_version = upstream_version('3.0.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -66,6 +66,7 @@ Summary:        Documentation for OpenStack Watcher API client libary
 Group:          Documentation/HTML
 BuildRequires:  {{ py3('Sphinx') }}
 BuildRequires:  {{ py3('openstackdocstheme') }}
+BuildRequires:  {{ py3('sphinxcontrib-apidoc') }}
 
 %description -n python-watcherclient-doc
 Client library for Watcher built on the Watcher API. It provides a Python API
