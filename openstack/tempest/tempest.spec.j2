@@ -1,5 +1,5 @@
 {% set pypi_name = 'tempest' %}
-{% set upstream_version = upstream_version('23.0.0') %}
+{% set upstream_version = upstream_version('24.0.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -136,7 +136,6 @@ cp -av .stestr.conf %{buildroot}/%{_localstatedir}/lib/%{name}-test/
 %doc README.rst ChangeLog
 %_tmpfilesdir/%{name}.conf
 %{_bindir}/tempest
-%{_bindir}/verify-tempest-config
 %{_bindir}/tempest-account-generator
 %{_bindir}/skip-tracker
 %{_bindir}/check-uuid
