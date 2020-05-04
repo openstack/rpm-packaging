@@ -1,0 +1,123 @@
+From b82836ec0cc88a0c4f0b8c1ce0ff252f5e23654d Mon Sep 17 00:00:00 2001
+From: "Bernhard M. Wiedemann" <bwiedemann@suse.de>
+Date: Mon, 9 Sep 2019 21:00:14 +0200
+Subject: [PATCH] Make tests pass in 2020
+
+This issue was found while working on reproducible builds for openSUSE.
+
+This solves it similar to change I73bde68be53afff4e8dff12d756b8381f34b2adb
+
+Changed month to February to avoid races around new year.
+
+NOTE: in addition to the orginal backport, this patch also fix bandit
+complains. Since 'access_token' literal is not an actual token, we can
+safely mark it as false positive so bandit can stop chirping.
+
+Change-Id: I2a28f3f4eaabaa772df395f3f5d55b6fd78f8968
+(cherry picked from commit 4461358098cbbe3ce27f05801ae06b191b092d05)
+(cherry picked from commit c35cee2be71944fc73f685adf23e07da11824242)
+---
+ keystoneauth1/identity/v3/oidc.py                     | 6 +++---
+ keystoneauth1/session.py                              | 2 +-
+ keystoneauth1/tests/unit/identity/test_identity_v2.py | 4 +++-
+ keystoneauth1/tests/unit/identity/test_identity_v3.py | 4 +++-
+ 4 files changed, 10 insertions(+), 6 deletions(-)
+
+diff --git a/keystoneauth1/identity/v3/oidc.py b/keystoneauth1/identity/v3/oidc.py
+index 08c4a36..a521bde 100644
+--- a/keystoneauth1/identity/v3/oidc.py
++++ b/keystoneauth1/identity/v3/oidc.py
+@@ -288,7 +288,7 @@ class OidcPassword(_OidcBase):
+ 
+     grant_type = "password"
+ 
+-    @positional(4)
++    @positional(4)  # nosec
+     def __init__(self, auth_url, identity_provider, protocol,
+                  client_id, client_secret,
+                  access_token_endpoint=None,
+@@ -337,7 +337,7 @@ class OidcClientCredentials(_OidcBase):
+ 
+     grant_type = 'client_credentials'
+ 
+-    @positional(4)
++    @positional(4)  # nosec
+     def __init__(self, auth_url, identity_provider, protocol,
+                  client_id, client_secret,
+                  access_token_endpoint=None,
+@@ -381,7 +381,7 @@ class OidcAuthorizationCode(_OidcBase):
+ 
+     grant_type = 'authorization_code'
+ 
+-    @positional(4)
++    @positional(4)  # nosec
+     def __init__(self, auth_url, identity_provider, protocol,
+                  client_id, client_secret,
+                  access_token_endpoint=None,
+diff --git a/keystoneauth1/session.py b/keystoneauth1/session.py
+index 16cc84c..c9a82f1 100644
+--- a/keystoneauth1/session.py
++++ b/keystoneauth1/session.py
+@@ -320,7 +320,7 @@ class Session(object):
+         secure_headers = ('authorization', 'x-auth-token',
+                           'x-subject-token', 'x-service-token')
+         if header[0].lower() in secure_headers:
+-            token_hasher = hashlib.sha1()
++            token_hasher = hashlib.sha1()  # nosec log hashing
+             token_hasher.update(header[1].encode('utf-8'))
+             token_hash = token_hasher.hexdigest()
+             return (header[0], '{SHA1}%s' % token_hash)
+diff --git a/keystoneauth1/tests/unit/identity/test_identity_v2.py b/keystoneauth1/tests/unit/identity/test_identity_v2.py
+index 530b046..d7b76b8 100644
+--- a/keystoneauth1/tests/unit/identity/test_identity_v2.py
++++ b/keystoneauth1/tests/unit/identity/test_identity_v2.py
+@@ -12,6 +12,7 @@
+ 
+ import copy
+ import json
++import time
+ import uuid
+ 
+ from keystoneauth1 import _utils as ksa_utils
+@@ -84,7 +85,8 @@ class V2IdentityPlugin(utils.TestCase):
+         self.TEST_RESPONSE_DICT = {
+             "access": {
+                 "token": {
+-                    "expires": "2020-01-01T00:00:10.000123Z",
++                    "expires": "%i-02-01T00:00:10.000123Z" %
++                    (1 + time.gmtime().tm_year),
+                     "id": self.TEST_TOKEN,
+                     "tenant": {
+                         "id": self.TEST_TENANT_ID
+diff --git a/keystoneauth1/tests/unit/identity/test_identity_v3.py b/keystoneauth1/tests/unit/identity/test_identity_v3.py
+index 5c88105..936eefc 100644
+--- a/keystoneauth1/tests/unit/identity/test_identity_v3.py
++++ b/keystoneauth1/tests/unit/identity/test_identity_v3.py
+@@ -12,6 +12,7 @@
+ 
+ import copy
+ import json
++import time
+ import uuid
+ 
+ from keystoneauth1 import _utils as ksa_utils
+@@ -132,6 +133,7 @@ class V3IdentityPlugin(utils.TestCase):
+         self.TEST_DISCOVERY_RESPONSE = {
+             'versions': {'values': [fixture.V3Discovery(self.TEST_URL)]}}
+ 
++        nextyear = 1 + time.gmtime().tm_year
+         self.TEST_RESPONSE_DICT = {
+             "token": {
+                 "methods": [
+@@ -139,7 +141,7 @@ class V3IdentityPlugin(utils.TestCase):
+                     "password"
+                 ],
+ 
+-                "expires_at": "2020-01-01T00:00:10.000123Z",
++                "expires_at": "%i-02-01T00:00:10.000123Z" % nextyear,
+                 "project": {
+                     "domain": {
+                         "id": self.TEST_DOMAIN_ID,
+-- 
+2.26.0
+
