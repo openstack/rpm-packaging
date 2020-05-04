@@ -7,8 +7,8 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            https://launchpad.net/%{sname}
 Source0:        https://files.pythonhosted.org/packages/source/k/%{sname}/%{sname}-%{version}.tar.gz
-# https://review.openstack.org/#/c/546264/
-Patch1:         0001-Add-use_oslo_messaging-option.patch
+# https://review.opendev.org/#/c/707271/
+Patch2:         0001-Make-tests-pass-in-2022.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('WebOb') }}
 BuildRequires:  {{ py2pkg('WebTest') }}

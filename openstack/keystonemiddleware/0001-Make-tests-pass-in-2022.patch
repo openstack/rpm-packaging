@@ -1,0 +1,117 @@
+From 1a6f5d484d1ecc06bf84b4c6d16ac9f0d7613fa8 Mon Sep 17 00:00:00 2001
+From: Lance Bragstad <lbragstad@gmail.com>
+Date: Mon, 26 Aug 2019 22:41:41 +0000
+Subject: [PATCH] Make tests pass in 2022
+
+Background:
+As part of my work on reproducible builds for openSUSE, I check that software still gives identical build results in the future.
+The usual offset is +15 years, because that is how long I expect some software will be used in some places.
+This showed up failing tests in our package build.
+See https://reproducible-builds.org/ for why this matters.
+
+This makes it expire 1 year in the future to model realistic tokens.
+
+NOTE: in addition to the orginal backport, this patch adds the following
+changes. The changes has to be combined into a single patch in order to
+avoid circular dependencies.
+
+1. fixed the hadcoded token expiration date in
+keystonemiddleware/tests/unit/client_fixtures.py. This is using the same
+technique in the original backport.
+
+2. fixed bandit complains in keystonemiddleware/auth_token/_request.py.
+The request environment variable names are not tokens. We'll need to
+mark them as false positives so bandit can stop chirping.
+
+3. cherry-picked d68942d03d1628b0cc209024ec5966bc74f2f6d0 with U-C URL
+   in tox.ini adjusted for pike
+
+Change-Id: I73bde68be53afff4e8dff12d756b8381f34b2adb
+(cherry picked from commit 4a4c96ce9b28ed54f93a21ca405c5b34ef3c3429)
+(cherry picked from commit 8b5202e730b5294b3420b7b64a62100f5309cc3e)
+(cherry picked from commit d68942d03d1628b0cc209024ec5966bc74f2f6d0)
+---
+ keystonemiddleware/auth_token/_request.py                     | 4 ++--
+ .../tests/unit/auth_token/test_auth_token_middleware.py       | 3 ++-
+ keystonemiddleware/tests/unit/client_fixtures.py              | 4 +++-
+ test-requirements.txt                                         | 2 +-
+ tox.ini                                                       | 2 +-
+ 5 files changed, 9 insertions(+), 6 deletions(-)
+
+diff --git a/keystonemiddleware/auth_token/_request.py b/keystonemiddleware/auth_token/_request.py
+index 26037a2..3edd3f4 100644
+--- a/keystonemiddleware/auth_token/_request.py
++++ b/keystonemiddleware/auth_token/_request.py
+@@ -97,8 +97,8 @@ class _AuthTokenRequest(webob.Request):
+     _ADMIN_PROJECT_HEADER = 'X-Is-Admin-Project'
+ 
+     _SERVICE_CATALOG_HEADER = 'X-Service-Catalog'
+-    _TOKEN_AUTH = 'keystone.token_auth'
+-    _TOKEN_INFO = 'keystone.token_info'
++    _TOKEN_AUTH = 'keystone.token_auth'  # nosec
++    _TOKEN_INFO = 'keystone.token_info'  # nosec
+ 
+     _CONFIRMED = 'Confirmed'
+     _INVALID = 'Invalid'
+diff --git a/keystonemiddleware/tests/unit/auth_token/test_auth_token_middleware.py b/keystonemiddleware/tests/unit/auth_token/test_auth_token_middleware.py
+index 6c66aee..2b3f653 100644
+--- a/keystonemiddleware/tests/unit/auth_token/test_auth_token_middleware.py
++++ b/keystonemiddleware/tests/unit/auth_token/test_auth_token_middleware.py
+@@ -91,7 +91,8 @@ BASE_URI = '%s/testadmin' % BASE_HOST
+ FAKE_ADMIN_TOKEN_ID = 'admin_token2'
+ FAKE_ADMIN_TOKEN = jsonutils.dumps(
+     {'access': {'token': {'id': FAKE_ADMIN_TOKEN_ID,
+-                          'expires': '2022-10-03T16:58:01Z'}}})
++                          'expires': '%i-10-03T16:58:01Z' %
++                          (1 + time.gmtime().tm_year)}}})
+ 
+ VERSION_LIST_v3 = fixture.DiscoveryList(href=BASE_URI)
+ VERSION_LIST_v2 = fixture.DiscoveryList(v3=False, href=BASE_URI)
+diff --git a/keystonemiddleware/tests/unit/client_fixtures.py b/keystonemiddleware/tests/unit/client_fixtures.py
+index 528b418..14e22ad 100644
+--- a/keystonemiddleware/tests/unit/client_fixtures.py
++++ b/keystonemiddleware/tests/unit/client_fixtures.py
+@@ -13,6 +13,7 @@
+ # under the License.
+ 
+ import os
++import time
+ import uuid
+ 
+ import fixtures
+@@ -261,7 +262,8 @@ class Examples(fixtures.Fixture):
+             'access': {
+                 'token': {
+                     'id': self.VALID_DIABLO_TOKEN,
+-                    'expires': '2020-01-01T00:00:10.000123Z',
++                    'expires': '%i-01-01T00:00:10.000123Z' %
++                    (1 + time.gmtime().tm_year),
+                     'tenantId': PROJECT_ID,
+                 },
+                 'user': {
+diff --git a/test-requirements.txt b/test-requirements.txt
+index e35cb13..2b465a9 100644
+--- a/test-requirements.txt
++++ b/test-requirements.txt
+@@ -21,4 +21,4 @@ python-memcached>=1.56 # PSF
+ WebTest>=2.0 # MIT
+ 
+ # Bandit security code scanner
+-bandit>=1.1.0 # Apache-2.0
++bandit>=1.1.0,<=1.5.1 # Apache-2.0
+diff --git a/tox.ini b/tox.ini
+index 1dd8f8c..82ce1c8 100644
+--- a/tox.ini
++++ b/tox.ini
+@@ -5,7 +5,7 @@ envlist = py35,py27,pep8,releasenotes
+ 
+ [testenv]
+ usedevelop = True
+-install_command = {toxinidir}/tools/tox_install.sh {env:UPPER_CONSTRAINTS_FILE:https://git.openstack.org/cgit/openstack/requirements/plain/upper-constraints.txt?h=stable/pike} {opts} {packages}
++install_command = {toxinidir}/tools/tox_install.sh {env:UPPER_CONSTRAINTS_FILE:https://opendev.org/openstack/requirements/raw/branch/stable/pike/upper-constraints.txt} {opts} {packages}
+ setenv = VIRTUAL_ENV={envdir}
+          BRANCH_NAME=master
+          CLIENT_NAME=keystonemiddleware
+-- 
+2.26.1
+
