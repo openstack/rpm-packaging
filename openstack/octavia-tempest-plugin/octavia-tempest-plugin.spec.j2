@@ -44,7 +44,12 @@ OpenStack Load Balancing.
 pushd octavia_tempest_plugin/contrib/httpd
 # we don't want to ship a binary blob that we didn't build ourself
 rm -f httpd.bin
-go build -ldflags '-linkmode=external' -o httpd.bin httpd.go
+%if 0%{?suse_version}
+CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-s -w -extldflags -static' -o httpd.bin httpd.go
+%else
+# NOTE(jpena): the CentOS 8 build fails without this flag
+go build -ldflags '-linkmode=external -compressdwarf=false' -o httpd.bin httpd.go
+%endif
 popd
 %{python_build}
 
