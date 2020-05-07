@@ -8,6 +8,8 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 Url:            http://launchpad.net/%{sname}
 Source0:        https://files.pythonhosted.org/packages/source/p/%{sname}/%{sname}-%{version}.tar.gz
+# https://review.opendev.org/#/c/702262/
+Patch1:         0001-Make-tests-pass-in-2020.patch
 BuildRequires:  openssl
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('debtcollector') }}
