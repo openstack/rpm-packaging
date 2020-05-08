@@ -1,4 +1,4 @@
 # Needed for monasca_agent.collector.checks_d.swift_diags
-monasca-agent ALL = (root) NOPASSWD:/usr/local/bin/diagnostics /usr/local/bin/swift-checker
+monasca-agent ALL = (root) NOPASSWD:/usr/local/bin/diagnostics,/usr/local/bin/swift-checker,/bin/ip,/usr/bin/ovs-vsctl
 # Needed for monasca_agent.collector.checks_d.postfix
 monasca-agent ALL = (root) NOPASSWD:NOEXEC:/usr/bin/find
