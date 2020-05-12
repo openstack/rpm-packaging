@@ -1,5 +1,5 @@
 {% set pypi_name = 'mistral-lib' %}
-{% set upstream_version = upstream_version('1.4.0') %}
+{% set upstream_version = upstream_version('2.1.0') %}
 {% set source = url_pypi() %}
 {% set rpm_release = '1' %}
 Name:           {{ py2name() }}
@@ -17,7 +17,8 @@ BuildRequires:  {{ py3('oslo.serialization') }}
 BuildRequires:  {{ py3('oslotest') }}
 BuildRequires:  {{ py3('stestr') }}
 BuildRequires:  {{ py3('testtools') }}
-BuildArch:       noarch
+BuildRequires:  {{ py3('yaql') }}
+BuildArch:      noarch
 
 %description
 This library contains data types, exceptions, functions and
@@ -33,6 +34,7 @@ Requires:       {{ py3('eventlet') }}
 Requires:       {{ py3('oslo.log') }}
 Requires:       {{ py3('oslo.serialization') }}
 Requires:       {{ py3('pbr') }}
+Requires:       {{ py3('yaql') }}
 
 %description -n python3-mistral-lib
 This library contains data types, exceptions, functions and
