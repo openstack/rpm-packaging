@@ -34,6 +34,9 @@ Requires:       {{ py3('Sphinx') }}
 Requires:       {{ py3('iso8601') }}
 Requires:       {{ py3('lxml') }}
 Requires:       {{ py3('openstackdocstheme') }}
+%if 0%{?suse_version}
+Obsoletes:      {{ py2name(py_versions='py2') }} < 1.8.0
+%endif
 
 %description -n {{ py2name(py_versions='py3') }}
 Tools used by the OpenStack Documentation Project.
