@@ -1,0 +1,43 @@
+From 2a971972e46533a9c3af26bde1c85d8dacf36ad5 Mon Sep 17 00:00:00 2001
+From: Oleg Bondarev <obondarev@mirantis.com>
+Date: Mon, 27 Aug 2018 12:18:58 +0400
+Subject: [PATCH] Use default exchange for direct messaging
+
+Lots of exchanges create problems during failover under high
+load. Please see bug report for details.
+
+This is step 1 in the process: only using default exchange
+when publishing. Consumers will still consume on separate
+exchanges (and on default exchange by default) so this
+should be (and tested to be) a non-breaking and
+upgrade-friendly change.
+
+Step 2 is to update consumers to only listen on default exchange,
+to happen in T release.
+
+Change-Id: Id3603f4b7e1274b616d76e1c0c009d2ab7f6efb6
+Closes-Bug: #1789177
+(cherry picked from commit b67a457e4fa71e9220c149087dce013c7f81144f)
+---
+
+diff --git a/oslo_messaging/_drivers/impl_rabbit.py b/oslo_messaging/_drivers/impl_rabbit.py
+index 06be3c3..afc5cd8 100644
+--- a/oslo_messaging/_drivers/impl_rabbit.py
++++ b/oslo_messaging/_drivers/impl_rabbit.py
+@@ -1095,6 +1095,7 @@
+         responses for call/multicall
+         """
+ 
++        # TODO(obondarev): use default exchange since T release
+         consumer = Consumer(exchange_name=topic,
+                             queue_name=topic,
+                             routing_key=topic,
+@@ -1261,7 +1262,7 @@
+ 
+     def direct_send(self, msg_id, msg):
+         """Send a 'direct' message."""
+-        exchange = kombu.entity.Exchange(name=msg_id,
++        exchange = kombu.entity.Exchange(name='',  # using default exchange
+                                          type='direct',
+                                          durable=False,
+                                          auto_delete=True,
