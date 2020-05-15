@@ -1,0 +1,39 @@
+From 03700aa12b4e22552f8626ffb9d5261d7a7c44c8 Mon Sep 17 00:00:00 2001
+From: Slawek Kaplonski <skaplons@redhat.com>
+Date: Mon, 27 Apr 2020 13:31:01 +0200
+Subject: [PATCH] Ensure that external network don't have any ports before deletion
+
+In module
+neutron_tempest_plugin.api.admin.test_external_network_extension
+we need to ensure that there is no any leftover ports, like e.g.
+floatingip_agent_gateway port before network deletion.
+
+Closes-bug: #1875344
+
+Change-Id: I8226e999d9ec8e521b39ab915aaa503425174987
+---
+
+diff --git a/neutron_tempest_plugin/api/admin/test_external_network_extension.py b/neutron_tempest_plugin/api/admin/test_external_network_extension.py
+index a713492..cf6c44d 100644
+--- a/neutron_tempest_plugin/api/admin/test_external_network_extension.py
++++ b/neutron_tempest_plugin/api/admin/test_external_network_extension.py
+@@ -35,9 +35,18 @@
+             post_body['router:external'] = external
+         body = self.admin_client.create_network(**post_body)
+         network = body['network']
+-        self.addCleanup(self.admin_client.delete_network, network['id'])
++        self.addCleanup(self._delete_network, network['id'])
+         return network
+ 
++    def _delete_network(self, net_id):
++        try:
++            self.admin_client.delete_network(net_id)
++        except lib_exc.Conflict:
++            ports = self.admin_client.list_ports(network_id=net_id)['ports']
++            for port in ports:
++                self.admin_client.delete_port(port['id'])
++            self.admin_client.delete_network(net_id)
++
+     @decorators.idempotent_id('afd8f1b7-a81e-4629-bca8-a367b3a144bb')
+     def test_regular_client_shares_with_another(self):
+         net = self.create_network()
