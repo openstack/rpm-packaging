@@ -20,7 +20,6 @@ Source5:        openstack-ironic-inspector.service
 Source6:        openstack-ironic-inspector-dnsmasq.service
 Source7:        openstack-ironic-inspector-conductor.service
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py3('Babel') }}
 BuildRequires:  {{ py3('Flask') }}
 BuildRequires:  {{ py3('SQLAlchemy') }}
 BuildRequires:  {{ py3('alembic') }}
@@ -87,7 +86,6 @@ API and conductor in one binary.
 Summary:      Hardware introspection service for OpenStack Ironic
 Group:        Development/Languages/Python
 Requires:     openstack-ironic-inspector-dnsmasq
-Requires:     {{ py3('Babel') }}
 Requires:     {{ py3('Flask') }}
 Requires:     {{ py3('SQLAlchemy') }}
 Requires:     {{ py3('alembic') }}
