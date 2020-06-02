@@ -25,6 +25,7 @@ Source24:       openstack-octavia-worker.service
 Source25:       openstack-octavia-driver-agent.service
 Source50:       openstack-octavia.README.config
 BuildRequires:  openstack-macros
+BuildRequires:  {{ py3('WSME') }}
 BuildRequires:  {{ py3('keystoneauth1') }}
 BuildRequires:  {{ py3('octavia-lib') }}
 BuildRequires:  {{ py3('oslo.config') }}
