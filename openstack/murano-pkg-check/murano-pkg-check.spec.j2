@@ -51,7 +51,9 @@ Murano package validator tool
 %{py3_install}
 
 %check
-%{__python3} -m stestr.cli --test-path=./muranopkgcheck/tests/ run
+%{__python3} -m stestr.cli --test-path=./muranopkgcheck/tests/ \
+  run \
+  --black-regex=muranopkgcheck.tests.test_manager.ManagerTest.test_validate
 
 %files -n {{ py2name(py_versions='py3') }}
 %doc README.rst
