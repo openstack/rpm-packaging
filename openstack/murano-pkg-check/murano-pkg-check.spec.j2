@@ -36,6 +36,9 @@ Requires:       {{ py3('semantic_version') }}
 Requires:       {{ py3('six') }}
 Requires:       {{ py3('stevedore') }}
 Requires:       {{ py3('yaql') }}
+%if 0%{?suse_version}
+Obsoletes:      {{ py2name(py_versions='py2') }} < 0.3.1
+%endif
 
 %description -n {{ py2name(py_versions='py3') }}
 Murano package validator tool
