@@ -1,5 +1,5 @@
 {% set pypi_name = 'os-brick' %}
-{% set upstream_version = upstream_version('3.0.2') %}
+{% set upstream_version = upstream_version('3.1.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 # NOTE(ykarel): This is required to prevent singlespec macros from changing the requires
@@ -30,10 +30,10 @@ BuildRequires:  {{ py3('pbr') }}
 BuildRequires:  {{ py3('python-subunit') }}
 BuildRequires:  {{ py3('reno') }}
 BuildRequires:  {{ py3('requests') }}
-BuildRequires:  {{ py3('retrying') }}
 BuildRequires:  {{ py3('setuptools') }}
 BuildRequires:  {{ py3('six') }}
 BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('tenacity') }}
 BuildRequires:  {{ py3('testscenarios') }}
 BuildRequires:  {{ py3('testtools') }}
 BuildArch:      noarch
@@ -57,8 +57,8 @@ Requires:       {{ py3('oslo.privsep') }}
 Requires:       {{ py3('oslo.service') }}
 Requires:       {{ py3('oslo.utils') }}
 Requires:       {{ py3('requests') }}
-Requires:       {{ py3('retrying') }}
 Requires:       {{ py3('six') }}
+Requires:       {{ py3('tenacity') }}
 
 %description -n python3-os-brick
 OpenStack Cinder brick library for managing local volume attaches.
