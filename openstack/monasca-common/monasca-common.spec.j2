@@ -11,7 +11,7 @@ Summary:        Reusable code for building monitoring related services.
 License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://wiki.openstack.org/wiki/Monasca
-Source0:        {{ source|basename }}
+Source0:        {{ source }}
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py3('PyMySQL') }}
 BuildRequires:  {{ py3('confluent-kafka') }}
@@ -25,9 +25,9 @@ BuildRequires:  {{ py3('pbr') }}
 BuildRequires:  {{ py3('pyparsing') }}
 BuildRequires:  {{ py3('requests-mock') }}
 BuildRequires:  {{ py3('setuptools') }}
+BuildRequires:  {{ py3('simplejson') }}
 BuildRequires:  {{ py3('six') }}
 BuildRequires:  {{ py3('stestr') }}
-BuildRequires:  {{ py3('ujson') }}
 BuildArch:      noarch
 
 %description
@@ -42,8 +42,8 @@ Requires:       {{ py3('kazoo') }}
 Requires:       {{ py3('oslo.config') }}
 Requires:       {{ py3('oslo.policy') }}
 Requires:       {{ py3('pyparsing') }}
+Requires:       {{ py3('simplejson') }}
 Requires:       {{ py3('six') }}
-Requires:       {{ py3('ujson') }}
 
 %description -n python3-monasca-common
 Collection of sub-projects containing reusable application and
