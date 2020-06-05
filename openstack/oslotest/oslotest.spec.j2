@@ -1,5 +1,5 @@
 {% set pypi_name = 'oslotest' %}
-{% set upstream_version = upstream_version('3.7.1') %}
+{% set upstream_version = upstream_version('3.7.2') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -11,8 +11,6 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://launchpad.net/oslotest
 Source0:        {{ source }}
-# https://review.opendev.org/#/c/672522/
-Patch0:         0001-Stop-testing-mock-functionality.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('debtcollector', py_versions=['py2', 'py3']) }}
