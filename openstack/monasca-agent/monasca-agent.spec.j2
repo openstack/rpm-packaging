@@ -36,6 +36,7 @@ Source4:        %{name}.polkit
 Patch1:         libvirt-aggregate-status.patch
 Patch2:         monitor-cassandra-538096.patch
 Patch3:         0001-add-X.509-certificate-check-plugin.patch
+BuildRequires:  fdupes
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('PyYAML') }}
 BuildRequires:  {{ py2pkg('devel') }}
@@ -68,11 +69,13 @@ Requires:       python-%{sname} = %{version}-%{release}
 BuildArch:      noarch
 %if 0%{?suse_version}
 BuildRequires:  systemd-rpm-macros
+Requires(pre):  pwdutils
 %{?systemd_requires}
 %else
 BuildRequires:  systemd
 Requires(post): systemd
 Requires(postun):   systemd
+Requires(pre):  shadow-utils
 Requires(preun):    systemd
 %endif
 
@@ -155,6 +158,8 @@ install -D -m 644 %{SOURCE3} %{buildroot}%{_tmpfilesdir}/openstack-monasca-agent
 
 # polkit permissions
 install -D -m 644 %{SOURCE4} %{buildroot}%{_sysconfdir}/polkit-1/rules.d/49-monasca-agent.rules
+
+%fdupes %{buildroot}%{python2_sitelib}
 
 %pre
 # create user and groups
