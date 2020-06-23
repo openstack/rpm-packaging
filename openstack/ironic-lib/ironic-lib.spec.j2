@@ -11,6 +11,7 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://docs.openstack.org/developer/ironic-lib/
 Source0:        https://files.pythonhosted.org/packages/source/i/ironic-lib/ironic-lib-%{version}.tar.gz
+Patch1:         0001-Fix-for-latest-zeroconf-version.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py3('bcrypt') }}
 BuildRequires:  {{ py3('mock') }}
