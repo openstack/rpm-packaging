@@ -387,8 +387,5 @@ PYTHONPATH=. python3 -m stestr.cli --test-path glance/tests/unit run
 %files registry
 %{_unitdir}/openstack-glance-registry.service
 %{_bindir}/{{ pypi_name }}-registry
-%if 0%{?with_doc}
-%{_mandir}/man1/glance-registry.1.gz
-%endif
 
 %changelog
