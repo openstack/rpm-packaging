@@ -12,6 +12,10 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
+#https://review.opendev.org/#/c/733103/
+Patch0:         0001-Remove-VxFlex-OS-credentials-from-connection_propert.patch
+#https://review.opendev.org/#/c/736415/
+Patch1:         0002-Fix-Remove-VxFlex-OS-credentials-regression.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('devel', py_versions=['py2', 'py3']) }}
 BuildRequires:  {{ py2pkg('Babel', py_versions=['py2', 'py3']) }}
@@ -77,7 +81,9 @@ Summary:        Common files for the OpenStack Cinder brick library
 Configuration files for the OpenStack Cinder brick library.
 
 %prep
-%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
+%autosetup -p1 -N -n {{ pypi_name }}-{{ upstream_version }}
+%patch0 -p1
+%patch1 -p1
 rm -rf *requirements.txt
 sed -i 's/^warning-is-error.*/warning-is-error = 0/g' setup.cfg
 
