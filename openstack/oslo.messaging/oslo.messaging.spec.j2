@@ -1,5 +1,5 @@
 {% set pypi_name = 'oslo.messaging' %}
-{% set upstream_version = upstream_version('12.2.0') %}
+{% set upstream_version = upstream_version('12.2.1') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -89,13 +89,6 @@ This package contains the documentation.
 %autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
 
-%if !0%{?suse_version}
-# FIXME(jpena): since version 5.23.0, four tests in the amqp driver are
-# failing. Let's remove the tests for now, so we can build a package and
-# figure out whatis wrong.
-rm -f oslo_messaging/tests/drivers/test_amqp_driver.py
-%endif
-
 %build
 %py3_build
 
@@ -109,8 +102,11 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %check
 # NOTE(jpena): we do not want to run functional tests, just unit tests
+# python3-pifpaf is not available in RDO, but loading functional tests would
+# fail without it
 rm -rf oslo_messaging/tests/functional
-python3 -m stestr.cli run
+# 3 cyrus tests fail on rdo with time out
+python3 -m stestr.cli run --black-regex '^oslo_messaging.tests.(functional|drivers.test_amqp_driver.TestCyrusAuthentication.test_authentication_(ok|ignore_default_realm|default_realm))'
 
 %files -n {{ py2name(py_versions='py3') }}
 %license LICENSE
