@@ -1,5 +1,5 @@
 {% set pypi_name = 'oslo.policy' %}
-{% set upstream_version = upstream_version('3.2.1') %}
+{% set upstream_version = upstream_version('3.3.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -86,6 +86,7 @@ python3 -m stestr.cli run
 %{_bindir}/oslopolicy-policy-generator
 %{_bindir}/oslopolicy-sample-generator
 %{_bindir}/oslopolicy-policy-upgrade
+%{_bindir}/oslopolicy-validator
 %{python3_sitelib}/oslo_policy
 %{python3_sitelib}/*.egg-info
 
