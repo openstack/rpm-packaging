@@ -34,7 +34,7 @@ BuildRequires:  {{ py3('oslo.upgradecheck') }}
 BuildRequires:  {{ py3('oslotest') }}
 BuildRequires:  {{ py3('reno') }}
 BuildRequires:  {{ py3('six') }}
-BuildRequires:  {{ py3('testrepository') }}
+BuildRequires:  {{ py3('stestr') }}
 BuildRequires:  {{ py3('testtools') }}
 Requires:       python3-{{ pypi_name }} = %{version}-%{release}
 BuildArch:      noarch
@@ -130,7 +130,7 @@ install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/openstack
 %openstack_pre_user_group_create freezer freezer /sbin/nologin
 
 %check
-PYTHON=%{__python3} OS_PATH_TEST=./freezer_api/tests/unit %{__python3} setup.py test
+python3 -m stestr.cli run
 
 %files
 %license LICENSE
