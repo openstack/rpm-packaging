@@ -17,7 +17,6 @@ Source0:        {{ source|basename }}
 Source1:        openstack-glance.logrotate
 Source2:        openstack-glance.conf
 Source3:        openstack-glance-api.service
-Source4:        openstack-glance-registry.service
 Source6:        openstack-glance.defaultconf
 Source7:        openstack-glance.README.config
 BuildRequires:  openstack-macros
@@ -204,24 +203,6 @@ OpenStack Swift project.
 
 This package contains the %{name} API server.
 
-%package registry
-Summary:        OpenStack Image service (Glance) - Registry
-Group:          Development/Languages/Python
-Requires:       %{name} = %{epoch}:%{version}-%{release}
-
-%description registry
-The Glance project provides a service where users can upload and discover
-data assets that are meant to be used with other services. This currently
-includes images and metadata definitions.
-Glance image services include discovering, registering, and retrieving
-virtual machine images. Glance has a RESTful API that allows querying of
-VM image metadata as well as retrieval of the actual image.
-VM images made available through Glance can be stored in a variety of
-locations from simple filesystems to object-storage systems like the
-OpenStack Swift project.
-
-This package contains the %{name} registry server.
-
 %prep
 %autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
@@ -249,7 +230,6 @@ rm -f etc/glance-policy-generator.conf
 install -d -m 755 %{buildroot}%{_sysconfdir}/{{ pypi_name }}
 install -d -m 755 %{buildroot}%{_sysconfdir}/glance/glance.conf.d/
 install -d -m 755 %{buildroot}%{_sysconfdir}/glance/glance-api.conf.d/
-install -d -m 755 %{buildroot}%{_sysconfdir}/glance/glance-registry.conf.d/
 install -d -m 755 %{buildroot}%{_localstatedir}/lib/{{ pypi_name }}
 install -d -m 755 %{buildroot}%{_localstatedir}/lib/{{ pypi_name }}/images
 install -d -m 750 %{buildroot}%{_localstatedir}/log/{{ pypi_name }}
@@ -268,7 +248,6 @@ rm -rf %{buildroot}%{_sysconfdir}/{{ pypi_name }}/oslo-config-generator
 install -D -m 640 %{SOURCE6} %{buildroot}/%{_sysconfdir}/glance/glance.conf.d/010-glance.conf
 # systemd
 install -p -D -m 444 %{SOURCE3} %{buildroot}%{_unitdir}/openstack-glance-api.service
-install -p -D -m 444 %{SOURCE4} %{buildroot}%{_unitdir}/openstack-glance-registry.service
 # logrotate
 install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/openstack-glance
 # move metadefs
@@ -301,33 +280,21 @@ PYTHONPATH=. python3 -m stestr.cli --test-path glance/tests/unit run
 %postun api
 %systemd_postun_with_restart %{name}-api.service
 
-%post registry
-%systemd_post %{name}-registry.service
-
-%preun registry
-%systemd_preun %{name}-registry.service
-
-%postun registry
-%systemd_postun_with_restart %{name}-registry.service
-
 %files
 %license LICENSE
 %_tmpfilesdir/glance.conf
 %dir %attr(0750, root, glance) %{_sysconfdir}/{{ pypi_name }}
 %dir %attr(0750, root, glance) %{_sysconfdir}/glance/glance.conf.d/
 %dir %attr(0750, root, glance) %{_sysconfdir}/glance/glance-api.conf.d/
-%dir %attr(0750, root, glance) %{_sysconfdir}/glance/glance-registry.conf.d/
 %config(noreplace) %attr(0640, root, glance) %{_sysconfdir}/glance/glance.conf.d/010-glance.conf
 %{_sysconfdir}/{{ pypi_name }}/README.config
 %config(noreplace) %attr(0640, root, glance) %{_sysconfdir}/{{ pypi_name }}/glance-api.conf
-%config(noreplace) %attr(0640, root, glance) %{_sysconfdir}/{{ pypi_name }}/glance-registry.conf
 %config(noreplace) %attr(0640, root, glance) %{_sysconfdir}/{{ pypi_name }}/glance-cache.conf
 %config(noreplace) %attr(0640, root, glance) %{_sysconfdir}/{{ pypi_name }}/glance-image-import.conf
 %config(noreplace) %attr(0640, root, glance) %{_sysconfdir}/{{ pypi_name }}/glance-scrubber.conf
 %config(noreplace) %attr(0640, root, glance) %{_sysconfdir}/{{ pypi_name }}/glance-swift.conf
 %config(noreplace) %attr(0640, root, glance) %{_sysconfdir}/{{ pypi_name }}/glance-manage.conf
 %config %{_sysconfdir}/{{ pypi_name }}/glance-api-paste.ini
-%config %{_sysconfdir}/{{ pypi_name }}/glance-registry-paste.ini
 %config %{_sysconfdir}/{{ pypi_name }}/policy.json
 %config %{_sysconfdir}/{{ pypi_name }}/property-protections-policies.conf.sample
 %config %{_sysconfdir}/{{ pypi_name }}/property-protections-roles.conf.sample
@@ -383,9 +350,5 @@ PYTHONPATH=. python3 -m stestr.cli --test-path glance/tests/unit run
 %if 0%{?with_doc}
 %{_mandir}/man1/glance-api.1.gz
 %endif
-
-%files registry
-%{_unitdir}/openstack-glance-registry.service
-%{_bindir}/{{ pypi_name }}-registry
 
 %changelog
