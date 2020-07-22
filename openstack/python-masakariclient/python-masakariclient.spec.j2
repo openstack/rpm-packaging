@@ -16,7 +16,6 @@ Source0:        {{ source }}
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py3('PrettyTable') }}
 BuildRequires:  {{ py3('ddt') }}
-BuildRequires:  {{ py3('nose') }}
 BuildRequires:  {{ py3('openstacksdk') }}
 BuildRequires:  {{ py3('osc-lib') }}
 BuildRequires:  {{ py3('oslo.serialization') }}
@@ -24,7 +23,7 @@ BuildRequires:  {{ py3('oslo.utils') }}
 BuildRequires:  {{ py3('oslotest') }}
 BuildRequires:  {{ py3('python-subunit') }}
 BuildRequires:  {{ py3('requests-mock') }}
-BuildRequires:  {{ py3('testrepository') }}
+BuildRequires:  {{ py3('stestr') }}
 BuildRequires:  {{ py3('testscenarios') }}
 BuildRequires:  {{ py3('testtools') }}
 BuildArch:      noarch
@@ -80,12 +79,7 @@ rm -r doc/build/html/.{doctrees,buildinfo}
 install -p -D -m 644 doc/build/man/python-masakariclient.1 %{buildroot}%{_mandir}/man1/python-masakariclient.1
 
 %check
-find . -type f -name *.pyc -delete
-%if 0%{?suse_version}
-PYTHONPATH=%{buildroot}%{python3_sitelib} nosetests masakariclient/tests/unit
-%else
-PYTHONPATH=%{buildroot}%{python3_sitelib} nosetests-3 masakariclient/tests/unit
-%endif
+python3 -m stestr.cli run
 
 %files -n python3-masakariclient
 %license LICENSE
