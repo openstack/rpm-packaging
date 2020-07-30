@@ -17,6 +17,7 @@ Source1:        openstack-freezer-api.logrotate
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py3('Paste') }}
 BuildRequires:  {{ py3('PasteDeploy') }}
+BuildRequires:  {{ py3('astroid') }}
 BuildRequires:  {{ py3('elasticsearch') }}
 BuildRequires:  {{ py3('falcon') }}
 BuildRequires:  {{ py3('fixtures') }}
@@ -30,11 +31,14 @@ BuildRequires:  {{ py3('oslo.i18n') }}
 BuildRequires:  {{ py3('oslo.log') }}
 BuildRequires:  {{ py3('oslo.middleware') }}
 BuildRequires:  {{ py3('oslo.policy') }}
+BuildRequires:  {{ py3('oslo.serialization') }}
 BuildRequires:  {{ py3('oslo.upgradecheck') }}
 BuildRequires:  {{ py3('oslotest') }}
 BuildRequires:  {{ py3('reno') }}
 BuildRequires:  {{ py3('six') }}
 BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('testresources') }}
+BuildRequires:  {{ py3('testscenarios') }}
 BuildRequires:  {{ py3('testtools') }}
 Requires:       python3-{{ pypi_name }} = %{version}-%{release}
 BuildArch:      noarch
@@ -72,6 +76,7 @@ Requires:       {{ py3('oslo.i18n') }}
 Requires:       {{ py3('oslo.log') }}
 Requires:       {{ py3('oslo.middleware') }}
 Requires:       {{ py3('oslo.policy') }}
+Requires:       {{ py3('oslo.serialization') }}
 Requires:       {{ py3('six') }}
 
 %description -n python3-{{ pypi_name }}
