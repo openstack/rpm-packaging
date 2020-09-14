@@ -1,6 +1,6 @@
 %define with_tests 1
 {% set pypi_name = 'ovsdbapp' %}
-{% set upstream_version = upstream_version('1.4.0') %}
+{% set upstream_version = upstream_version('1.5.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 Name:           {{ py2name() }}
@@ -11,8 +11,6 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
-# From https://review.opendev.org/#/c/743001/
-Patch1:         0001-Fix-thread-threading-change-in-unit-test.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py3('fixtures') }}
 BuildRequires:  {{ py3('netaddr') }}
