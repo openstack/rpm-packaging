@@ -282,7 +282,6 @@ exit 0
 %config(noreplace) %attr(0640, root, ironic) %{_sysconfdir}/ironic/ironic.conf.d/010-ironic.conf
 %config %{_sysconfdir}/ironic/rootwrap.conf
 %dir %{_sysconfdir}/ironic/rootwrap.d
-%config(noreplace) %{_sysconfdir}/ironic/rootwrap.d/ironic-images.filters
 %config(noreplace) %{_sysconfdir}/ironic/rootwrap.d/ironic-utils.filters
 %{_bindir}/ironic-status
 %{_bindir}/ironic-rootwrap
