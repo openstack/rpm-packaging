@@ -470,8 +470,6 @@ cp -a etc/nova/rootwrap.d/ %{buildroot}%{_sysconfdir}/nova/
 %check
 # drop some tests we don't want to run currently
 rm -r nova/tests/unit/virt/zvm
-rm -r nova/tests/unit/virt/xenapi
-rm nova/tests/unit/compute/test_compute_xen.py
 rm -r nova/tests/unit/virt/powervm
 rm nova/tests/unit/test_hacking.py
 %{__python3} -m stestr.cli --test-path nova/tests/unit run
