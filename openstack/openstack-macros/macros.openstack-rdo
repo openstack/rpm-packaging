@@ -171,3 +171,26 @@ if rhel_version > 7 then posix.setenv("RHEL_ALLOW_PYTHON2_FOR_BUILD",1) end
 \
     print(url .. first .. '/' .. src .. '/' .. src .. '-' .. ver .. '.' .. ext)
 }
+
+# Compatibility with fedora in CentOS8
+
+# - gpgverify
+
+# From https://src.fedoraproject.org/rpms/redhat-rpm-config/blob/master/f/macros.fedora-misc
+# gpgverify verifies signed sources. There is documentation in the script.
+%gpgverify(k:s:d:) %{lua:
+local script = rpm.expand("%{_rpmconfigdir}/redhat/gpgverify ")
+local keyring = rpm.expand("%{-k*}")
+local signature = rpm.expand("%{-s*}")
+local data = rpm.expand("%{-d*}")
+print(script)
+if keyring ~= "" then
+  print(rpm.expand("--keyring='%{SOURCE" .. keyring ..  "}' "))
+end
+if signature ~= "" then
+  print(rpm.expand("--signature='%{SOURCE" .. signature ..  "}' "))
+end
+if data ~= "" then
+  print(rpm.expand("--data='%{SOURCE" .. data ..  "}' "))
+end
+}

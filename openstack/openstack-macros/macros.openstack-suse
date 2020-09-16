@@ -81,3 +81,7 @@ sed -i "s/%{2}/%{1}_tests/g" $tempest_egg_path/PKG-INFO \
 %sphinx_build /usr/bin/sphinx-build
 
 %http_dashboard_dir /srv/www/openstack-dashboard
+
+# For compatibility with RDO gpgverify macro
+# Not needed for Suse, source verification is done with no need of special macro
+%gpgverify %{nil}
