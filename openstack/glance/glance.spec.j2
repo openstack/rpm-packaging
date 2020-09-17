@@ -68,6 +68,7 @@ Requires(postun): systemd
 Requires(preun): systemd
 %endif
 %if 0%{?suse_version}
+BuildRequires:  qemu-tools
 Requires(pre):  pwdutils
 %endif
 %if 0%{?rdo}
@@ -263,9 +264,12 @@ install -p -D -m 644 doc/build/man/*.1 %{buildroot}%{_mandir}/man1/
 
 %pre
 %openstack_pre_user_group_create glance glance /sbin/nologin
-exit 0
 
 %check
+%if 0%{?rdo}
+# Skip qemu-tools related tests, those fail on RDO due to missing VDI support
+rm -v glance/tests/unit/common/test_format_inspector.py
+%endif
 PYTHONPATH=. python3 -m stestr.cli --test-path glance/tests/unit run
 
 %post
