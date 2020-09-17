@@ -72,6 +72,7 @@ BuildRequires:  {{ py3('testresources') }}
 BuildRequires:  {{ py3('testscenarios') }}
 BuildRequires:  {{ py3('testtools') }}
 BuildRequires:  {{ py3('tooz') }}
+BuildRequires:  {{ py3('zstd') }}
 BuildRequires:  sudo
 Requires:       logrotate
 Requires:       python3-{{ pypi_name }} = %{epoch}:%{version}-%{release}
@@ -159,6 +160,7 @@ Requires:       {{ py3('python-swiftclient') }}
 Requires:       {{ py3('tabulate') }}
 Requires:       {{ py3('taskflow') }}
 Requires:       {{ py3('tooz') }}
+Requires:       {{ py3('zstd') }}
 Requires:       sudo
 
 %description -n python3-{{ pypi_name }}
