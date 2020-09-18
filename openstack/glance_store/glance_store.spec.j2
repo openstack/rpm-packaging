@@ -98,14 +98,17 @@ mv %{buildroot}/%{_prefix}/%{_sysconfdir} %{buildroot}/%{_sysconfdir}
 %check
 PYTHON=python3 PYTHONPATH="." python3 -m stestr.cli run
 
+%pre
+%openstack_pre_user_group_create glance glance /sbin/nologin
+
 %files -n {{ py3('glance_store') }}
 %doc README.rst ChangeLog
 %license LICENSE
 %{python3_sitelib}/glance_store*
 %{python3_sitelib}/*.egg-info
 %{_bindir}/glance-rootwrap
-%dir %{_sysconfdir}/glance
-%dir %{_sysconfdir}/glance/rootwrap.d
+%dir %attr(0750, root, glance) %{_sysconfdir}/glance
+%dir %attr(0750, root, glance) %{_sysconfdir}/glance/rootwrap.d
 %config %{_sysconfdir}/glance/rootwrap.d/glance_*_store.filters
 %config %{_sysconfdir}/glance/rootwrap.conf
 
