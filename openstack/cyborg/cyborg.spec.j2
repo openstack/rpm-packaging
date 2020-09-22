@@ -153,6 +153,7 @@ install -p -D -m 640 etc/cyborg/policy.json.sample %{buildroot}%{_sysconfdir}/cy
 %config(noreplace) %attr(0640, root, cyborg) %{_sysconfdir}/cyborg/cyborg.conf
 %config(noreplace) %attr(0640, root, cyborg) %{_sysconfdir}/cyborg/api-paste.ini
 %config(noreplace) %attr(0640, root, cyborg) %{_sysconfdir}/cyborg/policy.json
+%config(noreplace) %attr(0640, root, cyborg) %{_sysconfdir}/cyborg/policy.yaml
 %dir %attr(0750, cyborg, cyborg) %{_localstatedir}/log/cyborg
 
 %files -n python3-{{ pypi_name }}
