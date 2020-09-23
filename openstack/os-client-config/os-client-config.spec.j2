@@ -15,7 +15,6 @@ URL:            https://launchpad.net/%{name}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py3('pbr') }}
-BuildRequires:  {{ py3('setuptools') }}
 BuildArch:      noarch
 %if %{with test}
 BuildRequires:  {{ py3('extras') }}
