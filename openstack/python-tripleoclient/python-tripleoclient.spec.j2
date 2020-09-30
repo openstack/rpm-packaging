@@ -1,5 +1,5 @@
 {% set pypi_name = 'python-tripleoclient' %}
-{% set upstream_version = upstream_version('13.0.0') %}
+{% set upstream_version = upstream_version('13.7.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -14,6 +14,10 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://launchpad.net/{{ pypi_name }}
 Source0:        {{ source }}
+# Patch added due to SUSE CI error due to PEP3151 must be removed
+# when https://review.opendev.org/#/c/756720/ will be released
+Patch0:         0001-catch-KeyError-and-OSError-PEP3151.patch
+BuildRequires:  {{ py3('ansible-runner') }}
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('tripleo-common') }}
 BuildRequires:  {{ py3('cliff') }}
@@ -32,6 +36,7 @@ BuildRequires:  {{ py3('requests-mock') }}
 BuildRequires:  {{ py3('stestr') }}
 BuildRequires:  {{ py3('testscenarios') }}
 BuildRequires:  {{ py3('testtools') }}
+BuildRequires:  {{ py3('validations-libs') }}
 BuildRequires:  {{ py3('python-zaqarclient') }}
 BuildArch:      noarch
 %if 0%{?rdo}
@@ -44,8 +49,8 @@ for TripleO.
 
 %package -n python3-tripleoclient
 Summary:        OpenstackClient plugin for tripleoclient
+Requires:       {{ py3('ansible-runner') }}
 Requires:       {{ py2pkg('tripleo-common') }}
-Requires:       {{ py3('Babel') }}
 Requires:       {{ py3('cliff') }}
 Requires:       {{ py3('cryptography') }}
 Requires:       {{ py3('python-heatclient') }}
@@ -60,6 +65,7 @@ Requires:       {{ py3('pbr') }}
 Requires:       {{ py3('psutil') }}
 Requires:       {{ py3('simplejson') }}
 Requires:       {{ py3('six') }}
+Requires:       {{ py3('validations-libs') }}
 Requires:       {{ py3('websocket-client') }}
 Requires:       {{ py3('python-zaqarclient') }}
 
