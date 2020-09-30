@@ -14,19 +14,19 @@ Summary:        Visualization utility
 License:        {{ license('Apache-2.0') }}
 URL:            http://git.openstack.org/cgit/openstack/stackviz
 Source0:        {{ source|basename }}
-BuildRequires: openstack-macros
-BuildRequires: {{ py3('devel') }}
-BuildRequires: {{ py3('oslotest') }}
-BuildRequires: {{ py3('python-subunit') }}
-BuildRequires: {{ py3('stestr') }}
-BuildRequires: {{ py3('testrepository') }}
-BuildRequires: {{ py3('testtools') }}
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py3('devel') }}
+BuildRequires:  {{ py3('oslotest') }}
+BuildRequires:  {{ py3('python-subunit') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('testrepository') }}
+BuildRequires:  {{ py3('testtools') }}
 BuildArch:      noarch
 %if 0%{?rdo}
-Requires:      {{ py3('subunit2sql') }}
+Requires:       {{ py3('subunit2sql') }}
 %endif
 %if 0%{?with_tests}
-BuildRequires: {{ py3('docutils') }}
+BuildRequires:  {{ py3('docutils') }}
 %endif
 
 %description
@@ -34,12 +34,12 @@ BuildRequires: {{ py3('docutils') }}
 
 %package -n {{ py2name(py_versions='py3') }}
 Summary:        Visualization utility
-Requires:      {{ py3('python-subunit') }}
-Requires:      {{ py3('six') }}
-Requires:      {{ py3('testrepository') }}
-Requires:      {{ py3('testtools') }}
+Requires:       {{ py3('python-subunit') }}
+Requires:       {{ py3('six') }}
+Requires:       {{ py3('testrepository') }}
+Requires:       {{ py3('testtools') }}
 %if 0%{?rdo}
-Requires:      {{ py3('subunit2sql') }}
+Requires:       {{ py3('subunit2sql') }}
 %endif
 
 %description -n {{ py2name(py_versions='py3') }}
@@ -49,9 +49,10 @@ This package contains the Python 3.x module.
 
 %if 0%{?with_doc}
 %package -n python-stackviz-doc
-Summary:    Documentation for stackviz
-BuildRequires: {{ py3('Sphinx') }}
-BuildRequires: {{ py3('openstackdocstheme') }}
+Summary:        Documentation for stackviz
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
+BuildRequires:  {{ py3('sphinxcontrib-svg2pdfconverter') }}
 
 %description -n python-stackviz-doc
 It contains the documentation for the stackviz.
