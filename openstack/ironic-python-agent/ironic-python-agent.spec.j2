@@ -15,6 +15,7 @@ Source20:       openstack-ironic-python-agent.service
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py3('Pint') }}
 BuildRequires:  {{ py3('Werkzeug') }}
+BuildRequires:  {{ py3('cryptography') }}
 BuildRequires:  {{ py3('eventlet') }}
 BuildRequires:  {{ py3('ironic-lib') }}
 BuildRequires:  {{ py3('mock') }}
@@ -33,6 +34,7 @@ BuildRequires:  {{ py3('requests') }}
 BuildRequires:  {{ py3('rtslib-fb') }}
 BuildRequires:  {{ py3('stestr') }}
 BuildRequires:  {{ py3('stevedore') }}
+BuildRequires:  {{ py3('tenacity') }}
 Requires:       python3-{{ pypi_name }} = %{version}-%{release}
 BuildArch:      noarch
 %if 0%{?suse_version}
@@ -55,6 +57,7 @@ Summary:        Ironic Python Agent Ramdisk - Python module
 Group:          Development/Languages/Python
 Requires:       {{ py3('Pint') }}
 Requires:       {{ py3('Werkzeug') }}
+Requires:       {{ py3('cryptography') }}
 Requires:       {{ py3('eventlet') }}
 Requires:       {{ py3('ironic-lib') }}
 Requires:       {{ py3('netifaces') }}
@@ -70,6 +73,7 @@ Requires:       {{ py3('pyudev') }}
 Requires:       {{ py3('requests') }}
 Requires:       {{ py3('rtslib-fb') }}
 Requires:       {{ py3('stevedore') }}
+Requires:       {{ py3('tenacity') }}
 
 %description -n python3-{{ pypi_name }}
 The ironic-python-agent works with the agent driver in Ironic to provision the node.
