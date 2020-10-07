@@ -25,7 +25,6 @@ Source7:        openstack-ironic-conductor.service
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py3('Jinja2') }}
 BuildRequires:  {{ py3('SQLAlchemy') }}
-BuildRequires:  {{ py3('WSME') }}
 BuildRequires:  {{ py3('WebOb') }}
 BuildRequires:  {{ py3('alembic') }}
 BuildRequires:  {{ py3('automaton') }}
@@ -43,6 +42,7 @@ BuildRequires:  {{ py3('keystoneauth1') }}
 BuildRequires:  {{ py3('keystonemiddleware') }}
 BuildRequires:  {{ py3('mock') }}
 BuildRequires:  {{ py3('python-neutronclient') }}
+BuildRequires:  {{ py3('openstacksdk') }}
 BuildRequires:  {{ py3('os-traits') }}
 BuildRequires:  {{ py3('oslo.concurrency') }}
 BuildRequires:  {{ py3('oslo.config') }}
@@ -104,7 +104,6 @@ Summary:        OpenStack shared file system service (ironic) - Python module
 Group:          Development/Languages/Python
 Requires:       {{ py3('Jinja2') }}
 Requires:       {{ py3('SQLAlchemy') }}
-Requires:       {{ py3('WSME') }}
 Requires:       {{ py3('WebOb') }}
 Requires:       {{ py3('alembic') }}
 Requires:       {{ py3('automaton') }}
@@ -118,17 +117,16 @@ Requires:       {{ py3('jsonschema') }}
 Requires:       {{ py3('keystoneauth1') }}
 Requires:       {{ py3('keystonemiddleware') }}
 Requires:       {{ py3('python-neutronclient') }}
+Requires:       {{ py3('openstacksdk') }}
 Requires:       {{ py3('os-traits') }}
 Requires:       {{ py3('oslo.concurrency') }}
 Requires:       {{ py3('oslo.config') }}
 Requires:       {{ py3('oslo.context') }}
 Requires:       {{ py3('oslo.db') }}
-Requires:       {{ py3('oslo.i18n') }}
 Requires:       {{ py3('oslo.log') }}
 Requires:       {{ py3('oslo.messaging') }}
 Requires:       {{ py3('oslo.middleware') }}
 Requires:       {{ py3('oslo.policy') }}
-Requires:       {{ py3('oslo.reports') }}
 Requires:       {{ py3('oslo.rootwrap') }}
 Requires:       {{ py3('oslo.serialization') }}
 Requires:       {{ py3('oslo.service') }}
@@ -140,7 +138,6 @@ Requires:       {{ py3('pbr') }}
 Requires:       {{ py3('pecan') }}
 Requires:       {{ py3('psutil') }}
 Requires:       {{ py3('pysendfile') }}
-Requires:       {{ py3('pysnmp') }}
 Requires:       {{ py3('pytz') }}
 Requires:       {{ py3('requests') }}
 Requires:       {{ py3('retrying') }}
