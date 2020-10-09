@@ -79,9 +79,9 @@ BuildRequires:  systemd-rpm-macros
 Requires:       apache2-mod_wsgi
 %{?systemd_requires}
 %else
-BuildRequires:  mod_wsgi
+BuildRequires:  python3-mod_wsgi
 BuildRequires:  systemd
-Requires:       mod_wsgi
+Requires:       python3-mod_wsgi
 Requires(post): systemd
 Requires(postun): systemd
 Requires(preun): systemd
