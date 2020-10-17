@@ -79,7 +79,7 @@ install -p -D -m 644 tools/zun.bash_completion %{buildroot}%{_sysconfdir}/bash_c
 
 %check
 export OS_TEST_PATH=./zunclient/tests/unit/
-# we dont want to depend on Tempest so remove the relevant tests
+# we don't want to depend on Tempest so remove the relevant tests
 rm -f zunclient/tests/unit/test_shell.py
 rm -f zunclient/tests/unit/test_functional_utils.py
 rm -rf zunclient/tests/functional
