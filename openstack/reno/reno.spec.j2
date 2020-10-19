@@ -50,7 +50,7 @@ repository and then building documentation from them.
 
 %prep
 %autosetup -p1 -n {{ pypi_name}}-{{ upstream_version }}
-# we dont need hacking
+# we don't need hacking
 sed -i '/^hacking.*/d' test-requirements.txt
 %py_req_cleanup
 

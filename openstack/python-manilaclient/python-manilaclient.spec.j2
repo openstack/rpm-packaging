@@ -80,7 +80,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 install -p -D -m 644 tools/manila.bash_completion %{buildroot}%{_sysconfdir}/bash_completion.d/manila.bash_completion
 
 %check
-# we dont want to depend on Tempest so remove the relevant tests
+# we don't want to depend on Tempest so remove the relevant tests
 rm -f manilaclient/tests/unit/test_shell.py
 rm -f manilaclient/tests/unit/test_functional_utils.py
 rm -rf manilaclient/tests/functional

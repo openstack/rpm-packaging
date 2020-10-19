@@ -186,7 +186,7 @@ chmod +x %{buildroot}%{_bindir}/mistral*
 %openstack_pre_user_group_create mistral mistral
 
 %check
-# we dont want hacking/pep8 tests
+# we don't want hacking/pep8 tests
 rm -r mistral/tests/unit/hacking/
 %{__python3} -m stestr.cli run
 

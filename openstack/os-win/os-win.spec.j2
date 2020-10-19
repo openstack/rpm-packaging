@@ -61,7 +61,7 @@ Documentation for the Hyper-V library.
 %prep
 %autosetup -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
-# we dont want to run the hacking tests again (and dont want the needed deps)
+# we don't want to run the hacking tests again (and don't want the needed deps)
 rm -f os_win/tests/unit/test_hacking.py
 
 %build
