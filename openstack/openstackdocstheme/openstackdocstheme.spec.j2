@@ -1,5 +1,5 @@
 {% set pypi_name = 'openstackdocstheme' %}
-{% set upstream_version = upstream_version('2.2.5') %}
+{% set upstream_version = upstream_version('2.2.6') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -33,8 +33,9 @@ to docs.openstack.org. Intended for use by OpenStack projects.
 %prep
 %autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 
-# we don't need hacking
+# we dont need hacking or pre-commit
 sed -i '/^hacking.*/d' test-requirements.txt
+sed -i '/^pre-commit.*/d' test-requirements.txt
 %py_req_cleanup
 
 %build
