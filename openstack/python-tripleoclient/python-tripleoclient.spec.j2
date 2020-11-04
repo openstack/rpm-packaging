@@ -1,5 +1,5 @@
 {% set pypi_name = 'python-tripleoclient' %}
-{% set upstream_version = upstream_version('13.7.0') %}
+{% set upstream_version = upstream_version('14.0.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -14,9 +14,6 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://docs.openstack.org/{{ pypi_name }}
 Source0:        {{ source }}
-# Patch added due to SUSE CI error due to PEP3151 must be removed
-# when https://review.opendev.org/#/c/756720/ will be released
-Patch0:         0001-catch-KeyError-and-OSError-PEP3151.patch
 BuildRequires:  {{ py3('ansible-runner') }}
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py2pkg('tripleo-common') }}
