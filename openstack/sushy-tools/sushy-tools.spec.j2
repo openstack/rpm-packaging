@@ -1,0 +1,124 @@
+{% set pypi_name = 'sushy-tools' %}
+{% set upstream_version = upstream_version('0.13.0') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
+Summary:        A set of tools to support the development and test of the Sushy library
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+URL:            https://opendev.org/openstack/{{ pypi_name }}
+Source0:        {{ source }}
+Source1:        sushy-emulator.service
+Source2:        sushy-emulator.conf
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py3('Flask') }}
+BuildRequires:  {{ py3('devel') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('requests') }}
+BuildRequires:  {{ py3('setuptools') }}
+BuildRequires:  {{ py3('tenacity') }}
+BuildArch:      noarch
+%if 0%{?suse_version}
+BuildRequires:  systemd-rpm-macros
+%{?systemd_requires}
+%else
+BuildRequires:  systemd
+Requires(post): systemd
+Requires(postun): systemd
+Requires(preun): systemd
+%endif
+
+%description
+A set of tools to support the development and test of the Sushy library
+
+%package -n python3-{{ py2name() }}
+Summary:        A set of tools to support the development and test of the Sushy library
+Requires:       {{ py3('Flask') }}
+Requires:       {{ py3('pbr') }}
+Requires:       {{ py3('requests') }}
+Requires:       {{ py3('tenacity') }}
+
+%description -n python3-{{ py2name() }}
+A set of tools to support the development and test of the Sushy library
+
+%if 0%{?with_doc}
+%package -n {{ py2name() }}-doc
+Summary:        sushy-tools documentation
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
+BuildRequires:  {{ py3('sphinxcontrib-apidoc') }}
+
+%description -n python3-{{ py2name() }}-doc
+Summary:        sushy-tools documentation
+%endif
+
+
+%prep
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
+%py_req_cleanup
+
+%build
+%{py3_build}
+
+%if 0%{?with_doc}
+# generate html docs
+sphinx-build-3 -W -b html doc/source doc/build/html
+# remove the sphinx-build-3 leftovers
+rm -rf doc/build/html/.{doctrees,buildinfo}
+%endif
+
+%install
+%{py3_install}
+
+# Install systemd script
+mkdir -p %{buildroot}%{_unitdir}
+install -p -D -m 644 %{SOURCE1} %{buildroot}/%{_unitdir}/sushy-emulator.service
+
+# Install distribution config
+mkdir -p %{buildroot}%{_sysconfdir}/sushy-emulator/
+install -p -D -m 640 %{SOURCE2} %{buildroot}/%{_sysconfdir}/sushy-emulator/sushy-emulator.conf
+
+### install symlinks on SUSE
+%if 0%{?suse_version}
+mkdir -p %{buildroot}%{_sbindir}
+ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}
+%endif
+
+%files -n python3-{{ py2name() }}
+%license LICENSE
+%{_bindir}/sushy-emulator
+%{_bindir}/sushy-static
+%{python3_sitelib}/sushy_tools
+%{python3_sitelib}/sushy_tools-*.egg-info
+%{_unitdir}/sushy-emulator.service
+%config(noreplace) %attr(-, root, sushy-tools) %{_sysconfdir}/sushy-emulator
+%attr(-, root, sushy-tools) %{_sysconfdir}/sushy-emulator/sushy-emulator.conf
+%exclude %{python3_sitelib}/{{ py2name() }}/tests
+%if 0%{?suse_version}
+%{_sbindir}/rc%{name}
+%endif
+
+%pre -n python3-{{ py2name() }}
+getent group sushy-tools >/dev/null || groupadd -r sushy-tools
+getent passwd sushy-tools >/dev/null || useradd -r \
+    -g sushy-tools -M -s /sbin/nologin -c "Redfish Emulator" sushy-tools
+
+%if 0%{?with_doc}
+%files -n python-{{ py2name() }}-doc
+%license LICENSE
+%doc doc/build/html README.rst
+%endif
+
+%post -n python3-{{ py2name() }}
+%systemd_post sushy-emulator.service
+
+%preun -n python3-{{ py2name() }}
+%systemd_preun sushy-emulator.service
+
+%postun -n python3-{{ py2name() }}
+%systemd_postun_with_restart sushy-emulator.service
+
+%changelog

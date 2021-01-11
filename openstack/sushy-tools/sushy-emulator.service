@@ -1,0 +1,13 @@
+[Unit]
+Description=Virtual Redfish Emulation service
+After=syslog.target network.target
+
+[Service]
+Type=simple
+User=sushy-tools
+ExecStart=/usr/bin/sushy-emulator --config /etc/sushy-emulator/sushy-emulator.conf
+Restart=always
+RestartSec=1
+
+[Install]
+WantedBy=multi-user.target
