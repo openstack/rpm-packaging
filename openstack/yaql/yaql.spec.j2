@@ -11,6 +11,8 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://docs.openstack.org/{{ pypi_name }}
 Source0:        {{ source }}
+# rebased from https://opendev.org/openstack/yaql/commit/0b006f07226138ef26ab8296494f1dc1c09908e2.patch
+Patch1:         0b006f07226138ef26ab8296494f1dc1c09908e2.patch
 BuildRequires:  openstack-macros
 # for testing
 BuildRequires:  {{ py3('Sphinx') }}
