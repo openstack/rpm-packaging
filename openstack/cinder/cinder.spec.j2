@@ -29,6 +29,7 @@ BuildRequires:  {{ py3('PyMySQL') }}
 BuildRequires:  {{ py3('SQLAlchemy') }}
 BuildRequires:  {{ py3('SQLAlchemy-Utils') }}
 BuildRequires:  {{ py3('python-barbicanclient') }}
+BuildRequires:  {{ py3('boto3') }}
 BuildRequires:  {{ py3('castellan') }}
 BuildRequires:  {{ py3('cryptography') }}
 BuildRequires:  {{ py3('cursive') }}
@@ -107,6 +108,7 @@ Requires:       {{ py3('Routes') }}
 Requires:       {{ py3('SQLAlchemy') }}
 Requires:       {{ py3('WebOb') }}
 Requires:       {{ py3('python-barbicanclient') }}
+Requires:       {{ py3('boto3') }}
 Requires:       {{ py3('castellan') }}
 Requires:       {{ py3('cryptography') }}
 Requires:       {{ py3('cursive') }}
@@ -315,8 +317,11 @@ exit 0
 %tmpfiles_create %{_tmpfilesdir}/%{name}.conf
 
 %check
+%if 0%{?rdo}
+# requires python-moto package which is missing in RDO
+rm -f cinder/tests/unit/backup/drivers/test_backup_s3.py
+%endif
 stestr run
-
 
 %post api
 %systemd_post %{name}-api.service
