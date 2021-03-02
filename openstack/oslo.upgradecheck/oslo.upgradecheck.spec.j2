@@ -1,5 +1,5 @@
 {% set pypi_name = 'oslo.upgradecheck' %}
-{% set upstream_version = upstream_version('1.2.0') %}
+{% set upstream_version = upstream_version('1.3.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -18,6 +18,7 @@ BuildRequires:  {{ py3('Babel') }}
 BuildRequires:  {{ py3('PrettyTable') }}
 BuildRequires:  {{ py3('oslo.config') }}
 BuildRequires:  {{ py3('oslo.i18n') }}
+BuildRequires:  {{ py3('oslo.policy') }}
 BuildRequires:  {{ py3('oslo.serialization') }}
 BuildRequires:  {{ py3('oslo.utils') }}
 BuildRequires:  {{ py3('oslotest') }}
@@ -36,6 +37,7 @@ Requires:       {{ py3('Babel') }}
 Requires:       {{ py3('PrettyTable') }}
 Requires:       {{ py3('oslo.config') }}
 Requires:       {{ py3('oslo.i18n') }}
+Requires:       {{ py3('oslo.policy') }}
 Requires:       {{ py3('oslo.utils') }}
 
 %description -n {{ py2name(py_versions='py3') }}
