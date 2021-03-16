@@ -15,6 +15,7 @@ Source1:        openstack-masakari-api.service
 Source2:        openstack-masakari-engine.service
 Source3:        openstack-masakari.tmpfiles
 BuildRequires:  openstack-macros
+BuildRequires:  {{ py3('SQLAlchemy-Utils') }}
 BuildRequires:  {{ py3('ddt') }}
 BuildRequires:  {{ py3('eventlet') }}
 BuildRequires:  {{ py3('keystoneauth1') }}
@@ -64,6 +65,7 @@ This package contains the documentation.
 %package -n     python3-{{ pypi_name }}
 Summary:        Masakari Python libraries
 Requires:       {{ py3('Babel') }}
+Requires:       {{ py3('SQLAlchemy-Utils') }}
 Requires:       {{ py3('iso8601') }}
 Requires:       {{ py3('jsonschema') }}
 Requires:       {{ py3('keystoneauth1') }}
