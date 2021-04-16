@@ -80,6 +80,7 @@ Requires:       logrotate
 Requires:       python3-{{ pypi_name }} = %{epoch}:%{version}-%{release}
 BuildArch:      noarch
 %if 0%{?suse_version}
+BuildRequires:  {{ py3('moto') }}
 BuildRequires:  systemd-rpm-macros
 %{?systemd_requires}
 %else
