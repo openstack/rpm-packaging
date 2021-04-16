@@ -147,10 +147,7 @@ install -p -D -m 644 %SOURCE5 %{buildroot}%{_unitdir}/openstack-masakari-introsp
 install -p -D -m 644 %SOURCE4 %{buildroot}/%{_tmpfilesdir}/openstack-masakari-monitors.conf
 
 install -p -D -m 640 etc/masakarimonitors/masakarimonitors.conf.sample %{buildroot}%{_sysconfdir}/masakarimonitors/masakarimonitors.conf
-install -p -D -m 640 etc/masakarimonitors/hostmonitor.conf.sample %{buildroot}%{_sysconfdir}/masakarimonitors/hostmonitor.conf
-install -p -D -m 640 etc/masakarimonitors/processmonitor.conf.sample %{buildroot}%{_sysconfdir}/masakarimonitors/processmonitor.conf
 install -p -D -m 640 etc/masakarimonitors/process_list.yaml.sample %{buildroot}%{_sysconfdir}/masakarimonitors/process_list.yaml
-install -p -D -m 640 etc/masakarimonitors/proc.list.sample %{buildroot}%{_sysconfdir}/masakarimonitors/proc.list
 chmod +x %{buildroot}%{_bindir}/masakari-*
 
 %pre
@@ -194,7 +191,6 @@ chmod +x %{buildroot}%{_bindir}/masakari-*
 %_tmpfilesdir/openstack-masakari-monitors.conf
 
 %files -n openstack-masakari-hostmonitor
-%config(noreplace) %attr(-, masakari, masakari) %{_sysconfdir}/masakarimonitors/hostmonitor.conf
 %{_bindir}/masakari-hostmonitor
 %{_unitdir}/openstack-masakari-hostmonitor.service
 
@@ -209,9 +205,7 @@ chmod +x %{buildroot}%{_bindir}/masakari-*
 %files -n openstack-masakari-processmonitor
 %{_bindir}/masakari-processmonitor
 %{_unitdir}/openstack-masakari-processmonitor.service
-%config(noreplace) %attr(-, masakari, masakari) %{_sysconfdir}/masakarimonitors/processmonitor.conf
 %config(noreplace) %attr(-, masakari, masakari) %{_sysconfdir}/masakarimonitors/process_list.yaml
-%config(noreplace) %attr(-, masakari, masakari) %{_sysconfdir}/masakarimonitors/proc.list
 
 %files doc
 %license LICENSE
