@@ -579,15 +579,7 @@ python3 -m stestr.cli --test-path neutron/tests/unit run --black-regex '(neutron
 %dir %attr(0755, neutron, neutron) %{_localstatedir}/lib/{{ pypi_name }}
 %dir %attr(0750, neutron, neutron) %{_localstatedir}/log/{{ pypi_name }}
 %dir %attr(0750, neutron, neutron) %{_localstatedir}/cache/{{ pypi_name }}
-%{_datarootdir}/{{ pypi_name }}/rootwrap/debug.filters
-%{_datarootdir}/{{ pypi_name }}/rootwrap/dhcp.filters
-%{_datarootdir}/{{ pypi_name }}/rootwrap/dibbler.filters
-%{_datarootdir}/{{ pypi_name }}/rootwrap/ebtables.filters
-%{_datarootdir}/{{ pypi_name }}/rootwrap/ipset-firewall.filters
-%{_datarootdir}/{{ pypi_name }}/rootwrap/iptables-firewall.filters
-%{_datarootdir}/{{ pypi_name }}/rootwrap/l3.filters
-%{_datarootdir}/{{ pypi_name }}/rootwrap/linuxbridge-plugin.filters
-%{_datarootdir}/{{ pypi_name }}/rootwrap/privsep.filters
+%{_datarootdir}/{{ pypi_name }}/rootwrap/rootwrap.filters
 %if 0%{?with_doc}
 %{_mandir}/man1/neutron.1.gz
 %endif
@@ -662,7 +654,6 @@ python3 -m stestr.cli --test-path neutron/tests/unit run --black-regex '(neutron
 %{_bindir}/neutron-openvswitch-agent
 %{_bindir}/neutron-ovs-cleanup
 %{_unitdir}/openstack-neutron-openvswitch-agent.service
-%{_datarootdir}/{{ pypi_name }}/rootwrap/openvswitch-plugin.filters
 %dir %{_sysconfdir}/{{ pypi_name }}/neutron-openvswitch-agent.conf.d
 %{_libexecdir}/modules-load.d/openstack-neutron-openvswitch-agent.conf
 %{_sysctldir}/99-openstack-neutron-openvswitch-agent.conf
