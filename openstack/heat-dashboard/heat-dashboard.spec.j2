@@ -77,7 +77,7 @@ install -m 0755 -d %{buildroot}%{http_dashboard_dir}/openstack_dashboard/local/l
 cp -a heat_dashboard/local_settings.d/_1699_orchestration_settings.py \
      %{buildroot}%{http_dashboard_dir}/openstack_dashboard/local/local_settings.d/_1699_orchestration_settings.py
 install -m 0755 -d %{buildroot}%{http_dashboard_dir}/openstack_dashboard/conf/
-cp -a heat_dashboard/conf/heat_policy.json %{buildroot}%{http_dashboard_dir}/openstack_dashboard/conf/
+cp -a heat_dashboard/conf/heat_policy.yaml %{buildroot}%{http_dashboard_dir}/openstack_dashboard/conf/
 
 %fdupes %{buildroot}%{python3_sitelib}
 %fdupes %{buildroot}%{http_dashboard_dir}
@@ -93,7 +93,7 @@ su %{apache_user} -s /bin/sh -c "python3 %{http_dashboard_dir}/manage.py collect
 %license LICENSE
 %{http_dashboard_dir}/openstack_dashboard/enabled/*.py*
 %{http_dashboard_dir}/openstack_dashboard/local/local_settings.d/_1699_orchestration_settings.py*
-%{http_dashboard_dir}/openstack_dashboard/conf/heat_policy.json
+%{http_dashboard_dir}/openstack_dashboard/conf/heat_policy.yaml
 
 %files -n {{ py2pkg('horizon-plugin-heat-ui') }}
 %doc README.rst
