@@ -1,5 +1,5 @@
 {% set pypi_name = 'tempest' %}
-{% set upstream_version = upstream_version('25.0.1') %}
+{% set upstream_version = upstream_version('27.0.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -114,7 +114,8 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 install -d -m 755 %{buildroot}%{_sysconfdir}/tempest
 mv %{buildroot}/%{_prefix}/%{_sysconfdir}/{{ pypi_name }}/accounts.yaml.sample %{buildroot}/%{_sysconfdir}/{{ pypi_name }}/accounts.yaml
 mv %{buildroot}/%{_prefix}/%{_sysconfdir}/{{ pypi_name }}/logging.conf.sample %{buildroot}/%{_sysconfdir}/{{ pypi_name }}/logging.conf
-mv %{buildroot}/%{_prefix}/%{_sysconfdir}/{{ pypi_name }}/whitelist.yaml %{buildroot}/%{_sysconfdir}/{{ pypi_name }}/whitelist.yaml
+mv %{buildroot}/%{_prefix}/%{_sysconfdir}/{{ pypi_name }}/rbac-persona-accounts.yaml.sample %{buildroot}/%{_sysconfdir}/{{ pypi_name }}/rbac-persona-accounts.yaml
+mv %{buildroot}/%{_prefix}/%{_sysconfdir}/{{ pypi_name }}/allow-list.yaml %{buildroot}/%{_sysconfdir}/{{ pypi_name }}/allow-list.yaml
 
 # install config
 PYTHONPATH=. oslo-config-generator --config-file %{_builddir}/{{ pypi_name }}-{{ upstream_version }}/tempest/cmd/config-generator.tempest.conf --output-file %{buildroot}%{_sysconfdir}/tempest/tempest.conf
@@ -144,7 +145,8 @@ cp -av .stestr.conf %{buildroot}/%{_localstatedir}/lib/%{name}-test/
 %config(noreplace) %{_sysconfdir}/tempest/tempest.conf
 %config(noreplace) %{_sysconfdir}/tempest/logging.conf
 %config(noreplace) %{_sysconfdir}/tempest/accounts.yaml
-%config(noreplace) %{_sysconfdir}/tempest/whitelist.yaml
+%config(noreplace) %{_sysconfdir}/tempest/allow-list.yaml
+%config(noreplace) %{_sysconfdir}/tempest/rbac-persona-accounts.yaml
 %if 0%{?suse_version}
 %{_localstatedir}/lib/openstack-tempest-test
 %endif
