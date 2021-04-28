@@ -28,6 +28,7 @@ Source25:       openstack-designate-worker.service
 Source26:       openstack-designate-mdns.service
 Source50:       openstack-designate.README.config
 BuildRequires:  openstack-macros
+BuildRequires:  {{ py3('dnspython') }}
 BuildRequires:  {{ py3('edgegrid-python') }}
 BuildRequires:  {{ py3('keystoneauth1') }}
 BuildRequires:  {{ py3('mock') }}
