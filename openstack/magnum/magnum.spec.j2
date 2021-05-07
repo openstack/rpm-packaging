@@ -1,5 +1,5 @@
 {% set pypi_name = 'magnum' %}
-{% set source = fetch_source('https://tarballs.openstack.org/magnum/magnum-master.tar.gz') %}
+{% set source = fetch_source('https://tarballs.openstack.org/magnum/magnum-stable-wallaby.tar.gz') %}
 {% set upstream_version = upstream_version() %}
 {% set rpm_release = '1' %}
 %global with_doc 1
@@ -241,15 +241,13 @@ exit 0
 %post
 %tmpfiles_create %{_tmpfilesdir}/%{name}.conf
 
-# NOTE(jpena): Some unit tests are failing on SUSE. Let's disable them for now
-%if ! 0%{?suse_version}
 %check
 # we don't want to depend on hacking
 rm magnum/tests/unit/test_hacking.py
 
 export LC_ALL=en_US.UTF-8
-python3 -m stestr.cli run
-%endif
+export EDITOR=/bin/true
+python3 -m stestr.cli run --concurrency 2
 
 %post api
 %systemd_post %{name}-api.service
