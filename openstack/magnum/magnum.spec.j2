@@ -247,7 +247,7 @@ rm magnum/tests/unit/test_hacking.py
 
 export LC_ALL=en_US.UTF-8
 export EDITOR=/bin/true
-python3 -m stestr.cli run --concurrency 2
+python3 -m stestr.cli run --concurrency 1
 
 %post api
 %systemd_post %{name}-api.service
