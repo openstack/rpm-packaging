@@ -45,4 +45,4 @@ at:
 
 or join the IRC channel on
 
-   https://webchat.freenode.net/#openstack-rpm-packaging
+   https://webchat.oftc.net/?channels=openstack-rpm-packaging
