@@ -3,7 +3,7 @@
 %global rrcdir %{_prefix}/lib/rpm/redhat
 %endif
 Name:           openstack-macros
-Version:        2020.1.3
+Version:        2021.1.0
 Release:        0
 Summary:        OpenStack Packaging - RPM Macros
 License:        {{ license('Apache-2.0') }}
@@ -33,35 +33,35 @@ packages.
 %build
 
 %install
-install -D -m644 %{SOURCE1} %{buildroot}%{_sysconfdir}/rpm/macros.openstack-common
-install -D -m644 %{SOURCE5} %{buildroot}%{_sysconfdir}/rpm/macros.openstack-singlespec
+install -D -m644 %{SOURCE1} %{buildroot}%{_rpmmacrodir}/macros.openstack-common
+install -D -m644 %{SOURCE5} %{buildroot}%{_rpmmacrodir}/macros.openstack-singlespec
 %if 0%{?suse_version}
-install -D -m644 %{SOURCE2} %{buildroot}%{_sysconfdir}/rpm/macros.openstack-suse
+install -D -m644 %{SOURCE2} %{buildroot}%{_rpmmacrodir}/macros.openstack-suse
 %endif
 %if 0%{?rdo}
-install -D -m644 %{SOURCE3} %{buildroot}%{_sysconfdir}/rpm/macros.openstack-rdo
+install -D -m644 %{SOURCE3} %{buildroot}%{_rpmmacrodir}/macros.openstack-rdo
 %if 0%{?rhel} < 9
 install -D -m 755 %{SOURCE6} %{buildroot}%{rrcdir}/gpgverify
 %endif
 %endif
 %if 0%{?fedora} || 0%{?rhel} > 7
-install -D -m644 %{SOURCE4} %{buildroot}%{_sysconfdir}/rpm/macros.openstack-fedora
+install -D -m644 %{SOURCE4} %{buildroot}%{_rpmmacrodir}/macros.openstack-fedora
 %endif
 
 %files
-%{_sysconfdir}/rpm/macros.openstack-common
-%{_sysconfdir}/rpm/macros.openstack-singlespec
+%{_rpmmacrodir}/macros.openstack-common
+%{_rpmmacrodir}/macros.openstack-singlespec
 %if 0%{?suse_version}
-%{_sysconfdir}/rpm/macros.openstack-suse
+%{_rpmmacrodir}/macros.openstack-suse
 %endif
 %if 0%{?rdo}
-%{_sysconfdir}/rpm/macros.openstack-rdo
+%{_rpmmacrodir}/macros.openstack-rdo
 %if 0%{?rhel} < 9
 %{rrcdir}/gpgverify
 %endif
 %endif
 %if 0%{?fedora} || 0%{?rhel} > 7
-%{_sysconfdir}/rpm/macros.openstack-fedora
+%{_rpmmacrodir}/macros.openstack-fedora
 %endif
 
 %changelog
