@@ -1,0 +1,79 @@
+{% set pypi_name = 'oslo.limit' %}
+{% set upstream_version = upstream_version('1.4.0') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
+Summary:        OpenStack Limit library
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+URL:            https://docs.openstack.org/{{ pypi_name }}
+Source0:        {{ source }}
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py3('fixtures') }}
+BuildRequires:  {{ py3('openstacksdk') }}
+BuildRequires:  {{ py3('oslo.config') }}
+BuildRequires:  {{ py3('oslo.i18n') }}
+BuildRequires:  {{ py3('oslo.log') }}
+BuildRequires:  {{ py3('oslotest') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildArch:      noarch
+
+%description
+Oslo.limit is the limit enforcement library to assist with quota calculation.
+It aims to provide support for quota enforcement across all OpenStack services.
+
+%package -n {{ py2name(py_versions='py3') }}
+Summary:        OpenStack limit library
+Requires:       {{ py3('keystoneauth1') }}
+Requires:       {{ py3('openstacksdk') }}
+Requires:       {{ py3('oslo.config') }}
+Requires:       {{ py3('oslo.i18n') }}
+Requires:       {{ py3('oslo.log') }}
+
+%description -n {{ py2name(py_versions='py3') }}
+Oslo.limit is the limit enforcement library to assist with quota calculation.
+It aims to provide support for quota enforcement across all OpenStack services.
+
+This package contains the Python 3.x module.
+
+%package -n {{ py2name() }}-doc
+Summary:        Documentation for OpenStack limit library
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
+BuildRequires:  {{ py3('sphinxcontrib-apidoc') }}
+
+%description -n {{ py2name() }}-doc
+Documentation for the oslo.limit library.
+
+%prep
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
+%py_req_cleanup
+
+%build
+%{py3_build}
+
+# generate html docs
+PYTHONPATH=. PBR_VERSION={{ upstream_version }} %sphinx_build -b html doc/source doc/build/html
+rm -rf doc/build/html/.{doctrees,buildinfo}
+
+%install
+%{py3_install}
+
+%check
+python3 -m stestr.cli run
+
+%files -n {{ py2name(py_versions='py3') }}
+%license LICENSE
+%doc ChangeLog README.rst
+%{python3_sitelib}/oslo_limit
+%{python3_sitelib}/*.egg-info
+
+%files -n {{ py2name() }}-doc
+%license LICENSE
+%doc doc/build/html
+
+%changelog
