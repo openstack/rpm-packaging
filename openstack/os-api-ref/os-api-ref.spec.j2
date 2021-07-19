@@ -11,6 +11,7 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://docs.openstack.org/os-api-ref
 Source0:        {{ source }}
+Patch1:         0001-Replace-add_stylesheet-add_javascript.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py3('PyYAML') }}
 BuildRequires:  {{ py3('Sphinx') }}
