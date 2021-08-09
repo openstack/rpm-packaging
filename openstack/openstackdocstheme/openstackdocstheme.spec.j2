@@ -11,6 +11,7 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://docs.openstack.org/openstackdocstheme
 Source0:        {{ source }}
+Patch1:         0001-sphinx-4.0-Fix-sphinx.ext.extlinks.make_link_role-ca.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py3('Sphinx') }}
 BuildRequires:  {{ py3('dulwich') }}
