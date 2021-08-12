@@ -1,6 +1,9 @@
 %if 0%{?rhel}
 %global rdo 1
 %global rrcdir %{_prefix}/lib/rpm/redhat
+%if 0%{?rhel} < 8
+%global _rpmmacrodir %{_rpmconfigdir}/macros.d
+%endif
 %endif
 Name:           openstack-macros
 Version:        2021.1.0
