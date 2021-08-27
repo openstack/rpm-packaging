@@ -50,6 +50,7 @@ BuildRequires:  {{ py3('neutron-lib') }}
 BuildRequires:  {{ py3('python-neutronclient') }}
 BuildRequires:  {{ py3('python-novaclient') }}
 BuildRequires:  {{ py3('os-ken') }}
+BuildRequires:  {{ py3('os-resource-classes') }}
 BuildRequires:  {{ py3('os-vif') }}
 BuildRequires:  {{ py3('os-xenapi') }}
 BuildRequires:  {{ py3('oslo.cache') }}
@@ -113,6 +114,7 @@ Requires:       {{ py3('neutron-lib') }}
 Requires:       {{ py3('python-neutronclient') }}
 Requires:       {{ py3('python-novaclient') }}
 Requires:       {{ py3('os-ken') }}
+Requires:       {{ py3('os-resource-classes') }}
 Requires:       {{ py3('os-vif') }}
 Requires:       {{ py3('os-xenapi') }}
 Requires:       {{ py3('oslo.cache') }}
@@ -550,8 +552,10 @@ python3 -m stestr.cli --test-path neutron/tests/unit run --black-regex '(neutron
 %{_bindir}/neutron-rootwrap
 %{_bindir}/neutron-rootwrap-daemon
 %{_bindir}/neutron-sanity-check
+%{_bindir}/neutron-sanitize-port-mac-addresses
 %{_bindir}/neutron-status
 %{_bindir}/neutron-usage-audit
+%{_bindir}/ml2ovn-trace
 %{_unitdir}/openstack-neutron-netns-cleanup.service
 %{_unitdir}/openstack-neutron-linuxbridge-cleanup.service
 %{_unitdir}/openstack-neutron-ovs-cleanup.service
