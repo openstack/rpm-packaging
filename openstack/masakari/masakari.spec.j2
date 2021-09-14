@@ -2,7 +2,7 @@
 {% set source = fetch_source('https://tarballs.openstack.org/masakari/masakari-master.tar.gz') %}
 {% set upstream_version = upstream_version() %}
 {% set rpm_release = '1' %}
-
+%global with_doc 1
 Name:           {{ py2name() }}
 Version:        {{ py2rpmversion() }}
 Release:        {{ py2rpmrelease() }}
@@ -54,7 +54,7 @@ Masakari is a service providing high availability for VMs in OpenStack.
 %package        doc
 Summary:        Documentation for OpenStack Masakari Service
 BuildRequires:  {{ py3('Sphinx') }}
-BuildRequires:  {{ py3('oslosphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
 
 %description    doc
 Masakari is a service providing high availability for VMs in OpenStack.
