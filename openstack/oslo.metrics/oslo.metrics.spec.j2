@@ -1,0 +1,79 @@
+{% set pypi_name = 'oslo.metrics' %}
+{% set upstream_version = upstream_version('0.3.0') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
+Epoch:          {{ epoch( pypi_name ) }}
+Summary:        Collect metrics data from other Oslo libraries
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+URL:            https://docs.openstack.org/{{ pypi_name }}
+Source0:        {{ source }}
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py3('oslo.config') }}
+BuildRequires:  {{ py3('oslo.log') }}
+BuildRequires:  {{ py3('oslo.utils') }}
+BuildRequires:  {{ py3('oslotest') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('prometheus_client') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildArch:      noarch
+
+%description
+This Oslo metrics API supports collecting metrics data from other
+Oslo libraries and exposing the metrics data to monitoring system.
+
+%package -n {{ py2name(py_versions='py3') }}
+Summary:        Common code to collect metrics data from other Oslo libraries
+Requires:       {{ py3('oslo.config') }}
+Requires:       {{ py3('oslo.log') }}
+Requires:       {{ py3('oslo.utils') }}
+Requires:       {{ py3('pbr') }}
+Requires:       {{ py3('prometheus_client') }}
+
+%description -n {{ py2name(py_versions='py3') }}
+This Oslo metrics API supports collecting metrics data from other
+Oslo libraries and exposing the metrics data to monitoring system.
+
+This package contains the Python 3.x module.
+
+%package -n python-{{ pypi_name }}-doc
+Summary:        Docs for oslo.metrics
+BuildRequires:  {{ py3('Sphinx') }}
+BuildRequires:  {{ py3('openstackdocstheme') }}
+BuildRequires:  {{ py3('sphinxcontrib-apidoc') }}
+
+%description -n python-{{ pypi_name }}-doc
+Documentation for the {{ pypi_name }} library.
+
+%prep
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
+%py_req_cleanup
+
+%build
+%{py3_build}
+
+PBR_VERSION={{ upstream_version }} %sphinx_build -b html doc/source doc/build/html
+# remove the sphinx-build leftovers
+rm -rf doc/build/html/.{doctrees,buildinfo}
+
+%install
+%{py3_install}
+
+%check
+export PYTHONPATH=`pwd`
+python3 -m stestr.cli run
+
+%files -n {{ py2name(py_versions='py3') }}
+%license LICENSE
+%{python3_sitelib}/oslo_metrics
+%{python3_sitelib}/*.egg-info
+
+%files -n python-{{ pypi_name }}-doc
+%doc doc/build/html README.rst
+%license LICENSE
+
+%changelog
