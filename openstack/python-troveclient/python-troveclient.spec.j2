@@ -1,5 +1,5 @@
 {% set pypi_name = 'python-troveclient' %}
-{% set upstream_version = upstream_version('7.0.0') %}
+{% set upstream_version = upstream_version('7.1.1') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -18,6 +18,7 @@ BuildRequires:  {{ py3('httplib2') }}
 BuildRequires:  {{ py3('keystoneauth1') }}
 BuildRequires:  {{ py3('python-mistralclient') }}
 BuildRequires:  {{ py3('mock') }}
+BuildRequires:  {{ py3('python-openstackclient') }}
 BuildRequires:  {{ py3('oslo.utils') }}
 BuildRequires:  {{ py3('pbr') }}
 BuildRequires:  {{ py3('requests') }}
@@ -41,6 +42,7 @@ Requires:       {{ py3('Babel') }}
 Requires:       {{ py3('PrettyTable') }}
 Requires:       {{ py3('keystoneauth1') }}
 Requires:       {{ py3('python-mistralclient') }}
+Requires:       {{ py3('python-openstackclient') }}
 Requires:       {{ py3('osc-lib') }}
 Requires:       {{ py3('oslo.i18n') }}
 Requires:       {{ py3('oslo.utils') }}

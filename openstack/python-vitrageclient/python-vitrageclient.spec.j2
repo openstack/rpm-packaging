@@ -1,14 +1,7 @@
 {% set pypi_name = 'python-vitrageclient' %}
-{% set upstream_version = upstream_version('4.3.0') %}
+{% set upstream_version = upstream_version('4.4.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
-%if 0%{?suse_version}
-%define with_tests 1
-%else
-# tests.cli.test_topology_show.TopologyShowTest.test_dot_emitter unit test fail because of
-# elements order in a list. Until we find proper fix let's ignore results.
-%define with_tests 0
-%endif
 Name:           {{ py2name() }}
 Version:        {{ py2rpmversion() }}
 Release:        {{ py2rpmrelease() }}
@@ -24,9 +17,7 @@ BuildRequires:  {{ py3('networkx') }}
 BuildRequires:  {{ py3('oslotest') }}
 BuildRequires:  {{ py3('pbr') }}
 BuildRequires:  {{ py3('pydot') }}
-BuildRequires:  {{ py3('python-subunit') }}
-BuildRequires:  {{ py3('testrepository') }}
-BuildRequires:  {{ py3('testscenarios') }}
+BuildRequires:  {{ py3('stestr') }}
 BuildRequires:  {{ py3('testtools') }}
 BuildArch:      noarch
 
@@ -81,12 +72,8 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 install -p -D -m 644 tools/vitrage.bash_completion %{buildroot}%{_sysconfdir}/bash_completion.d/vitrage.bash_completion
 rm %{buildroot}%{_datadir}/vitrage.bash_completion
 
-%if 0%{?with_tests}
 %check
-export OS_TEST_PATH=vitrageclient/tests/unit
-export PYTHON=python3
-python3 setup.py testr
-%endif
+python3 -m stestr.cli run
 
 %files -n python3-vitrageclient
 %doc README.rst
