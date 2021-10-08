@@ -1,5 +1,5 @@
 {% set pypi_name = 'oslo.middleware' %}
-{% set upstream_version = upstream_version('4.2.0') %}
+{% set upstream_version = upstream_version('4.4.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -14,6 +14,7 @@ Source0:        {{ source }}
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py3('Jinja2') }}
 BuildRequires:  {{ py3('WebOb') }}
+BuildRequires:  {{ py3('bcrypt') }}
 BuildRequires:  {{ py3('debtcollector') }}
 BuildRequires:  {{ py3('devel') }}
 BuildRequires:  {{ py3('fixtures') }}
@@ -42,6 +43,7 @@ for limiting size/connection etc.
 Summary:        OpenStack oslo.middleware library
 Requires:       {{ py3('Jinja2') }}
 Requires:       {{ py3('WebOb') }}
+Requires:       {{ py3('bcrypt') }}
 Requires:       {{ py3('debtcollector') }}
 Requires:       {{ py3('oslo.config') }}
 Requires:       {{ py3('oslo.context') }}
