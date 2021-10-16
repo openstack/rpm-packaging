@@ -19,8 +19,6 @@ Source0:        {{ source|basename }}
 BuildRequires:  fdupes
 BuildRequires:  {{ py3('horizon') }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py3('django-nose') }}
-BuildRequires:  {{ py3('mock') }}
 BuildRequires:  {{ py3('openstackdocstheme') }}
 BuildRequires:  {{ py3('pbr') }}
 BuildRequires:  {{ py3('python-subunit') }}
@@ -47,8 +45,6 @@ This package contains the core Python module of the neutron-vpnaas-ui.
 
 %package test
 Summary:       Neutron VPNaaS Management Plugin for Horizon - Testsuite
-Requires:      {{ py3('django-nose') }}
-Requires:      {{ py3('mock') }}
 Requires:      {{ py3('openstackdocstheme') }}
 Requires:      {{ py3('python-subunit') }}
 Requires:      {{ py3('reno') }}
