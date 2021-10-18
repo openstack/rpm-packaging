@@ -18,7 +18,7 @@ BuildRequires:  {{ py3('oslo.log') }}
 BuildRequires:  {{ py3('oslo.utils') }}
 BuildRequires:  {{ py3('oslotest') }}
 BuildRequires:  {{ py3('pbr') }}
-BuildRequires:  {{ py3('prometheus_client') }}
+BuildRequires:  {{ py3('prometheus-client') }}
 BuildRequires:  {{ py3('stestr') }}
 BuildArch:      noarch
 
@@ -32,7 +32,7 @@ Requires:       {{ py3('oslo.config') }}
 Requires:       {{ py3('oslo.log') }}
 Requires:       {{ py3('oslo.utils') }}
 Requires:       {{ py3('pbr') }}
-Requires:       {{ py3('prometheus_client') }}
+Requires:       {{ py3('prometheus-client') }}
 
 %description -n {{ py2name(py_versions='py3') }}
 This Oslo metrics API supports collecting metrics data from other
@@ -69,6 +69,7 @@ python3 -m stestr.cli run
 
 %files -n {{ py2name(py_versions='py3') }}
 %license LICENSE
+%{_bindir}/oslo-metrics
 %{python3_sitelib}/oslo_metrics
 %{python3_sitelib}/*.egg-info
 
