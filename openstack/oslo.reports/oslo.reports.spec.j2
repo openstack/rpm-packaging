@@ -22,7 +22,6 @@ BuildRequires:  {{ py3('oslo.utils') }}
 BuildRequires:  {{ py3('oslotest') }}
 BuildRequires:  {{ py3('pbr') }}
 BuildRequires:  {{ py3('psutil') }}
-BuildRequires:  {{ py3('six') }}
 BuildRequires:  {{ py3('stestr') }}
 BuildArch:      noarch
 
@@ -37,7 +36,6 @@ Requires:       {{ py3('oslo.i18n') }}
 Requires:       {{ py3('oslo.serialization') }}
 Requires:       {{ py3('oslo.utils') }}
 Requires:       {{ py3('psutil') }}
-Requires:       {{ py3('six') }}
 
 %description -n {{ py2name(py_versions='py3') }}
 The project oslo.reports hosts a general purpose error report generation
