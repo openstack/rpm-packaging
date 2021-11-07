@@ -32,6 +32,7 @@ future deprecations.
 
 %package -n {{ py2name(py_versions='py3') }}
 Summary:        A collection of Python deprecation patterns and strategies
+Requires:       {{ py3('importlib-metadata') }}
 Requires:       {{ py3('pbr') }}
 Requires:       {{ py3('six') }}
 Requires:       {{ py3('wrapt') }}
