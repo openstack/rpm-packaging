@@ -37,7 +37,6 @@ BuildRequires:  {{ py3('pbr') }}
 BuildRequires:  {{ py3('python-subunit') }}
 BuildRequires:  {{ py3('requests-mock') }}
 BuildRequires:  {{ py3('requestsexceptions') }}
-BuildRequires:  {{ py3('six') }}
 BuildRequires:  {{ py3('statsd') }}
 BuildRequires:  {{ py3('stestr') }}
 BuildRequires:  {{ py3('stevedore') }}
@@ -71,7 +70,6 @@ Requires:       {{ py3('munch') }}
 Requires:       {{ py3('netifaces') }}
 Requires:       {{ py3('os-service-types') }}
 Requires:       {{ py3('requestsexceptions') }}
-Requires:       {{ py3('six') }}
 %if 0%{?suse_version}
 Obsoletes:      {{ py2name(py_versions='py2') }} < 1.0.0
 %endif

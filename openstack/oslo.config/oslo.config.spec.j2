@@ -25,7 +25,6 @@ BuildRequires:  {{ py3('pbr') }}
 BuildRequires:  {{ py3('requests') }}
 BuildRequires:  {{ py3('requests-mock') }}
 BuildRequires:  {{ py3('rfc3986') }}
-BuildRequires:  {{ py3('six') }}
 BuildRequires:  {{ py3('stestr') }}
 BuildRequires:  {{ py3('stevedore') }}
 BuildRequires:  {{ py3('testscenarios') }}
@@ -50,7 +49,6 @@ Requires:       {{ py3('netaddr') }}
 Requires:       {{ py3('oslo.i18n') }}
 Requires:       {{ py3('requests') }}
 Requires:       {{ py3('rfc3986') }}
-Requires:       {{ py3('six') }}
 Requires:       {{ py3('stevedore') }}
 %if 0%{?suse_version}
 Obsoletes:      {{ py2name(py_versions='py2') }} < 8.0.1
