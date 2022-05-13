@@ -1,5 +1,5 @@
 {% set pypi_name = 'futurist' %}
-{% set upstream_version = upstream_version('2.4.0') %}
+{% set upstream_version = upstream_version('2.4.1') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -18,8 +18,6 @@ BuildRequires:  {{ py3('eventlet') }}
 BuildRequires:  {{ py3('monotonic') }}
 BuildRequires:  {{ py3('openstackdocstheme') }}
 BuildRequires:  {{ py3('oslotest') }}
-BuildRequires:  {{ py3('pbr') }}
-BuildRequires:  {{ py3('six') }}
 BuildRequires:  {{ py3('stestr') }}
 BuildRequires:  {{ py3('testscenarios') }}
 BuildArch:      noarch
@@ -29,8 +27,6 @@ Useful additions to futures, from the future.
 
 %package -n {{ py2name(py_versions='py3') }}
 Summary:        Useful additions to futures, from the future.
-Requires:       {{ py3('PrettyTable') }}
-Requires:       {{ py3('six') }}
 
 %description -n {{ py2name(py_versions='py3') }}
 Useful additions to futures, from the future.
