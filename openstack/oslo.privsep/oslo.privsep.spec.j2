@@ -78,7 +78,7 @@ python3  -m stestr.cli run
 %license LICENSE
 %{_bindir}/privsep-helper
 %{python3_sitelib}/oslo_privsep
-%{python3_sitelib}/{{ pypi_name }}-*-py?.?.egg-info
+%{python3_sitelib}/{{ pypi_name }}-*-py?.*.egg-info
 
 %files -n {{ py2name() }}-doc
 %doc doc/build/html
