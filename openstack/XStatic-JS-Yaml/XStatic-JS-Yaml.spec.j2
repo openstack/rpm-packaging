@@ -29,7 +29,7 @@ BuildArch:      noarch
 %files
 %doc README.txt
 %{python3_sitelib}/xstatic
-%{python3_sitelib}/XStatic_{{ js_name | replace('-', '_') }}-%{version}-py?.?.egg-info
-%{python3_sitelib}/XStatic_{{ js_name | replace('-', '_') }}-%{version}-py?.?-nspkg.pth
+%{python3_sitelib}/XStatic_{{ js_name | replace('-', '_') }}-%{version}-py?.*.egg-info
+%{python3_sitelib}/XStatic_{{ js_name | replace('-', '_') }}-%{version}-py?.*-nspkg.pth
 
 %changelog
