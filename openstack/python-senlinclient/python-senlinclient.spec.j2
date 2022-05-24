@@ -12,13 +12,11 @@ Group:          Development/Languages/Python
 URL:            https://docs.openstack.org/{{ pypi_name }}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py3('Babel') }}
 BuildRequires:  {{ py3('PrettyTable') }}
 BuildRequires:  {{ py3('PyYAML') }}
 BuildRequires:  {{ py3('devel') }}
 BuildRequires:  {{ py3('fixtures') }}
 BuildRequires:  {{ py3('python-heatclient') }}
-BuildRequires:  {{ py3('mock') }}
 BuildRequires:  {{ py3('python-openstackclient') }}
 BuildRequires:  {{ py3('openstacksdk') }}
 BuildRequires:  {{ py3('osc-lib') }}
@@ -40,7 +38,6 @@ It provides a Python API (the senlinclient module).
 
 %package -n python3-senlinclient
 Summary:        Python API and CLI for OpenStack Senlin
-Requires:       {{ py3('Babel') }}
 Requires:       {{ py3('PrettyTable') }}
 Requires:       {{ py3('PyYAML') }}
 Requires:       {{ py3('python-heatclient') }}

@@ -23,7 +23,6 @@ BuildRequires:  {{ py3('fixtures') }}
 BuildRequires:  {{ py3('futurist') }}
 BuildRequires:  {{ py3('greenlet') }}
 BuildRequires:  {{ py3('kombu') }}
-BuildRequires:  {{ py3('mock') }}
 BuildRequires:  {{ py3('monotonic') }}
 BuildRequires:  {{ py3('oslo.config') }}
 BuildRequires:  {{ py3('oslo.i18n') }}
@@ -36,7 +35,6 @@ BuildRequires:  {{ py3('oslo.utils') }}
 BuildRequires:  {{ py3('oslotest') }}
 BuildRequires:  {{ py3('pbr') }}
 BuildRequires:  {{ py3('pyngus') }}
-BuildRequires:  {{ py3('six') }}
 BuildRequires:  {{ py3('stestr') }}
 BuildRequires:  {{ py3('stevedore') }}
 BuildRequires:  {{ py3('testscenarios') }}
@@ -65,7 +63,6 @@ Requires:       {{ py3('oslo.middleware') }}
 Requires:       {{ py3('oslo.serialization') }}
 Requires:       {{ py3('oslo.service') }}
 Requires:       {{ py3('oslo.utils') }}
-Requires:       {{ py3('six') }}
 Requires:       {{ py3('stevedore') }}
 %if 0%{?suse_version}
 Obsoletes:      {{ py2name(py_versions='py2') }} < 12.0.0

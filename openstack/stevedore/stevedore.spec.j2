@@ -13,7 +13,6 @@ URL:            https://docs.openstack.org/stevedore/latest/
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py3('docutils') }}
-BuildRequires:  {{ py3('mock') }}
 BuildRequires:  {{ py3('pbr') }}
 BuildRequires:  {{ py3('pytest') }}
 BuildRequires:  {{ py3('testtools') }}
@@ -34,7 +33,6 @@ dynamically loaded extensions.
 Summary:        Manage dynamic plugins for Python applications
 Requires:       {{ py3('importlib-metadata') }}
 Requires:       {{ py3('pbr') }}
-Requires:       {{ py3('six') }}
 
 %description -n {{ py2name(py_versions='py3') }}
 Python makes loading code dynamically easy, allowing you to configure

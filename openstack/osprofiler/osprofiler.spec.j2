@@ -18,7 +18,6 @@ BuildRequires:  {{ py3('ddt') }}
 BuildRequires:  {{ py3('docutils') }}
 BuildRequires:  {{ py3('elasticsearch') }}
 BuildRequires:  {{ py3('importlib-metadata') }}
-BuildRequires:  {{ py3('mock') }}
 BuildRequires:  {{ py3('oslo.concurrency') }}
 BuildRequires:  {{ py3('oslo.config') }}
 BuildRequires:  {{ py3('oslo.log') }}
@@ -26,7 +25,6 @@ BuildRequires:  {{ py3('oslo.utils') }}
 BuildRequires:  {{ py3('pymongo') }}
 BuildRequires:  {{ py3('python-subunit') }}
 BuildRequires:  {{ py3('redis') }}
-BuildRequires:  {{ py3('six') }}
 BuildRequires:  {{ py3('stestr') }}
 BuildRequires:  {{ py3('testtools') }}
 BuildArch:      noarch
@@ -48,7 +46,6 @@ Requires:       {{ py3('oslo.concurrency') }}
 Requires:       {{ py3('oslo.config') }}
 Requires:       {{ py3('oslo.log') }}
 Requires:       {{ py3('oslo.utils') }}
-Requires:       {{ py3('six') }}
 %if 0%{?suse_version}
 Obsoletes:      {{ py2name(py_versions='py2') }} < 3.0.0
 %endif
