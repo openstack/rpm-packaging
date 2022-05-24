@@ -14,10 +14,8 @@ Source0:        {{ source }}
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py3('debtcollector') }}
 BuildRequires:  {{ py3('fixtures') }}
-BuildRequires:  {{ py3('mock') }}
 BuildRequires:  {{ py3('pbr') }}
 BuildRequires:  {{ py3('python-subunit') }}
-BuildRequires:  {{ py3('six') }}
 BuildRequires:  {{ py3('stestr') }}
 BuildRequires:  {{ py3('testtools') }}
 BuildArch:      noarch
@@ -34,7 +32,6 @@ Requires:       {{ py3('mock') }}
 # NOTE: python-os-client-config is only needed for functional testing
 # Requires:       {{ py3('os-client-config') }}
 Requires:       {{ py3('python-subunit') }}
-Requires:       {{ py3('six') }}
 Requires:       {{ py3('stestr') }}
 Requires:       {{ py3('testtools') }}
 

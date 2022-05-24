@@ -1,5 +1,5 @@
 {% set pypi_name = 'oslo.log' %}
-{% set upstream_version = upstream_version('4.6.0') %}
+{% set upstream_version = upstream_version('5.0.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -12,7 +12,6 @@ Group:          Development/Languages/Python
 URL:            https://docs.openstack.org/{{ pypi_name }}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py3('mock') }}
 BuildRequires:  {{ py3('monotonic') }}
 BuildRequires:  {{ py3('oslo.config') }}
 BuildRequires:  {{ py3('oslo.context') }}
@@ -23,7 +22,6 @@ BuildRequires:  {{ py3('oslotest') }}
 BuildRequires:  {{ py3('pbr') }}
 BuildRequires:  {{ py3('pyinotify') }}
 BuildRequires:  {{ py3('python-dateutil') }}
-BuildRequires:  {{ py3('six') }}
 BuildRequires:  {{ py3('stestr') }}
 BuildRequires:  {{ py3('testtools') }}
 BuildArch:      noarch
@@ -44,7 +42,6 @@ Requires:       {{ py3('oslo.serialization') }}
 Requires:       {{ py3('oslo.utils') }}
 Requires:       {{ py3('pyinotify') }}
 Requires:       {{ py3('python-dateutil') }}
-Requires:       {{ py3('six') }}
 Requires:       {{ py3('systemd') }}
 %if 0%{?suse_version}
 Obsoletes:      {{ py2name(py_versions='py2') }} < 4.0.0

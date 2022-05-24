@@ -1,5 +1,5 @@
 {% set pypi_name = 'python-watcherclient' %}
-{% set upstream_version = upstream_version('3.3.0') %}
+{% set upstream_version = upstream_version('3.4.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -25,16 +25,6 @@ BuildRequires:  {{ py3('oslotest') }}
 BuildRequires:  {{ py3('pbr') }}
 BuildRequires:  {{ py3('stestr') }}
 BuildRequires:  {{ py3('testtools') }}
-Requires:       {{ py3('Babel') }}
-Requires:       {{ py3('PyYAML') }}
-Requires:       {{ py3('cliff') }}
-Requires:       {{ py3('keystoneauth1') }}
-Requires:       {{ py3('osc-lib') }}
-Requires:       {{ py3('oslo.i18n') }}
-Requires:       {{ py3('oslo.serialization') }}
-Requires:       {{ py3('oslo.utils') }}
-Requires:       {{ py3('pbr') }}
-Requires:       {{ py3('six') }}
 BuildArch:      noarch
 
 %description
@@ -52,7 +42,6 @@ Requires:       {{ py3('oslo.i18n') }}
 Requires:       {{ py3('oslo.serialization') }}
 Requires:       {{ py3('oslo.utils') }}
 Requires:       {{ py3('pbr') }}
-Requires:       {{ py3('six') }}
 
 %description -n python3-watcherclient
 Client library for Watcher built on the Watcher API. It provides a Python API
