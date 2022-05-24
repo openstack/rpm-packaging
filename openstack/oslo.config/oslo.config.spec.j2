@@ -1,5 +1,5 @@
 {% set pypi_name = 'oslo.config' %}
-{% set upstream_version = upstream_version('8.7.1') %}
+{% set upstream_version = upstream_version('8.8.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -17,7 +17,6 @@ BuildRequires:  {{ py3('PyYAML') }}
 BuildRequires:  {{ py3('debtcollector') }}
 BuildRequires:  {{ py3('fixtures') }}
 BuildRequires:  {{ py3('importlib-metadata') }}
-BuildRequires:  {{ py3('mock') }}
 BuildRequires:  {{ py3('netaddr') }}
 BuildRequires:  {{ py3('oslo.i18n') }}
 BuildRequires:  {{ py3('oslotest') }}

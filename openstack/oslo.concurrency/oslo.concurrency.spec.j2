@@ -1,5 +1,5 @@
 {% set pypi_name = 'oslo.concurrency' %}
-{% set upstream_version = upstream_version('4.4.1') %}
+{% set upstream_version = upstream_version('4.5.1') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -15,7 +15,6 @@ BuildRequires:  openstack-macros
 BuildRequires:  {{ py3('eventlet') }}
 BuildRequires:  {{ py3('fasteners') }}
 BuildRequires:  {{ py3('fixtures') }}
-BuildRequires:  {{ py3('mock') }}
 BuildRequires:  {{ py3('oslo.config') }}
 BuildRequires:  {{ py3('oslo.i18n') }}
 BuildRequires:  {{ py3('oslo.utils') }}
@@ -37,7 +36,6 @@ Requires:       {{ py3('fasteners') }}
 Requires:       {{ py3('oslo.config') }}
 Requires:       {{ py3('oslo.i18n') }}
 Requires:       {{ py3('oslo.utils') }}
-Requires:       {{ py3('six') }}
 %if 0%{?suse_version}
 Obsoletes:      {{ py2name(py_versions='py2') }} < 4.0.0
 %endif
