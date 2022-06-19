@@ -11,6 +11,8 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://docs.openstack.org/{{ pypi_name }}
 Source0:        {{ source }}
+# Upstream Ibee09bf76399849f7da987c4661fa1945d27afb7
+Patch1:         0001-Fix-test_help_on_subcommand-on-Python-3.10.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py3('PrettyTable') }}
 BuildRequires:  {{ py3('cryptography') }}
