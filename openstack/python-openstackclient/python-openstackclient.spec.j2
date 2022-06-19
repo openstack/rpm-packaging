@@ -11,6 +11,8 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://docs.openstack.org/{{ pypi_name }}
 Source0:        {{ source }}
+# https://review.opendev.org/c/openstack/python-openstackclient/+/824733
+Patch1:         0001-Skip-original_name-from-flavor-info.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py3('python-cinderclient') }}
 BuildRequires:  {{ py3('cliff') }}
