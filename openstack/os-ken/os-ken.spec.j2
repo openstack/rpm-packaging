@@ -15,7 +15,6 @@ BuildRequires:  openstack-macros
 BuildRequires:  {{ py3('Routes') }}
 BuildRequires:  {{ py3('WebOb') }}
 BuildRequires:  {{ py3('eventlet') }}
-BuildRequires:  {{ py3('mock') }}
 BuildRequires:  {{ py3('msgpack') }}
 BuildRequires:  {{ py3('netaddr') }}
 BuildRequires:  {{ py3('nose') }}
@@ -23,7 +22,6 @@ BuildRequires:  {{ py3('oslo.config') }}
 BuildRequires:  {{ py3('oslotest') }}
 BuildRequires:  {{ py3('ovs') }}
 BuildRequires:  {{ py3('pbr') }}
-BuildRequires:  {{ py3('six') }}
 BuildRequires:  {{ py3('stestr') }}
 BuildArch:      noarch
 
@@ -41,7 +39,6 @@ Requires:       {{ py3('netaddr') }}
 Requires:       {{ py3('oslo.config') }}
 Requires:       {{ py3('ovs') }}
 Requires:       {{ py3('pbr') }}
-Requires:       {{ py3('six') }}
 
 %description -n {{ py2name(py_versions='py3') }}
 A component-based software defined networking framework in OpenStack.

@@ -16,7 +16,6 @@ BuildRequires:  {{ py3('PyYAML') }}
 BuildRequires:  {{ py3('cliff') }}
 BuildRequires:  {{ py3('devel') }}
 BuildRequires:  {{ py3('fixtures') }}
-BuildRequires:  {{ py3('mock') }}
 BuildRequires:  {{ py3('osc-lib') }}
 BuildRequires:  {{ py3('oslo.serialization') }}
 BuildRequires:  {{ py3('pbr') }}
@@ -36,7 +35,6 @@ Requires:       {{ py3('oslo.i18n') }}
 Requires:       {{ py3('oslo.serialization') }}
 Requires:       {{ py3('oslo.utils') }}
 Requires:       {{ py3('requests') }}
-Requires:       {{ py3('six') }}
 Requires:       {{ py3('python-swiftclient') }}
 BuildArch:      noarch
 
@@ -58,7 +56,6 @@ Requires:       {{ py3('oslo.i18n') }}
 Requires:       {{ py3('oslo.serialization') }}
 Requires:       {{ py3('oslo.utils') }}
 Requires:       {{ py3('requests') }}
-Requires:       {{ py3('six') }}
 Requires:       {{ py3('python-swiftclient') }}
 %if 0%{?suse_version}
 Obsoletes:      {{ py2name(py_versions='py2') }} < 2.0.0

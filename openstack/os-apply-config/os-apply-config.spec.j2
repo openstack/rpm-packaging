@@ -13,7 +13,6 @@ URL:            https://docs.openstack.org/{{ pypi_name }}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py3('fixtures') }}
-BuildRequires:  {{ py3('mock') }}
 BuildRequires:  {{ py3('pbr') }}
 BuildRequires:  {{ py3('pystache') }}
 BuildRequires:  {{ py3('python-subunit') }}
@@ -25,7 +24,6 @@ Requires:       {{ py3('anyjson') }}
 Requires:       {{ py3('pbr') }}
 Requires:       {{ py3('pystache') }}
 Requires:       {{ py3('setuptools') }}
-Requires:       {{ py3('six') }}
 BuildArch:      noarch
 
 %description

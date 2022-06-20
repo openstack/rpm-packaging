@@ -23,7 +23,6 @@ BuildRequires:  {{ py3('falcon') }}
 BuildRequires:  {{ py3('fixtures') }}
 BuildRequires:  {{ py3('jsonschema') }}
 BuildRequires:  {{ py3('keystonemiddleware') }}
-BuildRequires:  {{ py3('mock') }}
 BuildRequires:  {{ py3('oslo.config') }}
 BuildRequires:  {{ py3('oslo.context') }}
 BuildRequires:  {{ py3('oslo.db') }}
@@ -35,7 +34,6 @@ BuildRequires:  {{ py3('oslo.serialization') }}
 BuildRequires:  {{ py3('oslo.upgradecheck') }}
 BuildRequires:  {{ py3('oslotest') }}
 BuildRequires:  {{ py3('reno') }}
-BuildRequires:  {{ py3('six') }}
 BuildRequires:  {{ py3('stestr') }}
 BuildRequires:  {{ py3('testresources') }}
 BuildRequires:  {{ py3('testscenarios') }}
@@ -77,7 +75,6 @@ Requires:       {{ py3('oslo.log') }}
 Requires:       {{ py3('oslo.middleware') }}
 Requires:       {{ py3('oslo.policy') }}
 Requires:       {{ py3('oslo.serialization') }}
-Requires:       {{ py3('six') }}
 
 %description -n python3-{{ pypi_name }}
 API service for OpenStack Freezer: an OpenStack Swift incremental
