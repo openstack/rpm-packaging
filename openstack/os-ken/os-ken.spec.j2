@@ -15,14 +15,16 @@ BuildRequires:  openstack-macros
 BuildRequires:  {{ py3('Routes') }}
 BuildRequires:  {{ py3('WebOb') }}
 BuildRequires:  {{ py3('eventlet') }}
+BuildRequires:  {{ py3('lxml') }}
 BuildRequires:  {{ py3('msgpack') }}
+BuildRequires:  {{ py3('ncclient') }}
 BuildRequires:  {{ py3('netaddr') }}
-BuildRequires:  {{ py3('nose') }}
 BuildRequires:  {{ py3('oslo.config') }}
 BuildRequires:  {{ py3('oslotest') }}
 BuildRequires:  {{ py3('ovs') }}
 BuildRequires:  {{ py3('pbr') }}
 BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('testscenarios') }}
 BuildArch:      noarch
 
 %description
@@ -71,7 +73,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %{py3_install}
 
 %check
-PYTHON=python3 ./run_tests.sh -N -P
+python3 -m stestr.cli run
 
 %files -n {{ py2name(py_versions='py3') }}
 %doc README.rst ChangeLog
