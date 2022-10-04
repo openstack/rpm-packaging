@@ -15,7 +15,6 @@ Source0:        https://files.pythonhosted.org/packages/source/r/{{ pypi_name }}
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py3('Jinja2') }}
 BuildRequires:  {{ py3('ddt') }}
-BuildRequires:  {{ py3('mock') }}
 BuildRequires:  {{ py3('packaging') }}
 BuildRequires:  {{ py3('pbr') }}
 BuildRequires:  {{ py3('pymod2pkg') }}
@@ -33,7 +32,6 @@ Requires:       {{ py3('Jinja2') }}
 Requires:       {{ py3('PyYAML') }}
 Requires:       {{ py3('packaging') }}
 Requires:       {{ py3('pymod2pkg') }}
-Requires:       {{ py3('six') }}
 Conflicts:      %{oldpython}-renderspec < %{version}
 
 %description -n {{ py2name(py_versions='py3') }}
