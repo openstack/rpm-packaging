@@ -19,7 +19,6 @@ BuildRequires:  {{ py3('pbr') }}
 BuildRequires:  {{ py3('ply') }}
 BuildRequires:  {{ py3('python-dateutil') }}
 BuildRequires:  {{ py3('python-subunit') }}
-BuildRequires:  {{ py3('six') }}
 BuildRequires:  {{ py3('testrepository') }}
 BuildRequires:  {{ py3('testscenarios') }}
 BuildRequires:  {{ py3('testtools') }}
@@ -37,7 +36,6 @@ Summary:        YAQL - Yet Another Query Language
 Requires:       {{ py3('Babel') }}
 Requires:       {{ py3('ply') }}
 Requires:       {{ py3('python-dateutil') }}
-Requires:       {{ py3('six') }}
 Conflicts:      %{oldpython}-yaql < %version-%release
 
 %description -n {{ py2name(py_versions='py3') }}
