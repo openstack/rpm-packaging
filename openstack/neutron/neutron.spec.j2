@@ -359,8 +359,8 @@ done
 ln -s %{_sysconfdir}/neutron/plugins/ml2/ml2_conf.ini %{buildroot}/%{_sysconfdir}/neutron/plugin.ini
 
 # install modules/modprobe/sysctl
-install -D -m 644 %{SOURCE22} %{buildroot}%{_libexecdir}/modules-load.d/openstack-neutron-linuxbridge-agent.conf
-install -D -m 644 %{SOURCE22} %{buildroot}%{_libexecdir}/modules-load.d/openstack-neutron-openvswitch-agent.conf
+install -D -m 644 %{SOURCE22} %{buildroot}%{_prefix}/lib/modules-load.d/openstack-neutron-linuxbridge-agent.conf
+install -D -m 644 %{SOURCE22} %{buildroot}%{_prefix}/lib/modules-load.d/openstack-neutron-openvswitch-agent.conf
 
 install -p -D -m 644 %{SOURCE23} %{buildroot}%{_sysctldir}/99-openstack-neutron-linuxbridge-agent.conf
 install -p -D -m 644 %{SOURCE23} %{buildroot}%{_sysctldir}/99-openstack-neutron-openvswitch-agent.conf
@@ -540,6 +540,7 @@ python3 -m stestr.cli --test-path neutron/tests/unit run --concurrency 2 --black
 %{_bindir}/neutron-netns-cleanup
 %{_bindir}/neutron-ovn-db-sync-util
 %{_bindir}/neutron-pd-notify
+%{_bindir}/neutron-remove-duplicated-port-bindings
 %{_bindir}/neutron-rootwrap
 %{_bindir}/neutron-rootwrap-daemon
 %{_bindir}/neutron-sanity-check
@@ -617,7 +618,7 @@ python3 -m stestr.cli --test-path neutron/tests/unit run --concurrency 2 --black
 %{_bindir}/neutron-linuxbridge-cleanup
 %{_unitdir}/openstack-neutron-linuxbridge-agent.service
 %dir %{_sysconfdir}/{{ pypi_name }}/neutron-linuxbridge-agent.conf.d
-%{_libexecdir}/modules-load.d/openstack-neutron-linuxbridge-agent.conf
+%{_prefix}/lib/modules-load.d/openstack-neutron-linuxbridge-agent.conf
 %{_sysctldir}/99-openstack-neutron-linuxbridge-agent.conf
 
 %files metadata-agent
@@ -651,7 +652,7 @@ python3 -m stestr.cli --test-path neutron/tests/unit run --concurrency 2 --black
 %{_bindir}/neutron-ovs-cleanup
 %{_unitdir}/openstack-neutron-openvswitch-agent.service
 %dir %{_sysconfdir}/{{ pypi_name }}/neutron-openvswitch-agent.conf.d
-%{_libexecdir}/modules-load.d/openstack-neutron-openvswitch-agent.conf
+%{_prefix}/lib/modules-load.d/openstack-neutron-openvswitch-agent.conf
 %{_sysctldir}/99-openstack-neutron-openvswitch-agent.conf
 
 %files macvtap-agent
