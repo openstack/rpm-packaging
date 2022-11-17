@@ -1,5 +1,5 @@
 {% set pypi_name = 'python-swiftclient' %}
-{% set upstream_version = upstream_version('4.0.0') %}
+{% set upstream_version = upstream_version('4.1.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -13,7 +13,6 @@ URL:            https://docs.openstack.org/{{ pypi_name }}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py3('python-keystoneclient') }}
-BuildRequires:  {{ py3('mock') }}
 BuildRequires:  {{ py3('pbr') }}
 BuildRequires:  {{ py3('stestr') }}
 BuildRequires:  {{ py3('testscenarios') }}
@@ -26,7 +25,6 @@ swiftclient module), and a command-line script (swift).
 %package -n {{ py2name(py_versions='py3') }}
 Summary:        OpenStack Object Storage API Client Library
 Requires:       {{ py3('requests') }}
-Requires:       {{ py3('six') }}
 %if 0%{?suse_version}
 Obsoletes:      {{ py2name(py_versions='py2') }} < 3.9.0
 %endif
