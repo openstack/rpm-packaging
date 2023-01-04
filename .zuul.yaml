@@ -2,6 +2,8 @@
     check:
       jobs:
         - openstack-tox-linters
+        - openstack-tox-validate
     gate:
       jobs:
         - openstack-tox-linters
+        - openstack-tox-validate
