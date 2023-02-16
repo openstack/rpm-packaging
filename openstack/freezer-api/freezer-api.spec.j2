@@ -132,7 +132,7 @@ install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/openstack
 %openstack_pre_user_group_create freezer freezer /sbin/nologin
 
 %check
-python3 -m stestr.cli run
+%{openstack_stestr_run}
 
 %files
 %license LICENSE

@@ -107,7 +107,7 @@ install -p -D -m 644 roles/fetch-validations/defaults/main.yaml \
                      %{buildroot}%{_datadir}/ansible/roles/fetch-validations/defaults/
 
 %check
-python3 -m stestr.cli run
+%{openstack_stestr_run}
 
 %files -n {{ py2name(py_versions='py3') }}
 %license LICENSE

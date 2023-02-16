@@ -92,7 +92,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %check
 # don't want to depend on hacking for package building
 rm oslo_vmware/tests/test_hacking.py
-python3 -m stestr.cli run
+%{openstack_stestr_run}
 
 %files -n {{ py2name(py_versions='py3') }}
 %doc README.rst

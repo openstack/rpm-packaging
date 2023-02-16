@@ -65,7 +65,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %if %{with test}
 %check
-python3 -m stestr.cli run
+%{openstack_stestr_run}
 %endif
 
 %files -n {{ py2name(py_versions='py3') }}

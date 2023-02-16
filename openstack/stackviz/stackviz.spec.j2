@@ -81,7 +81,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %check
 export OS_TEST_PATH=./stackviz/tests
 export PYTHONPATH=.
-python3 -m stestr.cli run
+%{openstack_stestr_run}
 %endif
 
 

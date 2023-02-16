@@ -103,7 +103,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %check
 # we don't want to depend on hacking
 rm -rf neutron_lib/tests/unit/hacking
-python3 -m stestr.cli run
+%{openstack_stestr_run}
 
 %files -n {{ py2name(py_versions='py3') }}
 %license LICENSE

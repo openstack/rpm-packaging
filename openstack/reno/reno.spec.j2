@@ -63,7 +63,7 @@ sed -i '/^hacking.*/d' test-requirements.txt
 %check
 rm -rf .git
 git init .
-python3 -m stestr.cli run
+%{openstack_stestr_run}
 
 %files -n {{ py2name(py_versions='py3') }}
 %license LICENSE

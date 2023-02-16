@@ -85,7 +85,7 @@ rm -fr doc/build/html/.doctrees doc/build/html/.buildinfo
 
 %check
 export OS_TEST_PATH=novaclient/tests/unit
-python3 -m stestr.cli run
+%{openstack_stestr_run}
 
 %files -n python3-novaclient
 %license LICENSE

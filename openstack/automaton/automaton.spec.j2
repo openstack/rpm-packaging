@@ -58,7 +58,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %{py3_install}
 
 %check
-python3 -m stestr.cli run
+%{openstack_stestr_run}
 
 %files -n {{ py2name(py_versions='py3') }}
 %doc README.rst

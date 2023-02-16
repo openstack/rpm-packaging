@@ -73,7 +73,7 @@ install -p -D -m 644 tools/vitrage.bash_completion %{buildroot}%{_sysconfdir}/ba
 rm %{buildroot}%{_datadir}/vitrage.bash_completion
 
 %check
-python3 -m stestr.cli run
+%{openstack_stestr_run}
 
 %files -n python3-vitrageclient
 %doc README.rst

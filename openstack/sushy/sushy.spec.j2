@@ -61,7 +61,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %{py3_install}
 
 %check
-python3 -m stestr.cli run
+%{openstack_stestr_run}
 
 %files -n python3-sushy
 %license LICENSE

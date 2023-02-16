@@ -54,7 +54,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %check
 # requires gabbi
 rm -v microversion_parse/tests/test_middleware.py
-python3 -m stestr.cli run
+%{openstack_stestr_run}
 
 %files -n {{ py2name(py_versions='py3') }}
 %license LICENSE

@@ -95,7 +95,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %check
 rm -v keystonemiddleware/tests/unit/audit/test_logging_notifier.py
-python3 -m stestr.cli run
+%{openstack_stestr_run}
 
 %files -n python3-keystonemiddleware
 %license LICENSE

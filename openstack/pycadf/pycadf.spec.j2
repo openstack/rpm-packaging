@@ -72,7 +72,7 @@ mkdir -p %{buildroot}/%{_sysconfdir}
 mv %{buildroot}%{_prefix}%{_sysconfdir}/{{ pypi_name }} %{buildroot}/%{_sysconfdir}/
 
 %check
-python3 -m stestr.cli run
+%{openstack_stestr_run}
 
 %files -n {{ py2name(py_versions='py3') }}
 %doc README.rst

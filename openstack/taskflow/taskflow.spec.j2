@@ -95,7 +95,7 @@ PBR_VERSION={{ upstream_version }} %sphinx_build -b html doc/source doc/build/ht
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %check
-python3 -m stestr.cli run
+%{openstack_stestr_run}
 
 %files -n python3-taskflow
 %doc README.rst

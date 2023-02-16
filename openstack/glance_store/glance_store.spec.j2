@@ -95,7 +95,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 mv %{buildroot}/%{_prefix}/%{_sysconfdir} %{buildroot}/%{_sysconfdir}
 
 %check
-PYTHON=python3 PYTHONPATH="." python3 -m stestr.cli run
+PYTHON=python3 PYTHONPATH="." %{openstack_stestr_run}
 
 %pre
 %openstack_pre_user_group_create glance glance /sbin/nologin

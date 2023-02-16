@@ -90,7 +90,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %check
 export OS_TEST_PATH="os_vif/tests/unit"
-python3 -m stestr.cli run
+%{openstack_stestr_run}
 
 %files -n python3-os-vif
 %license LICENSE

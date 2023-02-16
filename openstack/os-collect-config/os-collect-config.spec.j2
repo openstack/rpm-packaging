@@ -67,7 +67,7 @@ install -p -D -m 644 %{SOURCE2} %{buildroot}%{_sysconfdir}/os-collect-config.con
 mkdir -p %{buildroot}%{_localstatedir}/lib/%{name}/local-data
 
 %check
-python3 -m stestr.cli run
+%{openstack_stestr_run}
 
 %post
 %systemd_post os-collect-config.service

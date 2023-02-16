@@ -82,7 +82,7 @@ export OS_TEST_PATH=./zunclient/tests/unit/
 rm -f zunclient/tests/unit/test_shell.py
 rm -f zunclient/tests/unit/test_functional_utils.py
 rm -rf zunclient/tests/functional
-python3 -m stestr.cli run
+%{openstack_stestr_run}
 
 %files -n python3-zunclient
 %doc README.rst

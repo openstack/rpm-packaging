@@ -45,7 +45,7 @@ install -d -m 755 %{buildroot}%{_libexecdir}/os-refresh-config/post-configure.d
 # NOTE(jpena): os_refresh_config.py has a wrong shebang, and it is called
 # directly by the tests.
 sed -i 's/#!\/usr\/bin\/env.*/#!\/usr\/bin\/python3/' os_refresh_config/os_refresh_config.py
-python3 -m stestr.cli run
+%{openstack_stestr_run}
 
 %files
 %license LICENSE
