@@ -103,7 +103,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 
 
 %check
-%{__python3} -m stestr.cli run
+%{openstack_stestr_run}
 
 %files
 %doc README.rst ChangeLog

@@ -188,7 +188,7 @@ chmod +x %{buildroot}%{_bindir}/mistral*
 %check
 # we don't want hacking/pep8 tests
 rm -r mistral/tests/unit/hacking/
-%{__python3} -m stestr.cli run
+%{openstack_stestr_run}
 
 %post
 %tmpfiles_create %{_tmpfilesdir}/%{name}.conf

@@ -49,7 +49,7 @@ developers.
 %check
 # we don't want to depend on hacking
 rm -rf octavia_lib/tests/unit/hacking
-python3  -m stestr.cli run
+%{openstack_stestr_run}
 
 %files
 %license LICENSE
