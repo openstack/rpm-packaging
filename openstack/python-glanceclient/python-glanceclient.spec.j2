@@ -87,7 +87,7 @@ rm -rf doc/build/man/.{doctrees,buildinfo}
 install -p -D -m 644 doc/build/man/glance.1 %{buildroot}%{_mandir}/man1/glance.1
 
 %check
-python3 -m stestr.cli run
+%{openstack_stestr_run}
 
 %files -n {{ py2name(py_versions='py3') }}
 %license LICENSE

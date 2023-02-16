@@ -104,7 +104,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 mv %{buildroot}%{_prefix}%{_sysconfdir}/* %{buildroot}/%{_sysconfdir}/
 
 %check
-python3 -m stestr.cli run --concurrency=1
+%{openstack_stestr_run} --concurrency=1
 
 %files -n python3-os-brick
 %license LICENSE

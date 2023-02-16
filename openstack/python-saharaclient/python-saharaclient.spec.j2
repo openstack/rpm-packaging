@@ -74,7 +74,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %check
 # we don't want to depend on hacking/flake8/pep8
 rm -v saharaclient/tests/unit/test_hacking.py
-python3 -m stestr.cli run
+%{openstack_stestr_run}
 
 %files -n python3-saharaclient
 %license LICENSE

@@ -85,7 +85,7 @@ install -p -D -m 644 tools/manila.bash_completion %{buildroot}%{_sysconfdir}/bas
 rm -f manilaclient/tests/unit/test_shell.py
 rm -f manilaclient/tests/unit/test_functional_utils.py
 rm -rf manilaclient/tests/functional
-python3 -m stestr.cli run
+%{openstack_stestr_run}
 
 %files -n python3-manilaclient
 %doc README.rst

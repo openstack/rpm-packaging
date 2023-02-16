@@ -94,7 +94,7 @@ install -p -D -m 644 doc/build/man/python-magnumclient.1 %{buildroot}%{_mandir}/
 install -p -D -m 644 tools/magnum.bash_completion %{buildroot}%{_sysconfdir}/bash_completion.d/magnum.bash_completion
 
 %check
-python3 -m stestr.cli run
+%{openstack_stestr_run}
 
 %files -n python3-magnumclient
 %license LICENSE

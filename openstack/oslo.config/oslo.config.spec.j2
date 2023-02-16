@@ -91,7 +91,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %check
 # Requires oslo.log which we can't depend on for build cycle reasons
 rm -v oslo_config/tests/test_cfg.py
-python3 -m stestr.cli run
+%{openstack_stestr_run}
 
 %files -n {{ py2name(py_versions='py3') }}
 %license LICENSE

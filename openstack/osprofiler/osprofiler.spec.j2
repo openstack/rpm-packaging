@@ -85,7 +85,7 @@ PBR_VERSION=%{version} %sphinx_build -b html doc/source doc/build/html
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %check
-python3 -m stestr.cli run --black-regex '(^osprofiler.tests.unit.drivers.test_jaeger.JaegerTestCase.*$)'
+%{openstack_stestr_run} --black-regex '(^osprofiler.tests.unit.drivers.test_jaeger.JaegerTestCase.*$)'
 
 %files -n {{ py2name(py_versions='py3') }}
 %license LICENSE

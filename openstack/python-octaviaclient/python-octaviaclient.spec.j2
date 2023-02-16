@@ -72,7 +72,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %check
 # we don't want hacking
 rm -f octaviaclient/tests/unit/test_hacking.py
-python3 -m stestr.cli run
+%{openstack_stestr_run}
 
 %files -n python3-octaviaclient
 %doc README.rst

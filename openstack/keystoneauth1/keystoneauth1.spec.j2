@@ -86,7 +86,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %check
 rm -v keystoneauth1/tests/unit/test_hacking_checks.py
-python3 -m stestr.cli run
+%{openstack_stestr_run}
 
 %files -n {{ py2name(py_versions='py3') }}
 %license LICENSE

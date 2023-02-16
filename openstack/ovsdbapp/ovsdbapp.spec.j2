@@ -65,7 +65,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %if 0%{?with_tests}
 %check
-OS_TEST_PATH=./ovsdbapp/tests/unit PYTHONPATH=. python3 -m stestr.cli run
+OS_TEST_PATH=./ovsdbapp/tests/unit PYTHONPATH=. %{openstack_stestr_run}
 %endif
 
 %files -n {{ py2name(py_versions='py3') }}

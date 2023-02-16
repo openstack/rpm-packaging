@@ -53,7 +53,7 @@ governance <https://governance.openstack.org/tc/reference/projects/ironic.html>`
 %{py3_build}
 
 %check
-python3 -m stestr.cli run
+%{openstack_stestr_run}
 
 %install
 %{py3_install}

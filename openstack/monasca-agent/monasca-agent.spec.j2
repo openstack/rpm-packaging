@@ -177,7 +177,7 @@ install -D -m 644 %{SOURCE4} %{buildroot}%{_sysconfdir}/polkit-1/rules.d/49-mona
 %check
 find . -type f -name *.pyc -delete
 find . -type f -name '*test_service_plugin.py' -delete
-python3 -m stestr.cli run
+%{openstack_stestr_run}
 
 %files
 %dir %attr(-, root, monasca) %{_sysconfdir}/monasca

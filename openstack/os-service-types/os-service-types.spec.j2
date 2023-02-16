@@ -77,7 +77,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %check
 export OS_TEST_PATH=os_service_types/tests
-python3 -m stestr.cli run
+%{openstack_stestr_run}
 
 %files -n {{ py2name(py_versions='py3') }}
 %license LICENSE

@@ -84,7 +84,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %if %{with test}
 %check
 export PYTHONPATH="%{python3_sitearch}:%{python3_sitelib}:%{buildroot}%{python3_sitelib}"
-python3 -m stestr.cli run
+%{openstack_stestr_run}
 %endif
 
 %files -n {{ py2name(py_versions='py3') }}

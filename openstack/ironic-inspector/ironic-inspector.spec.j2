@@ -245,7 +245,7 @@ install -p -D -m 644 doc/build/man/ironic-inspector.1 %{buildroot}%{_mandir}/man
 
 %check
 export LC_ALL=en_US.UTF-8
-python3 -m stestr.cli run
+%{openstack_stestr_run}
 
 %pre
 %openstack_pre_user_group_create ironic-inspector ironic-inspector /sbin/nologin

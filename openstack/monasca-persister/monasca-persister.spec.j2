@@ -96,7 +96,7 @@ ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}
 install -p -D -m 644 %{SOURCE2} %{buildroot}%{_sysconfdir}/logrotate.d/openstack-monasca-persister.logrotate
 
 %check
-python3 -m stestr.cli run
+%{openstack_stestr_run}
 
 %pre
 %openstack_pre_user_group_create monasca-persister monasca /sbin/nologin

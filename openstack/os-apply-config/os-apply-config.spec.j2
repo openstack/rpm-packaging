@@ -42,7 +42,7 @@ sed -i 's#%{_bindir}/env python$#%{_bindir}/python3#g' os_apply_config/tests/tem
 install -d -m 755 %{buildroot}%{_libexecdir}/os-apply-config/templates
 
 %check
-python3 -m stestr.cli run
+%{openstack_stestr_run}
 
 %files
 %license LICENSE
