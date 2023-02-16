@@ -76,7 +76,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %fdupes %{buildroot}%{python3_sitelib}
 
 %check
-%{__python3} -m stestr.cli run
+%{openstack_stestr_run}
 
 %files
 %license LICENSE

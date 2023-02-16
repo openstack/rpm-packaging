@@ -155,7 +155,7 @@ rm -rf %{buildroot}%{_prefix}%{_sysconfdir}/
 %check
 # we don't want to check hacking rules
 rm masakari/tests/unit/test_hacking.py
-%{__python3} -m stestr.cli run
+%{openstack_stestr_run}
 
 %post api
 %systemd_post openstack-masakari-api.service

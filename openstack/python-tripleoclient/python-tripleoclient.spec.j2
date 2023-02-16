@@ -102,7 +102,7 @@ install -p -D -m 644 doc/build/man/python-tripleoclient.1 %{buildroot}%{_mandir}
 
 
 %check
-%{__python3} -m stestr.cli run
+%{openstack_stestr_run}
 
 %files
 %doc README.rst

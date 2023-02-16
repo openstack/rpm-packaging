@@ -125,7 +125,7 @@ ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}
 # NOTE: RDO currenty does not have python-jira in the CI
 # NOTE: SUSE fails on a weird mock issue
 %if 0
-%{__python3} -m stestr.cli run
+%{openstack_stestr_run}
 %endif
 
 %pre
