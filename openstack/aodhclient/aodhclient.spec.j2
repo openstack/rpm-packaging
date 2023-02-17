@@ -68,7 +68,7 @@ rm -r doc/build/html/.{doctrees,buildinfo}
 
 %check
 # FIXME: only run unittests for now.
-python3 -m stestr.cli --test-path  ./aodhclient/tests/unit run
+%{openstack_stestr_run} --test-path  ./aodhclient/tests/unit
 
 %files
 %doc README.rst
