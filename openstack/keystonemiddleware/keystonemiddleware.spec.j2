@@ -42,7 +42,7 @@ and authorization features to web services other than Keystone
 The most prominent module is keystonemiddleware.auth_token. This package
 does not expose any CLI or Python API features.
 
-%package -n python3-keystonemiddleware
+%package -n {{ py2name(py_versions='py3') }}
 Summary:        Middleware for OpenStack Identity
 Requires:       {{ py3('WebOb') }}
 Requires:       {{ py3('keystoneauth1') }}
@@ -59,7 +59,7 @@ Requires:       {{ py3('pycadf') }}
 Requires:       {{ py3('python-memcached') }}
 Requires:       {{ py3('requests') }}
 
-%description -n python3-keystonemiddleware
+%description -n {{ py2name(py_versions='py3') }}
 This package contains middleware modules designed to provide authentication
 and authorization features to web services other than Keystone
 The most prominent module is keystonemiddleware.auth_token. This package
@@ -97,7 +97,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 rm -v keystonemiddleware/tests/unit/audit/test_logging_notifier.py
 %{openstack_stestr_run}
 
-%files -n python3-keystonemiddleware
+%files -n {{ py2name(py_versions='py3') }}
 %license LICENSE
 %doc ChangeLog README.rst
 %{python3_sitelib}/{{ pypi_name }}

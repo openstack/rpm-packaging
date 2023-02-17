@@ -46,7 +46,7 @@ BuildArch:      noarch
 A library to do [jobs, tasks, flows] in a HA manner using
 different backends to be used with OpenStack projects.
 
-%package -n python3-taskflow
+%package -n {{ py2name(py_versions='py3') }}
 Summary:        Taskflow structured state management library
 Requires:       {{ py3('automaton') }}
 Requires:       {{ py3('cachetools') }}
@@ -62,7 +62,7 @@ Requires:       {{ py3('six') }}
 Requires:       {{ py3('stevedore') }}
 Requires:       {{ py3('tenacity') }}
 
-%description -n python3-taskflow
+%description -n {{ py2name(py_versions='py3') }}
 A library to do [jobs, tasks, flows] in a HA manner using
 different backends to be used with OpenStack projects.
 
@@ -97,7 +97,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %check
 %{openstack_stestr_run}
 
-%files -n python3-taskflow
+%files -n {{ py2name(py_versions='py3') }}
 %doc README.rst
 %license LICENSE
 %{python3_sitelib}/{{ pypi_name }}
