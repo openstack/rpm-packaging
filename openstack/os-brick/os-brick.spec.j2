@@ -43,7 +43,7 @@ Features:
 - Discovery of volumes being attached to a host for many transport protocols.
 - Removal of volumes from a host.
 
-%package -n python3-os-brick
+%package -n {{ py2name(py_versions='py3') }}
 Summary:        OpenStack Cinder brick library for managing local volume attaches
 Requires:       %{oldpython}-os-brick-common
 Requires:       {{ py3('Babel') }}
@@ -59,7 +59,7 @@ Requires:       {{ py3('requests') }}
 Requires:       {{ py3('six') }}
 Requires:       {{ py3('tenacity') }}
 
-%description -n python3-os-brick
+%description -n {{ py2name(py_versions='py3') }}
 OpenStack Cinder brick library for managing local volume attaches.
 Features:
 - Discovery of volumes being attached to a host for many transport protocols.
@@ -106,7 +106,7 @@ mv %{buildroot}%{_prefix}%{_sysconfdir}/* %{buildroot}/%{_sysconfdir}/
 %check
 %{openstack_stestr_run} --concurrency=1
 
-%files -n python3-os-brick
+%files -n {{ py2name(py_versions='py3') }}
 %license LICENSE
 %doc README.rst ChangeLog
 %{python3_sitelib}/os_brick
