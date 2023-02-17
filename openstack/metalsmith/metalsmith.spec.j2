@@ -24,7 +24,7 @@ BuildArch:      noarch
 Simple Python library and CLI tool to provision bare metal machines using
 OpenStack Ironic.
 
-%package -n python3-metalsmith
+%package -n {{ py2name(py_versions='py3') }}
 Summary:        Bare metal provisioner using Ironic
 Requires:       {{ py3('ansible') }}
 Requires:       {{ py3('PrettyTable') }}
@@ -32,7 +32,7 @@ Requires:       {{ py3('openstacksdk') }}
 Requires:       {{ py3('pbr') }}
 Requires:       {{ py3('requests') }}
 
-%description -n python3-metalsmith
+%description -n {{ py2name(py_versions='py3') }}
 Simple Python library and CLI tool to provision bare metal machines using
 OpenStack Ironic.
 
@@ -72,7 +72,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %check
 %{openstack_stestr_run}
 
-%files -n python3-metalsmith
+%files -n {{ py2name(py_versions='py3') }}
 %license LICENSE
 %{_bindir}/metalsmith
 %{python3_sitelib}/metalsmith
