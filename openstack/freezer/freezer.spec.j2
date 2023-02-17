@@ -184,12 +184,7 @@ rm -fr %{buildroot}%{_prefix}/freezer/scripts/vss.ps1
 
 %check
 export OS_TEST_PATH=./freezer/tests/unit
-%if 0%{?suse_version}
-PYTHON=python3 stestr run
-%endif
-%if 0%{?rdo}
-stestr-3 run
-%endif
+%{openstack_stestr_run}
 
 %files
 %license LICENSE

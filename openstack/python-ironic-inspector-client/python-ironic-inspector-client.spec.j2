@@ -13,6 +13,7 @@ URL:            https://docs.openstack.org/{{ pypi_name }}
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py3('fixtures') }}
+BuildRequires:  {{ py3('keystoneauth1') }}
 BuildRequires:  {{ py3('python-openstackclient') }}
 BuildRequires:  {{ py3('openstackdocstheme') }}
 BuildRequires:  {{ py3('osc-lib') }}
@@ -31,7 +32,7 @@ scheduling from a bare metal node, given its power management credentials
 
 This package contains Python client and command line tool for Ironic Inspector.
 
-%package -n python3-ironic-inspector-client
+%package -n {{ py2name(py_versions='py3') }}
 Summary: Python client and CLI tool for Ironic Inspector
 Requires:       {{ py3('PyYAML') }}
 Requires:       {{ py3('keystoneauth1') }}
@@ -41,7 +42,7 @@ Requires:       {{ py3('oslo.i18n') }}
 Requires:       {{ py3('oslo.utils') }}
 Requires:       {{ py3('requests') }}
 
-%description -n python3-ironic-inspector-client
+%description -n {{ py2name(py_versions='py3') }}
 Ironic Inspector is an auxiliary service for discovering hardware properties
 for a node managed by OpenStack Ironic. Hardware introspection or hardware
 properties discovery is a process of getting hardware parameters required for
@@ -67,10 +68,10 @@ sed -i -e 's,doc8.*,,' test-requirements.txt
 
 %check
 %{python_expand rm -rf .testrepository
-python3 -m unittest discover ironic_inspector_client
+$python -m unittest discover ironic_inspector_client
 }
 
-%files -n python3-ironic-inspector-client
+%files -n {{ py2name(py_versions='py3') }}
 %doc README.rst
 %license LICENSE
 %{python3_sitelib}/ironic_inspector_client

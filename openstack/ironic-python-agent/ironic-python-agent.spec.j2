@@ -34,6 +34,7 @@ BuildRequires:  {{ py3('rtslib-fb') }}
 BuildRequires:  {{ py3('stestr') }}
 BuildRequires:  {{ py3('stevedore') }}
 BuildRequires:  {{ py3('tenacity') }}
+BuildRequires:  {{ py3('tooz') }}
 Requires:       python3-{{ pypi_name }} = %{version}-%{release}
 BuildArch:      noarch
 %if 0%{?suse_version}
@@ -73,6 +74,7 @@ Requires:       {{ py3('requests') }}
 Requires:       {{ py3('rtslib-fb') }}
 Requires:       {{ py3('stevedore') }}
 Requires:       {{ py3('tenacity') }}
+Requires:       {{ py3('tooz') }}
 
 %description -n python3-{{ pypi_name }}
 The ironic-python-agent works with the agent driver in Ironic to provision the node.

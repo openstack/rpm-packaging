@@ -208,7 +208,7 @@ This package contains the Heat docker plugin
 
 ### heat_docker plugin
 pushd contrib/heat_docker
-OSLO_PACKAGE_VERSION=%{version} python3 setup.py build
+OSLO_PACKAGE_VERSION=%{version} %{py3_build}
 popd
 
 ### documentation
@@ -224,7 +224,7 @@ rm -rf doc/build/man/.{doctrees,buildinfo}
 
 ### heat_docker plugin
 pushd contrib/heat_docker
-OSLO_PACKAGE_VERSION=%{version} python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+OSLO_PACKAGE_VERSION=%{version} %{py3_install]}
 # no need for the egg-info file
 rm -r %{buildroot}%{python3_sitelib}/heat_contrib_docker-*.egg-info
 popd
