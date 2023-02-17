@@ -27,14 +27,14 @@ BuildArch:      noarch
 %description
 Sushy is a Python library to communicate with `Redfish` based systems.
 
-%package -n python3-sushy
+%package -n {{ py2name(py_versions='py3') }}
 Summary:        Python library to communicate with Redfish based systems
 Requires:       {{ py3('pbr') }}
 Requires:       {{ py3('python-dateutil') }}
 Requires:       {{ py3('requests') }}
 Requires:       {{ py3('stevedore') }}
 
-%description -n python3-sushy
+%description -n {{ py2name(py_versions='py3') }}
 Sushy is a Python library to communicate with `Redfish` based systems.
 
 %package -n {{ py2name() }}-doc
@@ -63,7 +63,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %check
 %{openstack_stestr_run}
 
-%files -n python3-sushy
+%files -n {{ py2name(py_versions='py3') }}
 %license LICENSE
 %doc AUTHORS ChangeLog README.rst
 %{python3_sitelib}/sushy*

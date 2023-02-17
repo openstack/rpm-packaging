@@ -37,7 +37,7 @@ The Tooz project aims at centralizing the most common distributed primitives
 like group membership protocol, lock service and leader election by providing
 a coordination API helping developers to build distributed applications.
 
-%package -n python3-tooz
+%package -n {{ py2name(py_versions='py3') }}
 Summary:        Coordination library for distributed systems
 Requires:       {{ py3('fasteners') }}
 Requires:       {{ py3('futurist') }}
@@ -48,7 +48,7 @@ Requires:       {{ py3('stevedore') }}
 Requires:       {{ py3('tenacity') }}
 Requires:       {{ py3('voluptuous') }}
 
-%description -n python3-tooz
+%description -n {{ py2name(py_versions='py3') }}
 The Tooz project aims at centralizing the most common distributed primitives
 like group membership protocol, lock service and leader election by providing
 a coordination API helping developers to build distributed applications.
@@ -92,7 +92,7 @@ bash run-tests.sh
 %install
 %{py3_install}
 
-%files -n python3-tooz
+%files -n {{ py2name(py_versions='py3') }}
 %license LICENSE
 %{python3_sitelib}/{{ pypi_name }}
 %{python3_sitelib}/{{ pypi_name }}-*.egg-info
