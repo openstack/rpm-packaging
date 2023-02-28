@@ -75,7 +75,8 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %{py3_install}
 
 %check
-%{openstack_stestr_run}
+env TEST_EVENTLET=0 %{openstack_stestr_run}
+env TEST_EVENTLET=1 %{openstack_stestr_run}
 
 %files -n {{ py2name(py_versions='py3') }}
 %license LICENSE
