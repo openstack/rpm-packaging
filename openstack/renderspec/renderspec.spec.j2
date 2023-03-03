@@ -12,6 +12,7 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://docs.openstack.org/{{ pypi_name }}
 Source0:        https://files.pythonhosted.org/packages/source/r/{{ pypi_name }}/{{ pypi_name }}-%{version}.tar.gz
+Patch1:         0001-Allow-selecting-suse_39-template.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py3('Jinja2') }}
 BuildRequires:  {{ py3('ddt') }}

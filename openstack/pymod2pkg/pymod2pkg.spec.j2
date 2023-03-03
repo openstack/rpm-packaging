@@ -11,6 +11,7 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Libraries/Python
 URL:            https://wiki.openstack.org/wiki/Rpm-packaging
 Source0:        {{ source }}
+Patch1:         0001-add-suse_py39-flavor-to-explicitly-render-templates-.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py3('distro') }}
 BuildRequires:  {{ py3('pbr') }}
