@@ -1,0 +1,63 @@
+{% set pypi_name = 'sushy-oem-idrac' %}
+{% set upstream_version = upstream_version('5.0.0') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
+Summary:        Dell EMC iDRAC OEM extension package for the sushy library
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+URL:            https://docs.openstack.org/{{ pypi_name }}
+Source0:        {{ source }}
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py3('oslotest') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('python-dateutil') }}
+BuildRequires:  {{ py3('python-subunit') }}
+BuildRequires:  {{ py3('reno') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('sushy') }}
+BuildArch:      noarch
+
+%description
+Redfish specification offers extensibility mechanism to let hardware vendors
+introduce their own features with the common Redfish framework. At the same
+time, sushy supports extending its data model by loading extensions found
+within its "oem" namespace.
+
+The sushy-oem-idrac package is a sushy extension package that aims at adding
+high-level hardware management abstractions, that are specific to Dell EMC BMC
+(which is known under the name of iDRAC), to the tree of sushy Redfish
+resources.
+
+%package -n {{ py2name(py_versions='py3') }}
+Summary:        Dell EMC iDRAC OEM extension package for the sushy library
+Requires:       {{ py3('pbr') }}
+Requires:       {{ py3('python-dateutil') }}
+Requires:       {{ py3('sushy') }}
+
+%description -n {{ py2name(py_versions='py3') }}
+This package provides the iDRAC OEM extensions for sushy
+
+%prep
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
+%py_req_cleanup
+
+%build
+%{py3_build}
+
+%install
+%{py3_install}
+
+%check
+%{openstack_stestr_run}
+
+%files -n {{ py2name(py_versions='py3') }}
+%license LICENSE
+%doc AUTHORS ChangeLog README.md
+%{python3_sitelib}/sushy_oem_idrac
+%{python3_sitelib}/sushy_oem_idrac*.egg-info
+
+%changelog
