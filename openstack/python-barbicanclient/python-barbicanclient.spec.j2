@@ -86,7 +86,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %check
 %{openstack_stestr_run} \
-    --black-regex 'barbicanclient.tests.test_barbican.WhenTestingBarbicanCLI.test_should_show_usage_with_help_flag'
+    --exclude-regex 'barbicanclient.tests.test_barbican.WhenTestingBarbicanCLI.test_should_show_usage_with_help_flag'
 
 %files -n python3-barbicanclient
 %license LICENSE

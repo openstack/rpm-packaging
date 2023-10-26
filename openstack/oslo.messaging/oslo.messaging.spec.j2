@@ -105,7 +105,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 # fail without it
 rm -rf oslo_messaging/tests/functional
 # 3 cyrus tests fail on rdo with time out
-%{openstack_stestr_run} --black-regex '^oslo_messaging.tests.(functional|drivers.test_amqp_driver.TestCyrusAuthentication.test_authentication_(ok|ignore_default_realm|default_realm))'
+%{openstack_stestr_run} --exclude-regex '^oslo_messaging.tests.(functional|drivers.test_amqp_driver.TestCyrusAuthentication.test_authentication_(ok|ignore_default_realm|default_realm))'
 
 %files -n {{ py2name(py_versions='py3') }}
 %license LICENSE
