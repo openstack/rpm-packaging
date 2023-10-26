@@ -72,7 +72,8 @@ install -p -D -m 444 %{SOURCE1} %{buildroot}%{_unitdir}/virtualbmc.service
 
 %files
 %license LICENSE
-%{python3_sitelib}/*
+%{python3_sitelib}/virtualbmc
+%{python3_sitelib}/virtualbmc-%{version}*-info
 %{_bindir}/vbmc
 %{_bindir}/vbmcd
 %{_unitdir}/virtualbmc.service

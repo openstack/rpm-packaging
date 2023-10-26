@@ -68,7 +68,8 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %license LICENSE
 %doc README*
 %{_bindir}/pymod2pkg
-%{python3_sitelib}/*
+%{python3_sitelib}/pymod2pkg
+%{python3_sitelib}/pymod2pkg-%{version}*-info
 
 %files -n {{ py2name() }}-doc
 %doc doc/build/html

@@ -67,6 +67,7 @@ PYTHON=python3 python3 setup.py testr
 %files -n {{ py2name(py_versions='py3') }}
 %license LICENSE
 %doc ChangeLog README.rst
-%{python3_sitelib}/*
+%{python3_sitelib}/cursive
+%{python3_sitelib}/cursive-%{version}*-info
 
 %changelog
