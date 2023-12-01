@@ -14,6 +14,7 @@ Source0:        {{ source }}
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py3('Babel') }}
 BuildRequires:  {{ py3('ddt') }}
+BuildRequires:  {{ py3('defusedxml') }}
 BuildRequires:  {{ py3('eventlet') }}
 BuildRequires:  {{ py3('fixtures') }}
 BuildRequires:  {{ py3('lxml') }}
@@ -43,6 +44,7 @@ server.
 %package -n {{ py2name(py_versions='py3') }}
 Summary:        Oslo VMware library for OpenStack projects
 Requires:       {{ py3('PyYAML') }}
+Requires:       {{ py3('defusedxml') }}
 Requires:       {{ py3('eventlet') }}
 Requires:       {{ py3('lxml') }}
 Requires:       {{ py3('netaddr') }}
