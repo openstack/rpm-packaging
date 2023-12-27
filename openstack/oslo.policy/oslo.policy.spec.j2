@@ -1,5 +1,5 @@
 {% set pypi_name = 'oslo.policy' %}
-{% set upstream_version = upstream_version('4.2.0') %}
+{% set upstream_version = upstream_version('4.3.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -14,6 +14,7 @@ Source0:        {{ source }}
 Patch1:         0001-Avoid-TypeError-when-building-with-Sphinx-6.1.1-and-.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py3('PyYAML') }}
+BuildRequires:  {{ py3('defusedxml') }}
 BuildRequires:  {{ py3('oslo.config') }}
 BuildRequires:  {{ py3('oslo.context') }}
 BuildRequires:  {{ py3('oslo.i18n') }}
@@ -33,6 +34,7 @@ RBAC policy enforcement library for OpenStack.
 %package -n {{ py2name(py_versions='py3') }}
 Summary:        OpenStack Oslo Policy library
 Requires:       {{ py3('PyYAML') }}
+Requires:       {{ py3('defusedxml') }}
 Requires:       {{ py3('oslo.config') }}
 Requires:       {{ py3('oslo.context') }}
 Requires:       {{ py3('oslo.i18n') }}
