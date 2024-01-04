@@ -22,7 +22,9 @@ BuildRequires:  {{ py3('setuptools') }}
 BuildRequires:  {{ py3('tenacity') }}
 BuildArch:      noarch
 %if 0%{?suse_version}
+BuildRequires:  shadow
 BuildRequires:  systemd-rpm-macros
+Requires(pre):  shadow
 %{?systemd_requires}
 %else
 BuildRequires:  systemd

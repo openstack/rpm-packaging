@@ -1,5 +1,5 @@
 {% set pypi_name = 'os-brick' %}
-{% set upstream_version = upstream_version('6.1.0') %}
+{% set upstream_version = upstream_version('6.5.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 # NOTE(ykarel): This is required to prevent singlespec macros from changing the requires
@@ -102,6 +102,8 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 mv %{buildroot}%{_prefix}%{_sysconfdir}/* %{buildroot}/%{_sysconfdir}/
 
 %check
+# Requires os-win
+rm -rf os_brick/tests/windows os_brick/tests/remotefs/test_windows*.py
 %{openstack_stestr_run} --concurrency=1
 
 %files -n {{ py2name(py_versions='py3') }}

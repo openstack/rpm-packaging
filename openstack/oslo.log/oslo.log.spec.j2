@@ -13,6 +13,7 @@ URL:            https://docs.openstack.org/{{ pypi_name }}
 Source0:        {{ source }}
 BuildRequires:  fdupes
 BuildRequires:  openstack-macros
+BuildRequires:  {{ py3('eventlet') }}
 BuildRequires:  {{ py3('monotonic') }}
 BuildRequires:  {{ py3('oslo.config') }}
 BuildRequires:  {{ py3('oslo.context') }}

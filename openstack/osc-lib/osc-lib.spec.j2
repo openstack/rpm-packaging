@@ -21,9 +21,9 @@ BuildRequires:  {{ py3('oslo.utils') }}
 BuildRequires:  {{ py3('oslotest') }}
 BuildRequires:  {{ py3('osprofiler') }}
 BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('platformdirs') }}
 BuildRequires:  {{ py3('requests-mock') }}
 BuildRequires:  {{ py3('simplejson') }}
-BuildRequires:  {{ py3('six') }}
 BuildRequires:  {{ py3('stestr') }}
 BuildRequires:  {{ py3('stevedore') }}
 BuildRequires:  {{ py3('testtools') }}
@@ -41,8 +41,8 @@ Requires:       {{ py3('openstacksdk') }}
 Requires:       {{ py3('oslo.i18n') }}
 Requires:       {{ py3('oslo.utils') }}
 Requires:       {{ py3('pbr') }}
+Requires:       {{ py3('platformdirs') }}
 Requires:       {{ py3('simplejson') }}
-Requires:       {{ py3('six') }}
 Requires:       {{ py3('stevedore') }}
 
 %description -n {{ py2name(py_versions='py3') }}
