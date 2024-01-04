@@ -7,7 +7,7 @@ basedir=${1:-$PWD}
 # 2nd positional arg is the find -name parameter
 FIND_STR=${2:-*}
 
-specdirs="${basedir}/openstack/ ${basedir}/airship/"
+specdirs="${basedir}/openstack/ ${basedir}/airship/ ${basedir}/x/"
 
 WORKSPACE=${WORKSPACE:-$basedir}
 OUTPUTDIR=$WORKSPACE/logs/
