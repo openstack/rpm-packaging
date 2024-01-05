@@ -2,9 +2,6 @@
 {% set upstream_version = upstream_version('2.0.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
-# FIXME(jpena): unit tests require way too much memory
-# and cause timeouts due to swapping. Disabling for now
-%define with_tests 0
 Name:           {{ py2name() }}
 Version:        {{ py2rpmversion() }}
 Release:        {{ py2rpmrelease() }}
@@ -68,6 +65,7 @@ Requires:       {{ py3('keystoneauth1') }}
 Requires:       {{ py3('munch') }}
 Requires:       {{ py3('netifaces') }}
 Requires:       {{ py3('os-service-types') }}
+Requires:       {{ py3('platformdirs') }}
 Requires:       {{ py3('requestsexceptions') }}
 %if 0%{?suse_version}
 Obsoletes:      {{ py2name(py_versions='py2') }} < 1.0.0
@@ -126,12 +124,11 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %install
 %py3_install
 
-%if 0%{?with_tests}
 %check
 export OS_LOG_CAPTURE=true
 export OS_TEST_TIMEOUT=30
+rm -v openstack/tests/unit/test_hacking.py
 %{openstack_stestr_run}
-%endif
 
 %files -n {{ py2name(py_versions='py3') }}
 %license LICENSE
