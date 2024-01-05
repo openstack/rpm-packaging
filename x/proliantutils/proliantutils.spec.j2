@@ -1,0 +1,79 @@
+{% set pypi_name = 'proliantutils' %}
+{% set upstream_version = upstream_version('2.16.0') %}
+{% set rpm_release = '1' %}
+{% set source = url_pypi() %}
+
+Name:           {{ py2name() }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
+Summary:        Client Library for interfacing with various devices in HP Proliant Servers
+License:        {{ license('Apache-2.0') }}
+Group:          Development/Languages/Python
+URL:            https://opendev.org/x/proliantutils
+Source0:        {{ source }}
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py3('ddt') }}
+BuildRequires:  {{ py3('jsonschema') }}
+BuildRequires:  {{ py3('oslo.concurrency') }}
+BuildRequires:  {{ py3('oslo.serialization') }}
+BuildRequires:  {{ py3('oslo.utils') }}
+BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('pysnmp') }}
+BuildRequires:  {{ py3('requests') }}
+BuildRequires:  {{ py3('retrying') }}
+BuildRequires:  {{ py3('setuptools') }}
+BuildRequires:  {{ py3('six') }}
+BuildRequires:  {{ py3('stestr') }}
+BuildRequires:  {{ py3('sushy') }}
+BuildRequires:  {{ py3('testtools') }}
+BuildRequires:  {{ py3('xmltodict') }}
+BuildArch:      noarch
+
+%description
+proliantutils is a set of utility libraries for interfacing and managing
+various components (like iLO, HPSSA) for HP Proliant Servers.  This library
+is used by iLO drivers in Ironic for managing Proliant Servers, though the
+library can be used by anyone who wants to manage HP Proliant servers.
+
+Please use https://bugs.launchpad.net/proliantutils to report bugs and ask
+questions.
+
+%package -n {{ py2name(py_versions='py3') }}
+Summary:        Client Library for interfacing with various devices in HP Proliant Servers
+Group:          Development/Languages/Python
+Requires:       {{ py3('jsonschema') }}
+Requires:       {{ py3('oslo.concurrency') }}
+Requires:       {{ py3('oslo.serialization') }}
+Requires:       {{ py3('oslo.utils') }}
+Requires:       {{ py3('pysnmp') }}
+Requires:       {{ py3('requests') }}
+Requires:       {{ py3('retrying') }}
+Requires:       {{ py3('six') }}
+Requires:       {{ py3('sushy') }}
+
+%description -n {{ py2name(py_versions='py3') }}
+proliantutils is a set of utility libraries for interfacing and managing
+various components (like iLO, HPSSA) for HP Proliant Servers.  This library
+is used by iLO drivers in Ironic for managing Proliant Servers, though the
+library can be used by anyone who wants to manage HP Proliant servers.
+
+%prep
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
+%py_req_cleanup
+
+%build
+%{py3_build}
+
+%install
+%{py3_install}
+
+%check
+%{openstack_stestr_run}
+
+%files -n {{ py2name(py_versions='py3') }}
+%license LICENSE
+%doc AUTHORS ChangeLog README.rst
+%{python3_sitelib}/proliantutils*
+%{python3_sitelib}/*.egg-info
+
+%changelog
