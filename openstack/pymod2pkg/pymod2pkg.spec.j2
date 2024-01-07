@@ -1,6 +1,6 @@
 %global sname pymod2pkg
 {% set pypi_name = 'pymod2pkg' %}
-{% set upstream_version = upstream_version('0.26.0') %}
+{% set upstream_version = upstream_version('0.28.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 Name:           {{ py2name() }}
@@ -11,7 +11,6 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Libraries/Python
 URL:            https://wiki.openstack.org/wiki/Rpm-packaging
 Source0:        {{ source }}
-Patch1:         0001-add-suse_py39-flavor-to-explicitly-render-templates-.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py3('distro') }}
 BuildRequires:  {{ py3('pbr') }}
@@ -68,6 +67,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %license LICENSE
 %doc README*
 %{_bindir}/pymod2pkg
+%{_bindir}/reqs2pkg
 %{python3_sitelib}/pymod2pkg
 %{python3_sitelib}/pymod2pkg-%{version}*-info
 
