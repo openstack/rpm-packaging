@@ -1,5 +1,5 @@
 {% set pypi_name = 'python-neutronclient' %}
-{% set upstream_version = upstream_version('8.2.1') %}
+{% set upstream_version = upstream_version('11.1.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -53,7 +53,6 @@ Requires:       {{ py3('oslo.utils') }}
 Requires:       {{ py3('pbr') }}
 Requires:       {{ py3('requests') }}
 Requires:       {{ py3('simplejson') }}
-Requires:       {{ py3('six') }}
 %if 0%{?suse_version}
 Obsoletes:      {{ py2name(py_versions='py2') }} < 7.1.0
 %endif
@@ -97,7 +96,6 @@ rm -r doc/build/html/.{doctrees,buildinfo}
 %license LICENSE
 %{python3_sitelib}/neutronclient
 %{python3_sitelib}/*.egg-info
-%{_bindir}/neutron
 
 %files -n python-neutronclient-doc
 %doc doc/build/html README.rst
