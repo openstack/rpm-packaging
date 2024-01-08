@@ -1,5 +1,5 @@
 {% set pypi_name = 'octavia-lib' %}
-{% set upstream_version = upstream_version('3.3.0') %}
+{% set upstream_version = upstream_version('3.4.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 %if 0%{?rdo}
@@ -14,7 +14,6 @@ Group:          Development/Languages/Python
 URL:            https://docs.openstack.org/octavia-lib
 Source0:        {{ source }}
 BuildRequires:  openstack-macros
-BuildRequires:  {{ py3('mock') }}
 BuildRequires:  {{ py3('oslo.i18n') }}
 BuildRequires:  {{ py3('oslo.log') }}
 BuildRequires:  {{ py3('oslo.serialization') }}
