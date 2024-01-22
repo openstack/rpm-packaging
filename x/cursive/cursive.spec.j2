@@ -10,6 +10,8 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://opendev.org/x/{{ pypi_name }}
 Source0:        {{ source }}
+# https://review.opendev.org/c/x/cursive/+/906321
+Patch1:         0001-Remove-use-of-external-mock.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py3('Sphinx') }}
 BuildRequires:  {{ py3('castellan') }}
@@ -22,7 +24,7 @@ BuildRequires:  {{ py3('oslotest') }}
 BuildRequires:  {{ py3('pbr') }}
 BuildRequires:  {{ py3('python-subunit') }}
 BuildRequires:  {{ py3('reno') }}
-BuildRequires:  {{ py3('testrepository') }}
+BuildRequires:  {{ py3('stestr') }}
 BuildRequires:  {{ py3('testscenarios') }}
 BuildRequires:  {{ py3('testtools') }}
 BuildArch:      noarch
@@ -52,7 +54,7 @@ projects for verifying digital signatures. Additional capabilities will be
 added to this project in support of various security features.
 
 %prep
-%autosetup -n {{ pypi_name }}-{{ upstream_version }}
+%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
 
 %build
@@ -62,7 +64,7 @@ added to this project in support of various security features.
 %py3_install
 
 %check
-PYTHON=python3 python3 setup.py testr
+%{openstack_stestr_run}
 
 %files -n {{ py2name(py_versions='py3') }}
 %license LICENSE
