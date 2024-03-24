@@ -1,5 +1,5 @@
 {% set pypi_name = 'oslo.policy' %}
-{% set upstream_version = upstream_version('4.2.1') %}
+{% set upstream_version = upstream_version('4.3.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -11,7 +11,6 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://docs.openstack.org/{{ pypi_name }}
 Source0:        {{ source }}
-Patch1:         0001-Avoid-TypeError-when-building-with-Sphinx-6.1.1-and-.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py3('PyYAML') }}
 BuildRequires:  {{ py3('defusedxml') }}
