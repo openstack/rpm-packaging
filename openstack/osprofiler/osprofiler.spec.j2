@@ -20,6 +20,7 @@ BuildRequires:  {{ py3('ddt') }}
 BuildRequires:  {{ py3('docutils') }}
 BuildRequires:  {{ py3('elasticsearch') }}
 BuildRequires:  {{ py3('importlib-metadata') }}
+BuildRequires:  {{ py3('opentelemetry-exporter-otlp') }}
 BuildRequires:  {{ py3('oslo.concurrency') }}
 BuildRequires:  {{ py3('oslo.config') }}
 BuildRequires:  {{ py3('oslo.log') }}
@@ -87,6 +88,8 @@ PBR_VERSION=%{version} %sphinx_build -b html doc/source doc/build/html
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %check
+# otherwise causes import error
+rm osprofiler/tests/unit/drivers/test_jaeger.py
 %{openstack_stestr_run} --exclude-regex '(^osprofiler.tests.unit.drivers.test_jaeger.JaegerTestCase.*$)'
 
 %files -n {{ py2name(py_versions='py3') }}
