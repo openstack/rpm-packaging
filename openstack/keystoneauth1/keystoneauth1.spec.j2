@@ -1,5 +1,5 @@
 {% set pypi_name = 'keystoneauth1' %}
-{% set upstream_version = upstream_version('5.4.0') %}
+{% set upstream_version = upstream_version('5.6.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 Name:           {{ py2name() }}
@@ -27,6 +27,7 @@ BuildRequires:  {{ py3('requests-mock') }}
 BuildRequires:  {{ py3('stestr') }}
 BuildRequires:  {{ py3('testresources') }}
 BuildRequires:  {{ py3('testtools') }}
+BuildRequires:  {{ py3('urllib3') }} < 2
 BuildArch:      noarch
 
 %description
