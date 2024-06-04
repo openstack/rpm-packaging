@@ -1,6 +1,0 @@
-[DEFAULT]
-log_dir=/var/log/murano
-state_path=/var/lib/murano
-
-[oslo_concurrency]
-lock_path=/run/murano
