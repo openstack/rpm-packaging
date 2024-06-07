@@ -11,6 +11,7 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://docs.openstack.org/{{ pypi_name }}
 Source0:        {{ source }}
+Patch1:         0001-netutils-Explicitly-require-INET_ATON.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py3('Babel') }}
 BuildRequires:  {{ py3('ddt') }}
@@ -75,8 +76,7 @@ PBR_VERSION={{ upstream_version }} %sphinx_build -b html doc/source doc/build/ht
 rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %check
-rm -v oslo_utils/tests/test_netutils.py
-%{openstack_stestr_run}
+%{openstack_stestr_run}  --exclude-regex test_is_valid_ip
 
 %files -n {{ py2name(py_versions='py3') }}
 %license LICENSE
