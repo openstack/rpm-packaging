@@ -30,25 +30,25 @@ BuildRequires:  {{ py3('PrettyTable') }}
 BuildRequires:  {{ py3('SQLAlchemy') }}
 BuildRequires:  {{ py3('WSME') }}
 BuildRequires:  {{ py3('WebOb') }}
-BuildRequires:  {{ py3('cinderclient') }}
+BuildRequires:  {{ py3('python-cinderclient') }}
 BuildRequires:  {{ py3('coverage') }}
 BuildRequires:  {{ py3('croniter') }}
 BuildRequires:  {{ py3('freezegun') }}
-BuildRequires:  {{ py3('glanceclient') }}
+BuildRequires:  {{ py3('python-glanceclient') }}
 BuildRequires:  {{ py3('gnocchiclient') }}
-BuildRequires:  {{ py3('ironicclient') }}
+BuildRequires:  {{ py3('python-ironicclient') }}
 BuildRequires:  {{ py3('jsonpatch') }}
 BuildRequires:  {{ py3('jsonschema') }}
 BuildRequires:  {{ py3('keystoneauth1') }}
-BuildRequires:  {{ py3('keystoneclient') }}
+BuildRequires:  {{ py3('python-keystoneclient') }}
 BuildRequires:  {{ py3('keystonemiddleware') }}
 BuildRequires:  {{ py3('lxml') }}
 BuildRequires:  {{ py3('microversion_parse') }}
-BuildRequires:  {{ py3('monascaclient') }}
+BuildRequires:  {{ py3('python-monascaclient') }}
 BuildRequires:  {{ py3('networkx') }}
-BuildRequires:  {{ py3('neutronclient') }}
-BuildRequires:  {{ py3('novaclient') }}
-BuildRequires:  {{ py3('openstackclient') }}
+BuildRequires:  {{ py3('python-neutronclient') }}
+BuildRequires:  {{ py3('python-novaclient') }}
+BuildRequires:  {{ py3('python-openstackclient') }}
 BuildRequires:  {{ py3('os-api-ref') }}
 BuildRequires:  {{ py3('oslo.cache') }}
 BuildRequires:  {{ py3('oslo.concurrency') }}
@@ -119,7 +119,7 @@ Requires:       {{ py3('python-monascaclient') }}
 Requires:       {{ py3('networkx') }}
 Requires:       {{ py3('python-neutronclient') }}
 Requires:       {{ py3('python-novaclient') }}
-Requires:       {{ py3('openstackclient') }}
+Requires:       {{ py3('python-openstackclient') }}
 Requires:       {{ py3('oslo.cache') }}
 Requires:       {{ py3('oslo.db') }}
 Requires:       {{ py3('oslo.messaging') }}
@@ -177,7 +177,7 @@ Summary:        Documentation for OpenStack Watcher Service
 Group:          Documentation/HTML
 BuildRequires:  fdupes
 BuildRequires:  {{ py3('Sphinx') }}
-BuildRequires:  {{ py3('keystoneclient') }}
+BuildRequires:  {{ py3('python-keystoneclient') }}
 BuildRequires:  {{ py3('os-api-ref') }}
 BuildRequires:  {{ py3('sphinxcontrib-apidoc') }}
 BuildRequires:  {{ py3('sphinxcontrib-pecanwsme') }}
