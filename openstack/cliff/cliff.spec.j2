@@ -73,7 +73,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 %check
 # doesn't work with pytest atm
 rm -v cliff/tests/test_commandmanager.py
-python3 -m pytest cliff/tests
+%{__python3} -m pytest cliff/tests
 
 %files -n {{ py2name(py_versions='py3') }}
 %license LICENSE
