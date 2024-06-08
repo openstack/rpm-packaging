@@ -414,7 +414,7 @@ exit 0
 %check
 # don't want to depend on hacking for package building
 rm neutron/tests/unit/hacking/test_checks.py
-python3 -m stestr.cli --test-path neutron/tests/unit run --concurrency 2 --exclude-regex '(neutron.tests.unit.objects|neutron.tests.unit.plugins)'
+%{__python3} -m stestr.cli --test-path neutron/tests/unit run --concurrency 2 --exclude-regex '(neutron.tests.unit.objects|neutron.tests.unit.plugins)'
 
 %post
 %tmpfiles_create %{_tmpfilesdir}/%{name}.conf
