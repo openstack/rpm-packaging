@@ -119,7 +119,7 @@ This package contains the OpenStack Placement API.
 %py_req_cleanup
 
 %build
-python3 setup.py build
+%py3_build
 
 # doc
 PYTHONPATH=. PBR_VERSION={{ upstream_version }} %sphinx_build -b man doc/source doc/build/man
@@ -174,7 +174,7 @@ install -m 644 doc/build/man/*.1 %{buildroot}%{_mandir}/man1
 install -p -D -m 640 %{SOURCE5} %{buildroot}%{_sysconfdir}/placement/placement.conf.d/010-placement.conf
 
 %check
-PYTHONPATH=. python3 -m stestr.cli --test-path placement/tests/unit run
+PYTHONPATH=. %{__python3} -m stestr.cli --test-path placement/tests/unit run
 
 %pre
 %openstack_pre_user_group_create placement placement
