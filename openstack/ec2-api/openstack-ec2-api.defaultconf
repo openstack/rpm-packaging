@@ -1,3 +1,0 @@
-[DEFAULT]
-log_dir = /var/log/ec2-api
-state_path = /var/lib/ec2-api
