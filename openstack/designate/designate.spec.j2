@@ -22,10 +22,9 @@ Source4:        openstack-designate.defaultconf
 Source20:       openstack-designate-api.service
 Source21:       openstack-designate-sink.service
 Source22:       openstack-designate-central.service
-Source23:       openstack-designate-agent.service
+Source23:       openstack-designate-mdns.service
 Source24:       openstack-designate-producer.service
 Source25:       openstack-designate-worker.service
-Source26:       openstack-designate-mdns.service
 Source50:       openstack-designate.README.config
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py3('dnspython') }}
@@ -174,16 +173,6 @@ Designate is an OpenStack inspired DNSaaS.
 
 This package contains the central server.
 
-%package agent
-Summary:        OpenStack DNS Service (Designate) - Agent
-Group:          Development/Languages/Python
-Requires:       python3-{{ pypi_name }} = %{epoch}:%{version}-%{release}
-
-%description agent
-Designate is an OpenStack inspired DNSaaS.
-
-This package contains the agent.
-
 %package producer
 Summary:        OpenStack DNS Service (Designate) - Producer
 Group:          Development/Languages/Python
@@ -269,10 +258,9 @@ for f in %{buildroot}%{_sysconfdir}/designate/*.sample ; do mv $f ${f/.sample} ;
 install -p -D -m 644 %{SOURCE20} %{buildroot}%{_unitdir}/openstack-designate-api.service
 install -p -D -m 644 %{SOURCE21} %{buildroot}%{_unitdir}/openstack-designate-sink.service
 install -p -D -m 644 %{SOURCE22} %{buildroot}%{_unitdir}/openstack-designate-central.service
-install -p -D -m 644 %{SOURCE23} %{buildroot}%{_unitdir}/openstack-designate-agent.service
+install -p -D -m 644 %{SOURCE23} %{buildroot}%{_unitdir}/openstack-designate-mdns.service
 install -p -D -m 644 %{SOURCE24} %{buildroot}%{_unitdir}/openstack-designate-producer.service
 install -p -D -m 644 %{SOURCE25} %{buildroot}%{_unitdir}/openstack-designate-worker.service
-install -p -D -m 644 %{SOURCE26} %{buildroot}%{_unitdir}/openstack-designate-mdns.service
 
 # install symlinks on SUSE
 %if 0%{?suse_version}
@@ -280,7 +268,6 @@ mkdir -p %{buildroot}%{_sbindir}
 ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-api
 ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-sink
 ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-central
-ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-agent
 ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-producer
 ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-worker
 ln -s %{_sbindir}/service %{buildroot}%{_sbindir}/rc%{name}-mdns
@@ -329,15 +316,6 @@ exit 0
 
 %postun central
 %systemd_postun_with_restart %{name}-central.service
-
-%post agent
-%systemd_post %{name}-agent.service
-
-%preun agent
-%systemd_preun %{name}-agent.service
-
-%postun agent
-%systemd_postun_with_restart %{name}-agent.service
 
 %post producer
 %systemd_post %{name}-producer.service
@@ -428,14 +406,6 @@ exit 0
 %{_unitdir}/openstack-designate-central.service
 %if 0%{?suse_version}
 %{_sbindir}/rc%{name}-central
-%endif
-
-%files agent
-%license LICENSE
-%{_bindir}/designate-agent
-%{_unitdir}/openstack-designate-agent.service
-%if 0%{?suse_version}
-%{_sbindir}/rc%{name}-agent
 %endif
 
 %files producer
