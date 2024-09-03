@@ -11,6 +11,8 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://docs.openstack.org/{{ pypi_name }}
 Source0:        {{ source }}
+# https://review.opendev.org/c/openstack/oslo.reports/+/927739
+Patch1:         0001-Handle-shell_completion-option-in-test-suite.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py3('Jinja2') }}
 BuildRequires:  {{ py3('eventlet') }}
