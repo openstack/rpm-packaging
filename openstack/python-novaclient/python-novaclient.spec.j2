@@ -12,6 +12,7 @@ License:        {{ license('Apache-2.0') }}
 Group:          Development/Languages/Python
 URL:            https://docs.openstack.org/{{ pypi_name }}
 Source0:        {{ source }}
+Patch1:         0001-Fix-Python-3.12-compatibility.patch
 BuildRequires:  openssl
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py3('python-cinderclient') }}
