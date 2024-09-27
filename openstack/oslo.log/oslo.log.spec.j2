@@ -14,7 +14,6 @@ Source0:        {{ source }}
 BuildRequires:  fdupes
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py3('eventlet') }}
-BuildRequires:  {{ py3('monotonic') }}
 BuildRequires:  {{ py3('oslo.config') }}
 BuildRequires:  {{ py3('oslo.context') }}
 BuildRequires:  {{ py3('oslo.i18n') }}
@@ -35,7 +34,6 @@ support for context specific logging (like resource id's etc).
 %package -n {{ py2name(py_versions='py3') }}
 Summary:        OpenStack log library
 Requires:       {{ py3('debtcollector') }}
-Requires:       {{ py3('monotonic') }}
 Requires:       {{ py3('oslo.config') }}
 Requires:       {{ py3('oslo.context') }}
 Requires:       {{ py3('oslo.i18n') }}
