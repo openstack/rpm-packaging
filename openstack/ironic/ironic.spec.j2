@@ -81,6 +81,13 @@ BuildRequires:  sudo
 Requires:       logrotate
 Requires:       python3-{{ pypi_name }} = %{epoch}:%{version}-%{release}
 BuildArch:      noarch
+%if 0%{?suse_version} > 1600
+BuildRequires:  qemu-img
+%else
+%if 0%{?suse_version}
+BuildRequires:  qemu-tools
+%endif
+%endif
 %if 0%{?suse_version}
 BuildRequires:  systemd-rpm-macros
 %{?systemd_requires}
