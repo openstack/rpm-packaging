@@ -1,0 +1,54 @@
+From c1dde58ac724b001e50e2b901b6345a032bcc747 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Dirk=20M=C3=BCller?= <dirk@dmllr.de>
+Date: Mon, 22 Jan 2024 23:20:28 +0100
+Subject: [PATCH] Remove use of external mock
+
+Change-Id: I464738e9485dc2745d293d60d6c760ed1558fdf0
+---
+ cursive/tests/unit/test_certificate_utils.py | 2 +-
+ cursive/tests/unit/test_signature_utils.py   | 2 +-
+ test-requirements.txt                        | 1 -
+ 3 files changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/cursive/tests/unit/test_certificate_utils.py b/cursive/tests/unit/test_certificate_utils.py
+index a376528..d342118 100644
+--- a/cursive/tests/unit/test_certificate_utils.py
++++ b/cursive/tests/unit/test_certificate_utils.py
+@@ -11,8 +11,8 @@
+ #    under the License.
+ 
+ import datetime
+-import mock
+ import os
++from unittest import mock
+ 
+ from cryptography.hazmat.backends import default_backend
+ from cryptography import x509
+diff --git a/cursive/tests/unit/test_signature_utils.py b/cursive/tests/unit/test_signature_utils.py
+index 9bfe63b..c466fdf 100644
+--- a/cursive/tests/unit/test_signature_utils.py
++++ b/cursive/tests/unit/test_signature_utils.py
+@@ -12,7 +12,7 @@
+ 
+ import base64
+ import datetime
+-import mock
++from unittest import mock
+ 
+ from castellan.common.exception import KeyManagerError
+ from castellan.common.exception import ManagedObjectNotFoundError
+diff --git a/test-requirements.txt b/test-requirements.txt
+index 5f430d4..f9079e4 100644
+--- a/test-requirements.txt
++++ b/test-requirements.txt
+@@ -7,7 +7,6 @@ hacking>=3.1.0,<3.2.0 # Apache-2.0
+ stestr>=3.0.1 # Apache-2.0
+ coverage>=3.6 # Apache-2.0
+ python-subunit>=0.0.18 # Apache-2.0/BSD
+-mock>=2.0.0 # BSD
+ oslotest>=1.10.0 # Apache-2.0
+ testrepository>=0.0.18 # Apache-2.0/BSD
+ testscenarios>=0.4 # Apache-2.0/BSD
+-- 
+2.46.1
+
