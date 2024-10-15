@@ -40,6 +40,11 @@ BuildArch:      noarch
 %if 0%{?suse_version}
 BuildRequires:  systemd-rpm-macros
 %{?systemd_requires}
+%if 0%{?suse_version} > 1600
+BuildRequires:  qemu-img
+%else
+BuildRequires:  qemu-tools
+%endif
 %else
 BuildRequires:  systemd
 Requires(post): systemd
