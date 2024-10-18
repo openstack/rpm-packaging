@@ -1,5 +1,5 @@
 {% set pypi_name = 'python-openstackclient' %}
-{% set upstream_version = upstream_version('6.6.0') %}
+{% set upstream_version = upstream_version('7.1.3') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -16,9 +16,7 @@ BuildRequires:  {{ py3('python-cinderclient') }}
 BuildRequires:  {{ py3('cliff') }}
 BuildRequires:  {{ py3('ddt') }}
 BuildRequires:  {{ py3('fixtures') }}
-BuildRequires:  {{ py3('python-glanceclient') }}
 BuildRequires:  {{ py3('python-keystoneclient') }}
-BuildRequires:  {{ py3('python-novaclient') }}
 BuildRequires:  {{ py3('openstacksdk') }}
 BuildRequires:  {{ py3('osc-lib') }}
 BuildRequires:  {{ py3('oslotest') }}
@@ -42,11 +40,7 @@ Summary:        OpenStack Command-line Client
 Requires:       {{ py3('Babel') }}
 Requires:       {{ py3('python-cinderclient') }}
 Requires:       {{ py3('cliff') }}
-Requires:       {{ py3('python-glanceclient') }}
-Requires:       {{ py3('python-heatclient') }}
-Requires:       {{ py3('keystoneauth1') }}
 Requires:       {{ py3('python-keystoneclient') }}
-Requires:       {{ py3('python-novaclient') }}
 Requires:       {{ py3('openstacksdk') }}
 Requires:       {{ py3('osc-lib') }}
 Requires:       {{ py3('oslo.i18n') }}
@@ -65,19 +59,8 @@ This package contains the Python 3.x module.
 %package -n python-openstackclient-doc
 Summary:        Documentation for OpenStack Command-line Client
 Group:          Documentation/HTML
-# Some clients are commented out, since they have not been built yet
-# TODO(jpena): uncomment them to enable their sections in the documentation
 BuildRequires:  {{ py3('Sphinx') }}
-#BuildRequires:  {{ py3('aodhclient') }}
-#BuildRequires:  {{ py3('python-barbicanclient') }}
-#BuildRequires:  {{ py3('python-designateclient') }}
-#BuildRequires:  {{ py3('python-heatclient') }}
-#BuildRequires:  {{ py3('python-ironicclient') }}
-#BuildRequires:  {{ py3('python-mistralclient') }}
-#BuildRequires:  {{ py3('python-neutronclient') }}
 BuildRequires:  {{ py3('openstackdocstheme') }}
-#BuildRequires:  {{ py3('python-ironic-inspector-client') }}
-#BuildRequires:  {{ py3('python-zaqarclient') }}
 BuildRequires:  {{ py3('sphinxcontrib-apidoc') }}
 
 %description -n python-openstackclient-doc
