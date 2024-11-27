@@ -1,0 +1,205 @@
+From 27bd04925748a66866011a68eb0e26f23cedbcfa Mon Sep 17 00:00:00 2001
+From: Riccardo Pittau <elfosardo@gmail.com>
+Date: Tue, 29 Oct 2024 09:05:05 +0100
+Subject: [PATCH] Use linux instead of linuxefi in grub config
+
+The EFI handover protocol has been deprecated since a while
+and recently moved to be optional and enabled by default [1].
+As a consequence, the linuxefi and initrdefi binaries that
+were specifically compiled to use that option, are
+also deprecated and they have been removed in most of
+the recent linux distributions in favor of the generic
+linux and initrd that are now compatible with UEFI boot.
+This patch changes linuxefi to linux and initrdefi to
+initrd in all the grub templates, using the generic
+entries for all the platform architectures.
+
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=cc3fdda2876e58a7e83e558ab51853cf106afb6a
+
+Closes-Bug: #2081305
+Change-Id: Ie5b2265d7afc8b71fabfca6ca6687e0e34ce3b5b
+---
+ ironic/common/grub_conf.template               |  4 ++--
+ ironic/common/pxe_utils.py                     |  6 ++----
+ .../drivers/modules/pxe_grub_config.template   | 14 +++++++-------
+ ironic/tests/unit/common/test_images.py        |  4 ++--
+ ironic/tests/unit/common/test_pxe_utils.py     | 18 +-----------------
+ .../unit/drivers/modules/test_deploy_utils.py  | 12 ++++++------
+ .../unit/drivers/pxe_grub_config.template      | 14 +++++++-------
+ 7 files changed, 27 insertions(+), 45 deletions(-)
+
+Index: ironic-26.1.2.dev9/ironic/common/grub_conf.template
+===================================================================
+--- ironic-26.1.2.dev9.orig/ironic/common/grub_conf.template
++++ ironic-26.1.2.dev9/ironic/common/grub_conf.template
+@@ -3,6 +3,6 @@ set timeout=5
+ set hidden_timeout_quiet=false
+ 
+ menuentry "boot_partition" {
+-linuxefi {{ linux }} {{ kernel_params }} --
+-initrdefi {{ initrd }}
++linux {{ linux }} {{ kernel_params }} --
++initrd {{ initrd }}
+ }
+Index: ironic-26.1.2.dev9/ironic/common/pxe_utils.py
+===================================================================
+--- ironic-26.1.2.dev9.orig/ironic/common/pxe_utils.py
++++ ironic-26.1.2.dev9/ironic/common/pxe_utils.py
+@@ -350,11 +350,9 @@ def create_pxe_config(task, pxe_options,
+         pxe_config_root_tag = '(( ROOT ))'
+         pxe_config_disk_ident = '(( DISK_IDENTIFIER ))'
+ 
+-        # Determine the appropriate commands based on the CPU architecture
+-        arch = task.node.properties.get('cpu_arch', 'x86_64')
+         commands = {
+-            'linux_cmd': 'linuxefi' if arch != 'aarch64' else 'linux',
+-            'initrd_cmd': 'initrdefi' if arch != 'aarch64' else 'initrd'
++            'linux_cmd': 'linux',
++            'initrd_cmd': 'initrd'
+         }
+         pxe_options.update(commands)
+     else:
+Index: ironic-26.1.2.dev9/ironic/drivers/modules/pxe_grub_config.template
+===================================================================
+--- ironic-26.1.2.dev9.orig/ironic/drivers/modules/pxe_grub_config.template
++++ ironic-26.1.2.dev9/ironic/drivers/modules/pxe_grub_config.template
+@@ -3,20 +3,20 @@ set timeout=5
+ set hidden_timeout_quiet=false
+ 
+ menuentry "deploy"  {
+-    {{ pxe_options.linux_cmd|default('linuxefi', true) }} {{ pxe_options.deployment_aki_path }} selinux=0 troubleshoot=0 text {{ pxe_options.pxe_append_params|default("", true) }} boot_server={{pxe_options.tftp_server}}
+-    {{ pxe_options.initrd_cmd|default('initrdefi', true) }} {{ pxe_options.deployment_ari_path }}
++    {{ pxe_options.linux_cmd|default('linux', true) }} {{ pxe_options.deployment_aki_path }} selinux=0 troubleshoot=0 text {{ pxe_options.pxe_append_params|default("", true) }} boot_server={{pxe_options.tftp_server}}
++    {{ pxe_options.initrd_cmd|default('initrd', true) }} {{ pxe_options.deployment_ari_path }}
+ }
+ 
+ menuentry "boot_ramdisk"  {
+-    {{ pxe_options.linux_cmd|default('linuxefi', true) }} {{ pxe_options.aki_path }} root=/dev/ram0 text {{ pxe_options.pxe_append_params|default("", true) }} {{ pxe_options.ramdisk_opts|default('', true) }}
+-    {{ pxe_options.initrd_cmd|default('initrdefi', true) }} {{ pxe_options.ari_path }}
++    {{ pxe_options.linux_cmd|default('linux', true) }} {{ pxe_options.aki_path }} root=/dev/ram0 text {{ pxe_options.pxe_append_params|default("", true) }} {{ pxe_options.ramdisk_opts|default('', true) }}
++    {{ pxe_options.initrd_cmd|default('initrd', true) }} {{ pxe_options.ari_path }}
+ }
+ 
+ menuentry "boot_whole_disk"  {
+-    {{ pxe_options.linux_cmd|default('linuxefi', true) }} chain.c32 mbr:{{ DISK_IDENTIFIER }}
++    {{ pxe_options.linux_cmd|default('linux', true) }} chain.c32 mbr:{{ DISK_IDENTIFIER }}
+ }
+ 
+ menuentry "boot_anaconda" {
+-     {{ pxe_options.linux_cmd|default('linuxefi', true) }} {{ pxe_options.aki_path }} text {{ pxe_options.pxe_append_params|default("", true) }} inst.ks={{ pxe_options.ks_cfg_url }} {% if pxe_options.repo_url %}inst.repo={{ pxe_options.repo_url }}{% else %}inst.stage2={{ pxe_options.stage2_url }}{% endif %}
+-     {{ pxe_options.initrd_cmd|default('initrdefi', true) }} {{ pxe_options.ari_path }}
++     {{ pxe_options.linux_cmd|default('linux', true) }} {{ pxe_options.aki_path }} text {{ pxe_options.pxe_append_params|default("", true) }} inst.ks={{ pxe_options.ks_cfg_url }} {% if pxe_options.repo_url %}inst.repo={{ pxe_options.repo_url }}{% else %}inst.stage2={{ pxe_options.stage2_url }}{% endif %}
++     {{ pxe_options.initrd_cmd|default('initrd', true) }} {{ pxe_options.ari_path }}
+ }
+Index: ironic-26.1.2.dev9/ironic/tests/unit/common/test_images.py
+===================================================================
+--- ironic-26.1.2.dev9.orig/ironic/tests/unit/common/test_images.py
++++ ironic-26.1.2.dev9/ironic/tests/unit/common/test_images.py
+@@ -654,8 +654,8 @@ class FsImageTestCase(base.TestCase):
+                         "set hidden_timeout_quiet=false\n"
+                         "\n"
+                         "menuentry \"boot_partition\" {\n"
+-                        "linuxefi /vmlinuz key1=value1 key2 --\n"
+-                        "initrdefi /initrd\n"
++                        "linux /vmlinuz key1=value1 key2 --\n"
++                        "initrd /initrd\n"
+                         "}")
+ 
+         cfg = images._generate_cfg(kernel_params,
+Index: ironic-26.1.2.dev9/ironic/tests/unit/common/test_pxe_utils.py
+===================================================================
+--- ironic-26.1.2.dev9.orig/ironic/tests/unit/common/test_pxe_utils.py
++++ ironic-26.1.2.dev9/ironic/tests/unit/common/test_pxe_utils.py
+@@ -166,23 +166,7 @@ class TestPXEUtils(db_base.DbTestCase):
+ 
+         self.assertEqual(str(expected_template), rendered_template)
+ 
+-    def test_pxe_config_x86_64(self):
+-        self.node.properties['cpu_arch'] = 'x86_64'
+-        self.node.save()
+-
+-        rendered_template = utils.render_template(
+-            CONF.pxe.uefi_pxe_config_template,
+-            {'pxe_options': self.pxe_options,
+-             'ROOT': '{{ ROOT }}',
+-             'DISK_IDENTIFIER': '{{ DISK_IDENTIFIER }}'})
+-
+-        self.assertIn('linuxefi', rendered_template)
+-        self.assertIn('initrdefi', rendered_template)
+-
+-    def test_pxe_config_aarch64(self):
+-        self.node.properties['cpu_arch'] = 'aarch64'
+-        self.node.save()
+-
++    def test_pxe_config(self):
+         rendered_template = utils.render_template(
+             CONF.pxe.uefi_pxe_config_template,
+             {'pxe_options': self.pxe_options,
+Index: ironic-26.1.2.dev9/ironic/tests/unit/drivers/modules/test_deploy_utils.py
+===================================================================
+--- ironic-26.1.2.dev9.orig/ironic/tests/unit/drivers/modules/test_deploy_utils.py
++++ ironic-26.1.2.dev9/ironic/tests/unit/drivers/modules/test_deploy_utils.py
+@@ -159,12 +159,12 @@ set timeout=5
+ set hidden_timeout_quiet=false
+ 
+ menuentry "deploy"  {
+-    linuxefi deploy_kernel "ro text"
+-    initrdefi deploy_ramdisk
++    linux deploy_kernel "ro text"
++    initrd deploy_ramdisk
+ }
+ 
+ menuentry "boot_whole_disk"  {
+-    linuxefi chain.c32 mbr:(( DISK_IDENTIFIER ))
++    linux chain.c32 mbr:(( DISK_IDENTIFIER ))
+ }
+ """
+ 
+@@ -174,12 +174,12 @@ set timeout=5
+ set hidden_timeout_quiet=false
+ 
+ menuentry "deploy"  {
+-    linuxefi deploy_kernel "ro text"
+-    initrdefi deploy_ramdisk
++    linux deploy_kernel "ro text"
++    initrd deploy_ramdisk
+ }
+ 
+ menuentry "boot_whole_disk"  {
+-    linuxefi chain.c32 mbr:0x12345678
++    linux chain.c32 mbr:0x12345678
+ }
+ """
+ 
+Index: ironic-26.1.2.dev9/ironic/tests/unit/drivers/pxe_grub_config.template
+===================================================================
+--- ironic-26.1.2.dev9.orig/ironic/tests/unit/drivers/pxe_grub_config.template
++++ ironic-26.1.2.dev9/ironic/tests/unit/drivers/pxe_grub_config.template
+@@ -3,20 +3,20 @@ set timeout=5
+ set hidden_timeout_quiet=false
+ 
+ menuentry "deploy"  {
+-    linuxefi /tftpboot/1be26c0b-03f2-4d2e-ae87-c02d7f33c123/deploy_kernel selinux=0 troubleshoot=0 text test_param boot_server=192.0.2.1
+-    initrdefi /tftpboot/1be26c0b-03f2-4d2e-ae87-c02d7f33c123/deploy_ramdisk
++    linux /tftpboot/1be26c0b-03f2-4d2e-ae87-c02d7f33c123/deploy_kernel selinux=0 troubleshoot=0 text test_param boot_server=192.0.2.1
++    initrd /tftpboot/1be26c0b-03f2-4d2e-ae87-c02d7f33c123/deploy_ramdisk
+ }
+ 
+ menuentry "boot_ramdisk"  {
+-    linuxefi /tftpboot/1be26c0b-03f2-4d2e-ae87-c02d7f33c123/kernel root=/dev/ram0 text test_param ramdisk_param
+-    initrdefi /tftpboot/1be26c0b-03f2-4d2e-ae87-c02d7f33c123/ramdisk
++    linux /tftpboot/1be26c0b-03f2-4d2e-ae87-c02d7f33c123/kernel root=/dev/ram0 text test_param ramdisk_param
++    initrd /tftpboot/1be26c0b-03f2-4d2e-ae87-c02d7f33c123/ramdisk
+ }
+ 
+ menuentry "boot_whole_disk"  {
+-    linuxefi chain.c32 mbr:(( DISK_IDENTIFIER ))
++    linux chain.c32 mbr:(( DISK_IDENTIFIER ))
+ }
+ 
+ menuentry "boot_anaconda" {
+-     linuxefi /tftpboot/1be26c0b-03f2-4d2e-ae87-c02d7f33c123/kernel text test_param inst.ks=http://fake/ks.cfg inst.stage2=http://fake/stage2
+-     initrdefi /tftpboot/1be26c0b-03f2-4d2e-ae87-c02d7f33c123/ramdisk
++     linux /tftpboot/1be26c0b-03f2-4d2e-ae87-c02d7f33c123/kernel text test_param inst.ks=http://fake/ks.cfg inst.stage2=http://fake/stage2
++     initrd /tftpboot/1be26c0b-03f2-4d2e-ae87-c02d7f33c123/ramdisk
+ }

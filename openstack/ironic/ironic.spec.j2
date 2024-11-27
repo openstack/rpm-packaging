@@ -22,6 +22,7 @@ Source5:        openstack-ironic.README.config
 # systemd service files
 Source6:        openstack-ironic-api.service
 Source7:        openstack-ironic-conductor.service
+Patch1:         0001-Use-linux-instead-of-linuxefi-in-grub-config.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py3('Jinja2') }}
 BuildRequires:  {{ py3('SQLAlchemy') }}
