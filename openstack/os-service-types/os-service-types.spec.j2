@@ -15,6 +15,7 @@ BuildRequires:  {{ py3('oslotest') }}
 BuildRequires:  {{ py3('pbr') }}
 BuildRequires:  {{ py3('python-subunit') }}
 BuildRequires:  {{ py3('requests-mock') }}
+BuildRequires:  {{ py3('six') }}
 BuildRequires:  {{ py3('stestr') }}
 BuildRequires:  {{ py3('testscenarios') }}
 BuildArch:      noarch
@@ -30,6 +31,7 @@ possible and local caching of the fetched data.
 %package -n {{ py2name(py_versions='py3') }}
 Summary:        Python library for consuming OpenStack sevice-types-authority data
 Requires:       {{ py3('pbr') }}
+Requires:       {{ py3('six') }}
 
 %description -n {{ py2name(py_versions='py3') }}
 The OpenStack Service Types Authority contains information about official
