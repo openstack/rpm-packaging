@@ -17,12 +17,9 @@ BuildRequires:  {{ py3('Pint') }}
 BuildRequires:  {{ py3('Werkzeug') }}
 BuildRequires:  {{ py3('cryptography') }}
 BuildRequires:  {{ py3('eventlet') }}
-BuildRequires:  {{ py3('ironic-lib') }}
-BuildRequires:  {{ py3('netifaces') }}
 BuildRequires:  {{ py3('oslo.concurrency') }}
 BuildRequires:  {{ py3('oslo.config') }}
 BuildRequires:  {{ py3('oslo.log') }}
-BuildRequires:  {{ py3('oslo.serialization') }}
 BuildRequires:  {{ py3('oslo.service') }}
 BuildRequires:  {{ py3('oslo.utils') }}
 BuildRequires:  {{ py3('oslotest') }}
@@ -30,11 +27,11 @@ BuildRequires:  {{ py3('pbr') }}
 BuildRequires:  {{ py3('psutil') }}
 BuildRequires:  {{ py3('pyudev') }}
 BuildRequires:  {{ py3('requests') }}
-BuildRequires:  {{ py3('rtslib-fb') }}
 BuildRequires:  {{ py3('stestr') }}
 BuildRequires:  {{ py3('stevedore') }}
 BuildRequires:  {{ py3('tenacity') }}
 BuildRequires:  {{ py3('tooz') }}
+BuildRequires:  {{ py3('zeroconf') }}
 Requires:       python3-{{ pypi_name }} = %{version}-%{release}
 BuildArch:      noarch
 %if 0%{?suse_version}
@@ -64,22 +61,19 @@ Requires:       {{ py3('Pint') }}
 Requires:       {{ py3('Werkzeug') }}
 Requires:       {{ py3('cryptography') }}
 Requires:       {{ py3('eventlet') }}
-Requires:       {{ py3('ironic-lib') }}
-Requires:       {{ py3('netifaces') }}
 Requires:       {{ py3('oslo.concurrency') }}
 Requires:       {{ py3('oslo.config') }}
 Requires:       {{ py3('oslo.log') }}
-Requires:       {{ py3('oslo.serialization') }}
 Requires:       {{ py3('oslo.service') }}
 Requires:       {{ py3('oslo.utils') }}
 Requires:       {{ py3('pbr') }}
 Requires:       {{ py3('psutil') }}
 Requires:       {{ py3('pyudev') }}
 Requires:       {{ py3('requests') }}
-Requires:       {{ py3('rtslib-fb') }}
 Requires:       {{ py3('stevedore') }}
 Requires:       {{ py3('tenacity') }}
 Requires:       {{ py3('tooz') }}
+Requires:       {{ py3('zeroconf') }}
 
 %description -n python3-{{ pypi_name }}
 The ironic-python-agent works with the agent driver in Ironic to provision the node.
