@@ -48,7 +48,7 @@ in transmittable and storable formats, such as Base64, JSON and MessagePack.
 This package contains the documentation.
 
 %prep
-%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
+%autosetup -p1 -n oslo_serialization-{{ upstream_version }}
 sed -i -e "s,bandit.*,," test-requirements.txt
 %py_req_cleanup
 

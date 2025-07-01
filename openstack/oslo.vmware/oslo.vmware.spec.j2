@@ -77,7 +77,7 @@ BuildRequires:  {{ py3('sphinxcontrib-apidoc') }}
 Documentation for OpenStack common VMware library.
 
 %prep
-%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
+%autosetup -p1 -n oslo_vmware-{{ upstream_version }}
 %py_req_cleanup
 
 %build

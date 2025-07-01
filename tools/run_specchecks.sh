@@ -17,11 +17,11 @@ cat openstack/openstack-macros/macros.openstack-singlespec > $thome/.rpmmacros
 failed=0
 for spec in `find $WORKSPACE/logs/suse/ -name "*${FIND_STR}.spec" -type f -print` ; do
     echo "Checking $spec"
-    egrep -q '^Source:' $spec && {
+    grep -E -q '^Source:' $spec && {
         echo "$spec should not have Source: lines. Please use Source0: instead."
         failed=1
     }
-    egrep -q '^%setup' $spec && {
+    grep -E -q '^%setup' $spec && {
         echo "$spec should not use '%setup'. Please use '%autosetup' instead."
         failed=1
     }

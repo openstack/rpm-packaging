@@ -54,10 +54,7 @@ This package contains Python client and command line tool for Ironic Inspector.
 This package contains the Python 3.x module.
 
 %prep
-%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
-sed -i -e 's,hacking.*,,' test-requirements.txt
-sed -i -e 's,coverage.*,,' test-requirements.txt
-sed -i -e 's,doc8.*,,' test-requirements.txt
+%autosetup -p1 -n python_ironic_inspector_client-{{ upstream_version }}
 %py_req_cleanup
 
 %build

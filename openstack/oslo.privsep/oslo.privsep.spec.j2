@@ -55,7 +55,7 @@ BuildRequires:  {{ py3('sphinxcontrib-apidoc') }}
 Documentation for oslo.privsep
 
 %prep
-%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
+%autosetup -p1 -n oslo_privsep-{{ upstream_version }}
 %py_req_cleanup
 
 %build

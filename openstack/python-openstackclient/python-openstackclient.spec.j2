@@ -1,5 +1,5 @@
 {% set pypi_name = 'python-openstackclient' %}
-{% set upstream_version = upstream_version('7.1.3') %}
+{% set upstream_version = upstream_version('7.4.0') %}
 {% set rpm_release = '1' %}
 {% set source = url_pypi() %}
 
@@ -70,7 +70,7 @@ actual REST API client actions.
 This package contains auto-generated documentation.
 
 %prep
-%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
+%autosetup -p1 -n python_openstackclient-{{ upstream_version }}
 %py_req_cleanup
 
 %build
