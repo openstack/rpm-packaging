@@ -59,7 +59,7 @@ Documentation for the client library for interacting with Openstack
 Identity API.
 
 %prep
-%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
+%autosetup -p1 -n python_keystoneclient-{{ upstream_version }}
 %py_req_cleanup
 # disable intersphinx - no network access during build
 echo "intersphinx_mapping = {}" >> doc/source/conf.py

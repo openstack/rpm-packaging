@@ -57,7 +57,7 @@ BuildRequires:  {{ py3('openstackdocstheme') }}
 Documentation for the {{ pypi_name }} library.
 
 %prep
-%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
+%autosetup -p1 -n oslo_upgradecheck-{{ upstream_version }}
 %py_req_cleanup
 
 %build

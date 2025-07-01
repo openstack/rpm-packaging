@@ -50,7 +50,7 @@ BuildRequires:  {{ py3('openstackdocstheme') }}
 Documentation for the OpenStack {{ pypi_name }} library.
 
 %prep
-%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
+%autosetup -p1 -n oslo_rootwrap-{{ upstream_version }}
 %py_req_cleanup
 
 %build

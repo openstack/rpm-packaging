@@ -52,7 +52,7 @@ BuildRequires:  {{ py3('sphinxcontrib-apidoc') }}
 Documentation for the oslo.limit library.
 
 %prep
-%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
+%autosetup -p1 -n oslo_limit-{{ upstream_version }}
 %py_req_cleanup
 
 %build

@@ -69,7 +69,7 @@ BuildRequires:  {{ py3('openstackdocstheme') }}
 This package contains documentation files for %{name}.
 
 %prep
-%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
+%autosetup -p1 -n oslo_versionedobjects-{{ upstream_version }}
 %py_req_cleanup
 
 %build

@@ -19,10 +19,10 @@ BuildRequires:  {{ py3('eventlet') }}
 BuildRequires:  {{ py3('fixtures') }}
 BuildRequires:  {{ py3('iso8601') }}
 BuildRequires:  {{ py3('netaddr') }}
-BuildRequires:  {{ py3('netifaces') }}
 BuildRequires:  {{ py3('oslo.i18n') }}
 BuildRequires:  {{ py3('oslotest') }}
 BuildRequires:  {{ py3('pbr') }}
+BuildRequires:  {{ py3('psutil') }}
 BuildRequires:  {{ py3('pyparsing') }}
 BuildRequires:  {{ py3('stestr') }}
 BuildRequires:  {{ py3('testscenarios') }}
@@ -39,8 +39,8 @@ Summary:        OpenStack Utils Library
 Requires:       {{ py3('debtcollector') }}
 Requires:       {{ py3('iso8601') }}
 Requires:       {{ py3('netaddr') }}
-Requires:       {{ py3('netifaces') }}
 Requires:       {{ py3('oslo.i18n') }}
+Requires:       {{ py3('psutil') }}
 Requires:       {{ py3('pyparsing') }}
 Requires:       {{ py3('pytz') }}
 
@@ -59,7 +59,7 @@ BuildRequires:  {{ py3('openstackdocstheme') }}
 Documentation for OpenStack utils library.
 
 %prep
-%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
+%autosetup -p1 -n oslo_utils-{{ upstream_version }}
 
 %py_req_cleanup
 

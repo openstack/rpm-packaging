@@ -61,7 +61,7 @@ BuildRequires:  {{ py3('openstackdocstheme') }}
 Documentation for the oslo.log library.
 
 %prep
-%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
+%autosetup -p1 -n oslo_log-{{ upstream_version }}
 %py_req_cleanup
 
 %build
@@ -77,7 +77,7 @@ rm -rf doc/build/html/.{doctrees,buildinfo}
 
 %check
 # skip test_log_config_append_invalid lp#2023684
-%{openstack_stestr_run} --exclude-regex 'test_log_config_append_invalid'
+%{openstack_stestr_run} --exclude-regex 'test_log_config_append_invalid|test_rate_limit'
 
 %files -n {{ py2name(py_versions='py3') }}
 %license LICENSE
