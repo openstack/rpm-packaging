@@ -1,7 +1,6 @@
 {% set pypi_name = 'python-troveclient' %}
 {% set upstream_version = upstream_version('8.8.0') %}
 {% set rpm_release = '1' %}
-{% set source = url_pypi() %}
 
 Name:           {{ py2name() }}
 Version:        {{ py2rpmversion() }}
@@ -11,7 +10,7 @@ Summary:        Client library for OpenStack DBaaS API
 License:        Apache-2.0
 Group:          Development/Languages/Python
 URL:            https://docs.openstack.org/{{ pypi_name }}
-Source0:        {{ source }}
+Source0:        https://files.pythonhosted.org/packages/source/p/python-troveclient/python_troveclient-{{ upstream_version }}.tar.gz
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py3('PrettyTable') }}
 BuildRequires:  {{ py3('httplib2') }}
