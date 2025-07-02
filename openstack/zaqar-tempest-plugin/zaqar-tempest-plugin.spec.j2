@@ -3,25 +3,25 @@
 {% set upstream_version = upstream_version() %}
 {% set rpm_release = '1' %}
 
-Name:          {{ py2name(py_versions='py3') }}
-Version:       {{ py2rpmversion() }}
-Release:       {{ py2rpmrelease() }}
-Summary:       Tempest plugin for the zaqar project
-License:       {{ license('Apache-2.0') }}
-Group:         Development/Languages/Python
-URL:           https://docs.openstack.org/{{ pypi_name }}
-Source0:       {{ source|basename }}
-BuildRequires: openstack-macros
-BuildRequires: {{ py3('pbr') }}
-Requires:      {{ py2pkg('tempest') }}
-Requires:      {{ py3('oslo.config') }}
-Requires:      {{ py3('oslo.serialization') }}
-Requires:      {{ py3('oslo.utils') }}
-Requires:      {{ py3('pbr') }}
-Requires:      {{ py3('six') }}
-Requires:      {{ py3('testrepository') }}
-Requires:      {{ py3('testtools') }}
-BuildArch:     noarch
+Name:           {{ py2name(py_versions='py3') }}
+Version:        {{ py2rpmversion() }}
+Release:        {{ py2rpmrelease() }}
+Summary:        Tempest plugin for the zaqar project
+License:        Apache-2.0
+Group:          Development/Languages/Python
+URL:            https://docs.openstack.org/{{ pypi_name }}
+Source0:        {{ source|basename }}
+BuildRequires:  openstack-macros
+BuildRequires:  {{ py3('pbr') }}
+Requires:       {{ py2pkg('tempest') }}
+Requires:       {{ py3('oslo.config') }}
+Requires:       {{ py3('oslo.serialization') }}
+Requires:       {{ py3('oslo.utils') }}
+Requires:       {{ py3('pbr') }}
+Requires:       {{ py3('six') }}
+Requires:       {{ py3('testrepository') }}
+Requires:       {{ py3('testtools') }}
+BuildArch:      noarch
 
 %description
 This package contains Tempest tests to cover the zaqar project.
