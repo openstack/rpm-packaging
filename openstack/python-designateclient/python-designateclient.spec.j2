@@ -51,7 +51,7 @@ BuildRequires:  {{ py3('sphinxcontrib-apidoc') }}
 Documentation for the OpenStack DNS as a Service - Client.
 
 %prep
-%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
+%autosetup -p1 -n python_designateclient-{{ upstream_version }}
 %py_req_cleanup
 
 %build
