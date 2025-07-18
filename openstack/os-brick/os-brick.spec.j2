@@ -1,7 +1,6 @@
 {% set pypi_name = 'os-brick' %}
 {% set upstream_version = upstream_version('6.11.0') %}
 {% set rpm_release = '1' %}
-{% set source = url_pypi() %}
 # NOTE(ykarel): This is required to prevent singlespec macros from changing the requires
 %global oldpython python
 Name:           {{ py2name() }}
@@ -11,7 +10,7 @@ Summary:        OpenStack Cinder brick library for managing local volume attache
 License:        Apache-2.0
 Group:          Development/Languages/Python
 URL:            https://docs.openstack.org/{{ pypi_name }}
-Source0:        {{ source }}
+Source0:        https://files.pythonhosted.org/packages/source/o/os-brick/os_brick-{{ upstream_version }}.tar.gz
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py3('Babel') }}
 BuildRequires:  {{ py3('castellan') }}
@@ -86,7 +85,7 @@ Summary:        Common files for the OpenStack Cinder brick library
 Configuration files for the OpenStack Cinder brick library.
 
 %prep
-%autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
+%autosetup -p1 -n os_brick-{{ upstream_version }}
 %py_req_cleanup
 
 %build

@@ -1,6 +1,5 @@
 {% set pypi_name = 'mistral-lib' %}
 {% set upstream_version = upstream_version('3.3.1') %}
-{% set source = url_pypi() %}
 {% set rpm_release = '1' %}
 Name:           {{ py2name() }}
 Version:        {{ py2rpmversion() }}
@@ -9,7 +8,7 @@ Summary:        Mistral shared routings and utilities
 License:        Apache-2.0
 Group:          Development/Languages/Python
 URL:            https://docs.openstack.org/{{ pypi_name }}
-Source0:        {{ source }}
+Source0:        https://files.pythonhosted.org/packages/source/m/{{ pypi_name }}/mistral_lib-{{ upstream_version }}.tar.gz
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py3('eventlet') }}
 BuildRequires:  {{ py3('oslo.log') }}
@@ -47,7 +46,7 @@ This library also contains the public interfaces for 3rd party integration
 This package contains the Python 3.x module.
 
 %prep
-%autosetup -p1 -n {{ pypi_name }}-%{version}
+%autosetup -p1 -n mistral_lib-%{version}
 %py_req_cleanup
 
 %build
