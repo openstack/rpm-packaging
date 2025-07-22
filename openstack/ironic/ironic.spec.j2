@@ -195,6 +195,14 @@ Requires:       openstack-{{ pypi_name }} = %{epoch}:%{version}-%{release}
 %description conductor
 This package contains the OpenStack Ironic Conductor Manager Daemon.
 
+%package novncproxy
+Summary:        OpenStack Ironic - noVNC Proxy
+Group:          System/Management
+Requires:       openstack-{{ pypi_name }} = %{epoch}:%{version}-%{release}
+
+%description novncproxy
+This package contains the OpenStack Ironic noVNC Proxy
+
 %prep
 %autosetup -p1 -n {{ pypi_name }}-{{ upstream_version }}
 %py_req_cleanup
@@ -299,6 +307,7 @@ exit 0
 %{_bindir}/ironic-status
 %{_bindir}/ironic-rootwrap
 %{_bindir}/ironic-dbsync
+%dir %{_datadir}/ironic
 %if 0%{?with_doc}
 %{_mandir}/man1/ironic.1.gz
 %endif
@@ -328,5 +337,10 @@ exit 0
 %{_sbindir}/rc%{name}-conductor
 %endif
 %{_bindir}/ironic-conductor
+
+%files novncproxy
+%license LICENSE
+%{_bindir}/ironic-novncproxy
+%{_datadir}/ironic/vnc-container
 
 %changelog
