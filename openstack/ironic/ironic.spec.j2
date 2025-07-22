@@ -22,6 +22,8 @@ Source5:        openstack-ironic.README.config
 # systemd service files
 Source6:        openstack-ironic-api.service
 Source7:        openstack-ironic-conductor.service
+# Backport of https://review.opendev.org/c/openstack/ironic/+/949681 -- bootloader_by_arch config option
+Patch1:         0001-Add-a-new-configuration-option-bootloader_by_arch.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py3('Jinja2') }}
 BuildRequires:  {{ py3('PyYAML') }}

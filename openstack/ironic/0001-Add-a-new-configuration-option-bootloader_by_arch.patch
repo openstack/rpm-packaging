@@ -1,0 +1,208 @@
+From 6d119548166c5b84581960f67abe170c9fb302f4 Mon Sep 17 00:00:00 2001
+From: Afonne-CID <afonnepaulc@gmail.com>
+Date: Tue, 13 May 2025 20:40:15 +0100
+Subject: [PATCH] Add a new configuration option, ``bootloader_by_arch``
+
+Adds a new configuration option ``bootloader_by_arch`` to support
+architecture-specific ESP images for virtual media boot, similar to
+how ``pxe_bootfile_name_by_arch`` works for PXE.
+
+Closes-Bug: #2110132
+Change-Id: I54fb4b2f379c2d06a7c49402d32403aa2ee67e70
+Signed-off-by: Afonne-CID <afonnepaulc@gmail.com>
+---
+ ironic/conf/conductor.py                      | 13 +++++++++-
+ ironic/drivers/modules/image_utils.py         |  5 ++++
+ ironic/drivers/modules/redfish/boot.py        |  3 +++
+ ironic/drivers/utils.py                       | 25 +++++++++++++------
+ .../unit/drivers/modules/test_image_utils.py  | 23 +++++++++++++++++
+ ironic/tests/unit/drivers/test_utils.py       | 22 ++++++++++++++++
+ ...ader-by-arch-support-b69eae5b30bc211f.yaml |  8 ++++++
+ 7 files changed, 90 insertions(+), 9 deletions(-)
+ create mode 100644 releasenotes/notes/bootloader-by-arch-support-b69eae5b30bc211f.yaml
+
+diff --git a/ironic/conf/conductor.py b/ironic/conf/conductor.py
+index b9634fae4..53c0822cb 100644
+--- a/ironic/conf/conductor.py
++++ b/ironic/conf/conductor.py
+@@ -279,7 +279,8 @@ opts = [
+                       'partition image containing EFI boot loader. This image '
+                       'will be used by ironic when building UEFI-bootable ISO '
+                       'out of kernel and ramdisk. Required for UEFI boot from '
+-                      'partition images.')),
++                      'partition images. Can be overridden per-architecture '
++                      'using the bootloader_by_arch option.')),
+     cfg.MultiOpt('clean_step_priority_override',
+                  item_type=types.Dict(),
+                  default={},
+@@ -546,6 +547,16 @@ opts = [
+                     'here are validated as absolute paths and will be rejected'
+                     'if they contain path traversal mechanisms, such as "..".'
+                 )),
++    cfg.DictOpt('bootloader_by_arch',
++                default={},
++                help=_(
++                    'Bootloader ESP image parameter per node architecture. '
++                    'For example: x86_64:bootx64.efi,aarch64:grubaa64.efi. '
++                    'A node\'s cpu_arch property is used as the key to get '
++                    'the appropriate bootloader ESP image. If the node\'s '
++                    'cpu_arch is not in the dictionary, '
++                    'the [conductor]bootloader value will be used instead.'
++                )),
+ ]
+ 
+ 
+diff --git a/ironic/drivers/modules/image_utils.py b/ironic/drivers/modules/image_utils.py
+index 56ccb7de6..9c245be09 100644
+--- a/ironic/drivers/modules/image_utils.py
++++ b/ironic/drivers/modules/image_utils.py
+@@ -567,6 +567,11 @@ def prepare_deploy_iso(task, params, mode, d_info):
+     kernel_href = _find_param(kernel_str, d_info)
+     ramdisk_href = _find_param(ramdisk_str, d_info)
+     iso_href = _find_param(iso_str, d_info)
++
++    if not d_info.get('bootloader'):
++        d_info['bootloader'] = driver_utils.get_field(
++            task.node, 'bootloader', use_conf=True)
++
+     bootloader_href = _find_param(bootloader_str, d_info)
+ 
+     params = override_api_url(params)
+diff --git a/ironic/drivers/modules/redfish/boot.py b/ironic/drivers/modules/redfish/boot.py
+index de1142b4c..2ecdba9e1 100644
+--- a/ironic/drivers/modules/redfish/boot.py
++++ b/ironic/drivers/modules/redfish/boot.py
+@@ -122,6 +122,9 @@ def _parse_driver_info(node):
+         {option: d_info.get(option, getattr(CONF.conductor, option, None))
+          for option in OPTIONAL_PROPERTIES})
+ 
++    deploy_info['bootloader'] = driver_utils.get_field(
++        node, 'bootloader', use_conf=True)
++
+     if (d_info.get('config_via_removable') is None
+             and d_info.get('config_via_floppy') is not None):
+         LOG.warning('The config_via_floppy driver_info option is deprecated, '
+diff --git a/ironic/drivers/utils.py b/ironic/drivers/utils.py
+index 882ec9ad8..5e63d6dbe 100644
+--- a/ironic/drivers/utils.py
++++ b/ironic/drivers/utils.py
+@@ -451,18 +451,27 @@ def get_field(node, name, deprecated_prefix=None, use_conf=False,
+     """Get a driver_info field with deprecated prefix."""
+     node_coll = getattr(node, collection)
+     value = node_coll.get(name)
+-    if value or not deprecated_prefix:
+-        return value
+-
+-    deprecated_name = f'{deprecated_prefix}_{name}'
+-    value = node_coll.get(deprecated_name)
+     if value:
+-        LOG.warning("The %s field %s of node %s is deprecated, "
+-                    "please use %s instead",
+-                    collection, deprecated_name, node.uuid, name)
+         return value
+ 
++    if deprecated_prefix:
++        deprecated_name = f'{deprecated_prefix}_{name}'
++        value = node_coll.get(deprecated_name)
++        if value:
++            LOG.warning("The %s field %s of node %s is deprecated, "
++                        "please use %s instead",
++                        collection, deprecated_name, node.uuid, name)
++            return value
++
+     if use_conf:
++        if name == 'bootloader':
++            cpu_arch = node.properties.get('cpu_arch')
++            if cpu_arch:
++                bootloader_by_arch = getattr(
++                    CONF.conductor, 'bootloader_by_arch', {})
++                bootloader_href = bootloader_by_arch.get(cpu_arch)
++                if bootloader_href:
++                    return bootloader_href
+         return getattr(CONF.conductor, name)
+ 
+ 
+diff --git a/ironic/tests/unit/drivers/modules/test_image_utils.py b/ironic/tests/unit/drivers/modules/test_image_utils.py
+index 26825df81..c5baa674f 100644
+--- a/ironic/tests/unit/drivers/modules/test_image_utils.py
++++ b/ironic/tests/unit/drivers/modules/test_image_utils.py
+@@ -848,6 +848,29 @@ class RedfishImageUtilsTestCase(db_base.DbTestCase):
+                 task, 'kernel', 'ramdisk', 'bootloader', params={},
+                 inject_files={}, base_iso=None)
+ 
++    @mock.patch.object(image_utils, '_prepare_iso_image', autospec=True)
++    def test_prepare_deploy_iso_bootloader_by_arch(self,
++                                                   mock__prepare_iso_image):
++        with task_manager.acquire(self.context, self.node.uuid,
++                                  shared=True) as task:
++
++            self.config(bootloader_by_arch={'x86_64': 'bootx64.efi'},
++                        group='conductor')
++
++            d_info = {
++                'deploy_kernel': 'kernel',
++                'deploy_ramdisk': 'ramdisk',
++            }
++            task.node.driver_info.update(d_info)
++
++            task.node.instance_info.update(deploy_boot_mode='uefi')
++
++            image_utils.prepare_deploy_iso(task, {}, 'deploy', d_info)
++
++            mock__prepare_iso_image.assert_called_once_with(
++                task, 'kernel', 'ramdisk', 'bootx64.efi', params={},
++                inject_files={}, base_iso=None)
++
+     @mock.patch.object(image_utils, '_prepare_iso_image', autospec=True)
+     def test_prepare_deploy_iso_existing_iso(self, mock__prepare_iso_image):
+         with task_manager.acquire(self.context, self.node.uuid,
+diff --git a/ironic/tests/unit/drivers/test_utils.py b/ironic/tests/unit/drivers/test_utils.py
+index f2e79e827..9b68221c1 100644
+--- a/ironic/tests/unit/drivers/test_utils.py
++++ b/ironic/tests/unit/drivers/test_utils.py
+@@ -221,6 +221,28 @@ class UtilsTestCase(db_base.DbTestCase):
+         mac_clean = driver_utils.normalize_mac(mac_raw)
+         self.assertEqual("0a1b2c3d4f", mac_clean)
+ 
++    def test_get_field_bootloader(self):
++        driver_info = self.node.driver_info
++        driver_info['bootloader'] = 'custom.efi'
++        self.node.driver_info = driver_info
++        result = driver_utils.get_field(self.node, 'bootloader', use_conf=True)
++        self.assertEqual('custom.efi', result)
++
++        self.config(bootloader='global.efi', group='conductor')
++        del self.node.driver_info['bootloader']
++        result = driver_utils.get_field(self.node, 'bootloader', use_conf=True)
++        self.assertEqual('global.efi', result)
++
++    def test_get_field_bootloader_by_arch(self):
++        self.config(bootloader_by_arch={'aarch64': 'grubaa64.efi'},
++                    group='conductor')
++        properties = self.node.properties
++        properties['cpu_arch'] = 'aarch64'
++        self.node.properties = properties
++
++        result = driver_utils.get_field(self.node, 'bootloader', use_conf=True)
++        self.assertEqual('grubaa64.efi', result)
++
+ 
+ class UtilsRamdiskLogsTestCase(tests_base.TestCase):
+ 
+diff --git a/releasenotes/notes/bootloader-by-arch-support-b69eae5b30bc211f.yaml b/releasenotes/notes/bootloader-by-arch-support-b69eae5b30bc211f.yaml
+new file mode 100644
+index 000000000..cbe6591d1
+--- /dev/null
++++ b/releasenotes/notes/bootloader-by-arch-support-b69eae5b30bc211f.yaml
+@@ -0,0 +1,8 @@
++---
++features:
++  - |
++    Adds a new configuration option ``bootloader_by_arch``, a dictionary value
++    that maps architecture names to a Glance ID, http:// or file:// URL
++    of an EFI system partition image containing EFI boot loader, to support
++    architecture-specific images for virtual media boot in mixed-architecture
++    clouds.
+-- 
+2.50.1
+
