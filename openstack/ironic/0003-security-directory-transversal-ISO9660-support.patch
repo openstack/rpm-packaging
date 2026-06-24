@@ -1,0 +1,404 @@
+From ad9be7369b89af18570428b48011cd30bc7c63e2 Mon Sep 17 00:00:00 2001
+From: Julia Kreger <juliaashleykreger@gmail.com>
+Date: Wed, 20 May 2026 15:31:38 -0700
+Subject: [PATCH 3/6] security: directory transversal ISO9660 support
+
+A vulnerability was identified in Ironic's handling of
+ISO images where Ironic contains support to patch ISO9660
+virtual media contents to include key data items like
+configuration drive data and other required metadata.
+
+Anyhow, the issue here was the Ironic service was trusting
+that the submitted contents were valid, and a directory
+transversal attempt could be embedded within a modified
+configuration drive ISO contents submitted to Ironic.
+This is a case where an attacker would take a path in an ISO,
+and attempt to directly modify it to reach another path on the
+filesystem which was within the confines and path structure they
+were working with. i.e. while "../foo" is not a valid file or
+directory name in ISO9660, it can still be represented, injected,
+and read by the pycdlib library.
+
+The code on all paths which perform this type of ISO content
+interaction have been patched to explicitly check the path for
+transversal attempts and internally raises an InvalidContent
+exception.
+
+Impacted features:
+* Virtual Media ISO patching code path for pre-generated
+  deployment ISOs as opposed to Ironic generated ISOs from
+  a kernel/ramdisk.
+* Anaconda deployment interfacce where a user could
+  impact the resulting pathing on the node being deployed
+  at deploy time.
+
+Related-Bug: 2148333
+Change-Id: I09ba308dc5088260594a502d43413d2069616703
+Signed-off-by: Julia Kreger <juliaashleykreger@gmail.com>
+(cherry picked from commit fbe121c2a505b2217532d891ca27e253b777216a)
+---
+ ironic/common/exception.py                    |   6 +
+ ironic/common/images.py                       |  11 +-
+ ironic/common/kickstart_utils.py              |   5 +
+ ironic/common/utils.py                        |  35 ++++++
+ ironic/tests/unit/common/test_images.py       | 111 ++++++++++++++++++
+ .../tests/unit/common/test_kickstart_utils.py |  83 +++++++++++++
+ .../notes/bug-2148333-b3a74b813eea7dab.yaml   |  17 +++
+ 7 files changed, 266 insertions(+), 2 deletions(-)
+ create mode 100644 releasenotes/notes/bug-2148333-b3a74b813eea7dab.yaml
+
+diff --git a/ironic/common/exception.py b/ironic/common/exception.py
+index 6ff4494ce..7d42f2e9d 100644
+--- a/ironic/common/exception.py
++++ b/ironic/common/exception.py
+@@ -931,3 +931,9 @@ class ImageChecksumFileReadFailure(InvalidImage):
+     _msg_fmt = _("Failed to read the file from local storage "
+                  "to perform a checksum operation.")
+     code = http_client.SERVICE_UNAVAILABLE
++
++
++class InvalidContent(Invalid):
++    """Invalid or malicious content has been provided to the conductor."""
++    _msg_fmt = _("Invalid or potentially malicious content has been provided "
++                 "to the conductor and the conductor will not proceed.")
+diff --git a/ironic/common/images.py b/ironic/common/images.py
+index 4fd079f87..ff993785a 100644
+--- a/ironic/common/images.py
++++ b/ironic/common/images.py
+@@ -736,15 +736,22 @@ def _extract_iso(extract_iso, extract_dir):
+     iso.open(extract_iso)
+ 
+     for dirname, dirlist, filelist in iso.walk(iso_path='/'):
++        # NOTE(TheJulia): This code is confusing because the way the
++        # walk method returns data, basically a list of tuples to
++        # provide a structural mapping which a consumer of the walk
++        # data can use to understand the structure.
+         dir_path = dirname.lstrip('/')
++        utils.check_iso_path(extract_dir, dir_path)
+         for dir_iso in dirlist:
++            utils.check_iso_path(extract_dir,
++                                 os.path.join(dir_path, dir_iso))
+             os.makedirs(os.path.join(extract_dir, dir_path, dir_iso))
+         for file in filelist:
+-            file_path = os.path.join(extract_dir, dirname, file)
++            utils.check_iso_path(extract_dir, dir_path, file)
++            file_path = os.path.join(dirname, file)
+             iso.get_file_from_iso(
+                 os.path.join(extract_dir, dir_path, file),
+                 iso_path=file_path)
+-
+     iso.close()
+ 
+ 
+diff --git a/ironic/common/kickstart_utils.py b/ironic/common/kickstart_utils.py
+index 4e02e2ea7..703faaeda 100644
+--- a/ironic/common/kickstart_utils.py
++++ b/ironic/common/kickstart_utils.py
+@@ -51,6 +51,11 @@ def _get_config_drive_dict_from_iso(
+             # server.
+             posix_file_path = posix_file_path.lstrip('/')
+             target_file_path = os.path.join(target_path, posix_file_path)
++            real_target_file_path = os.path.realpath(target_file_path)
++            if not target_file_path.startswith(real_target_file_path):
++                LOG.error('Discovered transversal attempt while reading '
++                          'the configuration drive contents.')
++                raise exception.InvalidContent()
+             b_buf = io.BytesIO()
+             iso_reader.get_file_from_iso_fp(
+                 iso_path=iso_file_path, outfp=b_buf
+diff --git a/ironic/common/utils.py b/ironic/common/utils.py
+index f03e89bef..3a91d25c7 100644
+--- a/ironic/common/utils.py
++++ b/ironic/common/utils.py
+@@ -706,3 +706,38 @@ def is_ironic_using_sqlite():
+     # return the value.
+     USING_SQLITE = 'sqlite' in CONF.database.connection.lower()
+     return USING_SQLITE
++
++
++def check_iso_path(base_folder, folder, file=None):
++    """Sanity check an ISO path, folder, and file structure.
++
++    :param base_folder: The target folder for path operations.
++    :param folder: The folder being evaluated in the ISO.
++    :param file: An optional file to also evaluate for path
++                 transversal attempts.
++    :raises: InvalidContent when an inconsistency is detected.
++    """
++    if folder.startswith('/'):
++        # If we're here, we were handed the base folder path with a leading /.
++        # Any caller of this method should pre-emptively strip it.
++        raise exception.InvalidContent()
++
++    target_folder = os.path.join(base_folder, folder)
++    resolved_folder = os.path.realpath(target_folder)
++    if not resolved_folder.startswith(base_folder):
++        # supplied folder path has something like ../ in the data set
++        # or resolution has resulted in a change in the value.
++        # Possible risk: if the temp folder is being used with a symlink...
++        LOG.error('ISO path evaluation identified a folder based '
++                  'transversal attempt.')
++        raise exception.InvalidContent()
++    if file:
++        target_file_path = os.path.join(resolved_folder, file)
++        resolved_file_path = os.path.realpath(target_file_path)
++        # Check that the folder itself doesn't change,
++        # and then check that the resolved path matches
++        if (not target_file_path.startswith(resolved_folder)
++                or target_file_path != resolved_file_path):
++            LOG.error('ISO path evaluation identified a file name based '
++                      'transversal attempt.')
++            raise exception.InvalidContent()
+diff --git a/ironic/tests/unit/common/test_images.py b/ironic/tests/unit/common/test_images.py
+index 99b165210..65d05783b 100644
+--- a/ironic/tests/unit/common/test_images.py
++++ b/ironic/tests/unit/common/test_images.py
+@@ -24,6 +24,7 @@ from unittest import mock
+ from oslo_concurrency import processutils
+ from oslo_config import cfg
+ from oslo_utils import fileutils
++import pycdlib
+ 
+ from ironic.common import exception
+ from ironic.common.glance_service import service_utils as glance_utils
+@@ -663,6 +664,116 @@ class FsImageTestCase(base.TestCase):
+                                    options)
+         self.assertEqual(expected_cfg, cfg)
+ 
++    @mock.patch.object(os, 'makedirs', autospec=True)
++    @mock.patch('pycdlib.PyCdlib', autospec=True)
++    def test__extract_iso(self, mock_pycdlib_cls, mock_makedirs):
++        mock_iso = mock_pycdlib_cls.return_value
++        mock_iso.walk.return_value = [
++            ('/', ['BOOT'], ['README.TXT']),
++            ('/BOOT', ['GRUB'], ['BOOTX64.EFI']),
++            ('/BOOT/GRUB', [], ['GRUB.CFG']),
++        ]
++
++        images._extract_iso('/path/to/image.iso', '/extract')
++
++        mock_iso.open.assert_called_once_with('/path/to/image.iso')
++        mock_iso.walk.assert_called_once_with(iso_path='/')
++        mock_makedirs.assert_any_call(
++            os.path.join('/extract', '', 'BOOT'))
++        mock_makedirs.assert_any_call(
++            os.path.join('/extract', 'BOOT', 'GRUB'))
++        mock_iso.get_file_from_iso.assert_any_call(
++            os.path.join('/extract', '', 'README.TXT'),
++            iso_path=os.path.join('/extract', '/', 'README.TXT'))
++        mock_iso.get_file_from_iso.assert_any_call(
++            os.path.join('/extract', 'BOOT', 'BOOTX64.EFI'),
++            iso_path=os.path.join('/extract', '/BOOT',
++                                  'BOOTX64.EFI'))
++        mock_iso.get_file_from_iso.assert_any_call(
++            os.path.join('/extract', 'BOOT/GRUB', 'GRUB.CFG'),
++            iso_path=os.path.join('/extract', '/BOOT/GRUB',
++                                  'GRUB.CFG'))
++        self.assertEqual(3, mock_iso.get_file_from_iso.call_count)
++        mock_iso.close.assert_called_once()
++
++    @mock.patch('pycdlib.PyCdlib', autospec=True)
++    def test__extract_iso_empty(self, mock_pycdlib_cls):
++        mock_iso = mock_pycdlib_cls.return_value
++        mock_iso.walk.return_value = [
++            ('/', [], []),
++        ]
++
++        images._extract_iso('/path/to/empty.iso', '/extract')
++
++        mock_iso.open.assert_called_once_with('/path/to/empty.iso')
++        mock_iso.walk.assert_called_once_with(iso_path='/')
++        mock_iso.get_file_from_iso.assert_not_called()
++        mock_iso.close.assert_called_once()
++
++    @mock.patch('pycdlib.PyCdlib', autospec=True)
++    def test__extract_iso_open_fails(self, mock_pycdlib_cls):
++        mock_iso = mock_pycdlib_cls.return_value
++        mock_iso.open.side_effect = (
++            pycdlib.pycdlibexception.PyCdlibInvalidInput(
++                msg='Could not open file'))
++
++        self.assertRaises(
++            pycdlib.pycdlibexception.PyCdlibInvalidInput,
++            images._extract_iso,
++            '/path/to/bad.iso', '/extract')
++        mock_iso.walk.assert_not_called()
++        mock_iso.close.assert_not_called()
++
++    @mock.patch.object(os, 'makedirs', autospec=True)
++    @mock.patch('pycdlib.PyCdlib', autospec=True)
++    def test__extract_iso_invalid_file(self, mock_pycdlib_cls, mock_makedirs):
++        mock_iso = mock_pycdlib_cls.return_value
++        mock_iso.walk.return_value = [
++            ('/', ['BOOT'], ['README.TXT']),
++            ('/BOOT', ['GRUB'], ['../TX64.EFI']),
++            ('/BOOT/GRUB', [], ['GRUB.CFG']),
++        ]
++
++        self.assertRaises(exception.InvalidContent,
++                          images._extract_iso,
++                          '/path/to/image.iso', '/extract')
++
++        mock_iso.open.assert_called_once_with('/path/to/image.iso')
++        mock_iso.walk.assert_called_once_with(iso_path='/')
++        mock_makedirs.assert_any_call(
++            os.path.join('/extract', '', 'BOOT'))
++        mock_makedirs.assert_any_call(
++            os.path.join('/extract', 'BOOT', 'GRUB'))
++        mock_iso.get_file_from_iso.assert_any_call(
++            os.path.join('/extract', '', 'README.TXT'),
++            iso_path=os.path.join('/extract', '/', 'README.TXT'))
++        self.assertEqual(1, mock_iso.get_file_from_iso.call_count)
++
++    @mock.patch.object(os, 'makedirs', autospec=True)
++    @mock.patch('pycdlib.PyCdlib', autospec=True)
++    def test__extract_iso_invalid_folder(self, mock_pycdlib_cls,
++                                         mock_makedirs):
++        mock_iso = mock_pycdlib_cls.return_value
++        mock_iso.walk.return_value = [
++            ('/', ['BOOT'], ['README.TXT']),
++            ('/../T', ['GRUB'], ['BOOTX64.EFI']),
++            ('/BOOT/GRUB', [], ['GRUB.CFG']),
++        ]
++
++        self.assertRaises(exception.InvalidContent,
++                          images._extract_iso,
++                          '/path/to/image.iso', '/extract')
++
++        mock_iso.open.assert_called_once_with('/path/to/image.iso')
++        mock_iso.walk.assert_called_once_with(iso_path='/')
++        mock_makedirs.assert_any_call(
++            os.path.join('/extract', '', 'BOOT'))
++        self.assertEqual(1, mock_makedirs.call_count)
++        mock_iso.get_file_from_iso.assert_any_call(
++            os.path.join('/extract', '', 'README.TXT'),
++            iso_path=os.path.join('/extract', '/', 'README.TXT'))
++        self.assertEqual(1, mock_iso.get_file_from_iso.call_count)
++
+     @mock.patch.object(os.path, 'relpath', autospec=True)
+     @mock.patch.object(os, 'walk', autospec=True)
+     @mock.patch.object(images, '_extract_iso', autospec=True)
+diff --git a/ironic/tests/unit/common/test_kickstart_utils.py b/ironic/tests/unit/common/test_kickstart_utils.py
+index 52ea0324d..125bb470a 100644
+--- a/ironic/tests/unit/common/test_kickstart_utils.py
++++ b/ironic/tests/unit/common/test_kickstart_utils.py
+@@ -17,6 +17,7 @@ import os
+ from unittest import mock
+ 
+ from oslo_config import cfg
++import pycdlib
+ 
+ from ironic.common import kickstart_utils as ks_utils
+ from ironic.conductor import task_manager
+@@ -100,3 +101,85 @@ echo $CONTENT | /usr/bin/base64 --decode > {file_path}\n\
+             self.assertEqual(expected, ks_utils.prepare_config_drive(task))
+             mock_get.assert_called_with('http://server/fake-configdrive-url',
+                                         timeout=60)
++
++    @mock.patch.object(pycdlib, 'PyCdlib', autospec=True)
++    def test_read_iso9600_config_drive(self, mock_pycdlib_cls):
++        mock_iso = mock_pycdlib_cls.return_value
++        mock_iso.walk.return_value = [
++            ('/', [], ['FILE1.TXT;1']),
++        ]
++        mock_record = mock.Mock()
++        mock_iso.get_record.return_value = mock_record
++        mock_iso.full_path_from_dirrecord.return_value = (
++            '/openstack/latest/user_data'
++        )
++
++        def fake_get_file(iso_path, outfp):
++            outfp.write(b'test user_data')
++
++        mock_iso.get_file_from_iso_fp.side_effect = fake_get_file
++
++        result = ks_utils.read_iso9600_config_drive(b'fake-iso')
++
++        mock_iso.open.assert_called_once()
++        mock_iso.walk.assert_called_once_with(iso_path='/')
++        mock_iso.get_record.assert_called_once_with(
++            iso_path='/FILE1.TXT;1'
++        )
++        mock_iso.full_path_from_dirrecord.assert_called_once_with(
++            mock_record, rockridge=True
++        )
++        mock_iso.get_file_from_iso_fp.assert_called_once()
++        mock_iso.close.assert_called_once()
++
++        expected_path = (
++            '/var/lib/cloud/seed/config_drive'
++            '/openstack/latest/user_data'
++        )
++        self.assertIn(expected_path, result)
++        self.assertEqual('test user_data', result[expected_path])
++
++    @mock.patch.object(pycdlib, 'PyCdlib', autospec=True)
++    def test_read_iso9600_config_drive_pycdlib_exception(
++            self, mock_pycdlib_cls):
++        mock_iso = mock_pycdlib_cls.return_value
++        mock_iso.open.side_effect = (
++            pycdlib.pycdlibexception.PyCdlibInvalidInput(
++                msg='bad iso'
++            )
++        )
++
++        result = ks_utils.read_iso9600_config_drive(b'bad-data')
++
++        mock_iso.open.assert_called_once()
++        mock_iso.walk.assert_not_called()
++        self.assertEqual({}, result)
++
++    @mock.patch.object(pycdlib, 'PyCdlib', autospec=True)
++    def test_read_iso9600_config_drive_invalid_file(self, mock_pycdlib_cls):
++        mock_iso = mock_pycdlib_cls.return_value
++        mock_iso.walk.return_value = [
++            ('/', [], ['../E1.TXT;1']),
++        ]
++        mock_record = mock.Mock()
++        mock_iso.get_record.return_value = mock_record
++        mock_iso.full_path_from_dirrecord.return_value = (
++            '../E1.TXT'
++        )
++
++        def fake_get_file(iso_path, outfp):
++            outfp.write(b'test user_data')
++
++        mock_iso.get_file_from_iso_fp.side_effect = fake_get_file
++
++        returned = ks_utils.read_iso9600_config_drive(b'fake-iso')
++        self.assertEqual({}, returned)
++        mock_iso.open.assert_called_once()
++        mock_iso.walk.assert_called_once_with(iso_path='/')
++        mock_iso.get_record.assert_called_once_with(
++            iso_path='/../E1.TXT;1'
++        )
++        mock_iso.full_path_from_dirrecord.assert_called_once_with(
++            mock_record, rockridge=True
++        )
++        mock_iso.get_file_from_iso_fp.assert_not_called()
+diff --git a/releasenotes/notes/bug-2148333-b3a74b813eea7dab.yaml b/releasenotes/notes/bug-2148333-b3a74b813eea7dab.yaml
+new file mode 100644
+index 000000000..f7070f454
+--- /dev/null
++++ b/releasenotes/notes/bug-2148333-b3a74b813eea7dab.yaml
+@@ -0,0 +1,17 @@
++---
++security:
++  - |
++    Fixes CVE-2026-48681 which was a lack of file path validation when
++    interacting with ISO9660 files in the kickstart/anaconda driver,
++    and administrative deployment ISOs which are admin-provided.
++    Ironic now explicitly rejects the submitted files when such
++    a case has been detected.
++fixes:
++  - |
++    Fixes path handling around ISO9660 file handling as denoted in
++    `bug 2148333 <https://bugs.launchpad.net/ironic/+bug/2148333>`_
++    under CVE-2026-48681 where a malicious user with deployment privilges
++    could craft an ISO9660 formatted configuration drive or deployment ramdisk
++    which includes intentional path manipulation which is non-compliant with
++    the underlying standard. Ironic now explicitly looks for such attempts
++    and rejects the content.
+-- 
+2.54.0
+

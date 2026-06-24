@@ -1,0 +1,153 @@
+From 8da0bf4a0892dca8ab44d6db14b0be5944075ca7 Mon Sep 17 00:00:00 2001
+From: Riccardo Pittau <elfosardo@gmail.com>
+Date: Mon, 8 Jun 2026 09:15:33 +0200
+Subject: [PATCH 6/6] Fix kernel parameter parsing for quoted values and
+ whitespace
+
+The kernel parameter validator introduced in commit c6c91d649 has
+three bugs in the KernelParameterTransformer class:
+
+1. The quoted_value() method tries to access items[0].value but
+   items[0] is already a plain string (returned by value_with_spaces
+   transformer), not a lark Token. This causes all quoted parameter
+   values (e.g. sshkey="ssh-rsa ... user@host") to fail with
+   "'str' object has no attribute 'value'".
+
+2. KernelParameter.__str__() uses self.value.value directly, bypassing
+   ParameterValue.__str__() which wraps space-containing values in
+   quotes. This breaks roundtrip rendering of quoted values.
+
+3. parse() does not strip surrounding whitespace from the input,
+   causing failures when config values have trailing spaces or
+   newlines from template expansion or oslo.config.
+
+Assisted-By: Claude Opus 4.6
+Change-Id: I9a398d557c3f87c070ffa10e317f0df613b98b6b
+Signed-off-by: Riccardo Pittau <elfosardo@gmail.com>
+(cherry picked from commit a58fe7d548e3b874b7538d6272b2a73f3a0d4b94)
+(cherry picked from commit 87807ea7ce1424293ae6443de61fd4847a34619f)
+(cherry picked from commit 1908af6cd4ef02f9e33ba4ed6e8ffff8e0afbf79)
+(cherry picked from commit 7c00fdb8822a066fe7dd22d0360a1615486eb807)
+---
+ ironic/common/kernel_parameters.py            |  7 +-
+ .../unit/common/test_kernel_parameters.py     | 68 +++++++++++++++++++
+ 2 files changed, 71 insertions(+), 4 deletions(-)
+
+diff --git a/ironic/common/kernel_parameters.py b/ironic/common/kernel_parameters.py
+index ca0cc924e..2af70d418 100644
+--- a/ironic/common/kernel_parameters.py
++++ b/ironic/common/kernel_parameters.py
+@@ -66,7 +66,7 @@ class KernelParameter:
+ 
+     def __str__(self):
+         if len(self.value.value) > 0:
+-            return f"{self.key.key}={self.value.value}"
++            return f"{self.key}={self.value}"
+         return self.key.key
+ 
+ 
+@@ -100,7 +100,7 @@ class KernelCommandLine:
+     def parse(cls, command_line: str):
+         try:
+             cmd_line, init_args = \
+-                _divide_command_line_by_init_args(command_line)
++                _divide_command_line_by_init_args(command_line.strip())
+             tree = KernelParameterParser.parse(cmd_line)
+             kcl = KernelParameterTransformer().transform(tree)
+             return KernelCommandLine(kcl.parameters, init_args)
+@@ -143,8 +143,7 @@ class KernelParameterTransformer(Transformer):
+         return ParameterValue(items[0])
+ 
+     def quoted_value(self, items):
+-        # Strip " characters from literal.
+-        return items[0].value[1:-1]
++        return items[0]
+ 
+     def bare_value(self, items):
+         return items[0].value
+diff --git a/ironic/tests/unit/common/test_kernel_parameters.py b/ironic/tests/unit/common/test_kernel_parameters.py
+index f64f46eb5..83e1f1d73 100644
+--- a/ironic/tests/unit/common/test_kernel_parameters.py
++++ b/ironic/tests/unit/common/test_kernel_parameters.py
+@@ -205,6 +205,54 @@ class KernelParametersTestCase(base.TestCase):
+                 )],
+             }, "some init args")
+         ),
++        annotate(
++            "Quoted value with spaces (sshkey pattern)",
++            'sshkey="ssh-rsa AAAAB3NzaC1yc2E= root@host"',
++            kp.KernelCommandLine({
++                'sshkey': [kp.KernelParameter(
++                    kp.ParameterKey('sshkey'),
++                    kp.ParameterValue(
++                        'ssh-rsa AAAAB3NzaC1yc2E= root@host'),
++                )],
++            }, "")
++        ),
++        annotate(
++            "Quoted value with SSH key and following parameters",
++            ('nofb nomodeset vga=normal ipa-insecure=1 '
++             'sshkey="ssh-rsa AAAAB3NzaC+/C1yc2E= root@host.example.com" '
++             'rd.net.timeout.carrier=30 ip=dhcp'),
++            kp.KernelCommandLine({
++                'nofb': [kp.KernelParameter(
++                    kp.ParameterKey('nofb'),
++                    kp.ParameterValue(''),
++                )],
++                'nomodeset': [kp.KernelParameter(
++                    kp.ParameterKey('nomodeset'),
++                    kp.ParameterValue(''),
++                )],
++                'vga': [kp.KernelParameter(
++                    kp.ParameterKey('vga'),
++                    kp.ParameterValue('normal'),
++                )],
++                'ipa-insecure': [kp.KernelParameter(
++                    kp.ParameterKey('ipa-insecure'),
++                    kp.ParameterValue('1'),
++                )],
++                'sshkey': [kp.KernelParameter(
++                    kp.ParameterKey('sshkey'),
++                    kp.ParameterValue(
++                        'ssh-rsa AAAAB3NzaC+/C1yc2E= root@host.example.com'),
++                )],
++                'rd.net.timeout.carrier': [kp.KernelParameter(
++                    kp.ParameterKey('rd.net.timeout.carrier'),
++                    kp.ParameterValue('30'),
++                )],
++                'ip': [kp.KernelParameter(
++                    kp.ParameterKey('ip'),
++                    kp.ParameterValue('dhcp'),
++                )],
++            }, "")
++        ),
+     )
+     @unpack
+     def test_kernel_command_line_parsing(
+@@ -228,3 +276,23 @@ class KernelParametersTestCase(base.TestCase):
+         self.assertRaises(InvalidParameterValue,
+                           kp.KernelCommandLine.parse,
+                           command_line)
++
++    @data(
++        annotate(
++            "trailing space",
++            "quiet ro ",
++        ),
++        annotate(
++            "leading space",
++            " quiet ro",
++        ),
++        annotate(
++            "leading and trailing spaces",
++            "  quiet ro  ",
++        ),
++    )
++    @unpack
++    def test_parse_strips_surrounding_whitespace(self, command_line: str):
++        result = kp.KernelCommandLine.parse(command_line)
++        self.assertEqual('quiet', list(result.parameters.keys())[0])
++        self.assertEqual('ro', list(result.parameters.keys())[1])
+-- 
+2.54.0
+

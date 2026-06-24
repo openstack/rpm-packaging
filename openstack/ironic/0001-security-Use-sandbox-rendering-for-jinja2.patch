@@ -1,0 +1,161 @@
+From 1b8ad35e3df9b499e9bc6a16fe70d20b6a2abf4e Mon Sep 17 00:00:00 2001
+From: Julia Kreger <juliaashleykreger@gmail.com>
+Date: Tue, 28 Apr 2026 11:11:22 -0700
+Subject: [PATCH 1/6] security: Use sandbox rendering for jinja2
+
+Analysis revealed that a malicious attacker with sufficent
+access to request a node to be provisioned could supply a
+maliciously crafted kickstart template configuration,
+which would then be rendered in an unsafe form ultimately.
+
+This is because the underlying render utility was modeled
+for rendering only admin-suppied files or the in-code tree
+files. Anaconda had to take this further by allowing the
+jinja utilized to be user supplied.
+
+Anyhow, an attacker with sufficient access, an ironic deployment
+with the anaconda deploy interface, a node with the anaconda
+deployment interface set by an admin, and a malicious template
+could result in conductor internal data being rendered and if
+the infrastucture operator is allowing traffic egress for the
+provisioning network, could have sensitive internal data
+exfiled out of the environment.
+
+The render helper has been changed to utilize a sandboxed
+environment. Attacks such as this now internally raise
+a Jinja2 SecurityError.
+
+Closes-Bug: 2148307
+Change-Id: Ie85357166fafca0acd9d852fe05ce34818d2b366
+Signed-off-by: Julia Kreger <juliaashleykreger@gmail.com>
+(cherry picked from commit a1f9a1e83a3f27d9cb5c796764ddb07ad8cb2616)
+---
+ ironic/common/utils.py                        |  7 +--
+ ironic/tests/unit/common/test_utils.py        | 47 +++++++++++++++++++
+ .../fix-bug-2148307-ddf0b4d69244e86e.yaml     |  8 ++++
+ 3 files changed, 59 insertions(+), 3 deletions(-)
+ create mode 100644 releasenotes/notes/fix-bug-2148307-ddf0b4d69244e86e.yaml
+
+diff --git a/ironic/common/utils.py b/ironic/common/utils.py
+index 0236f981b..f03e89bef 100644
+--- a/ironic/common/utils.py
++++ b/ironic/common/utils.py
+@@ -32,6 +32,7 @@ import tempfile
+ import time
+ 
+ import jinja2
++from jinja2 import sandbox as jinja2sandbox
+ from oslo_concurrency import processutils
+ from oslo_log import log as logging
+ from oslo_serialization import jsonutils
+@@ -447,6 +448,8 @@ def render_template(template, params, is_file=True, strict=False):
+     :param strict: Enable strict template rendering. Default is False
+     :returns: Rendered template
+     :raises: jinja2.exceptions.UndefinedError
++    :raises: jinja2.exceptions.SecurityError when the template has insecure
++             operations detected.
+     """
+     if is_file:
+         tmpl_path, tmpl_name = os.path.split(template)
+@@ -454,11 +457,9 @@ def render_template(template, params, is_file=True, strict=False):
+     else:
+         tmpl_name = 'template'
+         loader = jinja2.DictLoader({tmpl_name: template})
+-    # NOTE(pas-ha) bandit does not seem to cope with such syntaxis
+-    # and still complains with B701 for that line
+     # NOTE(pas-ha) not using default_for_string=False as we set the name
+     # of the template above for strings too.
+-    env = jinja2.Environment(  # nosec B701
++    env = jinja2sandbox.SandboxedEnvironment(
+         loader=loader,
+         autoescape=jinja2.select_autoescape(),
+         undefined=jinja2.StrictUndefined if strict else jinja2.Undefined
+diff --git a/ironic/tests/unit/common/test_utils.py b/ironic/tests/unit/common/test_utils.py
+index 7c270e976..e0fa332d5 100644
+--- a/ironic/tests/unit/common/test_utils.py
++++ b/ironic/tests/unit/common/test_utils.py
+@@ -581,6 +581,11 @@ class JinjaTemplatingTestCase(base.TestCase):
+         self.template = '{{ foo }} {{ bar }}'
+         self.params = {'foo': 'spam', 'bar': 'ham'}
+         self.expected = 'spam ham'
++        self.bogus_template = ("{{ foo }}{{ ''.__class__.__mro__[1]."
++                               "__subclasses__() }} {{ bar }}")
++        self.bogus_template2 = ("{{ foo }}{{ ''|attr('__class__')|attr('__mro"
++                                "__')|attr('__getitem__')(1)|attr('__subclass"
++                                "es__')() }} {{ bar }}")
+ 
+     def test_render_string(self):
+         self.assertEqual(self.expected,
+@@ -597,6 +602,7 @@ class JinjaTemplatingTestCase(base.TestCase):
+                                                self.params,
+                                                is_file=False))
+ 
++
+     @mock.patch('ironic.common.utils.jinja2.FileSystemLoader', autospec=True)
+     def test_render_file(self, jinja_fsl_mock):
+         path = '/path/to/template.j2'
+@@ -607,6 +613,47 @@ class JinjaTemplatingTestCase(base.TestCase):
+                                                self.params))
+         jinja_fsl_mock.assert_called_once_with('/path/to')
+ 
++    def test_render_bogus_string(self):
++        """Jinja explicitly blocks access access to .__ delimited items."""
++        self.assertRaises(jinja2.exceptions.SecurityError,
++                          utils.render_template,
++                          self.bogus_template,
++                          self.params,
++                          is_file=False)
++
++    @mock.patch('ironic.common.utils.jinja2.FileSystemLoader', autospec=True)
++    def test_render_bogus_file(self, jinja_fsl_mock):
++        """Jinja explicitly blocks access access to .__ delimited items."""
++        path = '/path/to/template.j2'
++        jinja_fsl_mock.return_value = jinja2.DictLoader(
++            {'template.j2': self.bogus_template})
++        self.assertRaises(jinja2.exceptions.SecurityError,
++                          utils.render_template,
++                          path,
++                          self.params)
++        jinja_fsl_mock.assert_called_once_with('/path/to')
++
++    def test_render_bogus_string_attr(self):
++        """Jinja explicitly blocks access access to .__ delimited items."""
++        self.assertRaises(jinja2.exceptions.SecurityError,
++                          utils.render_template,
++                          self.bogus_template2,
++                          self.params,
++                          is_file=False)
++
++    @mock.patch('ironic.common.utils.jinja2.FileSystemLoader', autospec=True)
++    def test_render_bogus_file_attr(self, jinja_fsl_mock):
++        """Jinja explicitly blocks access access to .__ delimited items."""
++        path = '/path/to/template.j2'
++        jinja_fsl_mock.return_value = jinja2.DictLoader(
++            {'template.j2': self.bogus_template2})
++        self.assertRaises(jinja2.exceptions.SecurityError,
++                          utils.render_template,
++                          path,
++                          self.params)
++        jinja_fsl_mock.assert_called_once_with('/path/to')
++
++
+ 
+ class ValidateConductorGroupTestCase(base.TestCase):
+     def test_validate_conductor_group_success(self):
+diff --git a/releasenotes/notes/fix-bug-2148307-ddf0b4d69244e86e.yaml b/releasenotes/notes/fix-bug-2148307-ddf0b4d69244e86e.yaml
+new file mode 100644
+index 000000000..c9052546a
+--- /dev/null
++++ b/releasenotes/notes/fix-bug-2148307-ddf0b4d69244e86e.yaml
+@@ -0,0 +1,8 @@
++---
++fixes:
++  - |
++    Fixes security issue identified in
++    `bug 2148307 <https://bugs.launchpad.net/ironic/+bug/2148307>`_
++    where users of the anaconda deployment interface could supply
++    a malicious template. The conductor process now sandboxes all
++    jinja2 rendering operations.
+-- 
+2.54.0
+

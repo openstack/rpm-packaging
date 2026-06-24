@@ -1,0 +1,208 @@
+From cefde3abf6a533b444782cb24368da29aa5fc157 Mon Sep 17 00:00:00 2001
+From: Julia Kreger <juliaashleykreger@gmail.com>
+Date: Thu, 7 May 2026 08:48:48 -0700
+Subject: [PATCH 4/6] security: disable driver_info level pxe_template override
+
+A vulnerability report was filed pointing out a flaw in the pxe_template
+override logic where a direct file path was supplied. The original usage
+context of this minimally documented feature was that an operator, i.e.
+the owner of the ironic deployment could leverage a direct file path to
+a template on disk. This should instead have utilized the file:/// URL
+provider, but research suggests this feature has largely not been used.
+
+As a result, consensus has been reached amongst security maintainers
+for the Ironic project to disable and remove this functionality.
+
+Where this issue became a vulnerability for Ironic was the evolution
+of the usage and Role Based Access Control model where we began to
+separate the overall operator of the system from the administrative
+manager of the system.
+
+The resulting vector was that an authenticated and authorized user
+could potentially request a template a sensitive file to be sourced
+as the PXE template. This file would then be written to disk and
+utilized IF the ironic-conductor service could access it. The
+malicious authenticated and authorized user could then, if the
+environment was misconfigured, or operating with "flat" networking,
+it could be possible to guess the underlying file path on the
+tftpboot/httpboot network bootendpoints, and retrieve the rendered
+output before the deployment failed and the rendered output is removed.
+
+This is tracked as CVE-2026-44917, and the underlying feature is
+expected to be removed during the 2027.2.
+
+Closes-Bug: 2148319
+Change-Id: I52daa344b4d417eee09c28b53703fea792e4367b
+Signed-off-by: Julia Kreger <juliaashleykreger@gmail.com>
+(cherry picked from commit 769bcc2e40d9e49fba6c7d45a857dc67da789419)
+---
+ ironic/conf/pxe.py                            |  7 ++++
+ ironic/drivers/modules/deploy_utils.py        | 36 ++++++++++++++++---
+ .../unit/drivers/modules/test_deploy_utils.py | 23 ++++++++++++
+ ...security-bug-2148319-49974afdcd38d9c0.yaml | 28 +++++++++++++++
+ 4 files changed, 90 insertions(+), 4 deletions(-)
+ create mode 100644 releasenotes/notes/security-bug-2148319-49974afdcd38d9c0.yaml
+
+diff --git a/ironic/conf/pxe.py b/ironic/conf/pxe.py
+index e4c912192..e84438a47 100644
+--- a/ironic/conf/pxe.py
++++ b/ironic/conf/pxe.py
+@@ -209,6 +209,13 @@ opts = [
+                    '$pybasedir', 'drivers/modules/initial_grub_cfg.template'),
+                help=_('On ironic-conductor node, the path to the initial grub'
+                       'configuration template for grub network boot.')),
++    cfg.BoolOpt('enable_insecure_template_override',
++                default=False,
++                help=_('If node level pxe_template override is permitted to '
++                       'be used in this Ironic deployment. This is an '
++                       'insecure pattern filed under CVE-2026-44917 and '
++                       'the feature this guards this is expected to be '
++                       'removed in Ironic release 2027.2.')),
+ ]
+ 
+ 
+diff --git a/ironic/drivers/modules/deploy_utils.py b/ironic/drivers/modules/deploy_utils.py
+index 4848e2fb7..c26e9d6f4 100644
+--- a/ironic/drivers/modules/deploy_utils.py
++++ b/ironic/drivers/modules/deploy_utils.py
+@@ -457,9 +457,22 @@ def get_ipxe_config_template(node):
+     # loaders by architecture as they are all consistent. Where as PXE
+     # could need to be grub for one arch, PXELINUX for another.
+     configured_template = CONF.pxe.ipxe_config_template
+-    override_template = node.driver_info.get('pxe_template')
+-    if override_template:
+-        configured_template = override_template
++    insecure_override_template = node.driver_info.get('pxe_template')
++    if CONF.pxe.enable_insecure_template_override:
++        # TODO(TheJulia): Remove the node level pxe_template setting in
++        # a future release as it is inhernetly insecure.
++        if insecure_override_template:
++            configured_template = insecure_override_template
++    elif insecure_override_template:
++        raise exception.InvalidParameterValue(_(
++            'The node\'s driver_info field pxe_template override value is '
++            'insecure (CVE-2026-44917) and should not be used. The '
++            'appropriate approach is to utilize [pxe]ipxe_template_by_arch '
++            'configuration in ironic.conf to match the baremetal node\'s '
++            'architecture. Please work with your Ironic operator to remedy '
++            'your usage and configuration. Default templates may be '
++            'leveraged by deleting the pxe_template value in the driver_info '
++            'field.'))
+     return configured_template or get_pxe_config_template(node)
+ 
+ 
+@@ -474,7 +487,22 @@ def get_pxe_config_template(node):
+     :param node: A single Node.
+     :returns: The PXE config template file name.
+     """
+-    config_template = node.driver_info.get("pxe_template", None)
++    config_template = None
++    insecure_override_template = node.driver_info.get("pxe_template", None)
++    if CONF.pxe.enable_insecure_template_override:
++        # TODO(TheJulia): Remove the node level pxe_template setting in
++        # a future release as it is inhernetly insecure.
++        config_template = insecure_override_template
++    elif insecure_override_template:
++        raise exception.InvalidParameterValue(_(
++            'The node\'s driver_info field pxe_template override value is '
++            'insecure (CVE-2026-44917) and should not be used. The '
++            'appropriate approach is to utilize [pxe]pxe_template_by_arch '
++            'configuration in ironic.conf to match the baremetal node\'s '
++            'architecture. Please work with your Ironic operator to remedy '
++            'your usage and configuration. Default templates may be '
++            'leveraged by deleting the pxe_template value in the driver_info '
++            'field.'))
+     if config_template is None:
+         cpu_arch = node.properties.get('cpu_arch')
+         config_template = CONF.pxe.pxe_config_template_by_arch.get(cpu_arch)
+diff --git a/ironic/tests/unit/drivers/modules/test_deploy_utils.py b/ironic/tests/unit/drivers/modules/test_deploy_utils.py
+index d0d9a35f5..4eda519c7 100644
+--- a/ironic/tests/unit/drivers/modules/test_deploy_utils.py
++++ b/ironic/tests/unit/drivers/modules/test_deploy_utils.py
+@@ -424,6 +424,8 @@ class GetPxeBootConfigTestCase(db_base.DbTestCase):
+         self.assertEqual('bios-template', result)
+ 
+     def test_get_pxe_config_template_per_node(self):
++        cfg.CONF.set_override('enable_insecure_template_override', True,
++                              group='pxe')
+         node = obj_utils.create_test_node(
+             self.context, driver='fake-hardware',
+             driver_info={"pxe_template": "fake-template"},
+@@ -431,6 +433,16 @@ class GetPxeBootConfigTestCase(db_base.DbTestCase):
+         result = utils.get_pxe_config_template(node)
+         self.assertEqual('fake-template', result)
+ 
++    def test_get_pxe_config_template_per_node_disabled(self):
++        self.assertFalse(cfg.CONF.pxe.enable_insecure_template_override)
++        node = obj_utils.create_test_node(
++            self.context, driver='fake-hardware',
++            driver_info={"pxe_template": "fake-template"},
++        )
++        self.assertRaisesRegex(
++            exception.InvalidParameterValue, 'CVE-2026-44917',
++            utils.get_pxe_config_template, node)
++
+     def test_get_ipxe_config_template(self):
+         node = obj_utils.create_test_node(
+             self.context, driver='fake-hardware')
+@@ -457,12 +469,23 @@ class GetPxeBootConfigTestCase(db_base.DbTestCase):
+                          utils.get_ipxe_config_template(node))
+ 
+     def test_get_ipxe_config_template_override_pxe_fallback(self):
++        cfg.CONF.set_override('enable_insecure_template_override', True,
++                              group='pxe')
+         node = obj_utils.create_test_node(
+             self.context, driver='fake-hardware',
+             driver_info={'pxe_template': 'magical'})
+         self.assertEqual('magical',
+                          utils.get_ipxe_config_template(node))
+ 
++    def test_get_ipxe_config_template_override_pxe_fallback_disabled(self):
++        self.assertFalse(cfg.CONF.pxe.enable_insecure_template_override)
++        node = obj_utils.create_test_node(
++            self.context, driver='fake-hardware',
++            driver_info={'pxe_template': 'magical'})
++        self.assertRaisesRegex(
++            exception.InvalidParameterValue, 'CVE-2026-44917',
++            utils.get_ipxe_config_template, node)
++
+ 
+ @mock.patch('time.sleep', lambda sec: None)
+ class OtherFunctionTestCase(db_base.DbTestCase):
+diff --git a/releasenotes/notes/security-bug-2148319-49974afdcd38d9c0.yaml b/releasenotes/notes/security-bug-2148319-49974afdcd38d9c0.yaml
+new file mode 100644
+index 000000000..67edfc8f4
+--- /dev/null
++++ b/releasenotes/notes/security-bug-2148319-49974afdcd38d9c0.yaml
+@@ -0,0 +1,28 @@
++---
++security:
++  - |
++    A vulnerability was discovered in an minimally documented feature of
++    Ironic where an absolute path to a ``pxe_template`` override value could
++    be defined by an authenticated and privilged API user. The Ironic team has
++    chosen to immediately deprecate and remove this functionality. To provide
++    an immediate security fix, this functionality is now disabled by default.
++    The functionality can be re-enabled via the
++    ``[pxe]enable_insecure_template_override`` configuration option which
++    was added to ironic.conf with a default value of ``False``.
++    This issue is tracked as
++    `bug 2148319 <https://bugs.launchpad.net/ironic/+bug/2148319>`_.
++fixes:
++  - |
++    Fixes a vulnerability (CVE-2026-44917) which was identified inhandling
++    of pxe_template overrides where an authenticated and authorized user
++    could request an override template via direct file path which would
++    bypass file URL handling guards introduced in OSSA-2025-001. This
++    feature was minimally documented through only a release note, and
++    does not appear to have actual use. This functionality is being
++    disabled by default, and will be promptly removed from Ironic's
++    current development branch.
++deprecations:
++  - |
++    The node ``driver_info`` field value ``pxe_template`` has been
++    deprecated and is expected to be removed in the future Ironic
++    2027.2 release.
+-- 
+2.54.0
+

@@ -1,0 +1,308 @@
+From 440c7bb15b2fdb99410b987907eedd8bfc1850d5 Mon Sep 17 00:00:00 2001
+From: Saad Zia <saad.zia@est.tech>
+Date: Thu, 28 May 2026 10:51:32 +0300
+Subject: [PATCH 5/6] Security: Fix sensitive properties returned on volume
+ targets
+
+Ensure that volume target properties are properly redacted when the
+user lacks the 'baremetal:volume:view_target_properties' policy in
+patch() similar to get_one().
+
+Additionally, Ironic Core Security determined that the RBAC reliant
+control over who can see properties was insufficient, especially in
+standalone use cases, and such the field handling is now consistent
+with other sensitive field usage.
+
+Assisted-By: Claude Opus 4.6
+Related-Bug: 2154564
+Related-Bug: 2155049
+Change-Id: I8366088731aa34da0e99941924c222ffed455c8b
+Signed-off-by: Saad Zia <saad.zia@est.tech>
+Signed-off-by: Julia Kreger <juliaashleykreger@gmail.com>
+(cherry picked from commit 49bff4c09acfdf195f40f911236b9ac5c6def3c5)
+---
+ ironic/api/controllers/v1/volume_target.py    |  20 ++-
+ .../api/controllers/v1/test_volume_target.py  | 166 ++++++++++++++++++
+ ...sensitive-properties-041818005cac008f.yaml |  21 +++
+ 3 files changed, 204 insertions(+), 3 deletions(-)
+ create mode 100644 releasenotes/notes/volume-target-redact-sensitive-properties-041818005cac008f.yaml
+
+diff --git a/ironic/api/controllers/v1/volume_target.py b/ironic/api/controllers/v1/volume_target.py
+index 2fe1afb03..6735af017 100644
+--- a/ironic/api/controllers/v1/volume_target.py
++++ b/ironic/api/controllers/v1/volume_target.py
+@@ -15,6 +15,7 @@
+ from http import client as http_client
+ 
+ from ironic_lib import metrics_utils
++from oslo_utils import strutils
+ from oslo_utils import uuidutils
+ from pecan import rest
+ 
+@@ -90,11 +91,18 @@ def convert_with_links(rpc_target, fields=None, sanitize=True):
+     if not sanitize:
+         return target
+ 
+-    api_utils.sanitize_dict(target, fields)
++    target_sanitize(target, fields)
+ 
+     return target
+ 
+ 
++def target_sanitize(target, fields=None):
++    api_utils.sanitize_dict(target, fields)
++    if target.get('properties'):
++        target['properties'] = strutils.mask_dict_password(
++            target['properties'], "******")
++
++
+ def list_convert_with_links(rpc_targets, limit, url, fields=None,
+                             detail=None, **kwargs):
+     if detail:
+@@ -106,7 +114,7 @@ def list_convert_with_links(rpc_targets, limit, url, fields=None,
+         limit=limit,
+         url=url,
+         fields=fields,
+-        sanitize_func=api_utils.sanitize_dict,
++        sanitize_func=target_sanitize,
+         **kwargs
+     )
+ 
+@@ -401,9 +409,15 @@ class VolumeTargetsController(rest.RestController):
+             new_target = api.request.rpcapi.update_volume_target(
+                 context, rpc_target, topic)
+ 
+-        api_target = convert_with_links(new_target)
+         notify.emit_end_notification(context, new_target, 'update',
+                                      node_uuid=rpc_node.uuid)
++
++        cdict = api.request.context.to_policy_values()
++        if not policy.check_policy('baremetal:volume:view_target_properties',
++                                   cdict, cdict):
++            self._redact_target_properties(new_target)
++
++        api_target = convert_with_links(new_target)
+         return api_target
+ 
+     @METRICS.timer('VolumeTargetsController.delete')
+diff --git a/ironic/tests/unit/api/controllers/v1/test_volume_target.py b/ironic/tests/unit/api/controllers/v1/test_volume_target.py
+index 038f3cb58..af33e2d18 100644
+--- a/ironic/tests/unit/api/controllers/v1/test_volume_target.py
++++ b/ironic/tests/unit/api/controllers/v1/test_volume_target.py
+@@ -29,6 +29,7 @@ from ironic.api.controllers import v1 as api_v1
+ from ironic.api.controllers.v1 import notification_utils
+ from ironic.api.controllers.v1 import utils as api_utils
+ from ironic.common import exception
++from ironic.common import policy
+ from ironic.conductor import rpcapi
+ from ironic import objects
+ from ironic.objects import fields as obj_fields
+@@ -319,6 +320,91 @@ class TestListVolumeTargets(test_api_base.BaseApiTest):
+             self.assertEqual('application/json', response.content_type)
+             self.assertIn(invalid_key, response.json['error_message'])
+ 
++    @mock.patch.object(policy, 'check_policy', autospec=True)
++    def test_get_one_redact_properties(self, mock_check_policy):
++        """Properties are redacted when policy denies access."""
++        target = obj_utils.create_test_volume_target(
++            self.context, node_id=self.node.id)
++
++        def check_policy_side_effect(rule, target_dict, creds,
++                                     *args, **kwargs):
++            if rule == 'baremetal:volume:view_target_properties':
++                return False
++            return True
++
++        mock_check_policy.side_effect = check_policy_side_effect
++        data = self.get_json('/volume/targets/%s' % target.uuid,
++                             headers=self.headers)
++        self.assertIn('properties', data)
++        self.assertIn('redacted_contents', data['properties'])
++        self.assertNotIn('target_iqn', data['properties'])
++
++    @mock.patch.object(policy, 'check_policy', autospec=True)
++    def test_get_one_no_redact_properties(self, mock_check_policy):
++        """Properties are visible when policy allows access."""
++        target = obj_utils.create_test_volume_target(
++            self.context, node_id=self.node.id)
++
++        def check_policy_side_effect(rule, target_dict, creds,
++                                     *args, **kwargs):
++            if rule == 'baremetal:volume:view_target_properties':
++                return True
++            return True
++
++        mock_check_policy.side_effect = check_policy_side_effect
++        data = self.get_json('/volume/targets/%s' % target.uuid,
++                             headers=self.headers)
++        self.assertIn('properties', data)
++        self.assertEqual({'target_iqn': 'iqn.foo'},
++                         data['properties'])
++
++    @mock.patch.object(policy, 'check_policy', autospec=True)
++    def test_detail_redact_properties(self, mock_check_policy):
++        """Properties are redacted in detail listing."""
++        obj_utils.create_test_volume_target(
++            self.context, node_id=self.node.id)
++
++        def check_policy_side_effect(rule, target_dict, creds,
++                                     *args, **kwargs):
++            if rule == 'baremetal:volume:view_target_properties':
++                return False
++            return True
++
++        mock_check_policy.side_effect = check_policy_side_effect
++        data = self.get_json('/volume/targets?detail=True',
++                             headers=self.headers)
++        props = data['targets'][0]['properties']
++        self.assertIn('redacted_contents', props)
++        self.assertNotIn('target_iqn', props)
++
++    def test_get_one_masks_secret_properties(self):
++        """Password-like values in properties are always masked."""
++        props = {'target_iqn': 'iqn.foo',
++                 'auth_password': 'supersecret'}
++        obj_utils.create_test_volume_target(
++            self.context, node_id=self.node.id,
++            properties=props)
++        data = self.get_json('/volume/targets/%s'
++                             % dbutils.get_test_volume_target()['uuid'],
++                             headers=self.headers)
++        self.assertEqual('iqn.foo',
++                         data['properties']['target_iqn'])
++        self.assertEqual('******',
++                         data['properties']['auth_password'])
++
++    def test_detail_masks_secret_properties(self):
++        """Password-like values in properties are masked in listings."""
++        props = {'target_iqn': 'iqn.foo',
++                 'auth_password': 'supersecret'}
++        obj_utils.create_test_volume_target(
++            self.context, node_id=self.node.id,
++            properties=props)
++        data = self.get_json('/volume/targets?detail=True',
++                             headers=self.headers)
++        result_props = data['targets'][0]['properties']
++        self.assertEqual('iqn.foo', result_props['target_iqn'])
++        self.assertEqual('******', result_props['auth_password'])
++
+     @mock.patch.object(api_utils, 'get_rpc_node', autospec=True)
+     def test_get_all_by_node_name_ok(self, mock_get_rpc_node):
+         # GET /v1/volume/targets specifying node_name - success
+@@ -727,6 +813,86 @@ class TestPatch(test_api_base.BaseApiTest):
+         self.assertTrue(response.json['error_message'])
+         self.assertFalse(mock_upd.called)
+ 
++    @mock.patch.object(policy, 'check_policy', autospec=True)
++    @mock.patch.object(notification_utils, '_emit_api_notification',
++                       autospec=True)
++    def test_patch_redact_properties(self, mock_notify, mock_check_policy,
++                                     mock_upd):
++        """Properties are redacted in PATCH response."""
++        props = {'target_iqn': 'iqn.secret'}
++        mock_upd.return_value = self.target
++        mock_upd.return_value.properties = props
++
++        def check_policy_side_effect(rule, target_dict, creds,
++                                     *args, **kwargs):
++            if rule == 'baremetal:volume:view_target_properties':
++                return False
++            return True
++
++        mock_check_policy.side_effect = check_policy_side_effect
++        response = self.patch_json('/volume/targets/%s'
++                                   % self.target.uuid,
++                                   [{'path': '/extra/foo',
++                                     'value': 'bar',
++                                     'op': 'add'}],
++                                   headers=self.headers)
++        self.assertEqual(http_client.OK, response.status_code)
++        self.assertIn('redacted_contents',
++                      response.json['properties'])
++        self.assertNotIn('target_iqn',
++                         response.json['properties'])
++        mock_notify.assert_has_calls(
++            [mock.call(mock.ANY, mock.ANY, 'update',
++                       obj_fields.NotificationLevel.INFO,
++                       obj_fields.NotificationStatus.START,
++                       node_uuid=self.node.uuid),
++             mock.call(mock.ANY, mock.ANY, 'update',
++                       obj_fields.NotificationLevel.INFO,
++                       obj_fields.NotificationStatus.END,
++                       node_uuid=self.node.uuid)])
++
++    @mock.patch.object(policy, 'check_policy', autospec=True)
++    def test_patch_no_redact_properties(self, mock_check_policy,
++                                        mock_upd):
++        """Properties are visible in PATCH response when allowed."""
++        props = {'target_iqn': 'iqn.secret'}
++        mock_upd.return_value = self.target
++        mock_upd.return_value.properties = props
++
++        def check_policy_side_effect(rule, target_dict, creds,
++                                     *args, **kwargs):
++            if rule == 'baremetal:volume:view_target_properties':
++                return True
++            return True
++
++        mock_check_policy.side_effect = check_policy_side_effect
++        response = self.patch_json('/volume/targets/%s'
++                                   % self.target.uuid,
++                                   [{'path': '/extra/foo',
++                                     'value': 'bar',
++                                     'op': 'add'}],
++                                   headers=self.headers)
++        self.assertEqual(http_client.OK, response.status_code)
++        self.assertEqual(props, response.json['properties'])
++
++    def test_patch_masks_secret_properties(self, mock_upd):
++        """Password-like values in properties are masked in PATCH."""
++        props = {'target_iqn': 'iqn.foo',
++                 'auth_password': 'supersecret'}
++        mock_upd.return_value = self.target
++        mock_upd.return_value.properties = props
++        response = self.patch_json('/volume/targets/%s'
++                                   % self.target.uuid,
++                                   [{'path': '/extra/foo',
++                                     'value': 'bar',
++                                     'op': 'add'}],
++                                   headers=self.headers)
++        self.assertEqual(http_client.OK, response.status_code)
++        self.assertEqual('iqn.foo',
++                         response.json['properties']['target_iqn'])
++        self.assertEqual('******',
++                         response.json['properties']['auth_password'])
++
+ 
+ class TestPost(test_api_base.BaseApiTest):
+     headers = {api_base.Version.string: str(api_v1.max_version())}
+diff --git a/releasenotes/notes/volume-target-redact-sensitive-properties-041818005cac008f.yaml b/releasenotes/notes/volume-target-redact-sensitive-properties-041818005cac008f.yaml
+new file mode 100644
+index 000000000..5d1a04b42
+--- /dev/null
++++ b/releasenotes/notes/volume-target-redact-sensitive-properties-041818005cac008f.yaml
+@@ -0,0 +1,21 @@
++---
++security:
++  - |
++    The volume target ``properties`` field can contain sensitive iSCSI
++    connection details, including CHAP authentication credentials. A
++    contributor identified that the ``baremetal:volume:view_target_properties``
++    RBAC policy check was not applied to ``PATCH`` responses. During review,
++    the ironic core security team determined that RBAC policy enforcement
++    alone was insufficient since standalone deployments do not have RBAC
++    support. The fix was updated in line with code reviewer feedback to
++    add secondary scrubbing of the ``properties`` field in all cases using
++    ``mask_dict_password``, ensuring password-like values are masked in all
++    API responses unconditionally.
++fixes:
++  - |
++    The ``PATCH`` endpoint for volume targets now applies the
++    ``baremetal:volume:view_target_properties`` RBAC policy check to its
++    response payload, consistent with the ``GET`` endpoints. Additionally,
++    the ``properties`` field is now scrubbed using ``mask_dict_password``
++    to mask any password-like keys, providing defense-in-depth independent
++    of RBAC policy enforcement.
+-- 
+2.54.0
+

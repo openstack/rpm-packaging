@@ -23,6 +23,12 @@ Source5:        openstack-ironic.README.config
 Source6:        openstack-ironic-api.service
 Source7:        openstack-ironic-conductor.service
 Patch1:         0001-Use-linux-instead-of-linuxefi-in-grub-config.patch
+Patch2:		0001-security-Use-sandbox-rendering-for-jinja2.patch
+Patch3:		0002-Ensure-kernel_append_params-are-valid-kernel-paramet.patch
+Patch4:		0003-security-directory-transversal-ISO9660-support.patch
+Patch5:		0004-security-disable-driver_info-level-pxe_template-over.patch
+Patch6:		0005-Security-Fix-sensitive-properties-returned-on-volume.patch
+Patch7:		0006-Fix-kernel-parameter-parsing-for-quoted-values-and-w.patch
 BuildRequires:  openstack-macros
 BuildRequires:  {{ py3('Jinja2') }}
 BuildRequires:  {{ py3('SQLAlchemy') }}
