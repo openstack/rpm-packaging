@@ -1,0 +1,379 @@
+From ce96f8750377b2c5e1bb2839bfb532af783cab92 Mon Sep 17 00:00:00 2001
+From: Daniel Bengtsson <dbengt@redhat.com>
+Date: Thu, 25 Jun 2026 08:32:03 +0000
+Subject: [PATCH] Fix RabbitMQ TLS hostname verification
+
+When TLS is used with ssl_ca_file, the Rabbit driver validates the
+certificate chain but does not verify the broker hostname. This
+could allow a MITM attacker with a certificate trusted by the
+deployment CA to impersonate the RabbitMQ broker.
+
+This change adds ssl_enforce_hostname_verification. When enabled
+together with ssl_ca_file, the driver enables hostname verification.
+
+For single-broker configurations, the broker hostname is passed
+explicitly. For multi-broker configurations, Kombu >= 5.2.0 is required
+when hostname verification is enforced. Older Kombu versions will result
+in an explicit failure instead of silently disabling verification.
+
+NOTE: Unlike master, the backport keeps
+ssl_enforce_hostname_verification disabled by default to preserve
+stable branch behavior compatibility.
+
+Conflicts:
+	oslo_messaging/tests/drivers/test_impl_rabbit.py
+
+Resolved conflict caused by remaining unit tests for FIPS mode support.
+
+Conflicts:
+	oslo_messaging/_drivers/impl_rabbit.py
+
+Resolved conflict caused by imports changes
+
+Related-Bug: #2150316
+Signed-off-by: Daniel Bengtsson <dbengt@redhat.com>
+(cherry picked from commit 73dc887a9caf7540685bdcb148f63d1a91f34bc0)
+(cherry picked from commit 399f96e8044419ea16929a39174617ba59644052)
+(cherry picked from commit 3a9ea484debcf208cc65eea557c78579418e196c)
+---
+ oslo_messaging/_drivers/impl_rabbit.py        |  46 +++++
+ .../tests/drivers/test_impl_rabbit.py         | 181 +++++++++++++++++-
+ ...bbit-ssl-hostname-verification-option.yaml |  24 +++
+ 3 files changed, 249 insertions(+), 2 deletions(-)
+ create mode 100644 releasenotes/notes/rabbit-ssl-hostname-verification-option.yaml
+
+diff --git a/oslo_messaging/_drivers/impl_rabbit.py b/oslo_messaging/_drivers/impl_rabbit.py
+index 9aea12b7..4a35ccde 100644
+--- a/oslo_messaging/_drivers/impl_rabbit.py
++++ b/oslo_messaging/_drivers/impl_rabbit.py
+@@ -16,6 +16,7 @@ import collections
+ import contextlib
+ import errno
+ import functools
++import importlib.metadata
+ import itertools
+ import math
+ import os
+@@ -36,6 +37,8 @@ import kombu.messaging
+ from oslo_config import cfg
+ from oslo_log import log as logging
+ from oslo_utils import eventletutils
++from oslo_utils import netutils
++from oslo_utils import versionutils
+ 
+ import oslo_messaging
+ from oslo_messaging._drivers import amqp as rpc_amqp
+@@ -82,6 +85,15 @@ rabbit_opts = [
+                deprecated_name='kombu_ssl_ca_certs',
+                help='SSL certification authority file '
+                     '(valid only if SSL enabled).'),
++    cfg.BoolOpt('ssl_enforce_hostname_verification',
++                default=False,
++                help='When true, verify the broker hostname against the '
++                     'certificate when ``ssl_ca_file`` is set. When false '
++                     '(default on stable branches), ``ssl`` with '
++                     '``ssl_ca_file`` still validates the certificate chain '
++                     'but does not verify the broker hostname. ``ssl=true`` '
++                     'without ``ssl_ca_file`` never enables hostname '
++                     'verification.'),
+     cfg.BoolOpt('ssl_enforce_fips_mode',
+                 default=False,
+                 help='Global toggle for enforcing the OpenSSL FIPS mode. '
+@@ -801,6 +813,11 @@ class Connection(object):
+             self.ssl_key_file = driver_conf.ssl_key_file
+             self.ssl_cert_file = driver_conf.ssl_cert_file
+             self.ssl_ca_file = driver_conf.ssl_ca_file
++            self.ssl_enforce_hostname_verification = (
++                driver_conf.ssl_enforce_hostname_verification)
++            self.ssl_server_hostname = None
++            if (self.ssl_ca_file and self.ssl_enforce_hostname_verification):
++                self.ssl_server_hostname = self._get_ssl_server_hostname(url)
+ 
+             if self.ssl_enforce_fips_mode:
+                 if hasattr(ssl, 'FIPS_mode'):
+@@ -983,6 +1000,33 @@ class Connection(object):
+         except KeyError:
+             raise RuntimeError("Invalid SSL version : %s" % version)
+ 
++    @staticmethod
++    def _get_ssl_server_hostname(url):
++        if len(url.hosts) == 1:
++            return url.hosts[0].hostname
++        if len(url.hosts) > 1:
++            kombu_ver = importlib.metadata.version('kombu')
++            try:
++                kombu_substitutes_failover_hostname = (
++                    versionutils.convert_version_to_tuple(kombu_ver) >=
++                    (5, 2, 0)
++                )
++            except ValueError:
++                kombu_substitutes_failover_hostname = False
++            if kombu_substitutes_failover_hostname:
++                # Kombu >= 5.2.0 substitutes None with the selected broker
++                # hostname after failover chooses the active URL.
++                return None
++            LOG.warning(
++                "Multi-host RabbitMQ TLS hostname verification with Kombu "
++                "before 5.2.0 cannot automatically track the active failover "
++                "broker for the TLS server name. Using the first configured "
++                "broker hostname as a best effort. Upgrade to Kombu >= "
++                "5.2.0, or use a broker certificate (SAN or wildcard) that "
++                "covers all configured broker hostnames.")
++            return url.hosts[0].hostname
++        return None
++
+     def _get_quorum_configurations(self, driver_conf):
+         """Get the quorum queue configurations"""
+         delivery_limit = driver_conf.rabbit_quorum_delivery_limit
+@@ -1031,6 +1075,8 @@ class Connection(object):
+                 # We might want to allow variations in the
+                 # future with this?
+                 ssl_params['cert_reqs'] = ssl.CERT_REQUIRED
++                if self.ssl_enforce_hostname_verification:
++                    ssl_params['server_hostname'] = self.ssl_server_hostname
+             return ssl_params or True
+         return False
+ 
+diff --git a/oslo_messaging/tests/drivers/test_impl_rabbit.py b/oslo_messaging/tests/drivers/test_impl_rabbit.py
+index eb44b714..e569f685 100644
+--- a/oslo_messaging/tests/drivers/test_impl_rabbit.py
++++ b/oslo_messaging/tests/drivers/test_impl_rabbit.py
+@@ -161,6 +161,7 @@ class TestRabbitDriverLoad(test_utils.BaseTestCase):
+ 
+ 
+ class TestRabbitDriverLoadSSL(test_utils.BaseTestCase):
++    hostname_verification = 'ssl_enforce_hostname_verification'
+     scenarios = [
+         ('no_ssl', dict(options=dict(), expected=False)),
+         ('no_ssl_with_options', dict(options=dict(ssl_version='TLSv1'),
+@@ -171,12 +172,28 @@ class TestRabbitDriverLoadSSL(test_utils.BaseTestCase):
+                                                ssl_version='TLSv1',
+                                                ssl_key_file='foo',
+                                                ssl_cert_file='bar',
+-                                               ssl_ca_file='foobar'),
++                                               ssl_ca_file='foobar',
++                                               **{
++                                                   hostname_verification: True
++                                               }),
+                                   expected=dict(ssl_version=3,
+                                                 keyfile='foo',
+                                                 certfile='bar',
+                                                 ca_certs='foobar',
+-                                                cert_reqs=ssl.CERT_REQUIRED))),
++                                                cert_reqs=ssl.CERT_REQUIRED,
++                                                server_hostname=None))),
++        ('ssl_with_options_no_hostname_check',
++         dict(options=dict(ssl=True,
++                           ssl_version='TLSv1',
++                           ssl_key_file='foo',
++                           ssl_cert_file='bar',
++                           ssl_ca_file='foobar',
++                           ssl_enforce_hostname_verification=False),
++              expected=dict(ssl_version=3,
++                            keyfile='foo',
++                            certfile='bar',
++                            ca_certs='foobar',
++                            cert_reqs=ssl.CERT_REQUIRED))),
+     ]
+ 
+     @mock.patch('oslo_messaging._drivers.impl_rabbit.Connection'
+@@ -265,6 +282,166 @@ class TestRabbitDriverLoadSSLWithFIPS(test_utils.BaseTestCase):
+             transport._driver._get_connection)
+ 
+ 
++class TestRabbitDriverSSLHostname(test_utils.BaseTestCase):
++
++    def test_ssl_enforce_hostname_verification_default_false(self):
++        transport = oslo_messaging.get_transport(self.conf,
++                                                 'kombu+memory:////')
++        self.addCleanup(transport.cleanup)
++        self.assertFalse(
++            self.conf.oslo_messaging_rabbit.ssl_enforce_hostname_verification)
++
++    @mock.patch('oslo_messaging._drivers.impl_rabbit.Connection'
++                '.ensure_connection')
++    @mock.patch('kombu.connection.Connection')
++    @mock.patch('oslo_messaging._drivers.impl_rabbit.LOG')
++    @mock.patch(
++        'oslo_messaging._drivers.impl_rabbit.importlib.metadata.version',
++        return_value='5.2.0')
++    def test_multi_host_kombu_5_2_uses_hostname_substitution(
++            self, mock_version, mock_log, connection_klass, fake_ensure):
++        self.config(ssl=True, ssl_ca_file='foobar',
++                    ssl_enforce_hostname_verification=True,
++                    group='oslo_messaging_rabbit')
++        transport = oslo_messaging.get_transport(
++            self.conf, 'rabbit://host1:5672,host2:5672//')
++        self.addCleanup(transport.cleanup)
++
++        transport._driver._get_connection()
++
++        ssl_params = connection_klass.call_args.kwargs['ssl']
++        self.assertIsNone(ssl_params['server_hostname'])
++        mock_log.warning.assert_not_called()
++
++    @mock.patch('oslo_messaging._drivers.impl_rabbit.Connection'
++                '.ensure_connection')
++    @mock.patch('kombu.connection.Connection')
++    @mock.patch('oslo_messaging._drivers.impl_rabbit.LOG')
++    @mock.patch(
++        'oslo_messaging._drivers.impl_rabbit.importlib.metadata.version',
++        return_value='5.1.0')
++    def test_multi_host_old_kombu_warns_and_uses_first_hostname(
++            self, mock_version, mock_log, connection_klass, fake_ensure):
++        self.config(ssl=True, ssl_ca_file='foobar',
++                    ssl_enforce_hostname_verification=True,
++                    group='oslo_messaging_rabbit')
++        transport = oslo_messaging.get_transport(
++            self.conf, 'rabbit://host1:5672,host2:5672//')
++        self.addCleanup(transport.cleanup)
++
++        transport._driver._get_connection()
++
++        ssl_params = connection_klass.call_args.kwargs['ssl']
++        self.assertEqual('host1', ssl_params['server_hostname'])
++        mock_log.warning.assert_called_once()
++        self.assertIn('Multi-host RabbitMQ TLS',
++                      mock_log.warning.call_args[0][0])
++
++    @mock.patch('oslo_messaging._drivers.impl_rabbit.Connection'
++                '.ensure_connection')
++    @mock.patch('kombu.connection.Connection')
++    @mock.patch('oslo_messaging._drivers.impl_rabbit.LOG')
++    @mock.patch(
++        'oslo_messaging._drivers.impl_rabbit.importlib.metadata.version',
++        return_value='unknown')
++    def test_multi_host_unparsable_kombu_version_warns_first_hostname(
++            self, mock_version, mock_log, connection_klass, fake_ensure):
++        self.config(ssl=True, ssl_ca_file='foobar',
++                    ssl_enforce_hostname_verification=True,
++                    group='oslo_messaging_rabbit')
++        transport = oslo_messaging.get_transport(
++            self.conf, 'rabbit://host1:5672,host2:5672//')
++        self.addCleanup(transport.cleanup)
++
++        transport._driver._get_connection()
++
++        ssl_params = connection_klass.call_args.kwargs['ssl']
++        self.assertEqual('host1', ssl_params['server_hostname'])
++        mock_log.warning.assert_called_once()
++
++    @mock.patch('oslo_messaging._drivers.impl_rabbit.Connection'
++                '.ensure_connection')
++    @mock.patch('kombu.connection.Connection')
++    def test_enforcement_disabled_omits_server_hostname(self, connection_klass,
++                                                        fake_ensure):
++        self.config(ssl=True, ssl_ca_file='foobar',
++                    ssl_enforce_hostname_verification=False,
++                    group='oslo_messaging_rabbit')
++        transport = oslo_messaging.get_transport(
++            self.conf, 'rabbit://host1:5672//')
++        self.addCleanup(transport.cleanup)
++
++        transport._driver._get_connection()
++
++        ssl_params = connection_klass.call_args.kwargs['ssl']
++        self.assertNotIn('server_hostname', ssl_params)
++
++    @mock.patch('oslo_messaging._drivers.impl_rabbit.Connection'
++                '.ensure_connection')
++    @mock.patch('kombu.connection.Connection')
++    def test_single_host_uses_hostname(self, connection_klass, fake_ensure):
++        self.config(ssl=True, ssl_ca_file='foobar',
++                    ssl_enforce_hostname_verification=True,
++                    group='oslo_messaging_rabbit')
++        transport = oslo_messaging.get_transport(
++            self.conf, 'rabbit://host1:5672//')
++        self.addCleanup(transport.cleanup)
++
++        transport._driver._get_connection()
++
++        ssl_params = connection_klass.call_args.kwargs['ssl']
++        self.assertEqual('host1', ssl_params['server_hostname'])
++
++    @mock.patch('oslo_messaging._drivers.impl_rabbit.Connection'
++                '.ensure_connection')
++    @mock.patch('kombu.connection.Connection')
++    @mock.patch(
++        'oslo_messaging._drivers.impl_rabbit.importlib.metadata.version',
++        return_value='5.1.0')
++    def test_multi_host_old_kombu_allowed_without_enforcement(
++            self, mock_version, connection_klass, fake_ensure):
++        self.config(ssl=True, ssl_ca_file='foobar',
++                    ssl_enforce_hostname_verification=False,
++                    group='oslo_messaging_rabbit')
++        transport = oslo_messaging.get_transport(
++            self.conf, 'rabbit://host1:5672,host2:5672//')
++        self.addCleanup(transport.cleanup)
++        transport._driver._get_connection()
++
++        ssl_params = connection_klass.call_args.kwargs['ssl']
++        self.assertNotIn('server_hostname', ssl_params)
++
++    @mock.patch('oslo_messaging._drivers.impl_rabbit.Connection'
++                '.ensure_connection')
++    @mock.patch('kombu.connection.Connection')
++    def test_multi_host_unknown_kombu_allowed_without_enforcement(
++            self, connection_klass, fake_ensure):
++        self.config(ssl=True, ssl_ca_file='foobar',
++                    ssl_enforce_hostname_verification=False,
++                    group='oslo_messaging_rabbit')
++        transport = oslo_messaging.get_transport(
++            self.conf, 'rabbit://host1:5672,host2:5672//')
++        self.addCleanup(transport.cleanup)
++        transport._driver._get_connection()
++
++        ssl_params = connection_klass.call_args.kwargs['ssl']
++        self.assertNotIn('server_hostname', ssl_params)
++
++    @mock.patch('oslo_messaging._drivers.impl_rabbit.Connection'
++                '.ensure_connection')
++    @mock.patch('kombu.connection.Connection')
++    def test_ssl_without_ca_does_not_check_hostname(self, connection_klass,
++                                                    fake_ensure):
++        self.config(ssl=True, group='oslo_messaging_rabbit')
++        transport = oslo_messaging.get_transport(
++            self.conf, 'rabbit://host1:5672,host2:5672//')
++        self.addCleanup(transport.cleanup)
++
++        transport._driver._get_connection()
++
++        self.assertIs(True, connection_klass.call_args.kwargs['ssl'])
++
++
+ class TestRabbitPublisher(test_utils.BaseTestCase):
+     @mock.patch('kombu.messaging.Producer.publish')
+     def test_send_with_timeout(self, fake_publish):
+diff --git a/releasenotes/notes/rabbit-ssl-hostname-verification-option.yaml b/releasenotes/notes/rabbit-ssl-hostname-verification-option.yaml
+new file mode 100644
+index 00000000..d79b09bb
+--- /dev/null
++++ b/releasenotes/notes/rabbit-ssl-hostname-verification-option.yaml
+@@ -0,0 +1,24 @@
++---
++security:
++  - |
++    Under TLS with ``ssl_ca_file``, oslo.messaging validated the broker
++    certificate chain but did not verify the RabbitMQ broker hostname. A
++    man-in-the-middle attacker with a certificate trusted by that CA could
++    impersonate the broker.
++
++    The RabbitMQ driver now verifies the broker hostname when ``ssl_ca_file``
++    is set and ``[oslo_messaging_rabbit] ssl_enforce_hostname_verification``
++    is enabled. Using ``ssl=true`` without ``ssl_ca_file`` still does not
++    verify the broker hostname.
++
++    The ``ssl_enforce_hostname_verification`` option defaults to
++    ``false`` to preserve existing behavior until operators opt in. When
++    enabled together with ``ssl_ca_file``, hostname verification is enforced
++    for RabbitMQ TLS connections.
++
++    For transport URLs with multiple brokers and hostname verification
++    enabled, Kombu 5.2.0 or newer substitutes the active broker hostname for
++    TLS. Older Kombu versions log a warning and use the first configured
++    broker hostname as a best effort; operators should upgrade Kombu or use a
++    certificate (SAN or wildcard) that covers all configured broker
++    hostnames.
+-- 
+2.54.0
+
